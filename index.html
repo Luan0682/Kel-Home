@@ -9,17 +9,12 @@
 <meta http-equiv="Expires" content="0">
 <meta name="apple-mobile-web-app-status-bar-style" content="default">
 <meta name="mobile-web-app-capable" content="yes">
-<meta name="ui-beautification-template-build" content="public-open-20260629">
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react/18.3.1/umd/react.production.min.js"></script>
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <script src="./support.js"></script>
-</head>
-<body>
-<x-dc>
-<helmet>
 <style>
 * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
-html,body { margin:0; padding:0; height:100%; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility; }
+html,body { margin:0; padding:0; height:100%; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; }
 body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 .sa::-webkit-scrollbar { width:0; display:none; }
 .sa { scrollbar-width:none; -webkit-overflow-scrolling:touch; }
@@ -29,7 +24,16 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 @keyframes slideIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:none} }
 @keyframes slideInLeft { from{transform:translateX(-100%)} to{transform:none} }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:none} }
+.fold-btn { background:transparent; border:none; cursor:pointer; font-family:inherit; display:flex; align-items:center; gap:6px; color:#9A958B; font-size:13px; }
+.fold-btn svg { transition:transform 0.2s; }
+.fold-btn .rotated { transform:rotate(180deg); }
+.tag { background:#F2EFE8; border-radius:12px; padding:2px 10px; font-size:11px; color:#6B665E; }
 </style>
+</head>
+<body>
+<x-dc>
+<helmet>
+<!-- 自定义样式已内联 -->
 </helmet>
 
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#F5F3EE;color:#1A1815;font-family:-apple-system,'Noto Sans SC','Helvetica Neue',sans-serif;overflow:hidden;letter-spacing:-0.01em;">
@@ -63,11 +67,9 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 
 <!-- messages area -->
 <div style="flex:1;min-height:0;position:relative;">
-<!-- top scroll fade -->
 <div style="position:absolute;top:0;left:0;right:0;height:24px;background:linear-gradient(#F5F3EE,rgba(245,243,238,0));z-index:5;pointer-events:none;"></div>
-<!-- bottom scroll fade -->
 <div style="position:absolute;bottom:0;left:0;right:0;height:20px;background:linear-gradient(rgba(245,243,238,0),#F5F3EE);z-index:5;pointer-events:none;"></div>
-<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:10px 20px 10px;">
+<div class="sa" id="messageContainer" style="position:absolute;inset:0;overflow-y:auto;padding:10px 20px 10px;">
 
 <!-- template watermark -->
 <div style="position:sticky;top:50%;left:50%;transform:translate(-50%,-50%);width:0;height:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0;">
@@ -78,18 +80,25 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 
 <!-- messages -->
-<sc-for list="{{ messages }}" as="m" hint-placeholder-count="4">
+<sc-if value="{{ showLoadMore }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ loadMoreMessages }}" style="display:block;width:100%;padding:12px;background:transparent;border:1px solid #EDE9E0;border-radius:16px;color:#9A958B;font-size:13px;cursor:pointer;font-family:inherit;">加载更早的消息</button>
+</sc-if>
+
+<sc-for list="{{ displayedMessages }}" as="m" hint-placeholder-count="4">
 <div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;">
 <div style="max-width:{{ m.maxW }};width:{{ m.fullW }};">
 
 <!-- thinking -->
 <sc-if value="{{ m.hasThink }}" hint-placeholder-val="{{ false }}">
-<div style="margin-bottom:14px;">
-<button onClick="{{ m.openThink }}" style="display:flex;align-items:center;gap:10px;width:100%;border:none;background:transparent;padding:4px 0;cursor:pointer;font-family:inherit;text-align:left;">
-<svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.55;{{ m.thinkPulse }}"><circle cx="12" cy="12" r="8.5" stroke="#9A958B" stroke-width="1.4"/><path d="M12 8v4l2.5 1.5" stroke="#9A958B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="flex:1;font-size:13.5px;color:#9A958B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.thinkSummary }}</span>
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.45;"><path d="M9 6l6 6-6 6" stroke="#B8B3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div style="margin-bottom:8px;">
+<button onClick="{{ m.toggleThink }}" style="display:flex;align-items:center;gap:8px;border:none;background:transparent;padding:4px 0;cursor:pointer;font-family:inherit;color:#9A958B;font-size:13px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex:none;"><circle cx="12" cy="12" r="8.5" stroke="#9A958B" stroke-width="1.4"/><path d="M12 8v4l2.5 1.5" stroke="#9A958B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span>思考过程{{ m.thinkSummary }}</span>
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="transform:{{ m.thinkRot }};transition:transform .2s;"><path d="M6 9l6 6 6-6" stroke="#9A958B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
+<sc-if value="{{ m.showThinkDetail }}" hint-placeholder-val="{{ false }}">
+<div style="background:#F2EFE8;border-radius:12px;padding:12px 14px;margin-top:4px;font-size:14px;line-height:1.7;color:#48453E;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;">{{ m.thinkFull }}</div>
+</sc-if>
 </div>
 </sc-if>
 
@@ -185,6 +194,9 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <button onClick="{{ openApiSheet }}" style="display:flex;align-items:center;gap:6px;background:#F2EFE8;border:none;border-radius:18px;padding:7px 14px;cursor:pointer;font-family:inherit;max-width:178px;">
 <span style="font-size:13.5px;font-weight:500;color:#3A362F;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ activeModel }}</span>
 </button>
+<button onClick="{{ attachFile }}" style="width:32px;height:32px;border-radius:50%;background:#F2EFE8;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="#6B665E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
 </div>
 <div style="display:flex;align-items:center;gap:16px;">
 <button onClick="{{ openPromptSheet }}" style="width:24px;height:24px;background:transparent;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;">
@@ -203,38 +215,27 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <!-- ========== HOME ========== -->
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
-
 <div style="padding:4px 0 6px;">
 <button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
 </button>
 </div>
-
 <div style="padding:6px 0 24px;">
 <div style="font-size:12px;color:#B8B3A8;letter-spacing:2.5px;font-weight:600;">COMPANION</div>
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:29px;font-weight:400;color:#1A1815;margin-top:10px;line-height:1.25;letter-spacing:-.01em;">Good morning.</div>
-<div style="font-size:14px;color:#9A958B;margin-top:6px;">Set up your companion space</div>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:29px;font-weight:400;color:#1A1815;margin-top:10px;line-height:1.25;letter-spacing:-.01em;">{{ homeGreeting }}</div>
+<div style="font-size:14px;color:#9A958B;margin-top:6px;">{{ statusMessage }}</div>
 </div>
-
-<!-- dawn card -->
+<!-- pinned note -->
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:20px;margin-bottom:14px;">
 <div style="font-size:12px;color:#B8B3A8;font-weight:500;letter-spacing:.3px;margin-bottom:10px;">Pinned note</div>
 <div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:17px;line-height:1.7;color:#3A362F;">Add your own note here. This card is intentionally blank for public reuse.</div>
 <div style="margin-top:14px;font-size:12.5px;color:#B8B3A8;">Save · Reply</div>
 </div>
-
 <!-- countdown -->
 <div onClick="{{ openAnniv }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div>
-<div style="font-size:15px;font-weight:500;color:#1A1815;">Next anniversary</div>
-<div style="font-size:13px;color:#B8B3A8;margin-top:4px;">MM.DD</div>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Next anniversary</div><div style="font-size:13px;color:#B8B3A8;margin-top:4px;">MM.DD</div></div>
+<div style="display:flex;align-items:baseline;gap:3px;"><span style="font-family:'Newsreader',serif;font-size:38px;font-weight:400;color:#1A1815;line-height:1;letter-spacing:-.02em;">0</span><span style="font-size:13px;color:#9A958B;">days</span></div>
 </div>
-<div style="display:flex;align-items:baseline;gap:3px;">
-<span style="font-family:'Newsreader',serif;font-size:38px;font-weight:400;color:#1A1815;line-height:1;letter-spacing:-.02em;">0</span>
-<span style="font-size:13px;color:#9A958B;">days</span>
-</div>
-</div>
-
 <!-- status row -->
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:22px;">
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
@@ -253,7 +254,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="font-size:11px;color:#9A958B;margin-top:2px;">Add data</div>
 </div>
 </div>
-
 <!-- recent -->
 <div style="font-size:13px;font-weight:500;color:#9A958B;margin-bottom:12px;">Recent</div>
 <div onClick="{{ openMoments }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px;margin-bottom:10px;cursor:pointer;">
@@ -270,17 +270,14 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <!-- ========== MORE ========== -->
 <sc-if value="{{ isMore }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
-
 <div style="padding:4px 0 6px;">
 <button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
 </button>
 </div>
-
 <div style="padding:6px 0 20px;">
 <div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">More</div>
 </div>
-
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;">
 <div onClick="{{ openAnniv }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
@@ -315,35 +312,53 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </div>
 
+<!-- Memory Management -->
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;margin-top:14px;">
-<div onClick="{{ openWorldbookSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div onClick="{{ openMemoryManager }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z" stroke="#9A958B" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 4v6l2-1.3L13 10V4" stroke="#9A958B" stroke-width="1.4" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Worldbook</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ wbHint }}</div></div>
-</div>
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-</div>
-
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;margin-top:14px;">
-<div onClick="{{ openPromptSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="8" width="16" height="12" rx="2" stroke="#9A958B" stroke-width="1.5"/><path d="M4 12h16M9 8V5h6v3M12 14v3" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Prompt templates</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ promptCount }}</div></div>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">记忆摘要 ({{ memoryCount }})</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">管理多条记忆，支持折叠、编辑、标签</div></div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 <div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ openAiSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div onClick="{{ openWorldbookManager }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#9A958B" stroke-width="1.5"/><path d="M12 7v5l3 2" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Persona</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ activeCompanion }}</div></div>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z" stroke="#9A958B" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 4v6l2-1.3L13 10V4" stroke="#9A958B" stroke-width="1.4" stroke-linejoin="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">世界书 ({{ worldbookCount }})</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">关键词触发，位置/权重可调</div></div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 </div>
 
-<!-- settings -->
+<!-- Backup and Export -->
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;margin-top:14px;">
+<div onClick="{{ exportData }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:14px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">导出备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">手动导出所有数据 (JSON)</div></div>
+</div>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ importDataTrigger }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:14px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 15v4a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-4M12 3v12M7 10l5 5 5-5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">导入备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">从 JSON 文件恢复数据</div></div>
+</div>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;">
+<div style="display:flex;align-items:center;gap:14px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2v4M12 22v-4M4 12H2M22 12h-2M19.07 4.93l-2.83 2.83M4.93 19.07l2.83-2.83M19.07 19.07l-2.83-2.83M4.93 4.93l2.83 2.83" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">自动备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ autoBackupStatus }}</div></div>
+</div>
+<button onClick="{{ toggleAutoBackup }}" style="border:none;background:#1A1815;color:#FFF;border-radius:16px;padding:6px 14px;font-size:12px;font-family:inherit;cursor:pointer;">{{ autoBackupToggle }}</button>
+</div>
+</div>
+
+<!-- Settings shortcut -->
 <div onClick="{{ toggleProfile }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:16px 18px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 3 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#9A958B" stroke-width="1.4" stroke-linejoin="round"/></svg>
@@ -357,17 +372,80 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <!-- ========== SUB PAGES ========== -->
 <sc-if value="{{ showSub }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;background:#F5F3EE;display:flex;flex-direction:column;animation:slideIn .25s ease both;">
-<!-- sub header -->
 <div style="flex:none;padding:4px 16px 12px;display:flex;align-items:center;gap:14px;">
 <button onClick="{{ closeSub }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="#48453E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
 <div style="font-size:17px;font-weight:500;color:#1A1815;">{{ subTitle }}</div>
 </div>
-
 <div class="sa" style="flex:1;min-height:0;overflow-y:auto;padding:6px 20px 24px;">
 
-<!-- Moments -->
+<!-- Memory Manager -->
+<sc-if value="{{ isMemoryManager }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px;">
+<div style="display:flex;justify-content:space-between;align-items:center;">
+<button onClick="{{ addMemory }}" style="border:none;background:#1A1815;color:#FFF;border-radius:20px;padding:8px 16px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新增记忆</button>
+</div>
+<sc-for list="{{ memoriesList }}" as="mem" hint-placeholder-count="3">
+<div style="background:#FFF;border:1px solid #EDE9E0;border-radius:16px;padding:12px 16px;">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;">
+<button onClick="{{ mem.toggleFold }}" style="background:transparent;border:none;cursor:pointer;font-size:15px;font-weight:500;color:#1A1815;flex:1;text-align:left;font-family:inherit;">
+<span>{{ mem.folded ? '▶' : '▼' }}</span> {{ mem.summary }}
+</button>
+<div style="display:flex;gap:6px;">
+<button onClick="{{ mem.edit }}" style="background:transparent;border:none;cursor:pointer;color:#9A958B;font-size:13px;">编辑</button>
+<button onClick="{{ mem.delete }}" style="background:transparent;border:none;cursor:pointer;color:#B8B3A8;font-size:13px;">删除</button>
+</div>
+</div>
+<sc-if value="{{ !mem.folded }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:8px;font-size:14px;color:#3A362F;line-height:1.6;white-space:pre-wrap;">{{ mem.content }}</div>
+<div style="margin-top:8px;display:flex;gap:10px;flex-wrap:wrap;align-items:center;">
+<span style="font-size:12px;color:#9A958B;">轮次: {{ mem.startRound }} - {{ mem.endRound }}</span>
+<div style="display:flex;gap:4px;flex-wrap:wrap;">
+<sc-for list="{{ mem.tags }}" as="t" hint-placeholder-count="2">
+<span class="tag">{{ t }}</span>
+</sc-for>
+</div>
+<button onClick="{{ mem.editTags }}" style="background:transparent;border:1px dashed #D1CCC2;border-radius:12px;padding:2px 10px;font-size:11px;color:#6B665E;cursor:pointer;">+标签</button>
+</div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- Worldbook Manager -->
+<sc-if value="{{ isWorldbookManager }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:12px;">
+<div style="display:flex;justify-content:space-between;align-items:center;">
+<button onClick="{{ addWorldbookEntry }}" style="border:none;background:#1A1815;color:#FFF;border-radius:20px;padding:8px 16px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新增条目</button>
+</div>
+<div style="background:#FFF;border:1px solid #EDE9E0;border-radius:16px;padding:12px 16px;">
+<div style="font-size:13px;font-weight:500;color:#3A362F;">永久世界书 (始终生效)</div>
+<textarea value="{{ wbPermanent }}" onInput="{{ wbPermanentChange }}" rows="3" style="width:100%;border:none;background:#F7F5F0;border-radius:12px;padding:8px 12px;font-family:inherit;font-size:14px;resize:vertical;margin-top:6px;"></textarea>
+<button onClick="{{ saveWorldbookPermanent }}" style="margin-top:8px;border:none;background:#1A1815;color:#FFF;border-radius:16px;padding:6px 12px;font-size:12px;cursor:pointer;">保存永久设定</button>
+</div>
+<sc-for list="{{ worldbookEntries }}" as="wb" hint-placeholder-count="3">
+<div style="background:#FFF;border:1px solid #EDE9E0;border-radius:16px;padding:12px 16px;">
+<div style="display:flex;justify-content:space-between;align-items:center;">
+<span style="font-weight:500;color:#1A1815;">关键词: {{ wb.keyword }}</span>
+<div style="display:flex;gap:6px;">
+<button onClick="{{ wb.toggleEnabled }}" style="background:transparent;border:none;cursor:pointer;color:{{ wb.enabled ? '#1A1815' : '#B8B3A8' }};font-size:13px;">{{ wb.enabled ? '启用' : '禁用' }}</button>
+<button onClick="{{ wb.edit }}" style="background:transparent;border:none;cursor:pointer;color:#9A958B;font-size:13px;">编辑</button>
+<button onClick="{{ wb.delete }}" style="background:transparent;border:none;cursor:pointer;color:#B8B3A8;font-size:13px;">删除</button>
+</div>
+</div>
+<div style="margin-top:6px;font-size:14px;color:#3A362F;">{{ wb.content }}</div>
+<div style="margin-top:6px;display:flex;gap:12px;font-size:12px;color:#9A958B;">
+<span>位置: {{ wb.position }}</span>
+<span>权重: {{ wb.weight }}</span>
+</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
+<!-- Other subpages (Moments, Diary, etc.) remain as placeholders -->
 <sc-if value="{{ isMoments }}" hint-placeholder-val="{{ false }}">
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:30px 22px;text-align:center;">
 <div style="width:58px;height:58px;border-radius:18px;background:#F2EFE8;margin:0 auto 15px;"></div>
@@ -375,8 +453,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="font-size:13px;color:#9A958B;line-height:1.65;margin-top:8px;">Replace this area with your own moments component.</div>
 </div>
 </sc-if>
-
-<!-- Diary -->
 <sc-if value="{{ isDiary }}" hint-placeholder-val="{{ false }}">
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:30px 22px;text-align:center;">
 <div style="width:58px;height:58px;border-radius:18px;background:#F2EFE8;margin:0 auto 15px;"></div>
@@ -384,8 +460,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="font-size:13px;color:#9A958B;line-height:1.65;margin-top:8px;">Replace this area with your own diary or letters component.</div>
 </div>
 </sc-if>
-
-<!-- Mood -->
 <sc-if value="{{ isMood }}" hint-placeholder-val="{{ false }}">
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:30px 22px;text-align:center;">
 <div style="width:58px;height:58px;border-radius:18px;background:#F2EFE8;margin:0 auto 15px;"></div>
@@ -393,8 +467,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="font-size:13px;color:#9A958B;line-height:1.65;margin-top:8px;">Replace this area with your own mood tracker component.</div>
 </div>
 </sc-if>
-
-<!-- Anniversaries -->
 <sc-if value="{{ isAnniv }}" hint-placeholder-val="{{ false }}">
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:30px 22px;text-align:center;">
 <div style="width:58px;height:58px;border-radius:18px;background:#F2EFE8;margin:0 auto 15px;"></div>
@@ -414,14 +486,12 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="position:absolute;inset:0;z-index:100;">
 <div onClick="{{ toggleDrawer }}" style="position:absolute;inset:0;background:rgba(0,0,0,.12);animation:fadeIn .15s ease both;"></div>
 <div style="position:absolute;left:0;top:0;bottom:0;width:300px;background:#F5F3EE;display:flex;flex-direction:column;box-shadow:6px 0 24px rgba(0,0,0,.06);animation:slideInLeft .2s ease both;">
-<!-- drawer header -->
 <div style="flex:none;padding:56px 24px 0;display:flex;align-items:center;justify-content:space-between;">
 <div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:26px;font-weight:500;color:#1A1815;">Companion</div>
 <div style="width:40px;height:40px;border-radius:50%;background:#FFF;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;" onClick="{{ toggleProfile }}">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
 </div>
 </div>
-<!-- nav items -->
 <div style="flex:none;padding:24px 16px 0;display:flex;flex-direction:column;gap:2px;">
 <div onClick="{{ navChat }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-4 3.5V17H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/></svg>
@@ -436,15 +506,12 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <span>More</span>
 </div>
 </div>
-<!-- recents label -->
 <div style="padding:28px 24px 10px;font-size:12px;color:#B8B3A8;font-weight:600;letter-spacing:1px;">RECENTS</div>
-<!-- recent chats list -->
 <div class="sa" style="flex:1;min-height:0;overflow-y:auto;padding:0 16px;">
 <sc-for list="{{ recentChats }}" as="c" hint-placeholder-count="8">
 <div onClick="{{ c.open }}" style="padding:11px 12px;border-radius:10px;font-size:14.5px;color:#3A362F;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.title }}</div>
 </sc-for>
 </div>
-<!-- bottom bar -->
 <div style="flex:none;padding:12px 16px 28px;display:flex;align-items:center;justify-content:space-between;">
 <div onClick="{{ pullCloud }}" style="font-size:13px;color:#B8B3A8;cursor:pointer;display:flex;align-items:center;gap:4px;">
 <span>All chats</span>
@@ -465,19 +532,14 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div onClick="{{ toggleProfile }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
 <div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 0 30px;animation:slideUp .25s ease both;">
 <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 20px;"></div>
-<!-- profile header -->
 <div style="padding:0 24px 22px;display:flex;align-items:center;gap:14px;">
 <div style="width:48px;height:48px;border-radius:50%;background:#ECEAE4;"></div>
-<div>
-<div style="font-size:17px;font-weight:600;color:#1A1815;">User</div>
-<div style="font-size:13px;color:#9A958B;margin-top:3px;">Set up profile</div>
+<div><div style="font-size:17px;font-weight:600;color:#1A1815;">User</div><div style="font-size:13px;color:#9A958B;margin-top:3px;">Set up profile</div></div>
 </div>
-</div>
-<!-- settings group -->
 <div style="margin:0 16px 12px;background:#FFF;border-radius:16px;overflow:hidden;">
 <div onClick="{{ openApiSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#48453E" stroke-width="1.5"/><path d="M19 12c0-.4 0-.8-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6c-.1.4-.1.8-.1 1.2s0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#48453E" stroke-width="1.3" stroke-linejoin="round"/></svg>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#48453E" stroke-width="1.5"/><path d="M19 12c0-.4 0-.8-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6c-.1-.4-.1-.8-.1-1.2s0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#48453E" stroke-width="1.3" stroke-linejoin="round"/></svg>
 <span style="font-size:15px;font-weight:500;color:#1A1815;">API settings</span>
 </div>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -540,9 +602,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="position:absolute;inset:0;z-index:200;">
 <div onClick="{{ togglePlus }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
 <div style="position:absolute;bottom:0;left:0;right:0;background:#EDEAE3;border-radius:16px 16px 0 0;padding:12px 0 30px;animation:slideUp .25s ease both;">
-<!-- grab handle -->
 <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 14px;"></div>
-<!-- header -->
 <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 16px;">
 <button onClick="{{ togglePlus }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
@@ -550,7 +610,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <span style="font-size:16px;font-weight:600;color:#1A1815;">Add to chat</span>
 <span style="font-size:14px;color:#9A958B;cursor:pointer;" onClick="{{ openPromptSheet }}">Prompts</span>
 </div>
-<!-- menu card 1 -->
 <div style="margin:0 16px;background:#FFF;border-radius:16px;overflow:hidden;">
 <div onClick="{{ openPromptSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:13px;">
@@ -585,13 +644,24 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </div>
 <div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ openWorldbookSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div onClick="{{ openWorldbookManager }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:13px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 4v6l2-1.3L13 10V4" stroke="#48453E" stroke-width="1.4" stroke-linejoin="round"/></svg>
 <span style="font-size:15px;font-weight:500;color:#1A1815;">Worldbook</span>
 </div>
 <div style="display:flex;align-items:center;gap:6px;">
 <span style="font-size:14px;color:#9A958B;">{{ wbHint }}</span>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ openMemoryManager }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:13px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span style="font-size:15px;font-weight:500;color:#1A1815;">记忆摘要</span>
+</div>
+<div style="display:flex;align-items:center;gap:6px;">
+<span style="font-size:14px;color:#9A958B;">{{ memoryCount }}</span>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 </div>
@@ -639,8 +709,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <span style="font-size:15px;font-weight:500;color:#1A1815;">Export Backup</span>
 </div>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-</div>
 </div>
 </div>
 </div>
@@ -725,16 +793,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
-<sc-if value="{{ isWorldbookSheet }}" hint-placeholder-val="{{ false }}">
-<div class="sa" style="max-height:calc(82vh - 40px);overflow-y:auto;padding:0 16px 8px;">
-<div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;"><button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button><span style="font-size:16px;font-weight:600;color:#1A1815;">Worldbook</span><button onClick="{{ saveWorldbook }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button></div>
-<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
-<div style="padding:13px 16px;border-bottom:1px solid #ECE8DF;"><div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">常驻worldbook</div><textarea value="{{ wbPermanent }}" onInput="{{ wbPermanentChange }}" placeholder="会一直带进 system 的设定、关系、禁忌、世界规则……" rows="7" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:#1A1815;"></textarea></div>
-<div style="padding:13px 16px;"><div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">触发条目</div><textarea value="{{ wbTriggers }}" onInput="{{ wbTriggersChange }}" placeholder="每行一个：关键词 => 触发后插入的内容" rows="6" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:#1A1815;"></textarea></div>
-</div>
-</div>
-</sc-if>
-
 <sc-if value="{{ isThoughtSheet }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="height:calc(100vh - 36px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 24px 44px;">
 <div style="display:flex;align-items:center;position:sticky;top:0;z-index:2;padding:12px 0 16px;background:linear-gradient(rgba(255,255,255,0.72) 60%, rgba(255,255,255,0));">
@@ -750,7 +808,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
-<!-- demo code modal -->
+<!-- demo code modal (保留，但未使用) -->
 <sc-if value="{{ showDemoCodeInput }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;">
 <div onClick="{{ cancelToken }}" style="position:absolute;inset:0;background:rgba(0,0,0,.25);animation:fadeIn .15s ease both;"></div>
@@ -777,15 +835,15 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 
 </div>
 </x-dc>
+
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
+// ============================
+// 完整逻辑实现
+// ============================
 const STORAGE_KEY = 'kel-home-data';
 
-const saved = loadData();
-// 恢复编辑草稿
-this.state.apiDraft = saved.apiDraft || null;
-this.state.styleDraft = saved.styleDraft || null;
-this.state.wbDraft = saved.wbDraft || null;
- {
+// ---------- 工具函数 ----------
+function loadData() {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : {};
@@ -794,15 +852,8 @@ this.state.wbDraft = saved.wbDraft || null;
 
 function saveData(data) {
   try {
-    const dataStr = JSON.stringify(data);
-    localStorage.setItem(STORAGE_KEY, dataStr);
-    return true;
-  } catch (err)
-    const tempComp = new Component({});
-    temp.show('本地存储空间已满，部分配置保存失败！');
-    console.error('存储失败：', err);
-    return false;
-  }
+    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+  } catch(e) {}
 }
 
 function genId() {
@@ -817,15 +868,32 @@ function getGreeting() {
   return 'Good evening.';
 }
 
+function getToday() {
+  return new Date().toISOString().slice(0,10);
+}
+
+// ---------- 主组件 ----------
 class Component extends DCLogic {
   constructor(props) {
     super(props);
     const saved = loadData();
+    // 默认数据
+    const defaultMemories = saved.memories || [];
+    const defaultWorldbook = saved.worldbook || { permanent: '', triggers: [] };
+    const defaultApiPresets = saved.apiPresets || [{ id: 'default', name: 'Default', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: true }];
+    const defaultPersonas = saved.personas || [{ id: 'default', name: 'Kel', content: '' }];
+    const defaultStyles = saved.styles || [{ id: 'default', title: 'Default', content: '' }];
+    const defaultPrompts = saved.prompts || [];
+    const defaultChats = saved.chats || {};
+    const defaultCurrentChatId = saved.currentChatId || genId();
+    if (!defaultChats[defaultCurrentChatId]) {
+      defaultChats[defaultCurrentChatId] = { id: defaultCurrentChatId, title: 'New Chat', messages: [] };
+    }
+
     this.state = {
       // UI state
       tab: 'chat',
       sub: null,
-      memory: false,
       drawer: false,
       plus: false,
       profile: false,
@@ -840,37 +908,46 @@ class Component extends DCLogic {
       thoughtText: '',
       apiAdvanced: false,
       petState: 'idle',
-      // Settings
+      // 消息显示分页
+      messageOffset: 0,
+      pageSize: 50,
+      // 记忆和世界书
+      memories: defaultMemories,
+      worldbook: defaultWorldbook,
+      // 其他设置
       petEnabled: saved.petEnabled !== false,
       petSizeIdx: saved.petSizeIdx || 1,
       soundEnabled: saved.soundEnabled !== false,
+      autoBackup: saved.autoBackup || false,
+      lastBackupDate: saved.lastBackupDate || null,
       // API presets
-      apiPresets: saved.apiPresets || [{ id: 'default', name: 'Default', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: true }],
+      apiPresets: defaultApiPresets,
       activePresetId: saved.activePresetId || 'default',
       // Persona
-      personas: saved.personas || [{ id: 'default', name: 'Kel', content: '' }],
+      personas: defaultPersonas,
       activePersonaId: saved.activePersonaId || 'default',
-      // Worldbook
-      wbPermanent: saved.wbPermanent || '',
-      wbTriggers: saved.wbTriggers || '',
       // Style
-      styles: saved.styles || [{ id: 'default', title: 'Default', content: '' }],
+      styles: defaultStyles,
       activeStyleId: saved.activeStyleId || 'default',
-      // Prompt templates
-      prompts: saved.prompts || [],
+      // Prompts
+      prompts: defaultPrompts,
       // Chat data
-      currentChatId: saved.currentChatId || genId(),
-      chats: saved.chats || {},
-      // Draft states for editing
+      currentChatId: defaultCurrentChatId,
+      chats: defaultChats,
+      // Drafts
       apiDraft: null,
       styleDraft: null,
       wbDraft: null,
       demoCodeDraft: '',
-      showDemoCodeInput: false
+      showDemoCodeInput: false,
+      // 临时编辑记忆/世界书
+      editingMemoryId: null,
+      editingWorldbookId: null,
     };
-    if (!this.state.chats[this.state.currentChatId]) {
-      this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: 'New Chat', messages: [] };
-    }
+    // 初始化自动备份检查
+    this.checkAutoBackup();
+    // 定时器每天检查一次
+    setInterval(() => this.checkAutoBackup(), 3600000);
   }
 
   get currentChat() {
@@ -892,6 +969,17 @@ class Component extends DCLogic {
   get petSizes() { return [32, 48, 64, 80, 96]; }
   get currentPetSize() { return this.petSizes[this.state.petSizeIdx] || 48; }
 
+  get displayedMessages() {
+    const msgs = this.currentChat.messages || [];
+    const start = Math.max(0, msgs.length - this.state.messageOffset - this.state.pageSize);
+    const end = msgs.length - this.state.messageOffset;
+    return msgs.slice(start, end);
+  }
+
+  get showLoadMore() {
+    return this.state.messageOffset + this.state.pageSize < this.currentChat.messages.length;
+  }
+
   persist() {
     const s = this.state;
     saveData({
@@ -899,8 +987,6 @@ class Component extends DCLogic {
       activePresetId: s.activePresetId,
       personas: s.personas,
       activePersonaId: s.activePersonaId,
-      wbPermanent: s.wbPermanent,
-      wbTriggers: s.wbTriggers,
       styles: s.styles,
       activeStyleId: s.activeStyleId,
       prompts: s.prompts,
@@ -909,9 +995,10 @@ class Component extends DCLogic {
       petEnabled: s.petEnabled,
       petSizeIdx: s.petSizeIdx,
       soundEnabled: s.soundEnabled,
-      apiDraft: s.apiDraft,
-      styleDraft: s.styleDraft,
-      wbDraft: s.wbDraft
+      autoBackup: s.autoBackup,
+      lastBackupDate: s.lastBackupDate,
+      memories: s.memories,
+      worldbook: s.worldbook,
     });
   }
 
@@ -921,32 +1008,140 @@ class Component extends DCLogic {
     this._t = setTimeout(() => this.setState({ toastShow: false }), 1800);
   }
 
+  // ---------- 自动备份 ----------
+  checkAutoBackup() {
+    if (this.state.autoBackup) {
+      const today = getToday();
+      if (this.state.lastBackupDate !== today) {
+        // 执行备份
+        this.autoExportBackup();
+        this.setState({ lastBackupDate: today });
+        this.persist();
+      }
+    }
+  }
+
+  autoExportBackup() {
+    const s = this.state;
+    const exportObj = {
+      exportDate: new Date().toISOString(),
+      chats: s.chats,
+      personas: s.personas,
+      worldbook: s.worldbook,
+      memories: s.memories,
+      styles: s.styles,
+      prompts: s.prompts,
+      apiPresets: s.apiPresets.map(p => ({ ...p, key: '***' })),
+    };
+    const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'kel-backup-' + getToday() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    this.show('自动备份完成 (' + getToday() + ')');
+  }
+
+  // ---------- 导出/导入 ----------
+  exportData() {
+    const s = this.state;
+    const exportObj = {
+      exportDate: new Date().toISOString(),
+      chats: s.chats,
+      personas: s.personas,
+      worldbook: s.worldbook,
+      memories: s.memories,
+      styles: s.styles,
+      prompts: s.prompts,
+      apiPresets: s.apiPresets.map(p => ({ ...p, key: '***' })),
+    };
+    const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'kel-backup-' + getToday() + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    this.show('备份已导出');
+  }
+
+  importData(file) {
+    const reader = new FileReader();
+    reader.onload = (e) => {
+      try {
+        const data = JSON.parse(e.target.result);
+        if (!data.chats || !data.personas) {
+          this.show('无效的备份文件');
+          return;
+        }
+        this.setState({
+          chats: data.chats,
+          personas: data.personas,
+          worldbook: data.worldbook || { permanent: '', triggers: [] },
+          memories: data.memories || [],
+          styles: data.styles || [{ id: 'default', title: 'Default', content: '' }],
+          prompts: data.prompts || [],
+          apiPresets: data.apiPresets || this.state.apiPresets,
+        }, () => {
+          this.persist();
+          this.show('导入成功');
+        });
+      } catch(err) {
+        this.show('解析失败: ' + err.message);
+      }
+    };
+    reader.readAsText(file);
+  }
+
+  // ---------- 构建 system prompt ----------
   buildSystemPrompt() {
     let sys = '';
     const persona = this.activePersona;
     if (persona.content) sys += persona.content + '\n\n';
-    if (this.state.wbPermanent) sys += '## Worldbook\n' + this.state.wbPermanent + '\n\n';
-    const style = this.activeStyleObj;
-    if (style.content) sys += '## Style: ' + style.title + '\n' + style.content + '\n';
-    if (this.state.wbTriggers) {
-  const msgs = this.currentChat.messages;
-  const lines = this.state.wbTriggers.split('\n').filter(line => line.trim() !== '');
-  const allChatText = msgs.map(item => item.text.toLowerCase()).join(' ');
-  for (const line of lines) {
-    const splitIndex = line.indexOf('=>');
-    if (splitIndex <= 0) continue;
-    const keyword = line.slice(0, splitIndex).trim().toLowerCase();
-    const wbContent = line.slice(splitIndex + 2).trim();
-    if (!keyword || !wbContent) continue;
-    const keywordReg = new RegExp(`\\b${keyword}\\b`, 'g');
-    if (keywordReg.test(allChatText)) {
-      sys += `\n[Triggered: ${keyword}]\n${wbContent}\n`;
+    // 永久世界书
+    if (this.state.worldbook.permanent) {
+      sys += '## Worldbook (Permanent)\n' + this.state.worldbook.permanent + '\n\n';
     }
-  }
-}
+    // 记忆摘要：按轮次排序，并折叠显示（此处只注入全部，不折叠）
+    if (this.state.memories.length > 0) {
+      sys += '## Memories (Summary)\n';
+      // 按 endRound 排序，最新的在前
+      const sorted = [...this.state.memories].sort((a,b) => b.endRound - a.endRound);
+      sorted.forEach(m => {
+        const tagsStr = m.tags.length > 0 ? ' [' + m.tags.join(', ') + ']' : '';
+        sys += `- [轮次 ${m.startRound}-${m.endRound}]${tagsStr} ${m.text}\n`;
+      });
+      sys += '\n';
+    }
+    // Style
+    const style = this.activeStyleObj;
+    if (style.content) sys += '## Style: ' + style.title + '\n' + style.content + '\n\n';
+    // 世界书触发（基于最近5条消息）
+    const msgs = this.currentChat.messages;
+    const contextWindow = 5;
+    const recentMsgs = msgs.slice(-contextWindow);
+    const recentText = recentMsgs.map(m => m.text).join(' ').toLowerCase();
+    const triggers = this.state.worldbook.triggers || [];
+    const matched = triggers
+      .filter(t => t.enabled !== false && t.keyword && recentText.includes(t.keyword.toLowerCase()))
+      .sort((a,b) => (b.weight || 5) - (a.weight || 5));
+    if (matched.length > 0) {
+      sys += '## Triggered Worldbook Entries\n';
+      matched.forEach(t => {
+        const prefix = t.position === 'before' ? '[前置]' : '[后置]';
+        sys += prefix + ' ' + t.content + '\n';
+      });
+      sys += '\n';
+    }
     return sys.trim();
   }
 
+  // ---------- 发送消息 ----------
   async sendMessage() {
     const text = (this.state.input || '').trim();
     if (!text || this.state.isBusy) return;
@@ -962,7 +1157,8 @@ class Component extends DCLogic {
       chat.title = text.slice(0, 30) + (text.length > 30 ? '...' : '');
     }
     chats[chatId] = chat;
-    this.setState({ input: '', chats, isBusy: true });
+    // 重置分页，显示最新消息
+    this.setState({ input: '', chats, isBusy: true, messageOffset: 0 });
     this.persist();
 
     try {
@@ -982,7 +1178,10 @@ class Component extends DCLogic {
         url += '/chat/completions';
       }
 
-      const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 60000);
+      const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body), signal: controller.signal });
+      clearTimeout(timeout);
       if (!res.ok) {
         const err = await res.text();
         throw new Error('API ' + res.status + ': ' + err.slice(0, 200));
@@ -1012,24 +1211,30 @@ class Component extends DCLogic {
       this.show('Error: ' + e.message);
     }
   }
-    regenerate(msgIdx) {
+
+  // ---------- 重新生成 ----------
+  regenerate(msgIdx) {
     if (this.state.isBusy) return;
     const chat = this.currentChat;
-    const msgs = chat.messages.slice(0, msgIdx);
+    const msgs = chat.messages;
+    if (msgIdx < 0 || msgIdx >= msgs.length) { this.show('Invalid message'); return; }
+    const target = msgs[msgIdx];
+    if (target.role !== 'assistant') { this.show('只能重新生成AI回复'); return; }
+    const msgsBefore = msgs.slice(0, msgIdx);
     const chatId = this.state.currentChatId;
     const chats = { ...this.state.chats };
-    chats[chatId] = { ...chat, messages: msgs };
+    chats[chatId] = { ...chat, messages: msgsBefore };
     this.setState({ chats, input: '' }, () => {
       this.setState({ isBusy: true });
-      this._regenerateFrom(chatId, msgs, msgIdx);
+      this._regenerateFrom(chatId, msgsBefore, msgIdx);
     });
   }
 
-  async _regenerateFrom(chatId, msgs, origIdx) {
+  async _regenerateFrom(chatId, msgsBefore, originalIdx) {
     try {
       const preset = this.activePreset;
       const sysPrompt = this.buildSystemPrompt();
-      const apiMessages = msgs.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.variants[m.variantIdx] || m.text }));
+      const apiMessages = msgsBefore.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.variants[m.variantIdx] || m.text }));
       const body = { model: preset.model, max_tokens: 8192, messages: apiMessages };
       if (sysPrompt) body.system = sysPrompt;
 
@@ -1044,7 +1249,10 @@ class Component extends DCLogic {
         url += '/chat/completions';
       }
 
-      const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 60000);
+      const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body), signal: controller.signal });
+      clearTimeout(timeout);
       if (!res.ok) throw new Error('API ' + res.status);
       const data = await res.json();
       let reply = '', thinking = '';
@@ -1057,18 +1265,17 @@ class Component extends DCLogic {
         reply = data.choices?.[0]?.message?.content || '';
       }
 
+      const originalMsgs = this.state.chats[chatId]?.messages || [];
+      const originalTarget = originalMsgs[originalIdx];
+      let variants = [reply];
+      if (originalTarget && originalTarget.role === 'assistant') {
+        variants = [...(originalTarget.variants || [originalTarget.text]), reply];
+      }
       const chats = { ...this.state.chats };
       const chat = { ...chats[chatId] };
-      const origChat = this.state.chats[chatId];
-      const origMsg = origChat.messages[origIdx];
-      if (origMsg && origMsg.role === 'assistant') {
-        const newMsgs = [...msgs];
-        const variants = [...(origMsg.variants || [origMsg.text]), reply];
-        newMsgs.push({ role: 'assistant', text: reply, thinking, variants, variantIdx: variants.length - 1 });
-        chat.messages = newMsgs;
-      } else {
-        chat.messages = [...msgs, { role: 'assistant', text: reply, thinking, variants: [reply], variantIdx: 0 }];
-      }
+      const newMsgs = [...msgsBefore];
+      newMsgs.push({ role: 'assistant', text: reply, thinking, variants, variantIdx: variants.length - 1 });
+      chat.messages = newMsgs;
       chats[chatId] = chat;
       this.setState({ chats, isBusy: false, petState: 'happy' });
       this.persist();
@@ -1080,62 +1287,148 @@ class Component extends DCLogic {
     }
   }
 
+  // ---------- 消息编辑 ----------
+  saveEdit() {
+    const idx = this.state.editIdx;
+    if (idx < 0) return;
+    const chats = { ...this.state.chats };
+    const chat = { ...chats[this.state.currentChatId] };
+    const newMsgs = [...chat.messages];
+    const m = { ...newMsgs[idx] };
+    m.text = this.state.editText;
+    m.variants = [this.state.editText];
+    m.variantIdx = 0;
+    newMsgs[idx] = m;
+    const truncated = newMsgs.slice(0, idx + 1);
+    chat.messages = truncated;
+    chats[this.state.currentChatId] = chat;
+    this.setState({ chats, editIdx: -1, editText: '', input: '' }, () => {
+      this.persist();
+      if (idx + 1 < truncated.length) {
+        // 如果后面有消息，重新生成后面的AI回复
+        this.regenerate(idx + 1);
+      } else {
+        // 否则重新请求AI回复
+        this.setState({ isBusy: true });
+        this._regenerateFrom(this.state.currentChatId, truncated, idx + 1);
+      }
+    });
+  }
+
+  cancelEdit() {
+    this.setState({ editIdx: -1, editText: '' });
+  }
+
+  // ---------- 加载更多 ----------
+  loadMoreMessages() {
+    this.setState(prev => ({ messageOffset: prev.messageOffset + prev.pageSize }));
+  }
+
+  // ---------- 新聊天 ----------
   newChat() {
     const id = genId();
     const chats = { ...this.state.chats };
     chats[id] = { id, title: 'New Chat', messages: [] };
-    this.setState({ currentChatId: id, chats, drawer: false, tab: 'chat', input: '' });
+    this.setState({ currentChatId: id, chats, drawer: false, tab: 'chat', input: '', messageOffset: 0 });
     this.persist();
   }
 
   openChat(id) {
-    this.setState({ currentChatId: id, drawer: false, tab: 'chat' });
+    this.setState({ currentChatId: id, drawer: false, tab: 'chat', messageOffset: 0 });
     this.persist();
   }
 
-  deleteChat(id) {
-    const chats = { ...this.state.chats };
-    delete chats[id];
-    let newCurrentId = this.state.currentChatId;
-    if (id === newCurrentId) {
-      const remaining = Object.keys(chats);
-      if (remaining.length > 0) {
-        newCurrentId = remaining[0];
-      } else {
-        newCurrentId = genId();
-        chats[newCurrentId] = { id: newCurrentId, title: 'New Chat', messages: [] };
-      }
-    }
-    this.setState({ chats, currentChatId: newCurrentId });
-    this.persist();
-    this.show('Chat deleted');
-  }
-
-  exportData() {
-    const s = this.state;
-    const exportObj = {
-      exportDate: new Date().toISOString(),
-      chats: s.chats,
-      personas: s.personas,
-      wbPermanent: s.wbPermanent,
-      wbTriggers: s.wbTriggers,
-      styles: s.styles,
-      prompts: s.prompts,
-      apiPresets: s.apiPresets.map(p => ({ ...p, key: '***' }))
+  // ---------- 记忆管理 ----------
+  addMemory() {
+    const newMem = {
+      id: genId(),
+      text: '新记忆内容',
+      startRound: this.currentChat.messages.length || 0,
+      endRound: this.currentChat.messages.length || 0,
+      tags: [],
+      folded: true,
     };
-    const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'kel-backup-' + new Date().toISOString().slice(0,10) + '.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    this.show('Backup exported');
+    this.setState(prev => ({ memories: [...prev.memories, newMem] }), () => this.persist());
   }
 
-  async fetchModels() {
+  editMemory(id) {
+    // 简单处理：弹窗输入，为简化，我们使用 prompt 或内联编辑，这里采用内联展开编辑（用新状态）
+    this.setState({ editingMemoryId: id });
+    // 实际更复杂，但此处我们用 prompt 快速编辑
+    const mem = this.state.memories.find(m => m.id === id);
+    if (!mem) return;
+    const newText = prompt('编辑记忆内容', mem.text);
+    if (newText !== null) {
+      mem.text = newText;
+      this.setState({ memories: this.state.memories.map(m => m.id === id ? mem : m) }, () => this.persist());
+    }
+    this.setState({ editingMemoryId: null });
+  }
+
+  deleteMemory(id) {
+    if (!confirm('删除此记忆？')) return;
+    this.setState(prev => ({ memories: prev.memories.filter(m => m.id !== id) }), () => this.persist());
+  }
+
+  toggleMemoryFold(id) {
+    this.setState(prev => ({
+      memories: prev.memories.map(m => m.id === id ? { ...m, folded: !m.folded } : m)
+    }), () => this.persist());
+  }
+
+  // ---------- 世界书管理 ----------
+  addWorldbookEntry() {
+    const newEntry = {
+      id: genId(),
+      keyword: '关键词',
+      content: '触发后插入的内容',
+      position: 'before', // 'before' or 'after'
+      weight: 5,
+      enabled: true,
+    };
+    this.setState(prev => ({
+      worldbook: { ...prev.worldbook, triggers: [...prev.worldbook.triggers, newEntry] }
+    }), () => this.persist());
+  }
+
+  toggleWorldbookEntry(id) {
+    this.setState(prev => ({
+      worldbook: {
+        ...prev.worldbook,
+        triggers: prev.worldbook.triggers.map(t => t.id === id ? { ...t, enabled: !t.enabled } : t)
+      }
+    }), () => this.persist());
+  }
+
+  deleteWorldbookEntry(id) {
+    if (!confirm('删除此条目？')) return;
+    this.setState(prev => ({
+      worldbook: { ...prev.worldbook, triggers: prev.worldbook.triggers.filter(t => t.id !== id) }
+    }), () => this.persist());
+  }
+
+  editWorldbookEntry(id) {
+    const entry = this.state.worldbook.triggers.find(t => t.id === id);
+    if (!entry) return;
+    // 简单编辑用prompt
+    const newKeyword = prompt('关键词', entry.keyword);
+    if (newKeyword !== null) entry.keyword = newKeyword;
+    const newContent = prompt('内容', entry.content);
+    if (newContent !== null) entry.content = newContent;
+    const newPos = prompt('位置 (before/after)', entry.position);
+    if (newPos !== null) entry.position = newPos;
+    const newWeight = prompt('权重 (1-10)', entry.weight.toString());
+    if (newWeight !== null) entry.weight = parseInt(newWeight) || 5;
+    this.setState({ worldbook: { ...this.state.worldbook } }, () => this.persist());
+  }
+
+  saveWorldbookPermanent() {
+    // 由 input 绑定直接保存
+    this.setState({ worldbook: { ...this.state.worldbook } }, () => this.persist());
+  }
+
+  // ---------- 获取模型列表 ----------
+  async fetchApiModels() {
     const preset = this.activePreset;
     if (!preset.key || !preset.url) { this.show('Need URL and Key first'); return; }
     try {
@@ -1160,6 +1453,7 @@ class Component extends DCLogic {
     }
   }
 
+  // ---------- 渲染 ----------
   renderVals() {
     const s = this.state;
     const chat = this.currentChat;
@@ -1168,13 +1462,27 @@ class Component extends DCLogic {
     const persona = this.activePersona;
     const styleObj = this.activeStyleObj;
 
-    const messages = msgs.map((m, i) => {
+    // 构建消息列表（显示分页）
+    const displayed = this.displayedMessages;
+    const messages = displayed.map((m, i) => {
       const isUser = m.role === 'user';
-      const isLast = i === msgs.length - 1;
+      const isLast = i === displayed.length - 1 && s.messageOffset === 0;
       const variants = m.variants || [m.text];
       const vIdx = m.variantIdx || 0;
       const displayText = variants[vIdx] || m.text;
+      const hasThink = !isUser && !!m.thinking;
+      const thinkFull = m.thinking || '';
+      const thinkSummary = hasThink ? ' (' + thinkFull.length + ' 字符)' : '';
+      const showThinkDetail = s._thinkOpenMap && s._thinkOpenMap[m.id || i] || false;
+      const toggleThink = () => {
+        if (!s._thinkOpenMap) s._thinkOpenMap = {};
+        s._thinkOpenMap[m.id || i] = !s._thinkOpenMap[m.id || i];
+        this.setState({ _thinkOpenMap: s._thinkOpenMap });
+      };
+      const thinkRot = showThinkDetail ? 'rotate(180deg)' : 'rotate(0deg)';
+
       return {
+        key: m.id || i,
         align: isUser ? 'flex-end' : 'flex-start',
         maxW: isUser ? '82%' : '100%',
         fullW: 'auto',
@@ -1184,10 +1492,13 @@ class Component extends DCLogic {
         pad: isUser ? '12px 18px' : '0 2px',
         gap: '24px',
         text: displayText,
-        hasThink: !isUser && !!m.thinking,
-        thinkSummary: m.thinking ? 'Thinking (' + m.thinking.length + ' chars)' : '',
-        thinkPulse: '',
-        openThink: () => this.setState({ sheet: 'thought', currentThoughtText: m.thinking || '' }),
+        hasThink,
+        thinkSummary,
+        thinkFull,
+        showThinkDetail,
+        toggleThink,
+        thinkRot,
+        openThink: () => this.setState({ sheet: 'thought', currentThoughtText: thinkFull }),
         hasMemory: false,
         memoryList: [],
         showNormal: s.editIdx !== i,
@@ -1195,7 +1506,7 @@ class Component extends DCLogic {
         showActions: !isUser && isLast && !s.isBusy,
         showUserActions: isUser && !s.isBusy,
         variantText: variants.length > 1 ? (vIdx + 1) + ' / ' + variants.length : '1 / 1',
-        copy: () => { navigator.clipboard.writeText(displayText).then(() => this.show('Copied')); },
+        copy: () => { navigator.clipboard.writeText(displayText).then(() => this.show('已复制')); },
         refresh: () => this.regenerate(i),
         prev: () => {
           if (vIdx > 0) {
@@ -1225,18 +1536,14 @@ class Component extends DCLogic {
       };
     });
 
-    const chatList = Object.values(s.chats).sort((a, b) => (b.messages.length || 0) - (a.messages.length || 0)).slice(0, 30);
+    // 最近聊天列表
+    const chatList = Object.values(s.chats).sort((a,b) => (b.messages.length || 0) - (a.messages.length || 0)).slice(0, 30);
     const recentChats = chatList.map(c => ({
       title: c.title || 'New Chat',
       open: () => this.openChat(c.id)
     }));
 
-    const homeRecents = chatList.slice(0, 5).map(c => ({
-      title: c.title || 'New Chat',
-      open: () => this.openChat(c.id)
-    }));
-
-    // API preset options for sheet
+    // API presets
     const apiOptions = s.apiPresets.map(p => ({
       title: p.name || 'Untitled',
       model: p.model || '',
@@ -1247,44 +1554,67 @@ class Component extends DCLogic {
       badgeDisplay: p.isDefault ? 'inline-flex' : 'none',
       badgeBg: '#F2EFE8',
       badgeFg: '#6B665E',
-      pick: () => {
-        this.setState({ activePresetId: p.id, apiDraft: { ...p, models: [] } });
-        this.persist();
-      }
+      pick: () => { this.setState({ activePresetId: p.id, apiDraft: { ...p, models: [] } }); this.persist(); }
     }));
 
-    // Persona options
+    // Personas
     const aiOptions = s.personas.map(p => ({
       name: p.name || 'Untitled',
       state: p.id === s.activePersonaId ? 'Active' : '',
       color: p.id === s.activePersonaId ? '#1A1815' : '#9A958B',
-      pick: () => {
-        this.setState({ activePersonaId: p.id });
-        this.persist();
-        this.show(p.name + ' activated');
-      }
+      pick: () => { this.setState({ activePersonaId: p.id }); this.persist(); this.show(p.name + ' activated'); }
     }));
 
-    // Prompt options
+    // Prompts
     const promptOptions = (s.prompts || []).map(p => ({
       name: p.name || 'Untitled',
       preview: (p.content || '').slice(0, 60),
       pick: () => this.setState({ input: p.content || '' })
     }));
 
-    // Style options
+    // Styles
     const styleOptions = s.styles.map(st => ({
       name: st.title || 'Untitled',
       bg: st.id === s.activeStyleId ? '#1A1815' : '#FFF',
       bd: st.id === s.activeStyleId ? '#1A1815' : '#E7E3DA',
       fg: st.id === s.activeStyleId ? '#F5F3EE' : '#2B2620',
-      pick: () => {
-        this.setState({ activeStyleId: st.id, styleDraft: { ...st } });
-        this.persist();
+      pick: () => { this.setState({ activeStyleId: st.id, styleDraft: { ...st } }); this.persist(); }
+    }));
+
+    // Memory list for manager
+    const memoriesList = s.memories.map(m => ({
+      id: m.id,
+      summary: m.text.slice(0, 50) + (m.text.length > 50 ? '...' : ''),
+      content: m.text,
+      folded: m.folded !== false,
+      startRound: m.startRound || 0,
+      endRound: m.endRound || 0,
+      tags: m.tags || [],
+      toggleFold: () => this.toggleMemoryFold(m.id),
+      edit: () => this.editMemory(m.id),
+      delete: () => this.deleteMemory(m.id),
+      editTags: () => {
+        const newTags = prompt('输入标签（逗号分隔）', (m.tags || []).join(', '));
+        if (newTags !== null) {
+          m.tags = newTags.split(',').map(t => t.trim()).filter(Boolean);
+          this.setState({ memories: s.memories.map(mm => mm.id === m.id ? m : mm) }, () => this.persist());
+        }
       }
     }));
 
-    // API draft for editing
+    // Worldbook entries
+    const worldbookEntries = (s.worldbook.triggers || []).map(wb => ({
+      id: wb.id,
+      keyword: wb.keyword,
+      content: wb.content,
+      position: wb.position || 'before',
+      weight: wb.weight || 5,
+      enabled: wb.enabled !== false,
+      toggleEnabled: () => this.toggleWorldbookEntry(wb.id),
+      edit: () => this.editWorldbookEntry(wb.id),
+      delete: () => this.deleteWorldbookEntry(wb.id),
+    }));
+
     const apiDraft = s.apiDraft || preset;
     const apiModelOptions = (apiDraft.models || []).map(m => ({
       name: m,
@@ -1295,14 +1625,19 @@ class Component extends DCLogic {
     }));
 
     const styleDraft = s.styleDraft || styleObj;
-    const wbDraft = s.wbDraft || { permanent: s.wbPermanent, triggersText: s.wbTriggers };
 
     // Pet
     const petGif = !s.petEnabled ? '' : (s.isBusy ? './sprites/clawd-thinking.gif' : (s.petState === 'happy' ? './sprites/clawd-happy.gif' : './sprites/clawd-idle.gif'));
 
+    // 计数
+    const memoryCount = s.memories.length;
+    const worldbookCount = s.worldbook.triggers.length;
+    const autoBackupStatus = s.autoBackup ? (s.lastBackupDate === getToday() ? '今日已备份' : '待备份') : '已关闭';
+    const autoBackupToggle = s.autoBackup ? '关闭' : '开启';
+
     return {
       true: true, false: false,
-      // Page routing
+      // Pages
       isChat: s.tab === 'chat' && !s.sub,
       isHome: s.tab === 'home' && !s.sub,
       isMore: s.tab === 'more' && !s.sub,
@@ -1311,21 +1646,28 @@ class Component extends DCLogic {
       isDiary: s.sub === 'diary',
       isMood: s.sub === 'mood',
       isAnniv: s.sub === 'anniversary',
-      subTitle: ({ moments: 'Moments', diary: 'Diary / Letters', mood: 'Mood', anniversary: 'Anniversaries' }[s.sub] || ''),
+      isMemoryManager: s.sub === 'memory_manager',
+      isWorldbookManager: s.sub === 'worldbook_manager',
+      subTitle: ({ moments: 'Moments', diary: 'Diary / Letters', mood: 'Mood', anniversary: 'Anniversaries', memory_manager: '记忆摘要', worldbook_manager: '世界书' }[s.sub] || ''),
       // Messages
       messages,
+      displayedMessages: messages,
+      showLoadMore: this.showLoadMore,
+      loadMoreMessages: () => this.loadMoreMessages(),
+      // Chats
       recentChats,
-      homeRecents,
+      // Home
       homeGreeting: getGreeting(),
-      chatCount: Object.keys(s.chats).length.toString(),
-      isBusy: s.isBusy,
+      statusMessage: '记忆: ' + memoryCount + ' 条 · 世界书: ' + worldbookCount + ' 条',
+      // Input
       input: s.input,
       editText: s.editText,
+      isBusy: s.isBusy,
       // Active labels
       activeModel: preset.model || 'Not set',
       activeStyle: styleObj.title || 'Default',
       activeCompanion: persona.name || 'Kel',
-      wbHint: s.wbPermanent ? (s.wbPermanent.length + ' chars') : 'Not set',
+      wbHint: s.worldbook.permanent ? (s.worldbook.permanent.length + ' chars') : 'Not set',
       promptCount: (s.prompts || []).length + ' items',
       // Pet
       petGif,
@@ -1334,8 +1676,14 @@ class Component extends DCLogic {
       petSizeLabel: this.currentPetSize + 'px',
       soundStatus: s.soundEnabled ? 'On' : 'Off',
       // Memory
-      memoryOpen: s.memory,
-      memRot: s.memory ? 'rotate(180deg)' : 'rotate(0deg)',
+      memoryOpen: false,
+      memRot: 'rotate(0deg)',
+      memoryCount,
+      memoriesList,
+      // Worldbook
+      worldbookEntries,
+      wbPermanent: s.worldbook.permanent || '',
+      worldbookCount,
       // Overlays
       drawerOpen: s.drawer,
       plusOpen: s.plus,
@@ -1361,7 +1709,7 @@ class Component extends DCLogic {
       sheetHandleW: s.sheet === 'thought' ? '0' : '36px',
       sheetHandleMb: s.sheet === 'thought' ? '0' : '14px',
       sheetOverlayBg: s.sheet === 'thought' ? 'transparent' : 'rgba(0,0,0,.18)',
-      // API sheet fields
+      // API sheet
       apiOptions,
       apiName: apiDraft.name || '',
       apiModel: apiDraft.model || '',
@@ -1379,77 +1727,53 @@ class Component extends DCLogic {
       apiAnthropicBd: apiDraft.apiType !== 'openai' ? '#1A1815' : '#E7E3DA',
       apiGatewayBg: '#E1DDD4',
       apiGatewayText: 'Direct',
-      // AI/Persona sheet
+      // AI/Persona
       aiOptions,
-      // Prompt sheet
+      // Prompts
       promptOptions,
-      // Worldbook
-      wbPermanent: wbDraft.permanent || s.wbPermanent || '',
-      wbTriggers: wbDraft.triggersText || s.wbTriggers || '',
-      // Style sheet
+      // Thought
+      thoughtText: s.currentThoughtText || s.thoughtText || '',
+      // Style
       styleOptions,
       styleTitle: styleDraft.title || '',
       styleContent: styleDraft.content || '',
-      // Thought
-      thoughtText: s.currentThoughtText || s.thoughtText || '',
-      // ======== ACTIONS ========
-      // Navigation
+      // Auto backup
+      autoBackupStatus,
+      autoBackupToggle,
+      // Actions
       toggleDrawer: () => this.setState(v => ({ drawer: !v.drawer })),
       togglePlus: () => this.setState(v => ({ plus: !v.plus })),
       toggleProfile: () => this.setState(v => ({ profile: !v.profile })),
       toggleMemory: () => this.setState(v => ({ memory: !v.memory })),
-      navChat: () => this.setState({ tab: 'chat', sub: null, drawer: false }),
+      navChat: () => this.setState({ tab: 'chat', sub: null, drawer: false, messageOffset: 0 }),
       navHome: () => this.setState({ tab: 'home', sub: null, drawer: false }),
       navMore: () => this.setState({ tab: 'more', sub: null, drawer: false }),
-      // Sub pages
       openMoments: () => this.setState({ sub: 'moments' }),
       openDiary: () => this.setState({ sub: 'diary' }),
       openMood: () => this.setState({ sub: 'mood' }),
       openAnniv: () => this.setState({ sub: 'anniversary' }),
+      openMemoryManager: () => this.setState({ sub: 'memory_manager' }),
+      openWorldbookManager: () => this.setState({ sub: 'worldbook_manager' }),
       closeSub: () => this.setState({ sub: null }),
-      // Chat
       newChat: () => this.newChat(),
       pullCloud: () => this.show('Local storage only'),
       syncCloud: () => this.show('Local storage only'),
       githubBackup: () => this.exportData(),
-      // Input
       inputChange: (e) => this.setState({ input: e.target.value }),
       inputKey: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.sendMessage(); } },
       send: () => this.sendMessage(),
-      // Edit
       editTextChange: (e) => this.setState({ editText: e.target.value }),
-      cancelEdit: () => this.setState({ editIdx: -1 }),
-      saveEdit: () => {
-        const idx = s.editIdx;
-        if (idx < 0) return;
-        const chats = { ...s.chats };
-        const chat = { ...chats[s.currentChatId] };
-        const newMsgs = [...chat.messages];
-        const m = { ...newMsgs[idx] };
-        m.text = s.editText;
-        const oldVariants = [...(m.variants || [])];
-        oldVariants.unshift(s.editText);
-        m.variants = [...new Set(oldVariants)];
-        m.variantIdx = 0;
-        newMsgs[idx] = m;
-        chat.messages = newMsgs.slice(0, idx + 1);
-        chats[s.currentChatId] = chat;
-        this.setState({ chats, editIdx: -1, input: '' }, () => {
-          this.persist();
-          this.setState({ isBusy: true });
-          this._regenerateFrom(s.currentChatId, chat.messages, idx + 1);
-        });
-      },
-      // Sheets open/close
+      cancelEdit: () => this.cancelEdit(),
+      saveEdit: () => this.saveEdit(),
       closeSheet: () => this.setState({ sheet: null, plus: false, profile: false }),
       openApiSheet: () => this.setState({ sheet: 'api', plus: false, profile: false, apiDraft: { ...preset, models: [] } }),
       openAiSheet: () => this.setState({ sheet: 'ai', plus: false, profile: false }),
       openPromptSheet: () => this.setState({ sheet: 'prompt', plus: false, profile: false }),
-      openWorldbookSheet: () => this.setState({ sheet: 'worldbook', plus: false, profile: false, wbDraft: { permanent: s.wbPermanent, triggersText: s.wbTriggers } }),
+      openWorldbookSheet: () => this.setState({ sheet: 'worldbook', plus: false, profile: false }),
       openStyle: () => this.setState({ style: true, styleDraft: { ...styleObj } }),
       closeStyle: () => this.setState({ style: false }),
       openThoughtSheet: () => this.setState({ sheet: 'thought' }),
-      // API sheet actions
+      // API actions
       newApiDraft: () => {
         const id = genId();
         const newPreset = { id, name: 'New Preset', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: false };
@@ -1457,7 +1781,7 @@ class Component extends DCLogic {
         this.setState({ apiPresets: presets, activePresetId: id, apiDraft: { ...newPreset, models: [] } });
         this.persist();
       },
-      fetchApiModels: () => this.fetchModels(),
+      fetchApiModels: () => this.fetchApiModels(),
       saveApiDraft: () => {
         const draft = s.apiDraft || {};
         const presets = s.apiPresets.map(p => p.id === (draft.id || s.activePresetId) ? { ...p, name: draft.name || p.name, url: draft.url || p.url, key: draft.key || p.key, model: draft.model || p.model, apiType: draft.apiType || p.apiType } : p);
@@ -1481,7 +1805,9 @@ class Component extends DCLogic {
       toggleApiGateway: () => this.show('Direct mode only'),
       toggleApiAdvanced: () => this.setState(v => ({ apiAdvanced: !v.apiAdvanced })),
       // Worldbook
-      wbPermanentChange: (e) => this.setState({ wbDraft: { ...(s.wbDraft || {}), permanent: e.target.value } }),
+      wbPermanentChange: (e) => {
+        this.setState({ worldbook: { ...this.state.worldbook, permanent: e.target.value } });
+      },
       wbTriggersChange: (e) => this.setState({ wbDraft: { ...(s.wbDraft || {}), triggersText: e.target.value } }),
       saveWorldbook: () => {
         const draft = s.wbDraft || {};
@@ -1489,6 +1815,9 @@ class Component extends DCLogic {
         this.persist();
         this.show('Worldbook saved');
       },
+      saveWorldbookPermanent: () => this.saveWorldbookPermanent(),
+      addWorldbookEntry: () => this.addWorldbookEntry(),
+      addMemory: () => this.addMemory(),
       // Style
       styleTitleChange: (e) => this.setState({ styleDraft: { ...(s.styleDraft || {}), title: e.target.value } }),
       styleContentChange: (e) => this.setState({ styleDraft: { ...(s.styleDraft || {}), content: e.target.value } }),
@@ -1517,13 +1846,46 @@ class Component extends DCLogic {
         this.persist();
         this.show(next ? 'Sound on' : 'Sound off');
       },
-      // Export
+      // Backup
       exportData: () => this.exportData(),
-      // Misc stubs for template compatibility
+      importDataTrigger: () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.onchange = (e) => {
+          if (e.target.files && e.target.files[0]) {
+            this.importData(e.target.files[0]);
+          }
+        };
+        input.click();
+      },
+      toggleAutoBackup: () => {
+        const next = !s.autoBackup;
+        this.setState({ autoBackup: next });
+        if (next) {
+          this.setState({ lastBackupDate: getToday() });
+          this.autoExportBackup();
+        }
+        this.persist();
+        this.show(next ? '自动备份已开启' : '自动备份已关闭');
+      },
+      // Attach file (多模态占位)
+      attachFile: () => {
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = 'image/*, .pdf, .docx';
+        input.onchange = (e) => {
+          if (e.target.files && e.target.files[0]) {
+            this.show('文件: ' + e.target.files[0].name + ' 已选择（多模态功能需对接API）');
+          }
+        };
+        input.click();
+      },
+      // 其他占位
       cancelToken: () => this.setState({ showDemoCodeInput: false }),
       confirmToken: () => this.setState({ showDemoCodeInput: false }),
       confirmTokenTouch: () => this.setState({ showDemoCodeInput: false }),
-      demoCodeDraftChange: () => {}
+      demoCodeDraftChange: () => {},
     };
   }
 }
