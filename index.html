@@ -34,6 +34,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#F5F3EE;color:#1A1815;font-family:-apple-system,'Noto Sans SC','Helvetica Neue',sans-serif;overflow:hidden;letter-spacing:-0.01em;">
 
+<!-- page content -->
 <div style="flex:1;min-height:0;position:relative;">
 
 <!-- ========== CHAT ========== -->
@@ -62,10 +63,13 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 
 <!-- messages area -->
 <div style="flex:1;min-height:0;position:relative;">
+<!-- top scroll fade -->
 <div style="position:absolute;top:0;left:0;right:0;height:24px;background:linear-gradient(#F5F3EE,rgba(245,243,238,0));z-index:5;pointer-events:none;"></div>
+<!-- bottom scroll fade -->
 <div style="position:absolute;bottom:0;left:0;right:0;height:20px;background:linear-gradient(rgba(245,243,238,0),#F5F3EE);z-index:5;pointer-events:none;"></div>
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:10px 20px 10px;">
 
+<!-- template watermark -->
 <div style="position:sticky;top:50%;left:50%;transform:translate(-50%,-50%);width:0;height:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0;">
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="opacity:.08;">
 <path d="M32 4 L34.5 26 L56 16 L38 28.5 L60 32 L38 35.5 L56 48 L34.5 38 L32 60 L29.5 38 L8 48 L26 35.5 L4 32 L26 28.5 L8 16 L29.5 26 Z" fill="#1A1815"/>
@@ -78,20 +82,43 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;">
 <div style="max-width:{{ m.maxW }};width:{{ m.fullW }};">
 
+<!-- thinking -->
 <sc-if value="{{ m.hasThink }}" hint-placeholder-val="{{ false }}">
 <div style="margin-bottom:14px;">
 <button onClick="{{ m.openThink }}" style="display:flex;align-items:center;gap:10px;width:100%;border:none;background:transparent;padding:4px 0;cursor:pointer;font-family:inherit;text-align:left;">
-<svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.55;"><circle cx="12" cy="12" r="8.5" stroke="#9A958B" stroke-width="1.4"/><path d="M12 8v4l2.5 1.5" stroke="#9A958B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.55;{{ m.thinkPulse }}"><circle cx="12" cy="12" r="8.5" stroke="#9A958B" stroke-width="1.4"/><path d="M12 8v4l2.5 1.5" stroke="#9A958B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span style="flex:1;font-size:13.5px;color:#9A958B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.thinkSummary }}</span>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.45;"><path d="M9 6l6 6-6 6" stroke="#B8B3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
 </div>
 </sc-if>
 
+<!-- memory recall -->
+<sc-if value="{{ m.hasMemory }}" hint-placeholder-val="{{ false }}">
+<div style="margin-bottom:14px;">
+<button onClick="{{ toggleMemory }}" style="display:inline-flex;align-items:center;gap:7px;border:none;background:transparent;padding:0;cursor:pointer;font-family:inherit;">
+<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#B8B3A8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span style="font-size:14px;color:#8A857B;white-space:nowrap;">Recalled memories</span>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="transform:{{ memRot }};transition:transform .2s;"><path d="M6 9l6 6 6-6" stroke="#B8B3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<sc-if value="{{ memoryOpen }}" hint-placeholder-val="{{ false }}">
+<div style="margin-top:10px;display:flex;flex-direction:column;gap:7px;">
+<sc-for list="{{ m.memoryList }}" as="mem" hint-placeholder-count="2">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:12px;padding:10px 13px;">
+<span style="font-size:13px;color:#6B665E;line-height:1.4;">{{ mem.text }}</span>
+<span style="flex:none;font-size:11px;font-weight:500;color:#9A958B;background:#F2EFE8;border-radius:6px;padding:3px 8px;">{{ mem.tag }}</span>
+</div>
+</sc-for>
+</div>
+</sc-if>
+</div>
+</sc-if>
+
+<!-- message body: normal -->
 <sc-if value="{{ m.showNormal }}" hint-placeholder-val="{{ true }}">
 <div style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:{{ m.pad }};font-size:16px;line-height:1.75;letter-spacing:-0.008em;white-space:pre-wrap;word-break:break-word;">{{ m.text }}</div>
 </sc-if>
-
+<!-- message body: edit mode -->
 <sc-if value="{{ m.showEdit }}" hint-placeholder-val="{{ false }}">
 <div style="background:#ECEAE4;border-radius:22px;padding:12px 16px;">
 <textarea value="{{ editText }}" onInput="{{ editTextChange }}" rows="3" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:16px;line-height:1.6;color:#2B2620;min-height:60px;"></textarea>
@@ -102,6 +129,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
+<!-- user actions: edit -->
 <sc-if value="{{ m.showUserActions }}" hint-placeholder-val="{{ false }}">
 <div style="display:flex;justify-content:flex-end;margin-top:6px;opacity:.45;">
 <button onClick="{{ m.edit }}" style="width:25px;height:25px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -110,6 +138,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
+<!-- actions row for AI -->
 <sc-if value="{{ m.showActions }}" hint-placeholder-val="{{ false }}">
 <div style="display:flex;align-items:center;gap:13px;margin-top:10px;opacity:.62;">
 <button onClick="{{ m.copy }}" style="width:25px;height:25px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -147,7 +176,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <!-- input bar -->
 <div style="flex:none;padding:8px 14px calc(env(safe-area-inset-bottom, 0px) + 6px);">
 <div style="background:#FBFAF7;border:1px solid #E7E3DA;border-radius:26px;padding:17px 17px 12px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
-<textarea value="{{ input }}" onInput="{{ inputChange }}" onKeyDown="{{ inputKey }}" placeholder="Message Kel..." rows="1" style="display:block;width:100%;min-height:30px;max-height:96px;border:none;background:transparent;resize:none;outline:none;font-family:inherit;font-size:16px;line-height:1.55;color:#2B2620;padding:2px 4px 17px;font-weight:300;"></textarea>
+<textarea value="{{ input }}" onInput="{{ inputChange }}" onKeyDown="{{ inputKey }}" placeholder="Message companion..." rows="1" style="display:block;width:100%;min-height:30px;max-height:96px;border:none;background:transparent;resize:none;outline:none;font-family:inherit;font-size:16px;line-height:1.55;color:#2B2620;padding:2px 4px 17px;font-weight:300;"></textarea>
 <div style="display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:9px;">
 <button onClick="{{ togglePlus }}" style="width:32px;height:32px;border-radius:50%;background:#F2EFE8;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -158,6 +187,9 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </button>
 </div>
 <div style="display:flex;align-items:center;gap:16px;">
+<button onClick="{{ openPromptSheet }}" style="width:24px;height:24px;background:transparent;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3a3 3 0 0 0-3 3v6a3 3 0 0 0 6 0V6a3 3 0 0 0-3-3ZM5 11a7 7 0 0 0 14 0M12 18v3" stroke="#6B665E" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
 <button onClick="{{ send }}" style="width:40px;height:40px;border-radius:50%;background:#1A1815;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 10v4M9 7v10M13 5.5v13M17 9v6M21 11v2" stroke="#F5F3EE" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
@@ -179,40 +211,59 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 
 <div style="padding:6px 0 24px;">
-<div style="font-size:12px;color:#B8B3A8;letter-spacing:2.5px;font-weight:600;">KEL</div>
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:29px;font-weight:400;color:#1A1815;margin-top:10px;line-height:1.25;letter-spacing:-.01em;">{{ homeGreeting }}</div>
-<div style="font-size:14px;color:#9A958B;margin-top:6px;">Your companion space</div>
+<div style="font-size:12px;color:#B8B3A8;letter-spacing:2.5px;font-weight:600;">COMPANION</div>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:29px;font-weight:400;color:#1A1815;margin-top:10px;line-height:1.25;letter-spacing:-.01em;">Good morning.</div>
+<div style="font-size:14px;color:#9A958B;margin-top:6px;">Set up your companion space</div>
 </div>
 
-<!-- pinned note card -->
+<!-- dawn card -->
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:20px;margin-bottom:14px;">
 <div style="font-size:12px;color:#B8B3A8;font-weight:500;letter-spacing:.3px;margin-bottom:10px;">Pinned note</div>
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:17px;line-height:1.7;color:#3A362F;">属于我们的空间 ♡</div>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:17px;line-height:1.7;color:#3A362F;">Add your own note here. This card is intentionally blank for public reuse.</div>
+<div style="margin-top:14px;font-size:12.5px;color:#B8B3A8;">Save · Reply</div>
+</div>
+
+<!-- countdown -->
+<div onClick="{{ openAnniv }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div>
+<div style="font-size:15px;font-weight:500;color:#1A1815;">Next anniversary</div>
+<div style="font-size:13px;color:#B8B3A8;margin-top:4px;">MM.DD</div>
+</div>
+<div style="display:flex;align-items:baseline;gap:3px;">
+<span style="font-family:'Newsreader',serif;font-size:38px;font-weight:400;color:#1A1815;line-height:1;letter-spacing:-.02em;">0</span>
+<span style="font-size:13px;color:#9A958B;">days</span>
+</div>
 </div>
 
 <!-- status row -->
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:22px;">
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
-<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Chats</div>
-<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">{{ chatCount }}</div>
+<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Weather</div>
+<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">—°</div>
+<div style="font-size:11px;color:#9A958B;margin-top:2px;">Add data</div>
 </div>
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
-<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Model</div>
-<div style="font-size:13px;color:#1A1815;margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ activeModel }}</div>
+<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Sleep</div>
+<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">—</div>
+<div style="font-size:11px;color:#9A958B;margin-top:2px;">Add data</div>
 </div>
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
-<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Style</div>
-<div style="font-size:13px;color:#1A1815;margin-top:6px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ activeStyle }}</div>
+<div onClick="{{ openMood }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;cursor:pointer;">
+<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Mood</div>
+<div style="font-size:18px;margin-top:6px;">—</div>
+<div style="font-size:11px;color:#9A958B;margin-top:2px;">Add data</div>
 </div>
 </div>
 
-<!-- recent section -->
-<div style="font-size:13px;font-weight:500;color:#9A958B;margin-bottom:12px;">Recent chats</div>
-<sc-for list="{{ homeRecents }}" as="r" hint-placeholder-count="3">
-<div onClick="{{ r.open }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px;margin-bottom:10px;cursor:pointer;">
-<div style="font-size:14.5px;color:#3A362F;line-height:1.55;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.title }}</div>
+<!-- recent -->
+<div style="font-size:13px;font-weight:500;color:#9A958B;margin-bottom:12px;">Recent</div>
+<div onClick="{{ openMoments }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px;margin-bottom:10px;cursor:pointer;">
+<div style="font-size:12px;color:#B8B3A8;font-weight:500;">Companion · Placeholder</div>
+<div style="font-size:14.5px;color:#3A362F;line-height:1.55;margin-top:6px;">Replace this preview with your own moment content.</div>
 </div>
-</sc-for>
+<div onClick="{{ openDiary }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px;cursor:pointer;">
+<div style="font-size:12px;color:#B8B3A8;font-weight:500;">Diary · Placeholder</div>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:17px;color:#1A1815;margin-top:6px;">Untitled entry</div>
+</div>
 </div>
 </sc-if>
 
@@ -231,14 +282,40 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;">
-<div onClick="{{ openPersonaSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div onClick="{{ openAnniv }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Persona</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">System prompt</div></div>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.6-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.4-7 10-7 10Z" stroke="#9A958B" stroke-width="1.5" stroke-linejoin="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Anniversaries</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">0</div></div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 <div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ openDiary }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:14px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7 3h10a2 2 0 0 1 2 2v16l-7-3-7 3V5a2 2 0 0 1 2-2Z" stroke="#9A958B" stroke-width="1.5" stroke-linejoin="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Diary / Letters</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">0</div></div>
+</div>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ openMoments }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:14px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="3" stroke="#9A958B" stroke-width="1.5"/><circle cx="8.5" cy="10" r="1.5" stroke="#9A958B" stroke-width="1.4"/><path d="M5 18l4.5-4 3 2.5L16 12l3 3" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Moments</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">0 posts</div></div>
+</div>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ openMood }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:14px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#9A958B" stroke-width="1.5"/><path d="M8.5 14.5a4 4 0 0 0 7 0" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="9.5" r=".8" fill="#9A958B"/><circle cx="15" cy="9.5" r=".8" fill="#9A958B"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Mood</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">No entries yet</div></div>
+</div>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+</div>
+
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;margin-top:14px;">
 <div onClick="{{ openWorldbookSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z" stroke="#9A958B" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 4v6l2-1.3L13 10V4" stroke="#9A958B" stroke-width="1.4" stroke-linejoin="round"/></svg>
@@ -246,34 +323,105 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
-<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ openStyle }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+</div>
+
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;margin-top:14px;">
+<div onClick="{{ openPromptSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 16.5l-4.9 2.7.9-5.5-4-3.9 5.5-.8L12 3Z" stroke="#9A958B" stroke-width="1.5" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Style</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ activeStyle }}</div></div>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="8" width="16" height="12" rx="2" stroke="#9A958B" stroke-width="1.5"/><path d="M4 12h16M9 8V5h6v3M12 14v3" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Prompt templates</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ promptCount }}</div></div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 <div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ openApiSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div onClick="{{ openAiSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M19 12c0-.4 0-.8-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6c-.1.4-.1.8-.1 1.2s0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#9A958B" stroke-width="1.4" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">API Settings</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ activeModel }}</div></div>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#9A958B" stroke-width="1.5"/><path d="M12 7v5l3 2" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Persona</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ activeCompanion }}</div></div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
+</div>
+
+<!-- settings -->
+<div onClick="{{ toggleProfile }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:16px 18px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:14px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 3 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#9A958B" stroke-width="1.4" stroke-linejoin="round"/></svg>
+<div style="font-size:15px;font-weight:500;color:#1A1815;">Settings</div>
+</div>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 </div>
 </sc-if>
 
-<!-- ========== DRAWER ========== -->
+<!-- ========== SUB PAGES ========== -->
+<sc-if value="{{ showSub }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:#F5F3EE;display:flex;flex-direction:column;animation:slideIn .25s ease both;">
+<!-- sub header -->
+<div style="flex:none;padding:4px 16px 12px;display:flex;align-items:center;gap:14px;">
+<button onClick="{{ closeSub }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="#48453E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div style="font-size:17px;font-weight:500;color:#1A1815;">{{ subTitle }}</div>
+</div>
+
+<div class="sa" style="flex:1;min-height:0;overflow-y:auto;padding:6px 20px 24px;">
+
+<!-- Moments -->
+<sc-if value="{{ isMoments }}" hint-placeholder-val="{{ false }}">
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:30px 22px;text-align:center;">
+<div style="width:58px;height:58px;border-radius:18px;background:#F2EFE8;margin:0 auto 15px;"></div>
+<div style="font-size:16px;font-weight:500;color:#1A1815;">Empty moments page</div>
+<div style="font-size:13px;color:#9A958B;line-height:1.65;margin-top:8px;">Replace this area with your own moments component.</div>
+</div>
+</sc-if>
+
+<!-- Diary -->
+<sc-if value="{{ isDiary }}" hint-placeholder-val="{{ false }}">
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:30px 22px;text-align:center;">
+<div style="width:58px;height:58px;border-radius:18px;background:#F2EFE8;margin:0 auto 15px;"></div>
+<div style="font-size:16px;font-weight:500;color:#1A1815;">Empty diary page</div>
+<div style="font-size:13px;color:#9A958B;line-height:1.65;margin-top:8px;">Replace this area with your own diary or letters component.</div>
+</div>
+</sc-if>
+
+<!-- Mood -->
+<sc-if value="{{ isMood }}" hint-placeholder-val="{{ false }}">
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:30px 22px;text-align:center;">
+<div style="width:58px;height:58px;border-radius:18px;background:#F2EFE8;margin:0 auto 15px;"></div>
+<div style="font-size:16px;font-weight:500;color:#1A1815;">Empty mood page</div>
+<div style="font-size:13px;color:#9A958B;line-height:1.65;margin-top:8px;">Replace this area with your own mood tracker component.</div>
+</div>
+</sc-if>
+
+<!-- Anniversaries -->
+<sc-if value="{{ isAnniv }}" hint-placeholder-val="{{ false }}">
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:30px 22px;text-align:center;">
+<div style="width:58px;height:58px;border-radius:18px;background:#F2EFE8;margin:0 auto 15px;"></div>
+<div style="font-size:16px;font-weight:500;color:#1A1815;">Empty anniversaries page</div>
+<div style="font-size:13px;color:#9A958B;line-height:1.65;margin-top:8px;">Replace this area with your own countdown or anniversary component.</div>
+</div>
+</sc-if>
+
+</div>
+</div>
+</sc-if>
+
+</div>
+
+<!-- drawer -->
 <sc-if value="{{ drawerOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:100;">
 <div onClick="{{ toggleDrawer }}" style="position:absolute;inset:0;background:rgba(0,0,0,.12);animation:fadeIn .15s ease both;"></div>
 <div style="position:absolute;left:0;top:0;bottom:0;width:300px;background:#F5F3EE;display:flex;flex-direction:column;box-shadow:6px 0 24px rgba(0,0,0,.06);animation:slideInLeft .2s ease both;">
+<!-- drawer header -->
 <div style="flex:none;padding:56px 24px 0;display:flex;align-items:center;justify-content:space-between;">
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:26px;font-weight:500;color:#1A1815;">Kel</div>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:26px;font-weight:500;color:#1A1815;">Companion</div>
+<div style="width:40px;height:40px;border-radius:50%;background:#FFF;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;" onClick="{{ toggleProfile }}">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
 </div>
+</div>
+<!-- nav items -->
 <div style="flex:none;padding:24px 16px 0;display:flex;flex-direction:column;gap:2px;">
 <div onClick="{{ navChat }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-4 3.5V17H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/></svg>
@@ -288,14 +436,20 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <span>More</span>
 </div>
 </div>
+<!-- recents label -->
 <div style="padding:28px 24px 10px;font-size:12px;color:#B8B3A8;font-weight:600;letter-spacing:1px;">RECENTS</div>
+<!-- recent chats list -->
 <div class="sa" style="flex:1;min-height:0;overflow-y:auto;padding:0 16px;">
-<sc-for list="{{ recentChats }}" as="c" hint-placeholder-count="5">
+<sc-for list="{{ recentChats }}" as="c" hint-placeholder-count="8">
 <div onClick="{{ c.open }}" style="padding:11px 12px;border-radius:10px;font-size:14.5px;color:#3A362F;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.title }}</div>
 </sc-for>
 </div>
+<!-- bottom bar -->
 <div style="flex:none;padding:12px 16px 28px;display:flex;align-items:center;justify-content:space-between;">
-<div onClick="{{ openApiSheet }}" style="font-size:13px;color:#B8B3A8;cursor:pointer;">Settings</div>
+<div onClick="{{ pullCloud }}" style="font-size:13px;color:#B8B3A8;cursor:pointer;display:flex;align-items:center;gap:4px;">
+<span>All chats</span>
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#B8B3A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
 <button onClick="{{ newChat }}" style="display:flex;align-items:center;gap:8px;background:#1A1815;color:#F5F3EE;border:none;border-radius:20px;padding:10px 18px;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;">
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#F5F3EE" stroke-width="2.2" stroke-linecap="round"/></svg>
 <span>New</span>
@@ -305,147 +459,315 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
-<!-- ========== PLUS SHEET ========== -->
+<!-- profile menu -->
+<sc-if value="{{ profileOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:300;">
+<div onClick="{{ toggleProfile }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 0 30px;animation:slideUp .25s ease both;">
+<div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 20px;"></div>
+<!-- profile header -->
+<div style="padding:0 24px 22px;display:flex;align-items:center;gap:14px;">
+<div style="width:48px;height:48px;border-radius:50%;background:#ECEAE4;"></div>
+<div>
+<div style="font-size:17px;font-weight:600;color:#1A1815;">User</div>
+<div style="font-size:13px;color:#9A958B;margin-top:3px;">Set up profile</div>
+</div>
+</div>
+<!-- settings group -->
+<div style="margin:0 16px 12px;background:#FFF;border-radius:16px;overflow:hidden;">
+<div onClick="{{ openApiSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:14px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#48453E" stroke-width="1.5"/><path d="M19 12c0-.4 0-.8-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6c-.1.4-.1.8-.1 1.2s0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#48453E" stroke-width="1.3" stroke-linejoin="round"/></svg>
+<span style="font-size:15px;font-weight:500;color:#1A1815;">API settings</span>
+</div>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ syncCloud }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:14px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span style="font-size:15px;font-weight:500;color:#1A1815;">Load demo records</span>
+</div>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ githubBackup }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:14px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M8 7l4-4 4 4M5 15v3a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-3" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Export demo snapshot（不会拉回）</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">只把云端记录存进 Git，不会改变当前页面</div></div>
+</div>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- style sheet -->
+<sc-if value="{{ styleOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:250;">
+<div onClick="{{ closeStyle }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:82%;overflow-y:auto;">
+<div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+<button onClick="{{ closeStyle }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button>
+<span style="font-size:16px;font-weight:600;color:#1A1815;">Style</span>
+<button onClick="{{ saveStyle }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
+</div>
+<div style="display:flex;gap:8px;overflow-x:auto;padding:0 0 12px;">
+<sc-for list="{{ styleOptions }}" as="st" hint-placeholder-count="3">
+<button onClick="{{ st.pick }}" style="flex:none;border:1px solid {{ st.bd }};background:{{ st.bg }};border-radius:18px;padding:8px 12px;font-size:13px;color:{{ st.fg }};font-family:inherit;cursor:pointer;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ st.name }}</button>
+</sc-for>
+</div>
+<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
+<div style="padding:13px 16px;border-bottom:1px solid #ECE8DF;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">名字</div>
+<input value="{{ styleTitle }}" onInput="{{ styleTitleChange }}" placeholder="比如：精简 / 小说感" style="width:100%;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;color:#1A1815;">
+</div>
+<div style="padding:13px 16px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">Style 内容</div>
+<textarea value="{{ styleContent }}" onInput="{{ styleContentChange }}" placeholder="这里写语气、文风、回复习惯，会随聊天带进 system。" rows="7" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:#1A1815;"></textarea>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- plus sheet -->
 <sc-if value="{{ plusOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:200;">
 <div onClick="{{ togglePlus }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
 <div style="position:absolute;bottom:0;left:0;right:0;background:#EDEAE3;border-radius:16px 16px 0 0;padding:12px 0 30px;animation:slideUp .25s ease both;">
+<!-- grab handle -->
 <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 14px;"></div>
+<!-- header -->
 <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 16px;">
 <button onClick="{{ togglePlus }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">Settings</span>
-<span style="width:36px;"></span>
+<span style="font-size:16px;font-weight:600;color:#1A1815;">Add to chat</span>
+<span style="font-size:14px;color:#9A958B;cursor:pointer;" onClick="{{ openPromptSheet }}">Prompts</span>
 </div>
+<!-- menu card 1 -->
 <div style="margin:0 16px;background:#FFF;border-radius:16px;overflow:hidden;">
-<div onClick="{{ openApiSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border-bottom:1px solid #ECE8DF;">
-<span style="font-size:15px;font-weight:500;color:#1A1815;">API Settings</span>
+<div onClick="{{ openPromptSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:13px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3c-4.97 0-9 3.58-9 8 0 1.5.5 2.9 1.3 4.1L3 21l5.5-1.5C10 20.2 11 20.5 12 20.5c4.97 0 9-3.58 9-8s-4.03-8-9-8Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 11h.01M12 11h.01M15 11h.01" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
+<span style="font-size:15px;font-weight:500;color:#1A1815;">Prompt template</span>
+</div>
+<div style="display:flex;align-items:center;gap:6px;">
+<span style="font-size:14px;color:#9A958B;">{{ promptCount }}</span>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ openApiSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:13px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#48453E" stroke-width="1.5"/><path d="M12 8v8M8 12h8" stroke="#48453E" stroke-width="1.5" stroke-linecap="round"/></svg>
+<span style="font-size:15px;font-weight:500;color:#1A1815;">Switch model</span>
+</div>
+<div style="display:flex;align-items:center;gap:6px;">
 <span style="font-size:14px;color:#9A958B;">{{ activeModel }}</span>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
-<div onClick="{{ openPersonaSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border-bottom:1px solid #ECE8DF;">
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ openAiSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:13px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="8" width="18" height="12" rx="2" stroke="#48453E" stroke-width="1.5"/><path d="M8 8V5a4 4 0 0 1 8 0v3" stroke="#48453E" stroke-width="1.5" stroke-linecap="round"/></svg>
 <span style="font-size:15px;font-weight:500;color:#1A1815;">Persona</span>
+</div>
+<div style="display:flex;align-items:center;gap:6px;">
+<span style="font-size:14px;color:#9A958B;">{{ activeCompanion }}</span>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
-<div onClick="{{ openWorldbookSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;border-bottom:1px solid #ECE8DF;">
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ openWorldbookSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:13px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 4v6l2-1.3L13 10V4" stroke="#48453E" stroke-width="1.4" stroke-linejoin="round"/></svg>
 <span style="font-size:15px;font-weight:500;color:#1A1815;">Worldbook</span>
+</div>
+<div style="display:flex;align-items:center;gap:6px;">
+<span style="font-size:14px;color:#9A958B;">{{ wbHint }}</span>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
 <div onClick="{{ openStyle }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:13px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 16.5l-4.9 2.7.9-5.5-4-3.9 5.5-.8L12 3Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/></svg>
 <span style="font-size:15px;font-weight:500;color:#1A1815;">Style</span>
+</div>
+<div style="display:flex;align-items:center;gap:6px;">
 <span style="font-size:14px;color:#9A958B;">{{ activeStyle }}</span>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ togglePet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:13px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#48453E" stroke-width="1.5"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#48453E" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="10" r="1" fill="#48453E"/><circle cx="15" cy="10" r="1" fill="#48453E"/></svg>
+<span style="font-size:15px;font-weight:500;color:#1A1815;">Pixel Pet</span>
+</div>
+<div style="display:flex;align-items:center;gap:6px;">
+<span style="font-size:14px;color:#9A958B;">{{ petStatus }}</span>
+</div>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ cyclePetSize }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:13px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span style="font-size:15px;font-weight:500;color:#1A1815;">Pet Size</span>
+</div>
+<span style="font-size:14px;color:#9A958B;">{{ petSizeLabel }}</span>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ toggleSound }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:13px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M11 5L6 9H2v6h4l5 4V5ZM15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span style="font-size:15px;font-weight:500;color:#1A1815;">Sound</span>
+</div>
+<span style="font-size:14px;color:#9A958B;">{{ soundStatus }}</span>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ exportData }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:13px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span style="font-size:15px;font-weight:500;color:#1A1815;">Export Backup</span>
+</div>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+</div>
 </div>
 </div>
 </div>
 </div>
 </sc-if>
 
-<!-- ========== API SHEET ========== -->
+<!-- config sheets -->
 <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:260;">
-<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 0 26px;animation:slideUp .25s ease both;max-height:85%;overflow-y:auto;">
-<div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 14px;"></div>
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:{{ sheetOverlayBg }};animation:fadeIn .15s ease both;"></div>
+<div style="position:absolute;{{ sheetPanelPos }};overflow:hidden;background:{{ sheetPanelBg }};border-radius:{{ sheetPanelRadius }};padding:{{ sheetPanelPad }};animation:slideUp .25s ease both;box-shadow:{{ sheetPanelShadow }};{{ sheetPanelBlur }}">
+<div style="width:{{ sheetHandleW }};height:5px;border-radius:3px;background:#CFCAC1;margin:0 auto {{ sheetHandleMb }};"></div>
 
 <sc-if value="{{ isApiSheet }}" hint-placeholder-val="{{ false }}">
-<div style="padding:0 16px;">
+<div class="sa" style="max-height:calc(82vh - 40px);overflow-y:auto;padding:0 16px 8px;">
 <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;">
 <button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">API Settings</span>
-<button onClick="{{ saveApi }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
+<span style="font-size:16px;font-weight:600;color:#1A1815;">API settings</span>
+<button onClick="{{ newApiDraft }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">新建</button>
+</div>
+<div style="display:flex;gap:8px;overflow-x:auto;padding:0 2px 12px;">
+<sc-for list="{{ apiOptions }}" as="p" hint-placeholder-count="3">
+<button onClick="{{ p.pick }}" style="flex:none;width:178px;border:1px solid {{ p.bd }};background:{{ p.bg }};border-radius:18px;padding:10px 12px;font-family:inherit;cursor:pointer;text-align:left;overflow:hidden;">
+<div style="display:flex;align-items:center;gap:6px;min-width:0;"><span style="flex:1;min-width:0;font-size:13px;font-weight:600;color:{{ p.fg }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.title }}</span><span style="display:{{ p.badgeDisplay }};font-size:10px;color:{{ p.badgeFg }};background:{{ p.badgeBg }};border-radius:8px;padding:2px 5px;">默认</span></div>
+<div style="font-size:11.5px;color:{{ p.subFg }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:3px;">{{ p.model }}</div>
+</button>
+</sc-for>
 </div>
 <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
-<div style="padding:13px 16px;border-bottom:1px solid #ECE8DF;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">Base URL</div>
-<input value="{{ apiUrl }}" onInput="{{ apiUrlChange }}" placeholder="https://az.zlapi.vip/v1" style="width:100%;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;color:#1A1815;">
+<div style="padding:12px 14px;border-bottom:1px solid #ECE8DF;">
+<div style="display:grid;grid-template-columns:0.72fr 1.28fr;gap:10px;align-items:end;">
+<label style="min-width:0;"><div style="font-size:11.5px;color:#B8B3A8;margin-bottom:6px;">preset</div><input value="{{ apiName }}" onInput="{{ apiNameChange }}" placeholder="渠道名" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 10px;font-family:inherit;font-size:13px;color:#1A1815;"></label>
+<label style="min-width:0;"><div style="font-size:11.5px;color:#B8B3A8;margin-bottom:6px;">模型</div><input value="{{ apiModel }}" onInput="{{ apiModelChange }}" placeholder="模型名" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 10px;font-family:inherit;font-size:13px;color:#1A1815;"></label>
 </div>
-<div style="padding:13px 16px;border-bottom:1px solid #ECE8DF;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">API Key</div>
-<input value="{{ apiKey }}" onInput="{{ apiKeyChange }}" placeholder="sk-..." type="password" style="width:100%;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;color:#1A1815;">
+<div style="display:flex;align-items:center;justify-content:space-between;gap:8px;margin-top:10px;">
+<div style="font-size:11.5px;color:#B8B3A8;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ apiModelListHint }}</div>
+<button onClick="{{ fetchApiModels }}" style="border:none;background:#ECEAE4;color:#3A362F;border-radius:14px;padding:7px 11px;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;">拉模型</button>
 </div>
-<div style="padding:13px 16px;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">Model</div>
-<input value="{{ apiModel }}" onInput="{{ apiModelChange }}" placeholder="claude-sonnet-4-20250514" style="width:100%;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;color:#1A1815;">
+<div style="display:{{ apiModelOptionsDisplay }};gap:7px;overflow-x:auto;padding-top:9px;">
+<sc-for list="{{ apiModelOptions }}" as="m" hint-placeholder-count="8">
+<button onClick="{{ m.pick }}" style="flex:none;max-width:220px;border:1px solid {{ m.bd }};background:{{ m.bg }};color:{{ m.fg }};border-radius:14px;padding:7px 10px;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ m.name }}</button>
+</sc-for>
 </div>
 </div>
-<div style="margin-top:12px;font-size:12px;color:#9A958B;padding:0 4px;">保存后刷新页面不会丢失设置。</div>
+<button onClick="{{ toggleApiAdvanced }}" style="width:100%;border:none;background:#FFF;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;font-family:inherit;cursor:pointer;">
+<span style="font-size:13px;font-weight:600;color:#3A362F;">连接细节</span>
+<span style="display:flex;align-items:center;gap:7px;font-size:12px;color:#9A958B;"><span>{{ apiDetailHint }}</span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="transform:{{ apiAdvancedRot }};transition:transform .2s;"><path d="M6 9l6 6 6-6" stroke="#B8B3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
+</button>
+<sc-if value="{{ isApiAdvanced }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 14px 14px;border-top:1px solid #ECE8DF;">
+<div style="padding-top:12px;display:flex;gap:8px;flex-wrap:wrap;"><button onClick="{{ setApiOpenAI }}" style="border:1px solid {{ apiOpenAiBd }};background:{{ apiOpenAiBg }};border-radius:14px;padding:7px 10px;font-size:12px;font-family:inherit;cursor:pointer;">OpenAI兼容</button><button onClick="{{ setApiAnthropic }}" style="border:1px solid {{ apiAnthropicBd }};background:{{ apiAnthropicBg }};border-radius:14px;padding:7px 10px;font-size:12px;font-family:inherit;cursor:pointer;">Anthropic</button><button onClick="{{ toggleApiGateway }}" style="border:1px solid #E7E3DA;background:{{ apiGatewayBg }};border-radius:14px;padding:7px 10px;font-size:12px;font-family:inherit;cursor:pointer;">{{ apiGatewayText }}</button></div>
+<div style="display:grid;grid-template-columns:1fr;gap:8px;margin-top:10px;">
+<input value="{{ connectorUrl }}" onInput="{{ connectorUrlChange }}" placeholder="Connector URL placeholder" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 10px;font-family:inherit;font-size:12.5px;color:#1A1815;">
+<input value="{{ accessValue }}" onInput="{{ accessValueChange }}" placeholder="Access value" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 10px;font-family:inherit;font-size:12.5px;color:#1A1815;">
+</div>
+</div>
+</sc-if>
+</div>
+<div style="display:flex;gap:10px;padding-top:12px;"><button onClick="{{ saveApiDraft }}" style="flex:1;border:none;background:#1A1815;color:#F5F3EE;border-radius:20px;padding:12px 16px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;">保存并使用</button><button onClick="{{ deleteApiDraft }}" style="border:none;background:#FFF;color:#9A958B;border-radius:20px;padding:12px 16px;font-size:14px;font-family:inherit;cursor:pointer;">删除</button></div>
 </div>
 </sc-if>
 
-<sc-if value="{{ isPersonaSheet }}" hint-placeholder-val="{{ false }}">
-<div style="padding:0 16px;">
-<div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;">
-<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">Persona</span>
-<button onClick="{{ savePersona }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
-</div>
+<sc-if value="{{ isAiSheet }}" hint-placeholder-val="{{ false }}">
+<div class="sa" style="max-height:calc(82vh - 40px);overflow-y:auto;padding:0 16px 8px;">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;"><button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button><span style="font-size:16px;font-weight:600;color:#1A1815;">Persona</span><span style="width:36px;"></span></div>
 <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
-<div style="padding:13px 16px;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">System Prompt（角色设定）</div>
-<textarea value="{{ personaText }}" onInput="{{ personaTextChange }}" placeholder="在这里写角色设定，会作为 system prompt 发送给模型..." rows="12" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:#1A1815;min-height:200px;"></textarea>
+<sc-for list="{{ aiOptions }}" as="p" hint-placeholder-count="3">
+<div onClick="{{ p.pick }}" style="padding:15px 18px;border-bottom:1px solid #ECE8DF;display:flex;align-items:center;justify-content:space-between;cursor:pointer;"><span style="font-size:15px;color:#1A1815;">{{ p.name }}</span><span style="font-size:13px;color:{{ p.color }};">{{ p.state }}</span></div>
+</sc-for>
 </div>
+</div>
+</sc-if>
+
+<sc-if value="{{ isPromptSheet }}" hint-placeholder-val="{{ false }}">
+<div class="sa" style="max-height:calc(82vh - 40px);overflow-y:auto;padding:0 16px 8px;">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;"><button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button><span style="font-size:16px;font-weight:600;color:#1A1815;">Prompt templates</span><span style="width:36px;"></span></div>
+<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
+<sc-for list="{{ promptOptions }}" as="p" hint-placeholder-count="4">
+<div onClick="{{ p.pick }}" style="padding:15px 18px;border-bottom:1px solid #ECE8DF;cursor:pointer;"><div style="font-size:15px;color:#1A1815;">{{ p.name }}</div><div style="font-size:12px;color:#B8B3A8;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.preview }}</div></div>
+</sc-for>
 </div>
 </div>
 </sc-if>
 
 <sc-if value="{{ isWorldbookSheet }}" hint-placeholder-val="{{ false }}">
-<div style="padding:0 16px;">
-<div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;">
-<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">Worldbook</span>
-<button onClick="{{ saveWorldbook }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
-</div>
+<div class="sa" style="max-height:calc(82vh - 40px);overflow-y:auto;padding:0 16px 8px;">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;"><button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button><span style="font-size:16px;font-weight:600;color:#1A1815;">Worldbook</span><button onClick="{{ saveWorldbook }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button></div>
 <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
-<div style="padding:13px 16px;border-bottom:1px solid #ECE8DF;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">常驻世界书（始终带入对话）</div>
-<textarea value="{{ wbPermanent }}" onInput="{{ wbPermanentChange }}" placeholder="角色关系、世界规则、禁忌设定……" rows="10" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:#1A1815;min-height:160px;"></textarea>
-</div>
-<div style="padding:13px 16px;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">触发条目（每行一条：关键词 =&gt; 内容）</div>
-<textarea value="{{ wbTriggers }}" onInput="{{ wbTriggersChange }}" placeholder="关键词 => 触发后插入的设定内容" rows="6" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:#1A1815;min-height:100px;"></textarea>
-</div>
-</div>
-</div>
-</sc-if>
-
-<sc-if value="{{ isStyleSheet }}" hint-placeholder-val="{{ false }}">
-<div style="padding:0 16px;">
-<div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;">
-<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">Style</span>
-<button onClick="{{ saveStyleData }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
-</div>
-<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
-<div style="padding:13px 16px;border-bottom:1px solid #ECE8DF;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">Style 名称</div>
-<input value="{{ styleTitle }}" onInput="{{ styleTitleChange }}" placeholder="比如：温柔 / 小说感" style="width:100%;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;color:#1A1815;">
-</div>
-<div style="padding:13px 16px;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">Style 内容（会附加在 system prompt 末尾）</div>
-<textarea value="{{ styleContent }}" onInput="{{ styleContentChange }}" placeholder="语气、文风、回复习惯……" rows="6" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:#1A1815;min-height:100px;"></textarea>
-</div>
+<div style="padding:13px 16px;border-bottom:1px solid #ECE8DF;"><div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">常驻worldbook</div><textarea value="{{ wbPermanent }}" onInput="{{ wbPermanentChange }}" placeholder="会一直带进 system 的设定、关系、禁忌、世界规则……" rows="7" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:#1A1815;"></textarea></div>
+<div style="padding:13px 16px;"><div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">触发条目</div><textarea value="{{ wbTriggers }}" onInput="{{ wbTriggersChange }}" placeholder="每行一个：关键词 => 触发后插入的内容" rows="6" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:#1A1815;"></textarea></div>
 </div>
 </div>
 </sc-if>
 
 <sc-if value="{{ isThoughtSheet }}" hint-placeholder-val="{{ false }}">
-<div style="padding:0 16px;">
-<div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;">
-<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">Thinking</span>
-<span style="width:36px;"></span>
+<div class="sa" style="height:calc(100vh - 36px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 24px 44px;">
+<div style="display:flex;align-items:center;position:sticky;top:0;z-index:2;padding:12px 0 16px;background:linear-gradient(rgba(255,255,255,0.72) 60%, rgba(255,255,255,0));">
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(0,0,0,.08);background:#FFF;box-shadow:0 1px 4px rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+<div style="flex:1;text-align:center;font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Noto Sans SC',sans-serif;font-size:17px;font-weight:600;color:#1A1815;letter-spacing:-0.01em;">Thought process</div>
+<div style="width:36px;flex:none;"></div>
 </div>
-<div style="font-size:15px;line-height:1.75;color:#1A1815;white-space:pre-wrap;word-break:break-word;">{{ thoughtText }}</div>
+<div style="font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Noto Sans SC',sans-serif;font-size:17px;line-height:1.8;color:#1A1815;font-weight:400;letter-spacing:-0.01em;white-space:pre-wrap;word-break:break-word;">{{ thoughtText }}</div>
 </div>
 </sc-if>
 
+</div>
+</div>
+</sc-if>
+
+<!-- demo code modal -->
+<sc-if value="{{ showDemoCodeInput }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;">
+<div onClick="{{ cancelToken }}" style="position:absolute;inset:0;background:rgba(0,0,0,.25);animation:fadeIn .15s ease both;"></div>
+<div style="position:relative;width:85%;max-width:340px;background:#FFF;border-radius:20px;padding:28px 24px 22px;box-shadow:0 20px 60px rgba(0,0,0,.15);animation:fadeUp .2s ease both;">
+<div style="font-size:16px;font-weight:600;color:#1A1815;margin-bottom:16px;text-align:center;">Demo access placeholder</div>
+<input value="{{ demoCodeDraft }}" onInput="{{ demoCodeDraftChange }}" placeholder="Demo code" style="display:block;width:100%;border:1px solid #E7E3DA;background:#F5F3EE;border-radius:14px;padding:13px 16px;font-size:15px;font-family:inherit;color:#2B2620;outline:none;margin-bottom:16px;">
+<div style="display:flex;gap:10px;">
+<button onClick="{{ cancelToken }}" style="flex:1;padding:12px;border:1px solid #E7E3DA;background:#FFF;border-radius:14px;font-size:14px;font-family:inherit;color:#6B665E;cursor:pointer;">取消</button>
+<button onClick="{{ confirmToken }}" onTouchEnd="{{ confirmTokenTouch }}" style="flex:1;padding:12px;border:none;background:#1A1815;border-radius:14px;font-size:14px;font-family:inherit;color:#F5F3EE;cursor:pointer;">确定</button>
+</div>
 </div>
 </div>
 </sc-if>
 
 <!-- pixel pet -->
 <div style="position:fixed;bottom:90px;right:16px;z-index:50;pointer-events:none;">
-<img src="{{ petGif }}" width="48" height="48" style="image-rendering:pixelated;" alt="Kel">
+<img src="{{ petGif }}" width="{{ petSize }}" height="{{ petSize }}" style="image-rendering:pixelated;" alt="Kel">
 </div>
 
 <!-- toast -->
@@ -454,12 +776,16 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </sc-if>
 
 </div>
-</div>
 </x-dc>
-<script type="text/x-dc" data-dc-script data-props="{}">
+<script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
 const STORAGE_KEY = 'kel-home-data';
 
-function loadData() {
+const saved = loadData();
+// 恢复编辑草稿
+this.state.apiDraft = saved.apiDraft || null;
+this.state.styleDraft = saved.styleDraft || null;
+this.state.wbDraft = saved.wbDraft || null;
+ {
   try {
     const raw = localStorage.getItem(STORAGE_KEY);
     return raw ? JSON.parse(raw) : {};
@@ -468,8 +794,15 @@ function loadData() {
 
 function saveData(data) {
   try {
-    localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-  } catch(e) {}
+    const dataStr = JSON.stringify(data);
+    localStorage.setItem(STORAGE_KEY, dataStr);
+    return true;
+  } catch (err)
+    const tempComp = new Component({});
+    temp.show('本地存储空间已满，部分配置保存失败！');
+    console.error('存储失败：', err);
+    return false;
+  }
 }
 
 function genId() {
@@ -491,32 +824,49 @@ class Component extends DCLogic {
     this.state = {
       // UI state
       tab: 'chat',
+      sub: null,
+      memory: false,
       drawer: false,
       plus: false,
+      profile: false,
+      style: false,
       sheet: null,
       input: '',
       toastShow: false,
-      petState: 'idle',
       toastText: '',
       isBusy: false,
       editIdx: -1,
       editText: '',
       thoughtText: '',
-      // API settings
-      apiUrl: saved.apiUrl || 'https://az.zlapi.vip/v1',
-      apiKey: saved.apiKey || '',
-      apiModel: saved.apiModel || 'claude-sonnet-4-20250514',
+      apiAdvanced: false,
+      petState: 'idle',
+      // Settings
+      petEnabled: saved.petEnabled !== false,
+      petSizeIdx: saved.petSizeIdx || 1,
+      soundEnabled: saved.soundEnabled !== false,
+      // API presets
+      apiPresets: saved.apiPresets || [{ id: 'default', name: 'Default', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: true }],
+      activePresetId: saved.activePresetId || 'default',
       // Persona
-      persona: saved.persona || '',
+      personas: saved.personas || [{ id: 'default', name: 'Kel', content: '' }],
+      activePersonaId: saved.activePersonaId || 'default',
       // Worldbook
       wbPermanent: saved.wbPermanent || '',
       wbTriggers: saved.wbTriggers || '',
       // Style
-      styleTitle: saved.styleTitle || 'Default',
-      styleContent: saved.styleContent || '',
+      styles: saved.styles || [{ id: 'default', title: 'Default', content: '' }],
+      activeStyleId: saved.activeStyleId || 'default',
+      // Prompt templates
+      prompts: saved.prompts || [],
       // Chat data
       currentChatId: saved.currentChatId || genId(),
-      chats: saved.chats || {}
+      chats: saved.chats || {},
+      // Draft states for editing
+      apiDraft: null,
+      styleDraft: null,
+      wbDraft: null,
+      demoCodeDraft: '',
+      showDemoCodeInput: false
     };
     if (!this.state.chats[this.state.currentChatId]) {
       this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: 'New Chat', messages: [] };
@@ -527,19 +877,41 @@ class Component extends DCLogic {
     return this.state.chats[this.state.currentChatId] || { messages: [] };
   }
 
+  get activePreset() {
+    return this.state.apiPresets.find(p => p.id === this.state.activePresetId) || this.state.apiPresets[0] || { url: '', key: '', model: '', apiType: 'anthropic', name: 'Default' };
+  }
+
+  get activePersona() {
+    return this.state.personas.find(p => p.id === this.state.activePersonaId) || this.state.personas[0] || { name: 'Kel', content: '' };
+  }
+
+  get activeStyleObj() {
+    return this.state.styles.find(st => st.id === this.state.activeStyleId) || this.state.styles[0] || { title: 'Default', content: '' };
+  }
+
+  get petSizes() { return [32, 48, 64, 80, 96]; }
+  get currentPetSize() { return this.petSizes[this.state.petSizeIdx] || 48; }
+
   persist() {
     const s = this.state;
     saveData({
-      apiUrl: s.apiUrl,
-      apiKey: s.apiKey,
-      apiModel: s.apiModel,
-      persona: s.persona,
+      apiPresets: s.apiPresets,
+      activePresetId: s.activePresetId,
+      personas: s.personas,
+      activePersonaId: s.activePersonaId,
       wbPermanent: s.wbPermanent,
       wbTriggers: s.wbTriggers,
-      styleTitle: s.styleTitle,
-      styleContent: s.styleContent,
+      styles: s.styles,
+      activeStyleId: s.activeStyleId,
+      prompts: s.prompts,
       currentChatId: s.currentChatId,
-      chats: s.chats
+      chats: s.chats,
+      petEnabled: s.petEnabled,
+      petSizeIdx: s.petSizeIdx,
+      soundEnabled: s.soundEnabled,
+      apiDraft: s.apiDraft,
+      styleDraft: s.styleDraft,
+      wbDraft: s.wbDraft
     });
   }
 
@@ -551,32 +923,35 @@ class Component extends DCLogic {
 
   buildSystemPrompt() {
     let sys = '';
-    if (this.state.persona) sys += this.state.persona + '\n\n';
+    const persona = this.activePersona;
+    if (persona.content) sys += persona.content + '\n\n';
     if (this.state.wbPermanent) sys += '## Worldbook\n' + this.state.wbPermanent + '\n\n';
-    if (this.state.styleContent) sys += '## Style: ' + this.state.styleTitle + '\n' + this.state.styleContent + '\n';
-    // Check triggers
+    const style = this.activeStyleObj;
+    if (style.content) sys += '## Style: ' + style.title + '\n' + style.content + '\n';
     if (this.state.wbTriggers) {
-      const msgs = this.currentChat.messages;
-      const lastMsg = msgs.length > 0 ? msgs[msgs.length - 1].text : '';
-      const lines = this.state.wbTriggers.split('\n');
-      for (const line of lines) {
-        const idx = line.indexOf('=>');
-        if (idx > 0) {
-          const keyword = line.slice(0, idx).trim().toLowerCase();
-          const content = line.slice(idx + 2).trim();
-          if (keyword && lastMsg.toLowerCase().includes(keyword)) {
-            sys += '\n[Triggered: ' + keyword + ']\n' + content + '\n';
-          }
-        }
-      }
+  const msgs = this.currentChat.messages;
+  const lines = this.state.wbTriggers.split('\n').filter(line => line.trim() !== '');
+  const allChatText = msgs.map(item => item.text.toLowerCase()).join(' ');
+  for (const line of lines) {
+    const splitIndex = line.indexOf('=>');
+    if (splitIndex <= 0) continue;
+    const keyword = line.slice(0, splitIndex).trim().toLowerCase();
+    const wbContent = line.slice(splitIndex + 2).trim();
+    if (!keyword || !wbContent) continue;
+    const keywordReg = new RegExp(`\\b${keyword}\\b`, 'g');
+    if (keywordReg.test(allChatText)) {
+      sys += `\n[Triggered: ${keyword}]\n${wbContent}\n`;
     }
+  }
+}
     return sys.trim();
   }
 
   async sendMessage() {
     const text = (this.state.input || '').trim();
     if (!text || this.state.isBusy) return;
-    if (!this.state.apiKey) { this.show('请先设置 API Key'); return; }
+    const preset = this.activePreset;
+    if (!preset.key) { this.show('请先设置 API Key'); return; }
 
     const chatId = this.state.currentChatId;
     const chats = { ...this.state.chats };
@@ -593,35 +968,35 @@ class Component extends DCLogic {
     try {
       const sysPrompt = this.buildSystemPrompt();
       const apiMessages = msgs.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.variants[m.variantIdx] || m.text }));
-      
-      const body = {
-        model: this.state.apiModel,
-        max_tokens: 8192,
-        messages: apiMessages
-      };
+      const body = { model: preset.model, max_tokens: 8192, messages: apiMessages };
       if (sysPrompt) body.system = sysPrompt;
 
-      const res = await fetch(this.state.apiUrl + '/messages', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'x-api-key': this.state.apiKey,
-          'anthropic-version': '2023-06-01'
-        },
-        body: JSON.stringify(body)
-      });
+      const headers = { 'Content-Type': 'application/json' };
+      let url = preset.url;
+      if (preset.apiType === 'anthropic') {
+        headers['x-api-key'] = preset.key;
+        headers['anthropic-version'] = '2023-06-01';
+        url += '/messages';
+      } else {
+        headers['Authorization'] = 'Bearer ' + preset.key;
+        url += '/chat/completions';
+      }
 
+      const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
       if (!res.ok) {
         const err = await res.text();
         throw new Error('API ' + res.status + ': ' + err.slice(0, 200));
       }
 
       const data = await res.json();
-      let reply = '';
-      let thinking = '';
-      for (const block of (data.content || [])) {
-        if (block.type === 'thinking') thinking += block.thinking;
-        else if (block.type === 'text') reply += block.text;
+      let reply = '', thinking = '';
+      if (preset.apiType === 'anthropic') {
+        for (const block of (data.content || [])) {
+          if (block.type === 'thinking') thinking += block.thinking;
+          else if (block.type === 'text') reply += block.text;
+        }
+      } else {
+        reply = data.choices?.[0]?.message?.content || '';
       }
 
       const chats2 = { ...this.state.chats };
@@ -630,15 +1005,14 @@ class Component extends DCLogic {
       chats2[chatId] = chat2;
       this.setState({ chats: chats2, isBusy: false, petState: 'happy' });
       this.persist();
-      try { new Audio('./notification.mp3').play(); } catch(e) {}
+      if (this.state.soundEnabled) { try { new Audio('./notification.mp3').play(); } catch(e) {} }
       setTimeout(() => this.setState({ petState: 'idle' }), 3000);
     } catch(e) {
       this.setState({ isBusy: false });
       this.show('Error: ' + e.message);
     }
   }
-
-  regenerate(msgIdx) {
+    regenerate(msgIdx) {
     if (this.state.isBusy) return;
     const chat = this.currentChat;
     const msgs = chat.messages.slice(0, msgIdx);
@@ -653,22 +1027,34 @@ class Component extends DCLogic {
 
   async _regenerateFrom(chatId, msgs, origIdx) {
     try {
+      const preset = this.activePreset;
       const sysPrompt = this.buildSystemPrompt();
       const apiMessages = msgs.map(m => ({ role: m.role === 'user' ? 'user' : 'assistant', content: m.variants[m.variantIdx] || m.text }));
-      const body = { model: this.state.apiModel, max_tokens: 8192, messages: apiMessages };
+      const body = { model: preset.model, max_tokens: 8192, messages: apiMessages };
       if (sysPrompt) body.system = sysPrompt;
 
-      const res = await fetch(this.state.apiUrl + '/messages', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json', 'x-api-key': this.state.apiKey, 'anthropic-version': '2023-06-01' },
-        body: JSON.stringify(body)
-      });
+      const headers = { 'Content-Type': 'application/json' };
+      let url = preset.url;
+      if (preset.apiType === 'anthropic') {
+        headers['x-api-key'] = preset.key;
+        headers['anthropic-version'] = '2023-06-01';
+        url += '/messages';
+      } else {
+        headers['Authorization'] = 'Bearer ' + preset.key;
+        url += '/chat/completions';
+      }
+
+      const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
       if (!res.ok) throw new Error('API ' + res.status);
       const data = await res.json();
       let reply = '', thinking = '';
-      for (const block of (data.content || [])) {
-        if (block.type === 'thinking') thinking += block.thinking;
-        else if (block.type === 'text') reply += block.text;
+      if (preset.apiType === 'anthropic') {
+        for (const block of (data.content || [])) {
+          if (block.type === 'thinking') thinking += block.thinking;
+          else if (block.type === 'text') reply += block.text;
+        }
+      } else {
+        reply = data.choices?.[0]?.message?.content || '';
       }
 
       const chats = { ...this.state.chats };
@@ -686,7 +1072,7 @@ class Component extends DCLogic {
       chats[chatId] = chat;
       this.setState({ chats, isBusy: false, petState: 'happy' });
       this.persist();
-      try { new Audio('./notification.mp3').play(); } catch(e) {}
+      if (this.state.soundEnabled) { try { new Audio('./notification.mp3').play(); } catch(e) {} }
       setTimeout(() => this.setState({ petState: 'idle' }), 3000);
     } catch(e) {
       this.setState({ isBusy: false });
@@ -707,10 +1093,80 @@ class Component extends DCLogic {
     this.persist();
   }
 
+  deleteChat(id) {
+    const chats = { ...this.state.chats };
+    delete chats[id];
+    let newCurrentId = this.state.currentChatId;
+    if (id === newCurrentId) {
+      const remaining = Object.keys(chats);
+      if (remaining.length > 0) {
+        newCurrentId = remaining[0];
+      } else {
+        newCurrentId = genId();
+        chats[newCurrentId] = { id: newCurrentId, title: 'New Chat', messages: [] };
+      }
+    }
+    this.setState({ chats, currentChatId: newCurrentId });
+    this.persist();
+    this.show('Chat deleted');
+  }
+
+  exportData() {
+    const s = this.state;
+    const exportObj = {
+      exportDate: new Date().toISOString(),
+      chats: s.chats,
+      personas: s.personas,
+      wbPermanent: s.wbPermanent,
+      wbTriggers: s.wbTriggers,
+      styles: s.styles,
+      prompts: s.prompts,
+      apiPresets: s.apiPresets.map(p => ({ ...p, key: '***' }))
+    };
+    const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'kel-backup-' + new Date().toISOString().slice(0,10) + '.json';
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+    this.show('Backup exported');
+  }
+
+  async fetchModels() {
+    const preset = this.activePreset;
+    if (!preset.key || !preset.url) { this.show('Need URL and Key first'); return; }
+    try {
+      const headers = {};
+      let url = preset.url + '/models';
+      if (preset.apiType === 'anthropic') {
+        headers['x-api-key'] = preset.key;
+        headers['anthropic-version'] = '2023-06-01';
+      } else {
+        headers['Authorization'] = 'Bearer ' + preset.key;
+      }
+      const res = await fetch(url, { headers });
+      if (!res.ok) throw new Error('Failed ' + res.status);
+      const data = await res.json();
+      const models = (data.data || data.models || []).map(m => m.id || m.name || m).filter(Boolean);
+      if (models.length === 0) { this.show('No models found'); return; }
+      const draft = this.state.apiDraft || {};
+      this.setState({ apiDraft: { ...draft, models } });
+      this.show(models.length + ' models loaded');
+    } catch(e) {
+      this.show('Error: ' + e.message);
+    }
+  }
+
   renderVals() {
     const s = this.state;
     const chat = this.currentChat;
     const msgs = chat.messages || [];
+    const preset = this.activePreset;
+    const persona = this.activePersona;
+    const styleObj = this.activeStyleObj;
 
     const messages = msgs.map((m, i) => {
       const isUser = m.role === 'user';
@@ -730,7 +1186,10 @@ class Component extends DCLogic {
         text: displayText,
         hasThink: !isUser && !!m.thinking,
         thinkSummary: m.thinking ? 'Thinking (' + m.thinking.length + ' chars)' : '',
-        openThink: () => this.setState({ sheet: 'thought', thoughtText: m.thinking || '' }),
+        thinkPulse: '',
+        openThink: () => this.setState({ sheet: 'thought', currentThoughtText: m.thinking || '' }),
+        hasMemory: false,
+        memoryList: [],
         showNormal: s.editIdx !== i,
         showEdit: s.editIdx === i,
         showActions: !isUser && isLast && !s.isBusy,
@@ -766,12 +1225,7 @@ class Component extends DCLogic {
       };
     });
 
-    const chatList = Object.values(s.chats).sort((a, b) => {
-      const aTime = a.messages.length ? a.messages.length : 0;
-      const bTime = b.messages.length ? b.messages.length : 0;
-      return bTime - aTime;
-    }).slice(0, 20);
-
+    const chatList = Object.values(s.chats).sort((a, b) => (b.messages.length || 0) - (a.messages.length || 0)).slice(0, 30);
     const recentChats = chatList.map(c => ({
       title: c.title || 'New Chat',
       open: () => this.openChat(c.id)
@@ -782,66 +1236,182 @@ class Component extends DCLogic {
       open: () => this.openChat(c.id)
     }));
 
-    // petGif at top level (bug fix: moved out of messages array)
-    const petGif = s.isBusy ? './sprites/clawd-thinking.gif' : (s.petState === 'happy' ? './sprites/clawd-happy.gif' : './sprites/clawd-idle.gif');
+    // API preset options for sheet
+    const apiOptions = s.apiPresets.map(p => ({
+      title: p.name || 'Untitled',
+      model: p.model || '',
+      bg: p.id === s.activePresetId ? '#1A1815' : '#FFF',
+      bd: p.id === s.activePresetId ? '#1A1815' : '#E7E3DA',
+      fg: p.id === s.activePresetId ? '#F5F3EE' : '#2B2620',
+      subFg: p.id === s.activePresetId ? '#D8D3CA' : '#9A958B',
+      badgeDisplay: p.isDefault ? 'inline-flex' : 'none',
+      badgeBg: '#F2EFE8',
+      badgeFg: '#6B665E',
+      pick: () => {
+        this.setState({ activePresetId: p.id, apiDraft: { ...p, models: [] } });
+        this.persist();
+      }
+    }));
+
+    // Persona options
+    const aiOptions = s.personas.map(p => ({
+      name: p.name || 'Untitled',
+      state: p.id === s.activePersonaId ? 'Active' : '',
+      color: p.id === s.activePersonaId ? '#1A1815' : '#9A958B',
+      pick: () => {
+        this.setState({ activePersonaId: p.id });
+        this.persist();
+        this.show(p.name + ' activated');
+      }
+    }));
+
+    // Prompt options
+    const promptOptions = (s.prompts || []).map(p => ({
+      name: p.name || 'Untitled',
+      preview: (p.content || '').slice(0, 60),
+      pick: () => this.setState({ input: p.content || '' })
+    }));
+
+    // Style options
+    const styleOptions = s.styles.map(st => ({
+      name: st.title || 'Untitled',
+      bg: st.id === s.activeStyleId ? '#1A1815' : '#FFF',
+      bd: st.id === s.activeStyleId ? '#1A1815' : '#E7E3DA',
+      fg: st.id === s.activeStyleId ? '#F5F3EE' : '#2B2620',
+      pick: () => {
+        this.setState({ activeStyleId: st.id, styleDraft: { ...st } });
+        this.persist();
+      }
+    }));
+
+    // API draft for editing
+    const apiDraft = s.apiDraft || preset;
+    const apiModelOptions = (apiDraft.models || []).map(m => ({
+      name: m,
+      bg: m === apiDraft.model ? '#1A1815' : '#FFF',
+      bd: m === apiDraft.model ? '#1A1815' : '#E7E3DA',
+      fg: m === apiDraft.model ? '#F5F3EE' : '#2B2620',
+      pick: () => this.setState({ apiDraft: { ...this.state.apiDraft, model: m } })
+    }));
+
+    const styleDraft = s.styleDraft || styleObj;
+    const wbDraft = s.wbDraft || { permanent: s.wbPermanent, triggersText: s.wbTriggers };
+
+    // Pet
+    const petGif = !s.petEnabled ? '' : (s.isBusy ? './sprites/clawd-thinking.gif' : (s.petState === 'happy' ? './sprites/clawd-happy.gif' : './sprites/clawd-idle.gif'));
 
     return {
       true: true, false: false,
       // Page routing
-      isChat: s.tab === 'chat',
-      isHome: s.tab === 'home',
-      isMore: s.tab === 'more',
-      // Data
+      isChat: s.tab === 'chat' && !s.sub,
+      isHome: s.tab === 'home' && !s.sub,
+      isMore: s.tab === 'more' && !s.sub,
+      showSub: !!s.sub,
+      isMoments: s.sub === 'moments',
+      isDiary: s.sub === 'diary',
+      isMood: s.sub === 'mood',
+      isAnniv: s.sub === 'anniversary',
+      subTitle: ({ moments: 'Moments', diary: 'Diary / Letters', mood: 'Mood', anniversary: 'Anniversaries' }[s.sub] || ''),
+      // Messages
       messages,
       recentChats,
       homeRecents,
       homeGreeting: getGreeting(),
       chatCount: Object.keys(s.chats).length.toString(),
-      wbHint: s.wbPermanent ? (s.wbPermanent.length + ' chars') : 'Not set',
       isBusy: s.isBusy,
       input: s.input,
       editText: s.editText,
-      activeModel: s.apiModel || 'Not set',
-      activeStyle: s.styleTitle || 'Default',
+      // Active labels
+      activeModel: preset.model || 'Not set',
+      activeStyle: styleObj.title || 'Default',
+      activeCompanion: persona.name || 'Kel',
+      wbHint: s.wbPermanent ? (s.wbPermanent.length + ' chars') : 'Not set',
+      promptCount: (s.prompts || []).length + ' items',
+      // Pet
       petGif,
+      petSize: this.currentPetSize,
+      petStatus: s.petEnabled ? 'On' : 'Off',
+      petSizeLabel: this.currentPetSize + 'px',
+      soundStatus: s.soundEnabled ? 'On' : 'Off',
+      // Memory
+      memoryOpen: s.memory,
+      memRot: s.memory ? 'rotate(180deg)' : 'rotate(0deg)',
       // Overlays
       drawerOpen: s.drawer,
       plusOpen: s.plus,
+      profileOpen: s.profile,
+      styleOpen: s.style,
       sheetOpen: !!s.sheet,
       isApiSheet: s.sheet === 'api',
-      isPersonaSheet: s.sheet === 'persona',
+      isAiSheet: s.sheet === 'ai',
+      isPromptSheet: s.sheet === 'prompt',
       isWorldbookSheet: s.sheet === 'worldbook',
-      isStyleSheet: s.sheet === 'style',
       isThoughtSheet: s.sheet === 'thought',
+      showDemoCodeInput: false,
+      demoCodeDraft: '',
       toastShow: s.toastShow,
       toastText: s.toastText,
-      // API fields
-      apiUrl: s.apiUrl,
-      apiKey: s.apiKey,
-      apiModel: s.apiModel,
-      // Persona
-      personaText: s.persona,
+      // Sheet panel styles
+      sheetPanelPos: s.sheet === 'thought' ? 'top:36px;bottom:0;left:0;right:0;' : 'bottom:0;left:0;right:0;',
+      sheetPanelBg: s.sheet === 'thought' ? 'rgba(255,255,255,0.82)' : '#F5F3EE',
+      sheetPanelRadius: s.sheet === 'thought' ? '18px 18px 0 0' : '16px 16px 0 0',
+      sheetPanelPad: s.sheet === 'thought' ? '0' : '12px 0 26px',
+      sheetPanelShadow: s.sheet === 'thought' ? '0 -8px 30px rgba(0,0,0,.06)' : 'none',
+      sheetPanelBlur: s.sheet === 'thought' ? 'backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);' : '',
+      sheetHandleW: s.sheet === 'thought' ? '0' : '36px',
+      sheetHandleMb: s.sheet === 'thought' ? '0' : '14px',
+      sheetOverlayBg: s.sheet === 'thought' ? 'transparent' : 'rgba(0,0,0,.18)',
+      // API sheet fields
+      apiOptions,
+      apiName: apiDraft.name || '',
+      apiModel: apiDraft.model || '',
+      connectorUrl: apiDraft.url || '',
+      accessValue: apiDraft.key || '',
+      apiDetailHint: apiDraft.apiType === 'anthropic' ? 'Anthropic format' : 'OpenAI format',
+      apiModelListHint: (apiDraft.models || []).length > 0 ? (apiDraft.models.length + ' models') : 'Click to fetch',
+      apiModelOptions,
+      apiModelOptionsDisplay: (apiDraft.models || []).length > 0 ? 'flex' : 'none',
+      isApiAdvanced: s.apiAdvanced,
+      apiAdvancedRot: s.apiAdvanced ? 'rotate(180deg)' : 'rotate(0deg)',
+      apiOpenAiBg: apiDraft.apiType === 'openai' ? '#1A1815' : '#FFF',
+      apiOpenAiBd: apiDraft.apiType === 'openai' ? '#1A1815' : '#E7E3DA',
+      apiAnthropicBg: apiDraft.apiType !== 'openai' ? '#1A1815' : '#FFF',
+      apiAnthropicBd: apiDraft.apiType !== 'openai' ? '#1A1815' : '#E7E3DA',
+      apiGatewayBg: '#E1DDD4',
+      apiGatewayText: 'Direct',
+      // AI/Persona sheet
+      aiOptions,
+      // Prompt sheet
+      promptOptions,
       // Worldbook
-      wbPermanent: s.wbPermanent,
-      wbTriggers: s.wbTriggers,
-      // Style
-      styleTitle: s.styleTitle,
-      styleContent: s.styleContent,
+      wbPermanent: wbDraft.permanent || s.wbPermanent || '',
+      wbTriggers: wbDraft.triggersText || s.wbTriggers || '',
+      // Style sheet
+      styleOptions,
+      styleTitle: styleDraft.title || '',
+      styleContent: styleDraft.content || '',
       // Thought
-      thoughtText: s.thoughtText,
-      // Navigation actions
+      thoughtText: s.currentThoughtText || s.thoughtText || '',
+      // ======== ACTIONS ========
+      // Navigation
       toggleDrawer: () => this.setState(v => ({ drawer: !v.drawer })),
       togglePlus: () => this.setState(v => ({ plus: !v.plus })),
-      navChat: () => this.setState({ tab: 'chat', drawer: false }),
-      navHome: () => this.setState({ tab: 'home', drawer: false }),
-      navMore: () => this.setState({ tab: 'more', drawer: false }),
+      toggleProfile: () => this.setState(v => ({ profile: !v.profile })),
+      toggleMemory: () => this.setState(v => ({ memory: !v.memory })),
+      navChat: () => this.setState({ tab: 'chat', sub: null, drawer: false }),
+      navHome: () => this.setState({ tab: 'home', sub: null, drawer: false }),
+      navMore: () => this.setState({ tab: 'more', sub: null, drawer: false }),
+      // Sub pages
+      openMoments: () => this.setState({ sub: 'moments' }),
+      openDiary: () => this.setState({ sub: 'diary' }),
+      openMood: () => this.setState({ sub: 'mood' }),
+      openAnniv: () => this.setState({ sub: 'anniversary' }),
+      closeSub: () => this.setState({ sub: null }),
+      // Chat
       newChat: () => this.newChat(),
-      // Sheet actions
-      closeSheet: () => this.setState({ sheet: null, plus: false }),
-      openApiSheet: () => this.setState({ sheet: 'api', plus: false }),
-      openPersonaSheet: () => this.setState({ sheet: 'persona', plus: false }),
-      openWorldbookSheet: () => this.setState({ sheet: 'worldbook', plus: false }),
-      openStyle: () => this.setState({ sheet: 'style', plus: false }),
+      pullCloud: () => this.show('Local storage only'),
+      syncCloud: () => this.show('Local storage only'),
+      githubBackup: () => this.exportData(),
       // Input
       inputChange: (e) => this.setState({ input: e.target.value }),
       inputKey: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.sendMessage(); } },
@@ -857,7 +1427,9 @@ class Component extends DCLogic {
         const newMsgs = [...chat.messages];
         const m = { ...newMsgs[idx] };
         m.text = s.editText;
-        m.variants = [s.editText];
+        const oldVariants = [...(m.variants || [])];
+        oldVariants.unshift(s.editText);
+        m.variants = [...new Set(oldVariants)];
         m.variantIdx = 0;
         newMsgs[idx] = m;
         chat.messages = newMsgs.slice(0, idx + 1);
@@ -868,25 +1440,94 @@ class Component extends DCLogic {
           this._regenerateFrom(s.currentChatId, chat.messages, idx + 1);
         });
       },
-      // API save
-      apiUrlChange: (e) => this.setState({ apiUrl: e.target.value }),
-      apiKeyChange: (e) => this.setState({ apiKey: e.target.value }),
-      apiModelChange: (e) => this.setState({ apiModel: e.target.value }),
-      saveApi: () => { this.persist(); this.show('API 设置已保存'); this.setState({ sheet: null }); },
-      // Persona save
-      personaTextChange: (e) => this.setState({ persona: e.target.value }),
-      savePersona: () => { this.persist(); this.show('Persona 已保存'); this.setState({ sheet: null }); },
-      // Worldbook save
-      wbPermanentChange: (e) => this.setState({ wbPermanent: e.target.value }),
-      wbTriggersChange: (e) => this.setState({ wbTriggers: e.target.value }),
-      saveWorldbook: () => { this.persist(); this.show('Worldbook 已保存'); this.setState({ sheet: null }); },
-      // Style save
-      styleTitleChange: (e) => this.setState({ styleTitle: e.target.value }),
-      styleContentChange: (e) => this.setState({ styleContent: e.target.value }),
-      saveStyleData: () => { this.persist(); this.show('Style 已保存'); this.setState({ sheet: null }); }
+      // Sheets open/close
+      closeSheet: () => this.setState({ sheet: null, plus: false, profile: false }),
+      openApiSheet: () => this.setState({ sheet: 'api', plus: false, profile: false, apiDraft: { ...preset, models: [] } }),
+      openAiSheet: () => this.setState({ sheet: 'ai', plus: false, profile: false }),
+      openPromptSheet: () => this.setState({ sheet: 'prompt', plus: false, profile: false }),
+      openWorldbookSheet: () => this.setState({ sheet: 'worldbook', plus: false, profile: false, wbDraft: { permanent: s.wbPermanent, triggersText: s.wbTriggers } }),
+      openStyle: () => this.setState({ style: true, styleDraft: { ...styleObj } }),
+      closeStyle: () => this.setState({ style: false }),
+      openThoughtSheet: () => this.setState({ sheet: 'thought' }),
+      // API sheet actions
+      newApiDraft: () => {
+        const id = genId();
+        const newPreset = { id, name: 'New Preset', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: false };
+        const presets = [...s.apiPresets, newPreset];
+        this.setState({ apiPresets: presets, activePresetId: id, apiDraft: { ...newPreset, models: [] } });
+        this.persist();
+      },
+      fetchApiModels: () => this.fetchModels(),
+      saveApiDraft: () => {
+        const draft = s.apiDraft || {};
+        const presets = s.apiPresets.map(p => p.id === (draft.id || s.activePresetId) ? { ...p, name: draft.name || p.name, url: draft.url || p.url, key: draft.key || p.key, model: draft.model || p.model, apiType: draft.apiType || p.apiType } : p);
+        this.setState({ apiPresets: presets, sheet: null });
+        this.persist();
+        this.show('API preset saved');
+      },
+      deleteApiDraft: () => {
+        if (s.apiPresets.length <= 1) { this.show('Cannot delete last preset'); return; }
+        const presets = s.apiPresets.filter(p => p.id !== s.activePresetId);
+        this.setState({ apiPresets: presets, activePresetId: presets[0].id, sheet: null });
+        this.persist();
+        this.show('Preset deleted');
+      },
+      apiNameChange: (e) => this.setState({ apiDraft: { ...(s.apiDraft || {}), name: e.target.value } }),
+      apiModelChange: (e) => this.setState({ apiDraft: { ...(s.apiDraft || {}), model: e.target.value } }),
+      connectorUrlChange: (e) => this.setState({ apiDraft: { ...(s.apiDraft || {}), url: e.target.value } }),
+      accessValueChange: (e) => this.setState({ apiDraft: { ...(s.apiDraft || {}), key: e.target.value } }),
+      setApiOpenAI: () => this.setState({ apiDraft: { ...(s.apiDraft || {}), apiType: 'openai' } }),
+      setApiAnthropic: () => this.setState({ apiDraft: { ...(s.apiDraft || {}), apiType: 'anthropic' } }),
+      toggleApiGateway: () => this.show('Direct mode only'),
+      toggleApiAdvanced: () => this.setState(v => ({ apiAdvanced: !v.apiAdvanced })),
+      // Worldbook
+      wbPermanentChange: (e) => this.setState({ wbDraft: { ...(s.wbDraft || {}), permanent: e.target.value } }),
+      wbTriggersChange: (e) => this.setState({ wbDraft: { ...(s.wbDraft || {}), triggersText: e.target.value } }),
+      saveWorldbook: () => {
+        const draft = s.wbDraft || {};
+        this.setState({ wbPermanent: draft.permanent || '', wbTriggers: draft.triggersText || '', sheet: null });
+        this.persist();
+        this.show('Worldbook saved');
+      },
+      // Style
+      styleTitleChange: (e) => this.setState({ styleDraft: { ...(s.styleDraft || {}), title: e.target.value } }),
+      styleContentChange: (e) => this.setState({ styleDraft: { ...(s.styleDraft || {}), content: e.target.value } }),
+      saveStyle: () => {
+        const draft = s.styleDraft || {};
+        const styles = s.styles.map(st => st.id === s.activeStyleId ? { ...st, title: draft.title || st.title, content: draft.content || '' } : st);
+        this.setState({ styles, style: false });
+        this.persist();
+        this.show('Style saved');
+      },
+      // Pet & Sound
+      togglePet: () => {
+        const next = !s.petEnabled;
+        this.setState({ petEnabled: next });
+        this.persist();
+        this.show(next ? 'Pet on' : 'Pet off');
+      },
+      cyclePetSize: () => {
+        const next = (s.petSizeIdx + 1) % this.petSizes.length;
+        this.setState({ petSizeIdx: next });
+        this.persist();
+      },
+      toggleSound: () => {
+        const next = !s.soundEnabled;
+        this.setState({ soundEnabled: next });
+        this.persist();
+        this.show(next ? 'Sound on' : 'Sound off');
+      },
+      // Export
+      exportData: () => this.exportData(),
+      // Misc stubs for template compatibility
+      cancelToken: () => this.setState({ showDemoCodeInput: false }),
+      confirmToken: () => this.setState({ showDemoCodeInput: false }),
+      confirmTokenTouch: () => this.setState({ showDemoCodeInput: false }),
+      demoCodeDraftChange: () => {}
     };
   }
 }
 </script>
 </body>
 </html>
+<!-- PUBLIC-UI-BEAUTIFICATION-TEMPLATE -->
