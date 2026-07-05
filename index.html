@@ -336,6 +336,10 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </div>
 </sc-if>
+<!-- pixel pet -->
+<div style="position:fixed;bottom:90px;right:16px;z-index:50;pointer-events:none;">
+<img src="{{ petGif }}" width="48" height="48" style="image-rendering:pixelated;" alt="Kel">
+</div>
 
 <!-- toast -->
 <sc-if value="{{ toastShow }}" hint-placeholder-val="{{ false }}">
@@ -376,7 +380,8 @@ class Component extends DCLogic {
       plus: false,
       sheet: null,
       input: '',
-      toastShow: false,
+      toastShow: false,      
+      petState: 'idle',
       toastText: '',
       isBusy: false,
       editIdx: -1,
@@ -509,8 +514,12 @@ class Component extends DCLogic {
       const chat2 = { ...chats2[chatId] };
       chat2.messages = [...chat2.messages, { role: 'assistant', text: reply, thinking, variants: [reply], variantIdx: 0 }];
       chats2[chatId] = chat2;
-      this.setState({ chats: chats2, isBusy: false });
+      this.setState({ chats: chats2, isBusy: false, petState: 'happy' });
       this.persist();
+      // Play notification sound
+      try { new Audio('./notification.mp3').play(); } catch(e) {}
+      // Return pet to idle after 3s
+      setTimeout(() => this.setState({ petState: 'idle' }), 3000);
     } catch(e) {
       this.setState({ isBusy: false });
       this.show('Error: ' + e.message);
@@ -565,8 +574,10 @@ class Component extends DCLogic {
         chat.messages = [...msgs, { role: 'assistant', text: reply, thinking, variants: [reply], variantIdx: 0 }];
       }
       chats[chatId] = chat;
-      this.setState({ chats, isBusy: false });
+      this.setState({ chats, isBusy: false, petState: 'happy' });
       this.persist();
+      try { new Audio('./notification.mp3').play(); } catch(e) {}
+      setTimeout(() => this.setState({ petState: 'idle' }), 3000);
     } catch(e) {
       this.setState({ isBusy: false });
       this.show('Error: ' + e.message);
@@ -598,6 +609,7 @@ class Component extends DCLogic {
       const vIdx = m.variantIdx || 0;
       const displayText = variants[vIdx] || m.text;
       return {
+        petGif: s.isBusy ? './sprites/clawd-thinking.gif' : (s.petState === 'happy' ? './sprites/clawd-happy.gif' : './sprites/clawd-idle.gif'),
         align: isUser ? 'flex-end' : 'flex-start',
         maxW: isUser ? '82%' : '100%',
         fullW: 'auto',
