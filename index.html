@@ -932,7 +932,7 @@ attachment: null, // { base64, mimeType, preview }
 petEnabled: saved.petEnabled !== false,
 petSizeIdx: saved.petSizeIdx || 1,
 soundEnabled: saved.soundEnabled !== false,
-      memoryCount: saved.memoryCount || 10,
+memoryCount: saved.memoryCount || 10,
 // API presets
 apiPresets: saved.apiPresets || [{ id: 'default', name: 'Default', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: true }],
 activePresetId: saved.activePresetId || 'default',
@@ -969,15 +969,15 @@ return this.state.chats[this.state.currentChatId] || { messages: [] };
 }
 
 get activePreset() {
-return this.state.apiPresets.find(p => p.id === this.state.activePresetId) || this.state.apiPresets0 || { url: '', key: '', model: '', apiType: 'anthropic', name: 'Default' };
+return this.state.apiPresets.find(p => p.id === this.state.activePresetId) || this.state.apiPresets[0] || { url: '', key: '', model: '', apiType: 'anthropic', name: 'Default' };
 }
 
 get activePersona() {
-return this.state.personas.find(p => p.id === this.state.activePersonaId) || this.state.personas0 || { name: 'Kel', content: '' };
+return this.state.personas.find(p => p.id === this.state.activePersonaId) || this.state.personas[0] || { name: 'Kel', content: '' };
 }
 
 get activeStyleObj() {
-return this.state.styles.find(st => st.id === this.state.activeStyleId) || this.state.styles0 || { title: 'Default', content: '' };
+return this.state.styles.find(st => st.id === this.state.activeStyleId) || this.state.styles[0] || { title: 'Default', content: '' };
 }
 
 get petSizes() { return [32, 48, 64, 80, 96]; }
@@ -1078,7 +1078,7 @@ content.push({ type: 'image', source: { type: 'base64', media_type: m.imageMime 
 }
 const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
 if (t) content.push({ type: 'text', text: t });
-return { role: m.role === 'user' ? 'user' : 'assistant', content: content.length === 1 && content0.type === 'text' ? t : content };
+return { role: m.role === 'user' ? 'user' : 'assistant', content: content.length === 1 && content[0].type === 'text' ? t : content };
 });
 } else {
 apiMessages = msgs.map(m => {
