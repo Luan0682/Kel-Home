@@ -1126,9 +1126,8 @@ if (block.type === 'thinking') thinking += block.thinking;
 else if (block.type === 'text') reply += block.text;
 }
 } else {
-reply = data.choices?.0?.message?.content || '';
+reply = data.choices?.[0]?.message?.content || '';
 }
-
 const chats2 = { ...this.state.chats };
 const chat2 = { ...chats2[chatId] };
       chat2.messages = [...chat2.messages, { role: 'assistant', text: reply, thinking, variants: [reply], variantIdx: 0 }];
