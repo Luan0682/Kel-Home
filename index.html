@@ -1186,7 +1186,7 @@ if (!this.state.chats[this.state.currentChatId]) {
 this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: 'New Chat', messages: [], lastTime: Date.now() };
 }
 }
-textareaRef: (el) => {
+textareaRef(el) {
   if (el && !el._listener) {
     el._listener = true;
     const adjust = () => {
@@ -1202,7 +1202,7 @@ textareaRef: (el) => {
     el.addEventListener('input', adjust);
     setTimeout(adjust, 50);
   }
-},
+}
 openWorldbookEditor(id) {
   const wb = id ? this.state.worldbooks.find(w => w.id === id) : null;
   this.setState({
@@ -2134,6 +2134,7 @@ renderVals() {
     pullCloud: () => self.show('Local storage only'),
     syncCloud: () => self.show('Local storage only'),
     githubBackup: () => self.exportData(),
+    textareaRef: (el) => self.textareaRef(el),
     // Input
     inputChange: (e) => self.setState({ input: e.target.value }),
     inputKey: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); self.sendMessage(); } },
