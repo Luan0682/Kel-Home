@@ -1528,7 +1528,7 @@ let body;
 
 if (preset.apiType === 'anthropic') {
 headers['x-api-key'] = preset.key;
-headers['anthropic-version'] = '2023-06-01';
+headers['anthropic-version'] = '2025-04-15';
 url += '/messages';
 body = { model: preset.model, max_tokens: 16384, messages: apiMessages };
 if (sysPrompt) body.system = sysPrompt;
@@ -1536,7 +1536,7 @@ if (sysPrompt) body.system = sysPrompt;
 const model = preset.model || '';
 const supportsThinking = model.includes('claude-3-5-sonnet') || model.includes('claude-sonnet-4') || model.includes('claude-opus');
 if (supportsThinking) {
-body.thinking = { type: 'enabled', budget_tokens: 8000 };
+body.thinking = { type: 'enabled', budget_tokens: 10000 };
 body.max_tokens = 16384;
 }
 } else {
@@ -1556,6 +1556,7 @@ const data = await res.json();
 let reply = '', thinking = '';
 if (preset.apiType === 'anthropic') {
 for (const block of (data.content || [])) {
+console.log('API response blocks:', JSON.stringify(data.content?.map(b => b.type)));
 if (block.type === 'thinking') thinking += block.thinking;
 else if (block.type === 'text') reply += block.text;
 }
@@ -1611,14 +1612,14 @@ const headers = { 'Content-Type': 'application/json' };
 let url = preset.url, body;
 if (preset.apiType === 'anthropic') {
 headers['x-api-key'] = preset.key;
-headers['anthropic-version'] = '2023-06-01';
+headers['anthropic-version'] = '2025-04-15';
 url += '/messages';
 body = { model: preset.model, max_tokens: 16384, messages: apiMessages };
 if (sysPrompt) body.system = sysPrompt;
 const model = preset.model || '';
 const supportsThinking = model.includes('claude-3-5-sonnet') || model.includes('claude-sonnet-4') || model.includes('claude-opus');
 if (supportsThinking) {
-body.thinking = { type: 'enabled', budget_tokens: 8000 };
+body.thinking = { type: 'enabled', budget_tokens: 10000 };
 body.max_tokens = 16384;
 }
 } else {
@@ -1634,6 +1635,7 @@ const data = await res.json();
 let reply = '', thinking = '';
 if (preset.apiType === 'anthropic') {
 for (const block of (data.content || [])) {
+console.log('API response blocks:', JSON.stringify(data.content?.map(b => b.type)));
 if (block.type === 'thinking') thinking += block.thinking;
 else if (block.type === 'text') reply += block.text;
 }
@@ -1872,7 +1874,7 @@ async fetchModels() {
     let url = draft.url + '/models';
     if (draft.apiType === 'anthropic') {
       headers['x-api-key'] = draft.key;
-      headers['anthropic-version'] = '2023-06-01';
+      headers['anthropic-version'] = '2025-04-15';
     } else {
       headers['Authorization'] = 'Bearer ' + draft.key;
     }
