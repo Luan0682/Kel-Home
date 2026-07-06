@@ -675,6 +675,114 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
+<!-- Worldbook Editor Sheet -->
+<sc-if value="{{ isWorldbookEditorSheet }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:270;">
+  <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:70vh;overflow-y:auto;">
+    <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <span style="font-size:16px;font-weight:600;color:#1A1815;">编辑世界书</span>
+      <button onClick="{{ saveWorldbookEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
+    </div>
+    <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
+      <!-- 名称 -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
+        <input value="{{ wbEditName }}" onInput="{{ wbEditNameChange }}" placeholder="世界书名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
+      </div>
+      <!-- 常驻激活 -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <input type="checkbox" checked="{{ wbEditAlwaysOn }}" onChange="{{ wbEditAlwaysOnChange }}" style="width:16px;height:16px;accent-color:#1A1815;">
+          常驻激活
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <span>权重</span>
+          <input value="{{ wbEditWeight }}" onInput="{{ wbEditWeightChange }}" type="number" min="0" max="10" step="0.5" style="width:50px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 6px;font-family:inherit;font-size:13px;text-align:center;">
+        </label>
+      </div>
+      <!-- 插入位置 -->
+      <div style="display:flex;gap:12px;margin-bottom:14px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <input type="radio" name="wbPos" value="before" checked="{{ wbEditPosBefore }}" onChange="{{ wbEditPosBefore }}" style="accent-color:#1A1815;">
+          字符前
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <input type="radio" name="wbPos" value="after" checked="{{ wbEditPosAfter }}" onChange="{{ wbEditPosAfter }}" style="accent-color:#1A1815;">
+          字符后
+        </label>
+      </div>
+      <!-- 触发关键词 -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个）</div>
+        <textarea value="{{ wbEditTriggers }}" onInput="{{ wbEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="3" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+      </div>
+      <!-- 内容 -->
+      <div>
+        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">内容（触发时插入）</div>
+        <textarea value="{{ wbEditContent }}" onInput="{{ wbEditContentChange }}" placeholder="触发后注入的设定、背景、规则……" rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- Memory Editor Sheet -->
+<sc-if value="{{ isMemoryEditorSheet }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:270;">
+  <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:70vh;overflow-y:auto;">
+    <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <span style="font-size:16px;font-weight:600;color:#1A1815;">编辑记忆</span>
+      <button onClick="{{ saveMemoryEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
+    </div>
+    <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
+        <input value="{{ memEditName }}" onInput="{{ memEditNameChange }}" placeholder="记忆名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <input type="checkbox" checked="{{ memEditAlwaysOn }}" onChange="{{ memEditAlwaysOnChange }}" style="width:16px;height:16px;accent-color:#1A1815;"> 常驻
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <span>权重</span>
+          <input value="{{ memEditWeight }}" onInput="{{ memEditWeightChange }}" type="number" min="0" max="10" step="0.5" style="width:50px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 6px;font-family:inherit;font-size:13px;text-align:center;">
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <span>标签</span>
+          <input value="{{ memEditTag }}" onInput="{{ memEditTagChange }}" placeholder="标签" style="width:80px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 8px;font-family:inherit;font-size:13px;">
+        </label>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:14px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <input type="radio" name="memPos" value="before" checked="{{ memEditPosBefore }}" onChange="{{ memEditPosBefore }}" style="accent-color:#1A1815;"> 字符前
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <input type="radio" name="memPos" value="after" checked="{{ memEditPosAfter }}" onChange="{{ memEditPosAfter }}" style="accent-color:#1A1815;"> 字符后
+        </label>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个，留空则常驻）</div>
+        <textarea value="{{ memEditTriggers }}" onInput="{{ memEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="2" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+      </div>
+      <div>
+        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">内容</div>
+        <textarea value="{{ memEditContent }}" onInput="{{ memEditContentChange }}" placeholder="记忆内容……" rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
 <!-- plus sheet -->
 <sc-if value="{{ plusOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:200;">
@@ -854,114 +962,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
-<!-- Worldbook Editor Sheet -->
-<sc-if value="{{ isWorldbookEditorSheet }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;inset:0;z-index:270;">
-  <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:70vh;overflow-y:auto;">
-    <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </button>
-      <span style="font-size:16px;font-weight:600;color:#1A1815;">编辑世界书</span>
-      <button onClick="{{ saveWorldbookEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
-    </div>
-    <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
-      <!-- 名称 -->
-      <div style="margin-bottom:14px;">
-        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
-        <input value="{{ wbEditName }}" onInput="{{ wbEditNameChange }}" placeholder="世界书名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
-      </div>
-      <!-- 常驻激活 -->
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <input type="checkbox" checked="{{ wbEditAlwaysOn }}" onChange="{{ wbEditAlwaysOnChange }}" style="width:16px;height:16px;accent-color:#1A1815;">
-          常驻激活
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <span>权重</span>
-          <input value="{{ wbEditWeight }}" onInput="{{ wbEditWeightChange }}" type="number" min="0" max="10" step="0.5" style="width:50px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 6px;font-family:inherit;font-size:13px;text-align:center;">
-        </label>
-      </div>
-      <!-- 插入位置 -->
-      <div style="display:flex;gap:12px;margin-bottom:14px;">
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <input type="radio" name="wbPos" value="before" checked="{{ wbEditPosBefore }}" onChange="{{ wbEditPosBefore }}" style="accent-color:#1A1815;">
-          字符前
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <input type="radio" name="wbPos" value="after" checked="{{ wbEditPosAfter }}" onChange="{{ wbEditPosAfter }}" style="accent-color:#1A1815;">
-          字符后
-        </label>
-      </div>
-      <!-- 触发关键词 -->
-      <div style="margin-bottom:14px;">
-        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个）</div>
-        <textarea value="{{ wbEditTriggers }}" onInput="{{ wbEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="3" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
-      </div>
-      <!-- 内容 -->
-      <div>
-        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">内容（触发时插入）</div>
-        <textarea value="{{ wbEditContent }}" onInput="{{ wbEditContentChange }}" placeholder="触发后注入的设定、背景、规则……" rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
-      </div>
-    </div>
-  </div>
-</div>
-</sc-if>
-
-<!-- Memory Editor Sheet -->
-<sc-if value="{{ isMemoryEditorSheet }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;inset:0;z-index:270;">
-  <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:70vh;overflow-y:auto;">
-    <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </button>
-      <span style="font-size:16px;font-weight:600;color:#1A1815;">编辑记忆</span>
-      <button onClick="{{ saveMemoryEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
-    </div>
-    <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
-      <div style="margin-bottom:14px;">
-        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
-        <input value="{{ memEditName }}" onInput="{{ memEditNameChange }}" placeholder="记忆名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <input type="checkbox" checked="{{ memEditAlwaysOn }}" onChange="{{ memEditAlwaysOnChange }}" style="width:16px;height:16px;accent-color:#1A1815;"> 常驻
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <span>权重</span>
-          <input value="{{ memEditWeight }}" onInput="{{ memEditWeightChange }}" type="number" min="0" max="10" step="0.5" style="width:50px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 6px;font-family:inherit;font-size:13px;text-align:center;">
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <span>标签</span>
-          <input value="{{ memEditTag }}" onInput="{{ memEditTagChange }}" placeholder="标签" style="width:80px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 8px;font-family:inherit;font-size:13px;">
-        </label>
-      </div>
-      <div style="display:flex;gap:12px;margin-bottom:14px;">
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <input type="radio" name="memPos" value="before" checked="{{ memEditPosBefore }}" onChange="{{ memEditPosBefore }}" style="accent-color:#1A1815;"> 字符前
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <input type="radio" name="memPos" value="after" checked="{{ memEditPosAfter }}" onChange="{{ memEditPosAfter }}" style="accent-color:#1A1815;"> 字符后
-        </label>
-      </div>
-      <div style="margin-bottom:14px;">
-        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个，留空则常驻）</div>
-        <textarea value="{{ memEditTriggers }}" onInput="{{ memEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="2" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
-      </div>
-      <div>
-        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">内容</div>
-        <textarea value="{{ memEditContent }}" onInput="{{ memEditContentChange }}" placeholder="记忆内容……" rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
-      </div>
-    </div>
-  </div>
-</div>
-</sc-if>
-
 <!-- Persona Sheet (with edit) -->
 <sc-if value="{{ isAiSheet }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="max-height:calc(82vh - 40px);overflow-y:auto;padding:0 16px 8px;">
@@ -1127,7 +1127,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <!-- 小可宝宝 -->
 <sc-if value="{{ petEnabled }}" hint-placeholder-val="{{ true }}">
 <div style="position:fixed;bottom:90px;right:16px;z-index:50;pointer-events:none;">
-<img src="{{ petGif }}" width="{{ petSize }}" height="{{ petSize }}" style="image-rendering:pixelated;" alt="Kel">
+<img src="{{ petGif }}" width="{{ petSize }}" height="{{ petSize }}" style="image-rendering:*ated;" alt="Kel">
 </div>
 </sc-if>
 
