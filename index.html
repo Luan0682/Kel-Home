@@ -34,7 +34,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#F5F3EE;color:#1A1815;font-family:-apple-system,'Noto Sans SC','Helvetica Neue',sans-serif;overflow:hidden;letter-spacing:-0.01em;">
 
-<!-- page content -->
 <div style="flex:1;min-height:0;position:relative;">
 
 <!-- ========== CHAT ========== -->
@@ -67,7 +66,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="position:absolute;bottom:0;left:0;right:0;height:20px;background:linear-gradient(rgba(245,243,238,0),#F5F3EE);z-index:5;pointer-events:none;"></div>
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:10px 20px 10px;">
 
-<!-- template watermark -->
 <div style="position:sticky;top:50%;left:50%;transform:translate(-50%,-50%);width:0;height:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0;">
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="opacity:.08;">
 <path d="M32 4 L34.5 26 L56 16 L38 28.5 L60 32 L38 35.5 L56 48 L34.5 38 L32 60 L29.5 38 L8 48 L26 35.5 L4 32 L26 28.5 L8 16 L29.5 26 Z" fill="#1A1815"/>
@@ -89,36 +87,16 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.45;transform:{{ m.thinkRot }};transition:transform .2s;"><path d="M9 6l6 6-6 6" stroke="#B8B3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
   <sc-if value="{{ m.thinkOpen }}" hint-placeholder-val="{{ false }}">
-    <div style="margin-top:6px;padding:12px 14px;background:#F2EFE8;border-radius:12px;font-size:13px;line-height:1.7;color:#6B665E;white-space:pre-wrap;word-break:break-word;border-left:3px solid #D1CCC2;">{{ m.thinkContent }}</div>
+    <div style="margin-top:6px;padding:12px 14px;background:#F2EFE8;border-radius:12px;font-size:13px;line-height:1.7;color:#6B665E;white-space:pre-wrap;word-break:break-word;border-left:3px solid #D1CCC2;max-height:300px;overflow-y:auto;">{{ m.thinkContent }}</div>
   </sc-if>
 </div>
 </sc-if>
 
-<!-- memory recall -->
-<sc-if value="{{ m.hasMemory }}" hint-placeholder-val="{{ false }}">
-<div style="margin-bottom:14px;">
-<button onClick="{{ toggleMemory }}" style="display:inline-flex;align-items:center;gap:7px;border:none;background:transparent;padding:0;cursor:pointer;font-family:inherit;">
-<svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#B8B3A8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-size:14px;color:#8A857B;white-space:nowrap;">Memory context</span>
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="transform:{{ memRot }};transition:transform .2s;"><path d="M6 9l6 6 6-6" stroke="#B8B3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</button>
-<sc-if value="{{ memoryOpen }}" hint-placeholder-val="{{ false }}">
-<div style="margin-top:10px;display:flex;flex-direction:column;gap:7px;">
-<sc-for list="{{ m.memoryList }}" as="mem" hint-placeholder-count="2">
-<div style="display:flex;align-items:center;justify-content:space-between;gap:10px;background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:12px;padding:10px 13px;">
-<span style="font-size:13px;color:#6B665E;line-height:1.4;">{{ mem.text }}</span>
-<span style="flex:none;font-size:11px;font-weight:500;color:#9A958B;background:#F2EFE8;border-radius:6px;padding:3px 8px;">{{ mem.tag }}</span>
-</div>
-</sc-for>
-</div>
-</sc-if>
-</div>
-</sc-if>
-
-<!-- AI avatar -->
+<!-- AI avatar + time -->
 <sc-if value="{{ m.showAiAvatar }}" hint-placeholder-val="{{ false }}">
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-<img src="{{ aiAvatar }}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;" alt="">
+<img src="{{ aiAvatar }}" style="width:{{ avatarSize }}px;height:{{ avatarSize }}px;border-radius:50%;object-fit:cover;" alt="">
+<span style="font-size:11px;color:#B8B3A8;">{{ currentTime }}</span>
 </div>
 </sc-if>
 
@@ -248,24 +226,31 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="padding:6px 0 24px;">
 <div style="font-size:12px;color:#B8B3A8;letter-spacing:2.5px;font-weight:600;">COMPANION</div>
 <div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:29px;font-weight:400;color:#1A1815;margin-top:10px;line-height:1.25;letter-spacing:-.01em;">{{ homeGreeting }}</div>
-<div style="font-size:14px;color:#9A958B;margin-top:6px;">Set up your companion space</div>
+<div style="font-size:14px;color:#9A958B;margin-top:6px;">{{ currentTime }}</div>
 </div>
 
-<!-- dawn card -->
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:20px;margin-bottom:14px;">
-<div style="font-size:12px;color:#B8B3A8;font-weight:500;letter-spacing:.3px;margin-bottom:10px;">Pinned note</div>
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:17px;line-height:1.7;color:#3A362F;">Add your own note here. This card is intentionally blank for public reuse.</div>
-<div style="margin-top:14px;font-size:12.5px;color:#B8B3A8;">Save · Reply</div>
+<!-- Persona card -->
+<div onClick="{{ openAiSheet }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:20px;margin-bottom:14px;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
+<sc-if value="{{ hasAiAvatar }}" hint-placeholder-val="{{ false }}">
+<img src="{{ aiAvatar }}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;">
+</sc-if>
+<div>
+<div style="font-size:16px;font-weight:600;color:#1A1815;">{{ activeCompanion }}</div>
+<div style="font-size:12px;color:#B8B3A8;margin-top:2px;">Persona · 点击编辑</div>
+</div>
+</div>
+<div style="font-size:13px;color:#6B665E;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">{{ personaPreview }}</div>
 </div>
 
 <!-- countdown -->
 <div onClick="{{ openAnniv }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div>
-<div style="font-size:15px;font-weight:500;color:#1A1815;">Next anniversary</div>
-<div style="font-size:13px;color:#B8B3A8;margin-top:4px;">MM.DD</div>
+<div style="font-size:15px;font-weight:500;color:#1A1815;">纪念日</div>
+<div style="font-size:13px;color:#B8B3A8;margin-top:4px;">{{ annivDate }}</div>
 </div>
 <div style="display:flex;align-items:baseline;gap:3px;">
-<span style="font-family:'Newsreader',serif;font-size:38px;font-weight:400;color:#1A1815;line-height:1;letter-spacing:-.02em;">0</span>
+<span style="font-family:'Newsreader',serif;font-size:38px;font-weight:400;color:#1A1815;line-height:1;letter-spacing:-.02em;">{{ annivDays }}</span>
 <span style="font-size:13px;color:#9A958B;">days</span>
 </div>
 </div>
@@ -273,32 +258,27 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <!-- status row -->
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:22px;">
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
-<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Weather</div>
-<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">—°</div>
-<div style="font-size:11px;color:#9A958B;margin-top:2px;">Add data</div>
+<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Chats</div>
+<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">{{ totalChats }}</div>
 </div>
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
-<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Sleep</div>
-<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">—</div>
-<div style="font-size:11px;color:#9A958B;margin-top:2px;">Add data</div>
+<div style="font-size:11px;color:#B8B3A8;font-weight:500;">世界书</div>
+<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">{{ totalWorldbooks }}</div>
 </div>
-<div onClick="{{ openMood }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;cursor:pointer;">
-<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Mood</div>
-<div style="font-size:18px;margin-top:6px;">—</div>
-<div style="font-size:11px;color:#9A958B;margin-top:2px;">Add data</div>
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
+<div style="font-size:11px;color:#B8B3A8;font-weight:500;">记忆</div>
+<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">{{ totalMemories }}</div>
 </div>
 </div>
 
-<!-- recent -->
-<div style="font-size:13px;font-weight:500;color:#9A958B;margin-bottom:12px;">Recent</div>
-<div onClick="{{ openMoments }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px;margin-bottom:10px;cursor:pointer;">
-<div style="font-size:12px;color:#B8B3A8;font-weight:500;">Companion · Placeholder</div>
-<div style="font-size:14.5px;color:#3A362F;line-height:1.55;margin-top:6px;">Replace this preview with your own moment content.</div>
+<!-- recent chats preview -->
+<div style="font-size:13px;font-weight:500;color:#9A958B;margin-bottom:12px;">最近对话</div>
+<sc-for list="{{ homeRecentChats }}" as="rc" hint-placeholder-count="3">
+<div onClick="{{ rc.open }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:14px 16px;margin-bottom:10px;cursor:pointer;">
+<div style="font-size:12px;color:#B8B3A8;font-weight:500;">{{ rc.time }}</div>
+<div style="font-size:14.5px;color:#3A362F;line-height:1.55;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ rc.title }}</div>
 </div>
-<div onClick="{{ openDiary }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px;cursor:pointer;">
-<div style="font-size:12px;color:#B8B3A8;font-weight:500;">Diary · Placeholder</div>
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:17px;color:#1A1815;margin-top:6px;">Untitled entry</div>
-</div>
+</sc-for>
 </div>
 </sc-if>
 
@@ -313,199 +293,141 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 
 <div style="padding:6px 0 20px;">
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">More</div>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">Settings</div>
 </div>
 
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;">
-<div onClick="{{ openAnniv }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<!-- API Settings -->
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;margin-bottom:14px;">
+<div onClick="{{ openApiSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 21s-7-4.6-7-10a4 4 0 0 1 7-2.6A4 4 0 0 1 19 11c0 5.4-7 10-7 10Z" stroke="#9A958B" stroke-width="1.5" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Anniversaries</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">0</div></div>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 3 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#9A958B" stroke-width="1.4" stroke-linejoin="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">API 设置</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ activeModel }}</div></div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 <div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ openDiary }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div onClick="{{ openCssSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M7 3h10a2 2 0 0 1 2 2v16l-7-3-7 3V5a2 2 0 0 1 2-2Z" stroke="#9A958B" stroke-width="1.5" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Diary / Letters</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">0</div></div>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4V4Z" stroke="#9A958B" stroke-width="1.5"/><path d="M8 10l2 2-2 2M12 14h4" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">界面美化</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">头像 · 字体 · CSS</div></div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 <div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ openMoments }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="3" stroke="#9A958B" stroke-width="1.5"/><circle cx="8.5" cy="10" r="1.5" stroke="#9A958B" stroke-width="1.4"/><path d="M5 18l4.5-4 3 2.5L16 12l3 3" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Moments</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">0 posts</div></div>
-</div>
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ openMood }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#9A958B" stroke-width="1.5"/><path d="M8.5 14.5a4 4 0 0 0 7 0" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="9.5" r=".8" fill="#9A958B"/><circle cx="15" cy="9.5" r=".8" fill="#9A958B"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Mood</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">No entries yet</div></div>
-</div>
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-</div>
-
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;margin-top:14px;">
-<div onClick="{{ openWorldbookSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z" stroke="#9A958B" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 4v6l2-1.3L13 10V4" stroke="#9A958B" stroke-width="1.4" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Worldbook</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ wbHint }}</div></div>
-</div>
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-</div>
-
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;margin-top:14px;">
 <div onClick="{{ openPromptSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="8" width="16" height="12" rx="2" stroke="#9A958B" stroke-width="1.5"/><path d="M4 12h16M9 8V5h6v3M12 14v3" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Prompt templates</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ promptCount }}</div></div>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Prompt 模板</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ promptCount }}</div></div>
+</div>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+</div>
+
+<!-- Data management -->
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;margin-bottom:14px;">
+<div onClick="{{ exportData }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:14px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M8 7l4-4 4 4M5 15v3a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-3" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">导出备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">JSON download</div></div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 <div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ openAiSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div onClick="{{ importData }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#9A958B" stroke-width="1.5"/><path d="M12 7v5l3 2" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Persona</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ activeCompanion }}</div></div>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">导入备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">从 JSON 恢复</div></div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 </div>
 
-<!-- settings -->
-<div onClick="{{ toggleProfile }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:16px 18px;margin-top:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 3 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#9A958B" stroke-width="1.4" stroke-linejoin="round"/></svg>
-<div style="font-size:15px;font-weight:500;color:#1A1815;">Settings</div>
-</div>
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
+<!-- About -->
+<div style="text-align:center;padding:20px 0;font-size:12px;color:#B8B3A8;">Kel Home · v2.0</div>
 </div>
 </sc-if>
 
-<!-- ========== WORLDBOOK ========== -->
+<!-- ========== WORLDBOOK PAGE ========== -->
 <sc-if value="{{ isWorldbookPage }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
 
-  <div style="padding:4px 0 6px;">
-    <button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
-    </button>
-  </div>
+<div style="padding:4px 0 6px;">
+<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
+</button>
+</div>
 
-  <div style="padding:6px 0 20px;display:flex;align-items:center;justify-content:space-between;">
-    <div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">世界书</div>
-    <button onClick="{{ newWorldbook }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
-  </div>
+<div style="padding:6px 0 20px;display:flex;align-items:center;justify-content:space-between;">
+<div style="display:flex;align-items:center;gap:10px;">
+<span style="font-size:24px;">📁</span>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">世界书</div>
+</div>
+<button onClick="{{ newWorldbook }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
+</div>
 
-  <!-- 世界书列表 -->
-  <sc-if value="{{ wbList.length > 0 }}" hint-placeholder-val="{{ true }}">
-    <sc-for list="{{ wbList }}" as="wb" hint-placeholder-count="3">
-      <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ wb.open }}">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <div style="display:flex;align-items:center;gap:10px;">
-            <span style="font-size:16px;font-weight:500;color:#1A1815;">{{ wb.name }}</span>
-            <span style="font-size:11px;color:#9A958B;background:#F2EFE8;border-radius:8px;padding:2px 8px;">{{ wb.triggerCount }} 触发</span>
-            <span style="font-size:11px;color:#9A958B;background:{{ wb.activeBg }};border-radius:8px;padding:2px 8px;">{{ wb.activeLabel }}</span>
-          </div>
-          <button onClick="{{ wb.del }}" style="border:none;background:transparent;padding:0;cursor:pointer;opacity:.35;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
-          </button>
-        </div>
-        <div style="font-size:13px;color:#9A958B;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ wb.preview }}</div>
-      </div>
-    </sc-for>
-  </sc-if>
-  <sc-if value="{{ wbList.length === 0 }}" hint-placeholder-val="{{ false }}">
-    <div style="text-align:center;padding:50px 0;color:#B8B3A8;font-size:14px;">还没有世界书，点击右上角新建</div>
-  </sc-if>
+<sc-if value="{{ wbListHasItems }}" hint-placeholder-val="{{ true }}">
+<sc-for list="{{ wbList }}" as="wb" hint-placeholder-count="3">
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ wb.open }}">
+<div style="display:flex;align-items:center;justify-content:space-between;">
+<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+<span style="font-size:18px;">📁</span>
+<span style="font-size:16px;font-weight:500;color:#1A1815;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ wb.name }}</span>
+<span style="font-size:11px;color:#9A958B;background:#F2EFE8;border-radius:8px;padding:2px 8px;flex:none;">{{ wb.triggerCount }} 触发</span>
+<span style="font-size:11px;color:#9A958B;background:{{ wb.activeBg }};border-radius:8px;padding:2px 8px;flex:none;">{{ wb.activeLabel }}</span>
+</div>
+<button onClick="{{ wb.del }}" style="border:none;background:transparent;padding:0;cursor:pointer;opacity:.35;flex:none;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
+</button>
+</div>
+<div style="font-size:13px;color:#9A958B;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ wb.preview }}</div>
+</div>
+</sc-for>
+</sc-if>
+<sc-if value="{{ !wbListHasItems }}" hint-placeholder-val="{{ false }}">
+<div style="text-align:center;padding:50px 0;color:#B8B3A8;font-size:14px;">还没有世界书，点击右上角新建</div>
+</sc-if>
 </div>
 </sc-if>
 
-<!-- ========== MEMORY ========== -->
+<!-- ========== MEMORY PAGE ========== -->
 <sc-if value="{{ isMemoryPage }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
-  <div style="padding:4px 0 6px;">
-    <button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
-      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
-    </button>
-  </div>
-  <div style="padding:6px 0 20px;display:flex;align-items:center;justify-content:space-between;">
-    <div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">记忆</div>
-    <div style="display:flex;gap:8px;">
-      <button onClick="{{ generateMemoryFromChat }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">✨ AI 总结</button>
-      <button onClick="{{ newMemory }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
-    </div>
-  </div>
-  <!-- 记忆列表 -->
-  <sc-if value="{{ memoryList.length > 0 }}" hint-placeholder-val="{{ true }}">
-    <sc-for list="{{ memoryList }}" as="mem" hint-placeholder-count="3">
-      <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ mem.open }}">
-        <div style="display:flex;align-items:center;justify-content:space-between;">
-          <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
-            <span style="font-size:15px;font-weight:500;color:#1A1815;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ mem.name }}</span>
-            <span style="font-size:11px;color:#9A958B;background:#F2EFE8;border-radius:8px;padding:2px 8px;flex:none;">{{ mem.tag }}</span>
-            <span style="font-size:11px;color:#9A958B;background:{{ mem.activeBg }};border-radius:8px;padding:2px 8px;flex:none;">{{ mem.activeLabel }}</span>
-          </div>
-          <button onClick="{{ mem.del }}" style="border:none;background:transparent;padding:0;cursor:pointer;opacity:.35;flex:none;">
-            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
-          </button>
-        </div>
-        <div style="font-size:13px;color:#6B665E;margin-top:6px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ mem.preview }}</div>
-      </div>
-    </sc-for>
-  </sc-if>
-  <sc-if value="{{ memoryList.length === 0 }}" hint-placeholder-val="{{ false }}">
-    <div style="text-align:center;padding:50px 0;color:#B8B3A8;font-size:14px;">还没有记忆，点击「AI 总结」从对话生成</div>
-  </sc-if>
-</div>
-</sc-if>
-
-<!-- ========== SUB PAGES ========== -->
-<sc-if value="{{ showSub }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;inset:0;background:#F5F3EE;display:flex;flex-direction:column;animation:slideIn .25s ease both;">
-<div style="flex:none;padding:4px 16px 12px;display:flex;align-items:center;gap:14px;">
-<button onClick="{{ closeSub }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 6l-6 6 6 6" stroke="#48453E" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div style="padding:4px 0 6px;">
+<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
 </button>
-<div style="font-size:17px;font-weight:500;color:#1A1815;">{{ subTitle }}</div>
 </div>
-<div class="sa" style="flex:1;min-height:0;overflow-y:auto;padding:6px 20px 24px;">
-<sc-if value="{{ isMoments }}" hint-placeholder-val="{{ false }}">
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:30px 22px;text-align:center;">
-<div style="width:58px;height:58px;border-radius:18px;background:#F2EFE8;margin:0 auto 15px;"></div>
-<div style="font-size:16px;font-weight:500;color:#1A1815;">Empty moments page</div>
-<div style="font-size:13px;color:#9A958B;line-height:1.65;margin-top:8px;">Replace this area with your own moments component.</div>
+<div style="padding:6px 0 20px;display:flex;align-items:center;justify-content:space-between;">
+<div style="display:flex;align-items:center;gap:10px;">
+<span style="font-size:24px;">📓</span>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">记忆</div>
 </div>
+<div style="display:flex;gap:8px;">
+<button onClick="{{ generateMemoryFromChat }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">✨ AI 总结</button>
+<button onClick="{{ newMemory }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
+</div>
+</div>
+<sc-if value="{{ memListHasItems }}" hint-placeholder-val="{{ true }}">
+<sc-for list="{{ memoryList }}" as="mem" hint-placeholder-count="3">
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ mem.open }}">
+<div style="display:flex;align-items:center;justify-content:space-between;">
+<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+<span style="font-size:18px;">📓</span>
+<span style="font-size:15px;font-weight:500;color:#1A1815;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ mem.name }}</span>
+<span style="font-size:11px;color:#9A958B;background:#F2EFE8;border-radius:8px;padding:2px 8px;flex:none;">{{ mem.tag }}</span>
+<span style="font-size:11px;color:#9A958B;background:{{ mem.activeBg }};border-radius:8px;padding:2px 8px;flex:none;">{{ mem.activeLabel }}</span>
+</div>
+<button onClick="{{ mem.del }}" style="border:none;background:transparent;padding:0;cursor:pointer;opacity:.35;flex:none;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
+</button>
+</div>
+<div style="font-size:13px;color:#6B665E;margin-top:6px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ mem.preview }}</div>
+</div>
+</sc-for>
 </sc-if>
-<sc-if value="{{ isDiary }}" hint-placeholder-val="{{ false }}">
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:30px 22px;text-align:center;">
-<div style="width:58px;height:58px;border-radius:18px;background:#F2EFE8;margin:0 auto 15px;"></div>
-<div style="font-size:16px;font-weight:500;color:#1A1815;">Empty diary page</div>
-<div style="font-size:13px;color:#9A958B;line-height:1.65;margin-top:8px;">Replace this area with your own diary or letters component.</div>
-</div>
+<sc-if value="{{ !memListHasItems }}" hint-placeholder-val="{{ false }}">
+<div style="text-align:center;padding:50px 0;color:#B8B3A8;font-size:14px;">还没有记忆，点击「AI 总结」从对话生成</div>
 </sc-if>
-<sc-if value="{{ isMood }}" hint-placeholder-val="{{ false }}">
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:30px 22px;text-align:center;">
-<div style="width:58px;height:58px;border-radius:18px;background:#F2EFE8;margin:0 auto 15px;"></div>
-<div style="font-size:16px;font-weight:500;color:#1A1815;">Empty mood page</div>
-<div style="font-size:13px;color:#9A958B;line-height:1.65;margin-top:8px;">Replace this area with your own mood tracker component.</div>
-</div>
-</sc-if>
-<sc-if value="{{ isAnniv }}" hint-placeholder-val="{{ false }}">
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:30px 22px;text-align:center;">
-<div style="width:58px;height:58px;border-radius:18px;background:#F2EFE8;margin:0 auto 15px;"></div>
-<div style="font-size:16px;font-weight:500;color:#1A1815;">Empty anniversaries page</div>
-<div style="font-size:13px;color:#9A958B;line-height:1.65;margin-top:8px;">Replace this area with your own countdown or anniversary component.</div>
-</div>
-</sc-if>
-</div>
 </div>
 </sc-if>
 
@@ -518,37 +440,37 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="position:absolute;left:0;top:0;bottom:0;width:300px;background:#F5F3EE;display:flex;flex-direction:column;box-shadow:6px 0 24px rgba(0,0,0,.06);animation:slideInLeft .2s ease both;">
 <!-- drawer header -->
 <div style="flex:none;padding:56px 24px 0;display:flex;align-items:center;justify-content:space-between;">
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:26px;font-weight:500;color:#1A1815;">Companion</div>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:26px;font-weight:500;color:#1A1815;">Kel Home</div>
 <div style="width:40px;height:40px;border-radius:50%;background:#FFF;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;" onClick="{{ toggleProfile }}">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
 </div>
 </div>
 <!-- nav items -->
 <div style="flex:none;padding:24px 16px 0;display:flex;flex-direction:column;gap:2px;">
-<div onClick="{{ navChat }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;">
+<div onClick="{{ navChat }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navChatBg }};">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-4 3.5V17H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/></svg>
 <span>Chat</span>
 </div>
-<div onClick="{{ navHome }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;">
+<div onClick="{{ navHome }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navHomeBg }};">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 11l8-6.5L20 11M6 9.5V19a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V9.5" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span>Home</span>
 </div>
-<div onClick="{{ navMore }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="6" r="1.5" fill="#48453E"/><circle cx="5" cy="12" r="1.5" fill="#48453E"/><circle cx="5" cy="18" r="1.5" fill="#48453E"/><path d="M10.5 6h9M10.5 12h9M10.5 18h9" stroke="#48453E" stroke-width="1.5" stroke-linecap="round"/></svg>
-<span>More</span>
+<div onClick="{{ navWorldbook }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navWbBg }};">
+<span style="font-size:18px;width:20px;text-align:center;">📁</span>
+<span>世界书</span>
 </div>
-  <div onClick="{{ navWorldbook }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 4v6l2-1.3L13 10V4" stroke="#48453E" stroke-width="1.4" stroke-linejoin="round"/></svg>
-    <span>世界书</span>
-  </div>
-  <div onClick="{{ navMemory }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;">
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span>记忆</span>
-  </div>
+<div onClick="{{ navMemory }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navMemBg }};">
+<span style="font-size:18px;width:20px;text-align:center;">📓</span>
+<span>记忆</span>
+</div>
+<div onClick="{{ navMore }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navMoreBg }};">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#48453E" stroke-width="1.5"/><path d="M19 12c0-.4 0-.8-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6c-.1.4-.1.8-.1 1.2s0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#48453E" stroke-width="1.4" stroke-linejoin="round"/></svg>
+<span>Settings</span>
+</div>
 </div>
 
 <!-- search -->
-<div style="padding:8px 16px 4px;">
+<div style="padding:12px 16px 4px;">
 <div style="background:#FFF;border:1px solid #E7E3DA;border-radius:14px;padding:8px 12px;display:flex;align-items:center;gap:8px;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#9A958B" stroke-width="1.5"/><path d="M16 16l4 4" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
 <input value="{{ searchQuery }}" onInput="{{ searchChange }}" placeholder="搜索聊天内容..." style="flex:1;border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;color:#1A1815;">
@@ -567,8 +489,8 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </sc-if>
 
 <!-- recents label -->
-<div style="padding:28px 24px 10px;font-size:12px;color:#B8B3A8;font-weight:600;letter-spacing:1px;">RECENTS</div>
-<!-- recent chats list with delete -->
+<div style="padding:20px 24px 10px;font-size:12px;color:#B8B3A8;font-weight:600;letter-spacing:1px;">RECENTS</div>
+<!-- recent chats list -->
 <div class="sa" style="flex:1;min-height:0;overflow-y:auto;padding:0 16px;">
 <sc-for list="{{ recentChats }}" as="c" hint-placeholder-count="8">
 <div style="padding:8px 12px;border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;" onClick="{{ c.open }}" onContextMenu="{{ c.rename }}">
@@ -580,11 +502,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </sc-for>
 </div>
 <!-- bottom bar -->
-<div style="flex:none;padding:12px 16px 28px;display:flex;align-items:center;justify-content:space-between;">
-<div onClick="{{ pullCloud }}" style="font-size:13px;color:#B8B3A8;cursor:pointer;display:flex;align-items:center;gap:4px;">
-<span>All chats</span>
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#B8B3A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
+<div style="flex:none;padding:12px 16px 28px;display:flex;align-items:center;justify-content:flex-end;">
 <button onClick="{{ newChat }}" style="display:flex;align-items:center;gap:8px;background:#1A1815;color:#F5F3EE;border:none;border-radius:20px;padding:10px 18px;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;">
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#F5F3EE" stroke-width="2.2" stroke-linecap="round"/></svg>
 <span>New</span>
@@ -601,40 +519,28 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 0 30px;animation:slideUp .25s ease both;">
 <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 20px;"></div>
 <div style="padding:0 24px 22px;display:flex;align-items:center;gap:14px;">
-<div style="width:48px;height:48px;border-radius:50%;background:#ECEAE4;"></div>
+<div style="width:48px;height:48px;border-radius:50%;background:#ECEAE4;overflow:hidden;display:flex;align-items:center;justify-content:center;">
+<sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
+<sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg></sc-if>
+</div>
 <div>
 <div style="font-size:17px;font-weight:600;color:#1A1815;">User</div>
-<div style="font-size:13px;color:#9A958B;margin-top:3px;">Set up profile</div>
+<div style="font-size:13px;color:#9A958B;margin-top:3px;">{{ currentTime }}</div>
 </div>
 </div>
 <div style="margin:0 16px 12px;background:#FFF;border-radius:16px;overflow:hidden;">
-<div onClick="{{ openApiSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#48453E" stroke-width="1.5"/><path d="M19 12c0-.4 0-.8-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6c-.1.4-.1.8-.1 1.2s0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#48453E" stroke-width="1.3" stroke-linejoin="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">API settings</span>
-</div>
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ syncCloud }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">Load demo records</span>
-</div>
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ githubBackup }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div onClick="{{ exportData }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M8 7l4-4 4 4M5 15v3a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-3" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Export backup</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">JSON download</div></div>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">导出备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">JSON download</div></div>
 </div>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div><div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ openCssSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:13px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4V4Z" stroke="#48453E" stroke-width="1.5"/><path d="M8 10l2 2-2 2M12 14h4" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">界面美化</span>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ importData }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:14px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#1A1815;">导入备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">从 JSON 恢复</div></div>
 </div>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
@@ -678,112 +584,107 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <!-- Worldbook Editor Sheet -->
 <sc-if value="{{ isWorldbookEditorSheet }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:270;">
-  <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:70vh;overflow-y:auto;">
-    <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </button>
-      <span style="font-size:16px;font-weight:600;color:#1A1815;">编辑世界书</span>
-      <button onClick="{{ saveWorldbookEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
-    </div>
-    <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
-      <!-- 名称 -->
-      <div style="margin-bottom:14px;">
-        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
-        <input value="{{ wbEditName }}" onInput="{{ wbEditNameChange }}" placeholder="世界书名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
-      </div>
-      <!-- 常驻激活 -->
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <input type="checkbox" checked="{{ wbEditAlwaysOn }}" onChange="{{ wbEditAlwaysOnChange }}" style="width:16px;height:16px;accent-color:#1A1815;">
-          常驻激活
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <span>权重</span>
-          <input value="{{ wbEditWeight }}" onInput="{{ wbEditWeightChange }}" type="number" min="0" max="10" step="0.5" style="width:50px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 6px;font-family:inherit;font-size:13px;text-align:center;">
-        </label>
-      </div>
-      <!-- 插入位置 -->
-      <div style="display:flex;gap:12px;margin-bottom:14px;">
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <input type="radio" name="wbPos" value="before" checked="{{ wbEditPosBefore }}" onChange="{{ wbEditPosBefore }}" style="accent-color:#1A1815;">
-          字符前
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <input type="radio" name="wbPos" value="after" checked="{{ wbEditPosAfter }}" onChange="{{ wbEditPosAfter }}" style="accent-color:#1A1815;">
-          字符后
-        </label>
-      </div>
-      <!-- 触发关键词 -->
-      <div style="margin-bottom:14px;">
-        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个）</div>
-        <textarea value="{{ wbEditTriggers }}" onInput="{{ wbEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="3" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
-      </div>
-      <!-- 内容 -->
-      <div>
-        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">内容（触发时插入）</div>
-        <textarea value="{{ wbEditContent }}" onInput="{{ wbEditContentChange }}" placeholder="触发后注入的设定、背景、规则……" rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
-      </div>
-    </div>
-  </div>
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:70vh;overflow-y:auto;">
+<div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button>
+<span style="font-size:16px;font-weight:600;color:#1A1815;">📁 编辑世界书</span>
+<button onClick="{{ saveWorldbookEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
+</div>
+<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
+<input value="{{ wbEditName }}" onInput="{{ wbEditNameChange }}" placeholder="世界书名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+<input type="checkbox" checked="{{ wbEditAlwaysOn }}" onChange="{{ wbEditAlwaysOnChange }}" style="width:16px;height:16px;accent-color:#1A1815;">
+常驻激活
+</label>
+<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+<span>权重</span>
+<input value="{{ wbEditWeight }}" onInput="{{ wbEditWeightChange }}" type="number" min="0" max="10" step="0.5" style="width:50px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 6px;font-family:inherit;font-size:13px;text-align:center;">
+</label>
+</div>
+<div style="display:flex;gap:12px;margin-bottom:14px;">
+<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+<input type="radio" name="wbPos" value="before" checked="{{ wbEditPosBefore }}" onChange="{{ wbEditSetPosBefore }}" style="accent-color:#1A1815;">
+字符前
+</label>
+<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+<input type="radio" name="wbPos" value="after" checked="{{ wbEditPosAfter }}" onChange="{{ wbEditSetPosAfter }}" style="accent-color:#1A1815;">
+字符后
+</label>
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个）</div>
+<textarea value="{{ wbEditTriggers }}" onInput="{{ wbEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="3" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+</div>
+<div>
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">内容（触发时插入）</div>
+<textarea value="{{ wbEditContent }}" onInput="{{ wbEditContentChange }}" placeholder="触发后注入的设定、背景、规则……" rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+</div>
+</div>
+</div>
 </div>
 </sc-if>
 
 <!-- Memory Editor Sheet -->
 <sc-if value="{{ isMemoryEditorSheet }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:270;">
-  <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:70vh;overflow-y:auto;">
-    <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
-    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-      <button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
-      </button>
-      <span style="font-size:16px;font-weight:600;color:#1A1815;">编辑记忆</span>
-      <button onClick="{{ saveMemoryEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
-    </div>
-    <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
-      <div style="margin-bottom:14px;">
-        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
-        <input value="{{ memEditName }}" onInput="{{ memEditNameChange }}" placeholder="记忆名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
-      </div>
-      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <input type="checkbox" checked="{{ memEditAlwaysOn }}" onChange="{{ memEditAlwaysOnChange }}" style="width:16px;height:16px;accent-color:#1A1815;"> 常驻
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <span>权重</span>
-          <input value="{{ memEditWeight }}" onInput="{{ memEditWeightChange }}" type="number" min="0" max="10" step="0.5" style="width:50px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 6px;font-family:inherit;font-size:13px;text-align:center;">
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <span>标签</span>
-          <input value="{{ memEditTag }}" onInput="{{ memEditTagChange }}" placeholder="标签" style="width:80px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 8px;font-family:inherit;font-size:13px;">
-        </label>
-      </div>
-      <div style="display:flex;gap:12px;margin-bottom:14px;">
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <input type="radio" name="memPos" value="before" checked="{{ memEditPosBefore }}" onChange="{{ memEditPosBefore }}" style="accent-color:#1A1815;"> 字符前
-        </label>
-        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-          <input type="radio" name="memPos" value="after" checked="{{ memEditPosAfter }}" onChange="{{ memEditPosAfter }}" style="accent-color:#1A1815;"> 字符后
-        </label>
-      </div>
-      <div style="margin-bottom:14px;">
-        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个，留空则常驻）</div>
-        <textarea value="{{ memEditTriggers }}" onInput="{{ memEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="2" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
-      </div>
-      <div>
-        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">内容</div>
-        <textarea value="{{ memEditContent }}" onInput="{{ memEditContentChange }}" placeholder="记忆内容……" rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
-      </div>
-    </div>
-  </div>
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:70vh;overflow-y:auto;">
+<div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button>
+<span style="font-size:16px;font-weight:600;color:#1A1815;">📓 编辑记忆</span>
+<button onClick="{{ saveMemoryEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
+</div>
+<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
+<input value="{{ memEditName }}" onInput="{{ memEditNameChange }}" placeholder="记忆名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
+</div>
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+<input type="checkbox" checked="{{ memEditAlwaysOn }}" onChange="{{ memEditAlwaysOnChange }}" style="width:16px;height:16px;accent-color:#1A1815;"> 常驻
+</label>
+<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+<span>权重</span>
+<input value="{{ memEditWeight }}" onInput="{{ memEditWeightChange }}" type="number" min="0" max="10" step="0.5" style="width:50px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 6px;font-family:inherit;font-size:13px;text-align:center;">
+</label>
+<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+<span>标签</span>
+<input value="{{ memEditTag }}" onInput="{{ memEditTagChange }}" placeholder="标签" style="width:80px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 8px;font-family:inherit;font-size:13px;">
+</label>
+</div>
+<div style="display:flex;gap:12px;margin-bottom:14px;">
+<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+<input type="radio" name="memPos" value="before" checked="{{ memEditPosBefore }}" onChange="{{ memEditSetPosBefore }}" style="accent-color:#1A1815;"> 字符前
+</label>
+<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+<input type="radio" name="memPos" value="after" checked="{{ memEditPosAfter }}" onChange="{{ memEditSetPosAfter }}" style="accent-color:#1A1815;"> 字符后
+</label>
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个，留空则常驻）</div>
+<textarea value="{{ memEditTriggers }}" onInput="{{ memEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="2" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+</div>
+<div>
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">内容</div>
+<textarea value="{{ memEditContent }}" onInput="{{ memEditContentChange }}" placeholder="记忆内容……" rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+</div>
+</div>
+</div>
 </div>
 </sc-if>
 
-<!-- plus sheet -->
+<!-- plus sheet (simplified) -->
 <sc-if value="{{ plusOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:200;">
 <div onClick="{{ togglePlus }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
@@ -793,70 +694,17 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <button onClick="{{ togglePlus }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">Add to chat</span>
-<span style="font-size:14px;color:#9A958B;cursor:pointer;" onClick="{{ openPromptSheet }}">Prompts</span>
+<span style="font-size:16px;font-weight:600;color:#1A1815;">Options</span>
+<span style="width:36px;"></span>
 </div>
 <div style="margin:0 16px;background:#FFF;border-radius:16px;overflow:hidden;">
-<!-- image/file upload -->
-<div onClick="{{ pickImage }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:13px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="3" stroke="#48453E" stroke-width="1.5"/><circle cx="8.5" cy="10" r="1.5" stroke="#48453E" stroke-width="1.3"/><path d="M5 18l4.5-4 3 2.5L16 12l3 3" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">发送图片</span>
-</div>
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
 <div onClick="{{ openPromptSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:13px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3c-4.97 0-9 3.58-9 8 0 1.5.5 2.9 1.3 4.1L3 21l5.5-1.5C10 20.2 11 20.5 12 20.5c4.97 0 9-3.58 9-8s-4.03-8-9-8Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 11h.01M12 11h.01M15 11h.01" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">Prompt template</span>
+<span style="font-size:15px;font-weight:500;color:#1A1815;">Prompt 模板</span>
 </div>
 <div style="display:flex;align-items:center;gap:6px;">
 <span style="font-size:14px;color:#9A958B;">{{ promptCount }}</span>
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-</div>
-<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ openApiSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:13px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#48453E" stroke-width="1.5"/><path d="M12 8v8M8 12h8" stroke="#48453E" stroke-width="1.5" stroke-linecap="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">Switch model</span>
-</div>
-<div style="display:flex;align-items:center;gap:6px;">
-<span style="font-size:14px;color:#9A958B;">{{ activeModel }}</span>
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-</div>
-<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ openAiSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:13px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="8" width="18" height="12" rx="2" stroke="#48453E" stroke-width="1.5"/><path d="M8 8V5a4 4 0 0 1 8 0v3" stroke="#48453E" stroke-width="1.5" stroke-linecap="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">Persona</span>
-</div>
-<div style="display:flex;align-items:center;gap:6px;">
-<span style="font-size:14px;color:#9A958B;">{{ activeCompanion }}</span>
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-</div>
-<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ openWorldbookSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:13px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 4v6l2-1.3L13 10V4" stroke="#48453E" stroke-width="1.4" stroke-linejoin="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">Worldbook</span>
-</div>
-<div style="display:flex;align-items:center;gap:6px;">
-<span style="font-size:14px;color:#9A958B;">{{ wbHint }}</span>
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-</div>
-<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ openStyle }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:13px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3l2.5 5 5.5.8-4 3.9.9 5.5L12 16.5l-4.9 2.7.9-5.5-4-3.9 5.5-.8L12 3Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">Style</span>
-</div>
-<div style="display:flex;align-items:center;gap:6px;">
-<span style="font-size:14px;color:#9A958B;">{{ activeStyle }}</span>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 </div>
@@ -892,14 +740,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 <span style="font-size:14px;color:#9A958B;">{{ memoryCountLabel }}</span>
 </div>
-<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
-<div onClick="{{ exportData }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:13px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">Export Backup</span>
-</div>
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
 </div>
 </div>
 </div>
@@ -908,9 +748,9 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <!-- config sheets -->
 <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:260;">
-<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:{{ sheetOverlayBg }};animation:fadeIn .15s ease both;"></div>
-<div style="position:absolute;{{ sheetPanelPos }};overflow:hidden;background:{{ sheetPanelBg }};border-radius:{{ sheetPanelRadius }};padding:{{ sheetPanelPad }};animation:slideUp .25s ease both;box-shadow:{{ sheetPanelShadow }};{{ sheetPanelBlur }}">
-<div style="width:{{ sheetHandleW }};height:5px;border-radius:3px;background:#CFCAC1;margin:0 auto {{ sheetHandleMb }};"></div>
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 0 26px;animation:slideUp .25s ease both;max-height:88%;overflow-y:auto;">
+<div style="width:36px;height:5px;border-radius:3px;background:#CFCAC1;margin:0 auto 14px;"></div>
 
 <!-- API Sheet -->
 <sc-if value="{{ isApiSheet }}" hint-placeholder-val="{{ false }}">
@@ -962,7 +802,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
-<!-- Persona Sheet (with edit) -->
+<!-- Persona Sheet -->
 <sc-if value="{{ isAiSheet }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="max-height:calc(82vh - 40px);overflow-y:auto;padding:0 16px 8px;">
 <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;">
@@ -970,13 +810,11 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <span style="font-size:16px;font-weight:600;color:#1A1815;">Persona</span>
 <button onClick="{{ newPersona }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">新建</button>
 </div>
-<!-- persona selector -->
 <div style="display:flex;gap:8px;overflow-x:auto;padding:0 2px 12px;">
 <sc-for list="{{ personaOptions }}" as="p" hint-placeholder-count="3">
 <button onClick="{{ p.pick }}" style="flex:none;border:1px solid {{ p.bd }};background:{{ p.bg }};border-radius:18px;padding:8px 14px;font-size:13px;color:{{ p.fg }};font-family:inherit;cursor:pointer;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.name }}</button>
 </sc-for>
 </div>
-<!-- persona edit -->
 <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
 <div style="padding:13px 16px;border-bottom:1px solid #ECE8DF;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">名字</div>
@@ -994,7 +832,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
-<!-- Prompt Templates Sheet (with CRUD) -->
+<!-- Prompt Templates Sheet -->
 <sc-if value="{{ isPromptSheet }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="max-height:calc(82vh - 40px);overflow-y:auto;padding:0 16px 8px;">
 <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;">
@@ -1002,7 +840,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <span style="font-size:16px;font-weight:600;color:#1A1815;">Prompt templates</span>
 <button onClick="{{ newPrompt }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">新建</button>
 </div>
-<!-- prompt list -->
 <sc-if value="{{ showPromptList }}" hint-placeholder-val="{{ true }}">
 <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
 <sc-for list="{{ promptOptions }}" as="p" hint-placeholder-count="4">
@@ -1024,7 +861,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="text-align:center;padding:30px 0;color:#B8B3A8;font-size:14px;">还没有模板，点击右上角新建</div>
 </sc-if>
 </sc-if>
-<!-- prompt edit -->
 <sc-if value="{{ showPromptEdit }}" hint-placeholder-val="{{ false }}">
 <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
 <div style="padding:13px 16px;border-bottom:1px solid #ECE8DF;">
@@ -1044,27 +880,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
-<!-- Worldbook Sheet -->
-<sc-if value="{{ isWorldbookSheet }}" hint-placeholder-val="{{ false }}">
-<div class="sa" style="max-height:calc(82vh - 40px);overflow-y:auto;padding:0 16px 8px;">
-<div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;">
-<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">Worldbook</span>
-<button onClick="{{ saveWorldbook }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
-</div>
-<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
-<div style="padding:13px 16px;border-bottom:1px solid #ECE8DF;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">常驻worldbook</div>
-<textarea value="{{ wbPermanent }}" onInput="{{ wbPermanentChange }}" placeholder="会一直带进 system 的设定、关系、禁忌、世界规则……" rows="7" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:#1A1815;"></textarea>
-</div>
-<div style="padding:13px 16px;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">触发条目</div>
-<textarea value="{{ wbTriggers }}" onInput="{{ wbTriggersChange }}" placeholder="每行一个：关键词 => 触发后插入的内容" rows="6" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:#1A1815;"></textarea>
-</div>
-</div>
-</div>
-</sc-if>
-
 <!-- CSS Editor Sheet -->
 <sc-if value="{{ isCssSheet }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="max-height:calc(85vh - 40px);overflow-y:auto;padding:0 16px 8px;">
@@ -1080,19 +895,24 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="display:flex;gap:20px;align-items:center;">
 <div style="text-align:center;">
 <div onClick="{{ pickUserAvatar }}" style="width:48px;height:48px;border-radius:50%;background:#ECEAE4;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;border:2px solid #E7E3DA;">
-<sc-if value="{{ userAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
-<sc-if value="{{ !userAvatar }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg></sc-if>
+<sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
+<sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg></sc-if>
 </div>
 <div style="font-size:11px;color:#9A958B;margin-top:4px;">我的头像</div>
 </div>
 <div style="text-align:center;">
 <div onClick="{{ pickAiAvatar }}" style="width:48px;height:48px;border-radius:50%;background:#ECEAE4;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;border:2px solid #E7E3DA;">
-<sc-if value="{{ aiAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ aiAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
-<sc-if value="{{ !aiAvatar }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#9A958B" stroke-width="1.5"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="10" r="1" fill="#9A958B"/><circle cx="15" cy="10" r="1" fill="#9A958B"/></svg></sc-if>
+<sc-if value="{{ hasAiAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ aiAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
+<sc-if value="{{ !hasAiAvatar }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#9A958B" stroke-width="1.5"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="10" r="1" fill="#9A958B"/><circle cx="15" cy="10" r="1" fill="#9A958B"/></svg></sc-if>
 </div>
 <div style="font-size:11px;color:#9A958B;margin-top:4px;">AI 头像</div>
 </div>
 </div>
+</div>
+<!-- 头像大小 -->
+<div style="padding:14px 16px;border-bottom:1px solid #ECE8DF;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">头像大小 (px)</div>
+<input value="{{ avatarSize }}" onInput="{{ avatarSizeChange }}" type="number" min="20" max="80" style="width:80px;border:1px solid #E7E3DA;border-radius:12px;padding:8px 12px;font-family:inherit;font-size:14px;color:#1A1815;text-align:center;">
 </div>
 <!-- 字体 -->
 <div style="padding:14px 16px;border-bottom:1px solid #ECE8DF;">
@@ -1108,18 +928,6 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
-<!-- Thought Process Sheet -->
-<sc-if value="{{ isThoughtSheet }}" hint-placeholder-val="{{ false }}">
-<div class="sa" style="height:calc(100vh - 36px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 24px 44px;">
-<div style="display:flex;align-items:center;position:sticky;top:0;z-index:2;padding:12px 0 16px;background:linear-gradient(rgba(255,255,255,0.72) 60%, rgba(255,255,255,0));">
-<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;border:1px solid rgba(0,0,0,.08);background:#FFF;box-shadow:0 1px 4px rgba(0,0,0,.06);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;"><svg width="15" height="15" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-<div style="flex:1;text-align:center;font-size:17px;font-weight:600;color:#1A1815;letter-spacing:-0.01em;">Thought process</div>
-<div style="width:36px;flex:none;"></div>
-</div>
-<div style="font-size:17px;line-height:1.8;color:#1A1815;font-weight:400;letter-spacing:-0.01em;white-space:pre-wrap;word-break:break-word;">{{ thoughtText }}</div>
-</div>
-</sc-if>
-
 </div>
 </div>
 </sc-if>
@@ -1127,7 +935,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <!-- 小可宝宝 -->
 <sc-if value="{{ petEnabled }}" hint-placeholder-val="{{ true }}">
 <div style="position:fixed;bottom:90px;right:16px;z-index:50;pointer-events:none;">
-<img src="{{ petGif }}" width="{{ petSize }}" height="{{ petSize }}" style="image-rendering:*ated;" alt="Kel">
+<img src="{{ petGif }}" width="{{ petSize }}" height="{{ petSize }}" style="image-rendering:pixelated;" alt="Kel">
 </div>
 </sc-if>
 
@@ -1136,8 +944,9 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="position:absolute;bottom:50px;left:50%;transform:translateX(-50%);background:#1A1815;color:#F5F3EE;font-size:13px;padding:10px 20px;border-radius:20px;box-shadow:0 6px 20px rgba(0,0,0,.18);animation:fadeUp .25s ease both;white-space:nowrap;">{{ toastText }}</div>
 </sc-if>
 
-<!-- hidden file input -->
-<input type="file" accept=".txt,.html,.htm,.md,.zip,.json,.csv,.xml,.pdf,.doc,.docx" style="display:none;" id="kelFileInput" onChange="{{ handleFileSelect }}">
+<!-- hidden file inputs -->
+<input type="file" accept=".txt,.html,.htm,.md,.zip,.json,.csv,.xml,.pdf,.doc,.docx,image/*" style="display:none;" id="kelFileInput" onChange="{{ handleFileSelect }}">
+<input type="file" accept=".json" style="display:none;" id="kelImportInput" onChange="{{ handleImportFile }}">
 
 </div>
 </x-dc>
@@ -1169,20 +978,31 @@ if (h < 18) return 'Good afternoon.';
 return 'Good evening.';
 }
 
+function getCurrentTime() {
+const now = new Date();
+const y = now.getFullYear();
+const mo = String(now.getMonth()+1).padStart(2,'0');
+const d = String(now.getDate()).padStart(2,'0');
+const h = String(now.getHours()).padStart(2,'0');
+const mi = String(now.getMinutes()).padStart(2,'0');
+const s = String(now.getSeconds()).padStart(2,'0');
+return y + '.' + mo + '.' + d + ' ' + h + ':' + mi + ':' + s;
+}
+
 function buildMemorySummary(chats, currentChatId, count) {
-  const chatList = Object.values(chats)
-    .filter(c => c.id !== currentChatId && c.messages && c.messages.length > 0)
-    .sort((a, b) => (b.lastTime || 0) - (a.lastTime || 0));
-  if (chatList.length === 0) return '';
-  const prev = chatList[0];
-  const msgs = prev.messages.slice(-(count || 10));
-  let summary = '[Memory from previous conversation: "' + (prev.title || 'Untitled') + '"]\n';
-  for (const m of msgs) {
-    const role = m.role === 'user' ? 'User' : 'AI';
-    const text = (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text || '';
-    summary += role + ': ' + text.slice(0, 500) + (text.length > 500 ? '...' : '') + '\n';
-  }
-  return summary.trim();
+const chatList = Object.values(chats)
+.filter(c => c.id !== currentChatId && c.messages && c.messages.length > 0)
+.sort((a, b) => (b.lastTime || 0) - (a.lastTime || 0));
+if (chatList.length === 0) return '';
+const prev = chatList0;
+const msgs = prev.messages.slice(-(count || 10));
+let summary = '[Memory from previous conversation: "' + (prev.title || 'Untitled') + '"]\n';
+for (const m of msgs) {
+const role = m.role === 'user' ? 'User' : 'AI';
+const text = (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text || '';
+summary += role + ': ' + text.slice(0, 500) + (text.length > 500 ? '...' : '') + '\n';
+}
+return summary.trim();
 }
 
 class Component extends DCLogic {
@@ -1190,24 +1010,24 @@ constructor(props) {
 super(props);
 const saved = loadData();
 this.state = {
-  thinkOpenMap: {},
-  worldbooks: saved.worldbooks || [],        // [{ id, name, content, triggers: [], alwaysOn, weight, position:'before'|'after' }]
-  wbEditId: null,
-  wbEditName: '',
-  wbEditContent: '',
-  wbEditTriggers: '',
-  wbEditAlwaysOn: false,
-  wbEditWeight: 1,
-  wbEditPosition: 'before',
-    memories: saved.memories || [],           // [{ id, name, content, triggers: [], alwaysOn, weight, position, tag }]
-  memEditId: null,
-  memEditName: '',
-  memEditContent: '',
-  memEditTriggers: '',
-  memEditAlwaysOn: false,
-  memEditWeight: 1,
-  memEditPosition: 'before',
-  memEditTag: '',
+thinkOpenMap: {},
+worldbooks: saved.worldbooks || [],
+wbEditId: null,
+wbEditName: '',
+wbEditContent: '',
+wbEditTriggers: '',
+wbEditAlwaysOn: false,
+wbEditWeight: 1,
+wbEditPosition: 'before',
+memories: saved.memories || [],
+memEditId: null,
+memEditName: '',
+memEditContent: '',
+memEditTriggers: '',
+memEditAlwaysOn: false,
+memEditWeight: 1,
+memEditPosition: 'before',
+memEditTag: '',
 tab: 'chat',
 sub: null,
 memory: false,
@@ -1222,220 +1042,73 @@ toastText: '',
 isBusy: false,
 editIdx: -1,
 editText: '',
-thoughtText: '',
 currentThoughtText: '',
 apiAdvanced: false,
 petState: 'idle',
-// Attachment
-attachment: null, // { base64, mimeType, preview }
-// Settings
+attachment: null,
 petEnabled: saved.petEnabled !== false,
 petSizeIdx: saved.petSizeIdx || 1,
 soundEnabled: saved.soundEnabled !== false,
 memoryCount: saved.memoryCount || 10,
-// API presets
+avatarSize: saved.avatarSize || 36,
 apiPresets: saved.apiPresets || [{ id: 'default', name: 'Default', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: true }],
 activePresetId: saved.activePresetId || 'default',
-// Persona
 personas: saved.personas || [{ id: 'default', name: 'Kel', content: '' }],
 activePersonaId: saved.activePersonaId || 'default',
 personaDraft: null,
-// Worldbook
-wbPermanent: saved.wbPermanent || '',
-wbTriggers: saved.wbTriggers || '',
-// Style
 styles: saved.styles || [{ id: 'default', title: 'Default', content: '' }],
 activeStyleId: saved.activeStyleId || 'default',
-// Prompt templates
 prompts: saved.prompts || [],
 promptEditId: null,
 promptEditName: '',
 promptEditContent: '',
-// Chat data
 currentChatId: saved.currentChatId || genId(),
 chats: saved.chats || {},
-// Draft states
 apiDraft: null,
 styleDraft: null,
-wbDraft: null,
-// 头像
 userAvatar: saved.userAvatar || '',
 aiAvatar: saved.aiAvatar || '',
-// 自定义 CSS
 customCss: saved.customCss || '',
 customFont: saved.customFont || '',
-// 搜索
 searchOpen: false,
 searchQuery: '',
-searchResults: []
+searchResults: [],
+annivDate: saved.annivDate || '',
+currentTime: getCurrentTime()
 };
-setTimeout(() => { this.applyCustomCss(); this.applyCustomFont(); }, 100);
 if (!this.state.chats[this.state.currentChatId]) {
 this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
 }
+setTimeout(() => { this.applyCustomCss(); this.applyCustomFont(); }, 100);
+// 实时时钟
+this._clockTimer = setInterval(() => {
+this.setState({ currentTime: getCurrentTime() });
+}, 1000);
 }
+
 textareaRef(el) {
-  if (el && !el._listener) {
-    el._listener = true;
-    const adjust = () => {
-      el.style.height = 'auto';
-      const maxHeight = window.innerHeight * 0.8 - 180;
-      el.style.height = Math.min(el.scrollHeight, maxHeight) + 'px';
-      if (el.scrollHeight > maxHeight) {
-        el.style.overflowY = 'auto';
-      } else {
-        el.style.overflowY = 'hidden';
-      }
-    };
-    el.addEventListener('input', adjust);
-    setTimeout(adjust, 50);
-  }
+if (el && !el._listener) {
+el._listener = true;
+const adjust = () => {
+el.style.height = 'auto';
+const maxHeight = window.innerHeight * 0.8 - 180;
+el.style.height = Math.min(el.scrollHeight, maxHeight) + 'px';
+el.style.overflowY = el.scrollHeight > maxHeight ? 'auto' : 'hidden';
+};
+el.addEventListener('input', adjust);
+setTimeout(adjust, 50);
 }
-openWorldbookEditor(id) {
-  const wb = id ? this.state.worldbooks.find(w => w.id === id) : null;
-  this.setState({
-    sheet: 'wbEditor',
-    wbEditId: id || genId(),
-    wbEditName: wb ? wb.name : '',
-    wbEditContent: wb ? wb.content : '',
-    wbEditTriggers: wb ? (wb.triggers || []).join('\n') : '',
-    wbEditAlwaysOn: wb ? wb.alwaysOn : false,
-    wbEditWeight: wb ? wb.weight : 1,
-    wbEditPosition: wb ? wb.position : 'before'
-  });
 }
-openMemoryEditor(id) {
-  const mem = id ? this.state.memories.find(m => m.id === id) : null;
-  this.setState({
-    sheet: 'memEditor',
-    memEditId: id || genId(),
-    memEditName: mem ? mem.name : '',
-    memEditContent: mem ? mem.content : '',
-    memEditTriggers: mem ? (mem.triggers || []).join('\n') : '',
-    memEditAlwaysOn: mem ? mem.alwaysOn : false,
-    memEditWeight: mem ? mem.weight : 1,
-    memEditPosition: mem ? mem.position : 'before',
-    memEditTag: mem ? mem.tag : ''
-  });
-}
-saveMemoryEditor() {
-  const s = this.state;
-  const triggers = s.memEditTriggers.split('\n').map(t => t.trim()).filter(Boolean);
-  const newMem = {
-    id: s.memEditId || genId(),
-    name: s.memEditName || '未命名记忆',
-    content: s.memEditContent || '',
-    triggers,
-    alwaysOn: s.memEditAlwaysOn,
-    weight: parseFloat(s.memEditWeight) || 1,
-    position: s.memEditPosition || 'before',
-    tag: s.memEditTag || 'general',
-    createdAt: Date.now()
-  };
-  let memories = s.memories.filter(m => m.id !== newMem.id);
-  memories.push(newMem);
-  this.setState({ memories, sheet: null });
-  this.persist();
-  this.show('记忆已保存');
-}
-// 聊天区消息滚动
+
 scrollToBottom() {
-  setTimeout(() => {
-    const container = document.querySelector('.sa[style*="overflow-y:auto"]');
-    if (container) {
-      container.scrollTop = container.scrollHeight;
-    }
-    // 也尝试找消息区域
-    const msgArea = document.querySelector('.sa');
-    if (msgArea && msgArea.scrollHeight > msgArea.clientHeight) {
-      msgArea.scrollTop = msgArea.scrollHeight;
-    }
-  }, 80);
+setTimeout(() => {
+const containers = document.querySelectorAll('.sa');
+for (const c of containers) {
+if (c.scrollHeight > c.clientHeight + 100) {
+c.scrollTop = c.scrollHeight;
 }
-deleteMemory(id) {
-  const memories = this.state.memories.filter(m => m.id !== id);
-  this.setState({ memories });
-  this.persist();
-  this.show('已删除');
 }
-
-// 🆕 AI 自动生成记忆总结
-async generateMemoryFromChat() {
-  const chat = this.currentChat;
-  if (!chat.messages || chat.messages.length < 2) {
-    this.show('对话太短，至少需要一轮交流');
-    return;
-  }
-  this.setState({ isBusy: true });
-  try {
-    const preset = this.activePreset;
-    const sysPrompt = '你是一个记忆提炼助手。请根据以下对话，生成一条简洁的记忆条目（不超过200字），总结关键信息、人物关系或重要事件。直接输出记忆内容，不要加前缀。';
-    const userPrompt = chat.messages.map(m => (m.role === 'user' ? 'User: ' : 'AI: ') + m.text).join('\n');
-    const apiMessages = [{ role: 'user', content: userPrompt }];
-    const headers = { 'Content-Type': 'application/json' };
-    let url = preset.url, body;
-    if (preset.apiType === 'anthropic') {
-      headers['x-api-key'] = preset.key;
-      headers['anthropic-version'] = '2023-06-01';
-      url += '/messages';
-      body = { model: preset.model, max_tokens: 1024, messages: apiMessages, system: sysPrompt };
-    } else {
-      headers['Authorization'] = 'Bearer ' + preset.key;
-      url += '/chat/completions';
-      body = { model: preset.model, max_tokens: 1024, messages: [{ role: 'system', content: sysPrompt }, ...apiMessages] };
-    }
-    const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
-    if (!res.ok) throw new Error('API ' + res.status);
-    const data = await res.json();
-    let reply = preset.apiType === 'anthropic' ? data.content?.[0]?.text || '' : data.choices?.[0]?.message?.content || '';
-    if (reply.trim()) {
-      const newMem = {
-        id: genId(),
-        name: 'AI 记忆 ' + new Date().toLocaleDateString(),
-        content: reply.trim(),
-        triggers: [],
-        alwaysOn: false,
-        weight: 0.5,
-        position: 'before',
-        tag: 'auto',
-        createdAt: Date.now()
-      };
-      const memories = [...this.state.memories, newMem];
-      this.setState({ memories, isBusy: false });
-      this.persist();
-      this.show('AI 已生成一条记忆');
-    } else {
-      this.show('AI 未生成内容，请重试');
-    }
-  } catch(e) {
-    this.setState({ isBusy: false });
-    this.show('生成失败: ' + e.message);
-  }
-}
-saveWorldbookEditor() {
-  const s = this.state;
-  const triggers = s.wbEditTriggers.split('\n').map(t => t.trim()).filter(Boolean);
-  const newWb = {
-    id: s.wbEditId || genId(),
-    name: s.wbEditName || '未命名世界书',
-    content: s.wbEditContent || '',
-    triggers,
-    alwaysOn: s.wbEditAlwaysOn,
-    weight: parseFloat(s.wbEditWeight) || 1,
-    position: s.wbEditPosition || 'before'
-  };
-  let worldbooks = s.worldbooks.filter(w => w.id !== newWb.id);
-  worldbooks.push(newWb);
-  this.setState({ worldbooks, sheet: null });
-  this.persist();
-  this.show('世界书已保存');
-}
-
-deleteWorldbook(id) {
-  const worldbooks = this.state.worldbooks.filter(w => w.id !== id);
-  this.setState({ worldbooks });
-  this.persist();
-  this.show('已删除');
+}, 80);
 }
 
 get currentChat() {
@@ -1443,15 +1116,15 @@ return this.state.chats[this.state.currentChatId] || { messages: [] };
 }
 
 get activePreset() {
-return this.state.apiPresets.find(p => p.id === this.state.activePresetId) || this.state.apiPresets[0] || { url: '', key: '', model: '', apiType: 'anthropic', name: 'Default' };
+return this.state.apiPresets.find(p => p.id === this.state.activePresetId) || this.state.apiPresets0 || { url: '', key: '', model: '', apiType: 'anthropic', name: 'Default' };
 }
 
 get activePersona() {
-return this.state.personas.find(p => p.id === this.state.activePersonaId) || this.state.personas[0] || { name: 'Kel', content: '' };
+return this.state.personas.find(p => p.id === this.state.activePersonaId) || this.state.personas0 || { name: 'Kel', content: '' };
 }
 
 get activeStyleObj() {
-return this.state.styles.find(st => st.id === this.state.activeStyleId) || this.state.styles[0] || { title: 'Default', content: '' };
+return this.state.styles.find(st => st.id === this.state.activeStyleId) || this.state.styles0 || { title: 'Default', content: '' };
 }
 
 get petSizes() { return [32, 48, 64, 80, 96]; }
@@ -1464,8 +1137,6 @@ apiPresets: s.apiPresets,
 activePresetId: s.activePresetId,
 personas: s.personas,
 activePersonaId: s.activePersonaId,
-wbPermanent: s.wbPermanent,
-wbTriggers: s.wbTriggers,
 styles: s.styles,
 activeStyleId: s.activeStyleId,
 prompts: s.prompts,
@@ -1475,12 +1146,14 @@ petEnabled: s.petEnabled,
 petSizeIdx: s.petSizeIdx,
 soundEnabled: s.soundEnabled,
 memoryCount: s.memoryCount,
+avatarSize: s.avatarSize,
 worldbooks: s.worldbooks,
 memories: s.memories,
 userAvatar: s.userAvatar,
 aiAvatar: s.aiAvatar,
 customCss: s.customCss,
 customFont: s.customFont,
+annivDate: s.annivDate
 });
 }
 
@@ -1490,35 +1163,203 @@ this.setState({ toastShow: true, toastText: text });
 this._t = setTimeout(() => this.setState({ toastShow: false }), 1800);
 }
 
+// ====== Worldbook ======
+openWorldbookEditor(id) {
+const wb = id ? this.state.worldbooks.find(w => w.id === id) : null;
+this.setState({
+sheet: 'wbEditor',
+wbEditId: id || genId(),
+wbEditName: wb ? wb.name : '',
+wbEditContent: wb ? wb.content : '',
+wbEditTriggers: wb ? (wb.triggers || []).join('\n') : '',
+wbEditAlwaysOn: wb ? !!wb.alwaysOn : false,
+wbEditWeight: wb ? wb.weight : 1,
+wbEditPosition: wb ? wb.position : 'before'
+});
+}
+
+saveWorldbookEditor() {
+const s = this.state;
+const triggers = s.wbEditTriggers.split('\n').map(t => t.trim()).filter(Boolean);
+const newWb = {
+id: s.wbEditId || genId(),
+name: s.wbEditName || '未命名世界书',
+content: s.wbEditContent || '',
+triggers,
+alwaysOn: s.wbEditAlwaysOn,
+weight: parseFloat(s.wbEditWeight) || 1,
+position: s.wbEditPosition || 'before'
+};
+let worldbooks = [...s.worldbooks.filter(w => w.id !== newWb.id), newWb];
+this.setState({ worldbooks, sheet: null }, () => {
+this.persist();
+});
+this.show('世界书已保存');
+}
+
+deleteWorldbook(id) {
+const worldbooks = this.state.worldbooks.filter(w => w.id !== id);
+this.setState({ worldbooks }, () => { this.persist(); });
+this.show('已删除');
+}
+
+// ====== Memory ======
+openMemoryEditor(id) {
+const mem = id ? this.state.memories.find(m => m.id === id) : null;
+this.setState({
+sheet: 'memEditor',
+memEditId: id || genId(),
+memEditName: mem ? mem.name : '',
+memEditContent: mem ? mem.content : '',
+memEditTriggers: mem ? (mem.triggers || []).join('\n') : '',
+memEditAlwaysOn: mem ? !!mem.alwaysOn : false,
+memEditWeight: mem ? mem.weight : 1,
+memEditPosition: mem ? mem.position : 'before',
+memEditTag: mem ? mem.tag : ''
+});
+}
+
+saveMemoryEditor() {
+const s = this.state;
+const triggers = s.memEditTriggers.split('\n').map(t => t.trim()).filter(Boolean);
+const newMem = {
+id: s.memEditId || genId(),
+name: s.memEditName || '未命名记忆',
+content: s.memEditContent || '',
+triggers,
+alwaysOn: s.memEditAlwaysOn,
+weight: parseFloat(s.memEditWeight) || 1,
+position: s.memEditPosition || 'before',
+tag: s.memEditTag || 'general',
+createdAt: Date.now()
+};
+let memories = [...s.memories.filter(m => m.id !== newMem.id), newMem];
+this.setState({ memories, sheet: null }, () => {
+this.persist();
+});
+this.show('记忆已保存');
+}
+
+deleteMemory(id) {
+const memories = this.state.memories.filter(m => m.id !== id);
+this.setState({ memories }, () => { this.persist(); });
+this.show('已删除');
+}
+
+async generateMemoryFromChat() {
+const chat = this.currentChat;
+if (!chat.messages || chat.messages.length < 2) {
+this.show('对话太短，至少需要一轮交流');
+return;
+}
+this.setState({ isBusy: true });
+try {
+const preset = this.activePreset;
+if (!preset.key) { this.show('请先设置 API Key'); this.setState({ isBusy: false }); return; }
+const sysPrompt = '你是一个记忆提炼助手。请根据以下对话，生成一条简洁的记忆条目（不超过200字），总结关键信息、人物关系或重要事件。直接输出记忆内容，不要加前缀。';
+const userPrompt = chat.messages.map(m => (m.role === 'user' ? 'User: ' : 'AI: ') + (m.text || '').slice(0, 300)).join('\n');
+const apiMessages = [{ role: 'user', content: userPrompt }];
+const headers = { 'Content-Type': 'application/json' };
+let url = preset.url, body;
+if (preset.apiType === 'anthropic') {
+headers['x-api-key'] = preset.key;
+headers['anthropic-version'] = '2023-06-01';
+url += '/messages';
+body = { model: preset.model, max_tokens: 1024, messages: apiMessages, system: sysPrompt };
+} else {
+headers['Authorization'] = 'Bearer ' + preset.key;
+url += '/chat/completions';
+body = { model: preset.model, max_tokens: 1024, messages: [{ role: 'system', content: sysPrompt }, ...apiMessages] };
+}
+const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
+if (!res.ok) throw new Error('API ' + res.status);
+const data = await res.json();
+let reply = preset.apiType === 'anthropic' ? (data.content?.0?.text || '') : (data.choices?.0?.message?.content || '');
+if (reply.trim()) {
+const newMem = {
+id: genId(),
+name: 'AI 记忆 ' + new Date().toLocaleDateString(),
+content: reply.trim(),
+triggers: [],
+alwaysOn: false,
+weight: 0.5,
+position: 'before',
+tag: 'auto',
+createdAt: Date.now()
+};
+const memories = [...this.state.memories, newMem];
+this.setState({ memories, isBusy: false }, () => { this.persist(); });
+this.show('AI 已生成一条记忆');
+} else {
+this.setState({ isBusy: false });
+this.show('AI 未生成内容');
+}
+} catch(e) {
+this.setState({ isBusy: false });
+this.show('生成失败: ' + e.message);
+}
+}
+
+// ====== System Prompt Builder ======
 buildSystemPrompt() {
 let sys = '';
 const persona = this.activePersona;
 if (persona.content) sys += persona.content + '\n\n';
-if (this.state.wbPermanent) sys += '## Worldbook\n' + this.state.wbPermanent + '\n\n';
+  
+// Worldbooks - always-on entries
+const alwaysOnWb = this.state.worldbooks.filter(w => w.alwaysOn && w.content);
+if (alwaysOnWb.length > 0) {
+sys += '## Worldbook\n';
+for (const wb of alwaysOnWb) {
+sys += '[' + wb.name + ']\n' + wb.content + '\n\n';
+}
+}
+  
+// Worldbooks - triggered entries
+const msgs = this.currentChat.messages;
+const lastMsgs = msgs.slice(-5).map(m => (m.text || '').toLowerCase()).join(' ');
+const triggeredWb = this.state.worldbooks.filter(w => !w.alwaysOn && w.triggers && w.triggers.length > 0);
+for (const wb of triggeredWb) {
+for (const trigger of wb.triggers) {
+if (trigger && lastMsgs.includes(trigger.toLowerCase())) {
+sys += '[Triggered WB: ' + wb.name + ']\n' + wb.content + '\n\n';
+break;
+}
+}
+}
+  
+// Memories - always-on
+const alwaysOnMem = this.state.memories.filter(m => m.alwaysOn && m.content);
+if (alwaysOnMem.length > 0) {
+sys += '## Memories\n';
+for (const mem of alwaysOnMem) {
+sys += '[' + mem.name + ']\n' + mem.content + '\n\n';
+}
+}
+  
+// Memories - triggered
+const triggeredMem = this.state.memories.filter(m => !m.alwaysOn && m.triggers && m.triggers.length > 0);
+for (const mem of triggeredMem) {
+for (const trigger of mem.triggers) {
+if (trigger && lastMsgs.includes(trigger.toLowerCase())) {
+sys += '[Triggered Memory: ' + mem.name + ']\n' + mem.content + '\n\n';
+break;
+}
+}
+}
+  
+// Style
 const style = this.activeStyleObj;
 if (style.content) sys += '## Style: ' + style.title + '\n' + style.content + '\n\n';
+  
 // Memory summary from previous chat
-    const memorySummary = buildMemorySummary(this.state.chats, this.state.currentChatId, this.state.memoryCount);
+const memorySummary = buildMemorySummary(this.state.chats, this.state.currentChatId, this.state.memoryCount);
 if (memorySummary) sys += '## Context Memory\n' + memorySummary + '\n\n';
-// Trigger worldbook entries
-if (this.state.wbTriggers) {
-const msgs = this.currentChat.messages;
-const lastMsg = msgs.length > 0 ? msgs[msgs.length - 1].text : '';
-const lines = this.state.wbTriggers.split('\n');
-for (const line of lines) {
-const idx = line.indexOf('=>');
-if (idx > 0) {
-const keyword = line.slice(0, idx).trim().toLowerCase();
-const content = line.slice(idx + 2).trim();
-if (keyword && lastMsg.toLowerCase().includes(keyword)) {
-sys += '\n[Triggered: ' + keyword + ']\n' + content + '\n';
-}
-}
-}
-}
+  
 return sys.trim();
 }
 
+// ====== Chat ======
 async sendMessage() {
 const text = (this.state.input || '').trim();
 const hasAttachment = !!this.state.attachment;
@@ -1532,26 +1373,26 @@ const chats = { ...this.state.chats };
 const chat = { ...chats[chatId] };
 const s = this.state;
 const newMsg = {
-  role: 'user',
-  text: text || '[File: ' + (s.attachment?.fileName || 'attachment') + ']',
-  variants: [text || '[File: ' + (s.attachment?.fileName || 'attachment') + ']'],
-  variantIdx: 0
+role: 'user',
+text: text || '[File: ' + (s.attachment?.fileName || 'attachment') + ']',
+variants: [text || '[File: ' + (s.attachment?.fileName || 'attachment') + ']'],
+variantIdx: 0
 };
 if (s.attachment) {
-  newMsg.file = {
-    base64: s.attachment.base64,
-    mimeType: s.attachment.mimeType,
-    fileName: s.attachment.fileName,
-    fileSize: s.attachment.fileSize,
-    isImage: s.attachment.isImage,
-    isText: s.attachment.isText,
-    textContent: s.attachment.textContent
-  };
-  if (s.attachment.isImage) {
-    newMsg.image = s.attachment.base64;
-    newMsg.imageMime = s.attachment.mimeType;
-    newMsg.imageUrl = s.attachment.preview;
-  }
+newMsg.file = {
+base64: s.attachment.base64,
+mimeType: s.attachment.mimeType,
+fileName: s.attachment.fileName,
+fileSize: s.attachment.fileSize,
+isImage: s.attachment.isImage,
+isText: s.attachment.isText,
+textContent: s.attachment.textContent
+};
+if (s.attachment.isImage) {
+newMsg.image = s.attachment.base64;
+newMsg.imageMime = s.attachment.mimeType;
+newMsg.imageUrl = s.attachment.preview;
+}
 }
 const msgs = [...chat.messages, newMsg];
 chat.messages = msgs;
@@ -1565,29 +1406,32 @@ this.persist();
 this.scrollToBottom();
 
 try {
+await this._callApi(chatId, msgs);
+} catch(e) {
+this.setState({ isBusy: false });
+this.show('Error: ' + e.message);
+}
+}
+
+async _callApi(chatId, msgs) {
+const preset = this.activePreset;
 const sysPrompt = this.buildSystemPrompt();
 let apiMessages;
 
 if (preset.apiType === 'anthropic') {
 apiMessages = msgs.map(m => {
-  const content = [];
-  // 图片
-  if (m.image) {
-    content.push({ type: 'image', source: { type: 'base64', media_type: m.imageMime || 'image/jpeg', data: m.image } });
-  }
-  // 文件（文本类）
-  if (m.file && m.file.isText && m.file.textContent) {
-    content.push({ type: 'text', text: '[File: ' + m.file.fileName + ']\n' + m.file.textContent });
-  }
-  // 文件（二进制，只提示）
-  if (m.file && !m.file.isImage && !m.file.isText) {
-    content.push({ type: 'text', text: '[File: ' + m.file.fileName + '] (binary, ' + (m.file.fileSize / 1024).toFixed(1) + 'KB)' });
-  }
-  const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
-  if (t) content.push({ type: 'text', text: t });
-  return { role: m.role === 'user' ? 'user' : 'assistant', content: content.length === 1 && content[0].type === 'text' ? t : content };
+const content = [];
+if (m.image) {
+content.push({ type: 'image', source: { type: 'base64', media_type: m.imageMime || 'image/jpeg', data: m.image } });
+}
+if (m.file && m.file.isText && m.file.textContent) {
+content.push({ type: 'text', text: '[File: ' + m.file.fileName + ']\n' + m.file.textContent });
+}
+const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
+if (t) content.push({ type: 'text', text: t });
+return { role: m.role === 'user' ? 'user' : 'assistant', content: content.length === 1 && content0.type === 'text' ? t : content };
 });
-  } else {
+} else {
 apiMessages = msgs.map(m => {
 const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
 if (m.image) {
@@ -1607,9 +1451,11 @@ headers['anthropic-version'] = '2023-06-01';
 url += '/messages';
 body = { model: preset.model, max_tokens: 16384, messages: apiMessages };
 if (sysPrompt) body.system = sysPrompt;
-// Enable extended thinking if model supports it
-if (preset.model && (preset.model.includes('claude') && !preset.model.includes('haiku'))) {
-body.thinking = { type: 'enabled', budget_tokens: 10000 };
+// Extended thinking - only for supported models
+const model = preset.model || '';
+const supportsThinking = model.includes('claude-3-5-sonnet') || model.includes('claude-sonnet-4') || model.includes('claude-opus');
+if (supportsThinking) {
+body.thinking = { type: 'enabled', budget_tokens: 8000 };
 body.max_tokens = 16384;
 }
 } else {
@@ -1622,7 +1468,7 @@ if (sysPrompt) body.messages = [{ role: 'system', content: sysPrompt }, ...body.
 const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
 if (!res.ok) {
 const err = await res.text();
-throw new Error('API ' + res.status + ': ' + err.slice(0, 300));
+throw new Error('API ' + res.status + ': ' + err.slice(0, 200));
 }
 
 const data = await res.json();
@@ -1633,206 +1479,209 @@ if (block.type === 'thinking') thinking += block.thinking;
 else if (block.type === 'text') reply += block.text;
 }
 } else {
-reply = data.choices?.[0]?.message?.content || '';
+reply = data.choices?.0?.message?.content || '';
 }
+
 const chats2 = { ...this.state.chats };
 const chat2 = { ...chats2[chatId] };
-      chat2.messages = [...chat2.messages, { role: 'assistant', text: reply, thinking, variants: [reply], variantIdx: 0 }];
-      chat2.lastTime = Date.now();
-      chats2[chatId] = chat2;
-      this.setState({ chats: chats2, isBusy: false, petState: 'happy' });
+chat2.messages = [...chat2.messages, { role: 'assistant', text: reply, thinking, variants: [reply], variantIdx: 0 }];
+chat2.lastTime = Date.now();
+chats2[chatId] = chat2;
+this.setState({ chats: chats2, isBusy: false, petState: 'happy' });
+this.persist();
+this.scrollToBottom();
+if (this.state.soundEnabled) { try { new Audio('./notification.mp3').play(); } catch(e) {} }
+setTimeout(() => this.setState({ petState: 'idle' }), 3000);
+}
+
+regenerate(msgIdx) {
+if (this.state.isBusy) return;
+const chat = this.currentChat;
+const msgs = chat.messages.slice(0, msgIdx);
+const chatId = this.state.currentChatId;
+const chats = { ...this.state.chats };
+const origMsg = chat.messages[msgIdx];
+chats[chatId] = { ...chat, messages: msgs };
+this.setState({ chats, isBusy: true });
+this._regenerateFrom(chatId, msgs, origMsg);
+}
+
+async _regenerateFrom(chatId, msgs, origMsg) {
+try {
+const preset = this.activePreset;
+const sysPrompt = this.buildSystemPrompt();
+let apiMessages;
+if (preset.apiType === 'anthropic') {
+apiMessages = msgs.map(m => {
+const content = [];
+if (m.image) content.push({ type: 'image', source: { type: 'base64', media_type: m.imageMime || 'image/jpeg', data: m.image } });
+const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
+if (t) content.push({ type: 'text', text: t });
+return { role: m.role === 'user' ? 'user' : 'assistant', content: content.length === 1 && content0.type === 'text' ? t : content };
+});
+} else {
+apiMessages = msgs.map(m => {
+const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
+return { role: m.role === 'user' ? 'user' : 'assistant', content: t };
+});
+}
+
+const headers = { 'Content-Type': 'application/json' };
+let url = preset.url, body;
+if (preset.apiType === 'anthropic') {
+headers['x-api-key'] = preset.key;
+headers['anthropic-version'] = '2023-06-01';
+url += '/messages';
+body = { model: preset.model, max_tokens: 16384, messages: apiMessages };
+if (sysPrompt) body.system = sysPrompt;
+const model = preset.model || '';
+const supportsThinking = model.includes('claude-3-5-sonnet') || model.includes('claude-sonnet-4') || model.includes('claude-opus');
+if (supportsThinking) {
+body.thinking = { type: 'enabled', budget_tokens: 8000 };
+body.max_tokens = 16384;
+}
+} else {
+headers['Authorization'] = 'Bearer ' + preset.key;
+url += '/chat/completions';
+body = { model: preset.model, max_tokens: 8192, messages: apiMessages };
+if (sysPrompt) body.messages = [{ role: 'system', content: sysPrompt }, ...body.messages];
+}
+
+const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
+if (!res.ok) throw new Error('API ' + res.status);
+const data = await res.json();
+let reply = '', thinking = '';
+if (preset.apiType === 'anthropic') {
+for (const block of (data.content || [])) {
+if (block.type === 'thinking') thinking += block.thinking;
+else if (block.type === 'text') reply += block.text;
+}
+} else {
+reply = data.choices?.0?.message?.content || '';
+}
+
+const chats = { ...this.state.chats };
+const chat = { ...chats[chatId] };
+const variants = origMsg && origMsg.variants ? [...origMsg.variants, reply] : [reply];
+chat.messages = [...msgs, { role: 'assistant', text: reply, thinking, variants, variantIdx: variants.length - 1 }];
+chat.lastTime = Date.now();
+chats[chatId] = chat;
+this.setState({ chats, isBusy: false, petState: 'happy' });
+this.persist();
+this.scrollToBottom();
+if (this.state.soundEnabled) { try { new Audio('./notification.mp3').play(); } catch(e) {} }
+setTimeout(() => this.setState({ petState: 'idle' }), 3000);
+} catch(e) {
+this.setState({ isBusy: false });
+this.show('Error: ' + e.message);
+}
+}
+
+// ====== Chat Management ======
+newChat() {
+const id = genId();
+const chats = { ...this.state.chats };
+chats[id] = { id, title: '新对话', messages: [], lastTime: Date.now() };
+this.setState({ currentChatId: id, chats, drawer: false, tab: 'chat', input: '', attachment: null });
+this.persist();
+}
+
+openChat(id) {
+this.setState({ currentChatId: id, drawer: false, tab: 'chat' });
+this.persist();
+this.scrollToBottom();
+}
+
+deleteChat(id) {
+const chats = { ...this.state.chats };
+delete chats[id];
+let newCurrentId = this.state.currentChatId;
+if (id === newCurrentId) {
+const remaining = Object.keys(chats);
+if (remaining.length > 0) { newCurrentId = remaining0; }
+else { newCurrentId = genId(); chats[newCurrentId] = { id: newCurrentId, title: '新对话', messages: [], lastTime: Date.now() }; }
+}
+this.setState({ chats, currentChatId: newCurrentId });
+this.persist();
+this.show('已删除');
+}
+
+// ====== Export / Import ======
+exportData() {
+const s = this.state;
+const exportObj = {
+exportDate: new Date().toISOString(),
+version: '2.0',
+chats: s.chats,
+personas: s.personas,
+activePersonaId: s.activePersonaId,
+worldbooks: s.worldbooks,
+memories: s.memories,
+styles: s.styles,
+activeStyleId: s.activeStyleId,
+prompts: s.prompts,
+apiPresets: s.apiPresets.map(p => ({ ...p, key: '***' })),
+userAvatar: s.userAvatar,
+aiAvatar: s.aiAvatar,
+customCss: s.customCss,
+customFont: s.customFont,
+avatarSize: s.avatarSize,
+annivDate: s.annivDate
+};
+const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+const url = URL.createObjectURL(blob);
+const a = document.createElement('a');
+a.href = url;
+a.download = 'kel-backup-' + new Date().toISOString().slice(0,10) + '.json';
+document.body.appendChild(a);
+a.click();
+document.body.removeChild(a);
+URL.revokeObjectURL(url);
+this.show('Backup exported');
+}
+
+importData() {
+const input = document.getElementById('kelImportInput');
+if (input) input.click();
+}
+
+handleImportFile(e) {
+const file = e.target.files && e.target.files0;
+if (!file) return;
+const reader = new FileReader();
+reader.onload = () => {
+try {
+const data = JSON.parse(reader.result);
+if (data.chats) this.setState({ chats: { ...this.state.chats, ...data.chats } });
+if (data.worldbooks) this.setState({ worldbooks: [...this.state.worldbooks, ...data.worldbooks.filter(w => !this.state.worldbooks.find(x => x.id === w.id))] });
+if (data.memories) this.setState({ memories: [...this.state.memories, ...data.memories.filter(m => !this.state.memories.find(x => x.id === m.id))] });
+if (data.personas) this.setState({ personas: [...this.state.personas, ...data.personas.filter(p => !this.state.personas.find(x => x.id === p.id))] });
+if (data.styles) this.setState({ styles: [...this.state.styles, ...data.styles.filter(s => !this.state.styles.find(x => x.id === s.id))] });
+if (data.prompts) this.setState({ prompts: [...this.state.prompts, ...data.prompts.filter(p => !this.state.prompts.find(x => x.id === p.id))] });
+if (data.userAvatar) this.setState({ userAvatar: data.userAvatar });
+      if (data.aiAvatar) this.setState({ aiAvatar: data.aiAvatar });
+      if (data.customCss) this.setState({ customCss: data.customCss });
+      if (data.customFont) this.setState({ customFont: data.customFont });
+      if (data.avatarSize) this.setState({ avatarSize: data.avatarSize });
+      if (data.annivDate) this.setState({ annivDate: data.annivDate });
       this.persist();
-      if (this.state.soundEnabled) { try { new Audio('./notification.mp3').play(); } catch(e) {} }
-      setTimeout(() => this.setState({ petState: 'idle' }), 3000);
-    } catch(e) {
-      this.setState({ isBusy: false });
-      this.show('Error: ' + e.message);
+      this.applyCustomCss();
+      this.applyCustomFont();
+      this.show('导入成功！');
+    } catch(err) {
+      this.show('导入失败: ' + err.message);
     }
-  }
+  };
+  reader.readAsText(file);
+  e.target.value = '';
+}
 
-  regenerate(msgIdx) {
-    if (this.state.isBusy) return;
-    const chat = this.currentChat;
-    const msgs = chat.messages.slice(0, msgIdx);
-    const chatId = this.state.currentChatId;
-    const chats = { ...this.state.chats };
-    chats[chatId] = { ...chat, messages: msgs };
-    this.setState({ chats, input: '' });
-    this.setState({ isBusy: true });
-    this._regenerateFrom(chatId, msgs, msgIdx);
-  }
+// ====== File Handling ======
+pickImageFile() {
+  const input = document.getElementById('kelFileInput');
+  if (input) input.click();
+}
 
-  async _regenerateFrom(chatId, msgs, origIdx) {
-    try {
-      const preset = this.activePreset;
-      const sysPrompt = this.buildSystemPrompt();
-
-      let apiMessages;
-      if (preset.apiType === 'anthropic') {
-        apiMessages = msgs.map(m => {
-          const content = [];
-          if (m.image) {
-            content.push({ type: 'image', source: { type: 'base64', media_type: m.imageMime || 'image/jpeg', data: m.image } });
-          }
-          const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
-          if (t) content.push({ type: 'text', text: t });
-          return { role: m.role === 'user' ? 'user' : 'assistant', content: content.length === 1 && content[0].type === 'text' ? t : content };
-        });
-      } else {
-        apiMessages = msgs.map(m => {
-          const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
-          if (m.image) {
-            return { role: m.role === 'user' ? 'user' : 'assistant', content: [{ type: 'image_url', image_url: { url: 'data:' + (m.imageMime || 'image/jpeg') + ';base64,' + m.image } }, { type: 'text', text: t || '' }] };
-          }
-          return { role: m.role === 'user' ? 'user' : 'assistant', content: t };
-        });
-      }
-
-      const headers = { 'Content-Type': 'application/json' };
-      let url = preset.url;
-      let body;
-
-      if (preset.apiType === 'anthropic') {
-        headers['x-api-key'] = preset.key;
-        headers['anthropic-version'] = '2023-06-01';
-        url += '/messages';
-        body = { model: preset.model, max_tokens: 16384, messages: apiMessages };
-        if (sysPrompt) body.system = sysPrompt;
-        if (preset.model && (preset.model.includes('claude') && !preset.model.includes('haiku'))) {
-          body.thinking = { type: 'enabled', budget_tokens: 10000 };
-          body.max_tokens = 16384;
-        }
-      } else {
-        headers['Authorization'] = 'Bearer ' + preset.key;
-        url += '/chat/completions';
-        body = { model: preset.model, max_tokens: 8192, messages: apiMessages };
-        if (sysPrompt) body.messages = [{ role: 'system', content: sysPrompt }, ...body.messages];
-      }
-
-      const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
-      if (!res.ok) throw new Error('API ' + res.status);
-      const data = await res.json();
-      let reply = '', thinking = '';
-      if (preset.apiType === 'anthropic') {
-        for (const block of (data.content || [])) {
-          if (block.type === 'thinking') thinking += block.thinking;
-          else if (block.type === 'text') reply += block.text;
-        }
-      } else {
-        reply = data.choices?.[0]?.message?.content || '';
-      }
-
-      const chats = { ...this.state.chats };
-      const chat = { ...chats[chatId] };
-      const origChat = this.state.chats[chatId];
-      const origMsg = origChat && origChat.messages[origIdx];
-      if (origMsg && origMsg.role === 'assistant') {
-        const newMsgs = [...msgs];
-        const variants = [...(origMsg.variants || [origMsg.text]), reply];
-        newMsgs.push({ role: 'assistant', text: reply, thinking, variants, variantIdx: variants.length - 1 });
-        chat.messages = newMsgs;
-      } else {
-        chat.messages = [...msgs, { role: 'assistant', text: reply, thinking, variants: [reply], variantIdx: 0 }];
-      }
-      chat.lastTime = Date.now();
-      chats[chatId] = chat;
-      this.setState({ chats, isBusy: false, petState: 'happy' });
-      this.persist();
-      this.scrollToBottom();
-      if (this.state.soundEnabled) { try { new Audio('./notification.mp3').play(); } catch(e) {} }
-      setTimeout(() => this.setState({ petState: 'idle' }), 3000);
-    } catch(e) {
-      this.setState({ isBusy: false });
-      this.show('Error: ' + e.message);
-    }
-  }
-
-  newChat() {
-    const id = genId();
-    const chats = { ...this.state.chats };
-    chats[id] = { id, title: '新对话', messages: [], lastTime: Date.now() };
-    this.setState({ currentChatId: id, chats, drawer: false, tab: 'chat', input: '', attachment: null });
-    this.persist();
-    this.scrollToBottom();
-  }
-
-  openChat(id) {
-    this.setState({ currentChatId: id, drawer: false, tab: 'chat' });
-    this.persist();
-    this.scrollToBottom();
-  }
-
-  deleteChat(id) {
-    const chats = { ...this.state.chats };
-    delete chats[id];
-    let newCurrentId = this.state.currentChatId;
-    if (id === newCurrentId) {
-      const remaining = Object.keys(chats);
-      if (remaining.length > 0) {
-        newCurrentId = remaining[0];
-      } else {
-        newCurrentId = genId();
-        chats[newCurrentId] = { id: newCurrentId, title: '新对话', messages: [], lastTime: Date.now() };
-      }
-    }
-    this.setState({ chats, currentChatId: newCurrentId });
-    this.persist();
-    this.show('已删除');
-  }
-
-  exportData() {
-    const s = this.state;
-    const exportObj = {
-      exportDate: new Date().toISOString(),
-      chats: s.chats,
-      personas: s.personas,
-      wbPermanent: s.wbPermanent,
-      wbTriggers: s.wbTriggers,
-      styles: s.styles,
-      prompts: s.prompts,
-      apiPresets: s.apiPresets.map(p => ({ ...p, key: '***' }))
-    };
-    const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url;
-    a.download = 'kel-backup-' + new Date().toISOString().slice(0,10) + '.json';
-    document.body.appendChild(a);
-    a.click();
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-    this.show('Backup exported');
-  }
-
-  async fetchModels() {
-    const draft = this.state.apiDraft || this.activePreset;
-    if (!draft.key || !draft.url) { this.show('Need URL and Key first'); return; }
-    try {
-      const headers = {};
-      let url = draft.url + '/models';
-      if (draft.apiType === 'anthropic') {
-        headers['x-api-key'] = draft.key;
-        headers['anthropic-version'] = '2023-06-01';
-      } else {
-        headers['Authorization'] = 'Bearer ' + draft.key;
-      }
-      const res = await fetch(url, { headers });
-      if (!res.ok) throw new Error('Failed ' + res.status);
-      const data = await res.json();
-      const models = (data.data || data.models || []).map(m => m.id || m.name || m).filter(Boolean);
-      if (models.length === 0) { this.show('No models found'); return; }
-      this.setState({ apiDraft: { ...(this.state.apiDraft || draft), models } });
-      this.show(models.length + ' models loaded');
-    } catch(e) {
-      this.show('Error: ' + e.message);
-    }
-  }
-
-  pickImageFile() {
-    const input = document.getElementById('kelFileInput');
-    if (input) input.click();
-  }
-  
 handleFile(e) {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
@@ -1866,13 +1715,12 @@ handleFile(e) {
   e.target.value = '';
 }
 
+// ====== Avatars ======
 pickUserAvatar() {
   const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
+  input.type = 'file'; input.accept = 'image/*';
   input.onchange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = () => { this.setState({ userAvatar: reader.result }); this.persist(); this.show('头像已更新'); };
     reader.readAsDataURL(file);
@@ -1882,11 +1730,9 @@ pickUserAvatar() {
 
 pickAiAvatar() {
   const input = document.createElement('input');
-  input.type = 'file';
-  input.accept = 'image/*';
+  input.type = 'file'; input.accept = 'image/*';
   input.onchange = (e) => {
-    const file = e.target.files[0];
-    if (!file) return;
+    const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
     reader.onload = () => { this.setState({ aiAvatar: reader.result }); this.persist(); this.show('AI 头像已更新'); };
     reader.readAsDataURL(file);
@@ -1894,6 +1740,7 @@ pickAiAvatar() {
   input.click();
 }
 
+// ====== CSS ======
 applyCustomCss() {
   let el = document.getElementById('kel-custom-css');
   if (!el) { el = document.createElement('style'); el.id = 'kel-custom-css'; document.head.appendChild(el); }
@@ -1906,6 +1753,7 @@ applyCustomFont() {
   else { document.body.style.fontFamily = ''; }
 }
 
+// ====== Search ======
 searchChats(query) {
   if (!query.trim()) { this.setState({ searchResults: [] }); return; }
   const q = query.toLowerCase();
@@ -1917,7 +1765,7 @@ searchChats(query) {
       const m = chat.messages[i];
       const text = (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text || '';
       if (text.toLowerCase().includes(q)) {
-        results.push({ chatId: chat.id, chatTitle: chat.title || '新对话', msgIdx: i, role: m.role, snippet: text.slice(0, 120) });
+        results.push({ chatId: chat.id, chatTitle: chat.title || '新对话', msgIdx: i, snippet: text.slice(0, 120) });
         if (results.length >= 30) break;
       }
     }
@@ -1926,19 +1774,49 @@ searchChats(query) {
   this.setState({ searchResults: results });
 }
 
-openSearchResult(chatId, msgIdx) {
-  this.setState({ currentChatId: chatId, tab: 'chat', sub: null, drawer: false, searchOpen: false, searchQuery: '' });
+openSearchResult(chatId) {
+  this.setState({ currentChatId: chatId, tab: 'chat', drawer: false, searchQuery: '', searchResults: [] });
   this.persist();
-  setTimeout(() => {
-    const msgs = document.querySelectorAll('.sa [style*="margin-bottom"]');
-    if (msgs[msgIdx]) {
-      msgs[msgIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
-      msgs[msgIdx].style.background = '#FFF3CD';
-      setTimeout(() => { msgs[msgIdx].style.background = ''; }, 2000);
-    }
-  }, 200);
+  this.scrollToBottom();
 }
 
+// ====== Models Fetch ======
+async fetchModels() {
+  const draft = this.state.apiDraft || this.activePreset;
+  if (!draft.key || !draft.url) { this.show('Need URL and Key first'); return; }
+  try {
+    const headers = {};
+    let url = draft.url + '/models';
+    if (draft.apiType === 'anthropic') {
+      headers['x-api-key'] = draft.key;
+      headers['anthropic-version'] = '2023-06-01';
+    } else {
+      headers['Authorization'] = 'Bearer ' + draft.key;
+    }
+    const res = await fetch(url, { headers });
+    if (!res.ok) throw new Error('Failed ' + res.status);
+    const data = await res.json();
+    const models = (data.data || data.models || []).map(m => m.id || m.name || m).filter(Boolean);
+    if (models.length === 0) { this.show('No models found'); return; }
+    this.setState({ apiDraft: { ...(this.state.apiDraft || draft), models } });
+    this.show(models.length + ' models loaded');
+  } catch(e) {
+    this.show('Error: ' + e.message);
+  }
+}
+
+// ====== Anniversary ======
+getAnnivDays() {
+  if (!this.state.annivDate) return '—';
+  try {
+    const target = new Date(this.state.annivDate);
+    const now = new Date();
+    const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
+    return diff >= 0 ? String(diff) : '0';
+  } catch(e) { return '—'; }
+}
+
+// ====== RENDER ======
 renderVals() {
   const s = this.state;
   const chat = this.currentChat;
@@ -1956,21 +1834,6 @@ renderVals() {
     const displayText = variants[vIdx] || m.text;
     return {
       isUser,
-      isLast,
-      variants,
-      vIdx,
-      displayText,
-      hasThink: !isUser && !!m.thinking,
-      thinkSummary: m.thinking ? '思考过程 (' + m.thinking.length + '字)' : '',
-      thinkContent: m.thinking || '',
-      thinkOpen: s.thinkOpenMap && s.thinkOpenMap[i] || false,
-      thinkRot: (s.thinkOpenMap && s.thinkOpenMap[i]) ? 'rotate(180deg)' : 'rotate(0deg)',
-      toggleThink: () => {
-        const map = { ...(s.thinkOpenMap || {}) };
-        map[i] = !map[i];
-        self.setState({ thinkOpenMap: map });
-      },
-      openThink: () => self.setState({ sheet: 'thought', currentThoughtText: m.thinking || '' }),
       align: isUser ? 'flex-end' : 'flex-start',
       maxW: isUser ? '82%' : '100%',
       fullW: 'auto',
@@ -1980,8 +1843,16 @@ renderVals() {
       pad: isUser ? '12px 18px' : '0 2px',
       gap: '24px',
       text: displayText,
-      hasMemory: !isUser && i === 0 && !!buildMemorySummary(s.chats, s.currentChatId),
-      memoryList: !isUser && i === 0 ? [{ text: '来自上一轮对话的记忆摘要', tag: 'auto' }] : [],
+      hasThink: !isUser && !!m.thinking,
+      thinkSummary: m.thinking ? '思考过程 (' + m.thinking.length + '字)' : '',
+      thinkContent: m.thinking || '',
+      thinkOpen: s.thinkOpenMap && s.thinkOpenMap[i] || false,
+      thinkRot: (s.thinkOpenMap && s.thinkOpenMap[i]) ? 'rotate(90deg)' : 'rotate(0deg)',
+      toggleThink: () => {
+        const map = { ...(s.thinkOpenMap || {}) };
+        map[i] = !map[i];
+        self.setState({ thinkOpenMap: map });
+      },
       showAiAvatar: !isUser && !!s.aiAvatar,
       hasImage: !!m.imageUrl,
       imageUrl: m.imageUrl || '',
@@ -1990,36 +1861,29 @@ renderVals() {
       showActions: !isUser && isLast && !s.isBusy,
       showUserActions: isUser && !s.isBusy,
       variantText: variants.length > 1 ? (vIdx + 1) + ' / ' + variants.length : '1 / 1',
-      copy: () => { navigator.clipboard.writeText(displayText).then(() => self.show('复制')); },
+      copy: () => { navigator.clipboard.writeText(displayText).then(() => self.show('已复制')); },
       refresh: () => self.regenerate(i),
       prev: () => {
         if (vIdx > 0) {
-          const chats = { ...s.chats };
-          const c = { ...chats[s.currentChatId] };
-          const newMsgs = [...c.messages];
-          newMsgs[i] = { ...newMsgs[i], variantIdx: vIdx - 1 };
-          c.messages = newMsgs;
-          chats[s.currentChatId] = c;
-          self.setState({ chats });
-          self.persist();
+          const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
+          const newMsgs = [...c.messages]; newMsgs[i] = { ...newMsgs[i], variantIdx: vIdx - 1 };
+          c.messages = newMsgs; chats[s.currentChatId] = c;
+          self.setState({ chats }); self.persist();
         }
       },
       next: () => {
         if (vIdx < variants.length - 1) {
-          const chats = { ...s.chats };
-          const c = { ...chats[s.currentChatId] };
-          const newMsgs = [...c.messages];
-          newMsgs[i] = { ...newMsgs[i], variantIdx: vIdx + 1 };
-          c.messages = newMsgs;
-          chats[s.currentChatId] = c;
-          self.setState({ chats });
-          self.persist();
+          const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
+          const newMsgs = [...c.messages]; newMsgs[i] = { ...newMsgs[i], variantIdx: vIdx + 1 };
+          c.messages = newMsgs; chats[s.currentChatId] = c;
+          self.setState({ chats }); self.persist();
         }
       },
       edit: () => self.setState({ editIdx: i, editText: displayText })
     };
   });
 
+  // Recent chats for drawer
   const chatList = Object.values(s.chats)
     .filter(c => c.messages && c.messages.length > 0)
     .sort((a, b) => (b.lastTime || 0) - (a.lastTime || 0))
@@ -2032,30 +1896,30 @@ renderVals() {
       e.stopPropagation();
       const newName = prompt('修改标题', c.title || '');
       if (newName !== null && newName.trim()) {
-        const chats = { ...s.chats };
-        chats[c.id] = { ...chats[c.id], title: newName.trim() };
-        self.setState({ chats });
-        self.persist();
+        const chats = { ...s.chats }; chats[c.id] = { ...chats[c.id], title: newName.trim() };
+        self.setState({ chats }); self.persist();
       }
     }
   }));
 
-  // API preset options
+  // Home recent chats (top 3)
+  const homeRecentChats = chatList.slice(0, 3).map(c => ({
+    title: c.title || '新对话',
+    time: c.lastTime ? new Date(c.lastTime).toLocaleString() : '',
+    open: () => self.openChat(c.id)
+  }));
+
+  // API options
   const apiDraft = s.apiDraft || preset;
   const apiOptions = s.apiPresets.map(p => ({
-    title: p.name || 'Untitled',
-    model: p.model || '',
+    title: p.name || 'Untitled', model: p.model || '',
     bg: p.id === s.activePresetId ? '#1A1815' : '#FFF',
     bd: p.id === s.activePresetId ? '#1A1815' : '#E7E3DA',
     fg: p.id === s.activePresetId ? '#F5F3EE' : '#2B2620',
     subFg: p.id === s.activePresetId ? '#D8D3CA' : '#9A958B',
     badgeDisplay: p.isDefault ? 'inline-flex' : 'none',
-    badgeBg: '#F2EFE8',
-    badgeFg: '#6B665E',
-    pick: () => {
-      self.setState({ activePresetId: p.id, apiDraft: { ...p, models: [] } });
-      self.persist();
-    }
+    badgeBg: '#F2EFE8', badgeFg: '#6B665E',
+    pick: () => { self.setState({ activePresetId: p.id, apiDraft: { ...p, models: [] } }); self.persist(); }
   }));
 
   // Persona options
@@ -2065,10 +1929,7 @@ renderVals() {
     bg: p.id === s.activePersonaId ? '#1A1815' : '#FFF',
     bd: p.id === s.activePersonaId ? '#1A1815' : '#E7E3DA',
     fg: p.id === s.activePersonaId ? '#F5F3EE' : '#2B2620',
-    pick: () => {
-      self.setState({ activePersonaId: p.id, personaDraft: { ...p } });
-      self.persist();
-    }
+    pick: () => { self.setState({ activePersonaId: p.id, personaDraft: { ...p } }); self.persist(); }
   }));
 
   // Prompt options
@@ -2077,13 +1938,7 @@ renderVals() {
     preview: (p.content || '').slice(0, 60),
     use: () => { self.setState({ input: p.content || '', sheet: null }); },
     edit: () => { self.setState({ promptEditId: p.id, promptEditName: p.name || '', promptEditContent: p.content || '' }); },
-    del: (e) => {
-      e.stopPropagation();
-      const prompts = s.prompts.filter(x => x.id !== p.id);
-      self.setState({ prompts });
-      self.persist();
-      self.show('已删除');
-    }
+    del: (e) => { e.stopPropagation(); self.setState({ prompts: s.prompts.filter(x => x.id !== p.id) }); self.persist(); self.show('已删除'); }
   }));
 
   // Style options
@@ -2093,10 +1948,7 @@ renderVals() {
     bg: st.id === s.activeStyleId ? '#1A1815' : '#FFF',
     bd: st.id === s.activeStyleId ? '#1A1815' : '#E7E3DA',
     fg: st.id === s.activeStyleId ? '#F5F3EE' : '#2B2620',
-    pick: () => {
-      self.setState({ activeStyleId: st.id, styleDraft: { ...st } });
-      self.persist();
-    }
+    pick: () => { self.setState({ activeStyleId: st.id, styleDraft: { ...st } }); self.persist(); }
   }));
 
   // API model options
@@ -2113,8 +1965,8 @@ renderVals() {
     ...wb,
     triggerCount: (wb.triggers || []).length,
     activeLabel: wb.alwaysOn ? '常驻' : '触发',
-    activeBg: wb.alwaysOn ? '#E8F0E8' : '#F2EFE8',
-    preview: (wb.content || '').slice(0, 80) + ((wb.content || '').length > 80 ? '...' : ''),
+    activeBg: wb.alwaysOn ? '#E8F5E8' : '#F2EFE8',
+    preview: (wb.content || '').slice(0, 80),
     open: () => self.openWorldbookEditor(wb.id),
     del: (e) => { e.stopPropagation(); self.deleteWorldbook(wb.id); }
   }));
@@ -2123,8 +1975,8 @@ renderVals() {
   const memoryList = s.memories.map(mem => ({
     ...mem,
     activeLabel: mem.alwaysOn ? '常驻' : '触发',
-    activeBg: mem.alwaysOn ? '#E8F0E8' : '#F2EFE8',
-    preview: (mem.content || '').slice(0, 120) + ((mem.content || '').length > 120 ? '...' : ''),
+    activeBg: mem.alwaysOn ? '#E8F5E8' : '#F2EFE8',
+    preview: (mem.content || '').slice(0, 120),
     open: () => self.openMemoryEditor(mem.id),
     del: (e) => { e.stopPropagation(); self.deleteMemory(mem.id); }
   }));
@@ -2134,22 +1986,18 @@ renderVals() {
 
   return {
     true: true, false: false,
-    // Page routing
-    isChat: s.tab === 'chat' && !s.sub,
-    isHome: s.tab === 'home' && !s.sub,
-    isMore: s.tab === 'more' && !s.sub,
-    isWorldbookPage: s.tab === 'worldbook' && !s.sub,
-    isMemoryPage: s.tab === 'memory' && !s.sub,
-    showSub: !!s.sub,
-    isMoments: s.sub === 'moments',
-    isDiary: s.sub === 'diary',
-    isMood: s.sub === 'mood',
-    isAnniv: s.sub === 'anniversary',
-    subTitle: ({ moments: '动态', diary: '日记 / 信件', mood: '心情', anniversary: '纪念日' }[s.sub] || ''),
+    // Pages
+    isChat: s.tab === 'chat',
+    isHome: s.tab === 'home',
+    isMore: s.tab === 'more',
+    isWorldbookPage: s.tab === 'worldbook',
+    isMemoryPage: s.tab === 'memory',
     // Messages
     messages,
     recentChats,
+    homeRecentChats,
     homeGreeting: getGreeting(),
+    currentTime: s.currentTime,
     isBusy: s.isBusy,
     input: s.input,
     editText: s.editText,
@@ -2157,16 +2005,25 @@ renderVals() {
     hasAttachment: !!s.attachment,
     attachmentPreview: s.attachment ? s.attachment.preview : '',
     attachmentIsImage: !!(s.attachment && s.attachment.isImage),
-    attachmentFileName: s.attachment ? s.attachment.fileName : '附件',
+    attachmentFileName: s.attachment ? s.attachment.fileName : '',
     // Active labels
     activeModel: preset.model || 'Not set',
     activeStyle: styleObj.title || 'Default',
     activeCompanion: persona.name || 'Kel',
-    wbHint: s.wbPermanent ? (s.wbPermanent.length + ' chars') : '未设置',
+    personaPreview: (persona.content || '未设置 system prompt').slice(0, 120),
     promptCount: (s.prompts || []).length + ' items',
-    // Worldbook & Memory lists
+    // Counts for Home
+    totalChats: Object.values(s.chats).filter(c => c.messages && c.messages.length > 0).length,
+    totalWorldbooks: s.worldbooks.length,
+    totalMemories: s.memories.length,
+    // Anniversary
+    annivDate: s.annivDate || '点击设置',
+    annivDays: self.getAnnivDays(),
+    // Worldbook & Memory
     wbList,
+    wbListHasItems: s.worldbooks.length > 0,
     memoryList,
+    memListHasItems: s.memories.length > 0,
     // Worldbook editor
     isWorldbookEditorSheet: s.sheet === 'wbEditor',
     wbEditName: s.wbEditName || '',
@@ -2186,6 +2043,12 @@ renderVals() {
     memEditTag: s.memEditTag || '',
     memEditPosBefore: s.memEditPosition === 'before',
     memEditPosAfter: s.memEditPosition === 'after',
+    // Avatar
+    avatarSize: s.avatarSize || 36,
+    userAvatar: s.userAvatar || '',
+    aiAvatar: s.aiAvatar || '',
+    hasUserAvatar: !!s.userAvatar,
+    hasAiAvatar: !!s.aiAvatar,
     // Pet
     petGif,
     petSize: this.currentPetSize,
@@ -2193,42 +2056,40 @@ renderVals() {
     petStatus: s.petEnabled ? 'On' : 'Off',
     petSizeLabel: this.currentPetSize + 'px',
     soundStatus: s.soundEnabled ? 'On' : 'Off',
-    memoryCount: s.memoryCount,
     memoryCountLabel: s.memoryCount + ' 条',
-    // Memory expand
-    memoryOpen: s.memory,
-    memRot: s.memory ? 'rotate(180deg)' : 'rotate(0deg)',
     // Overlays
     drawerOpen: s.drawer,
     plusOpen: s.plus,
     profileOpen: s.profile,
     styleOpen: s.style,
-    sheetOpen: !!s.sheet,
+    sheetOpen: !!s.sheet && s.sheet !== 'wbEditor' && s.sheet !== 'memEditor',
     isApiSheet: s.sheet === 'api',
     isAiSheet: s.sheet === 'ai',
     isPromptSheet: s.sheet === 'prompt',
-    isWorldbookSheet: s.sheet === 'worldbook',
-    isThoughtSheet: s.sheet === 'thought',
+    isCssSheet: s.sheet === 'css',
     toastShow: s.toastShow,
     toastText: s.toastText,
-    // Sheet panel styles
-    sheetPanelPos: s.sheet === 'thought' ? 'top:36px;bottom:0;left:0;right:0;' : 'bottom:0;left:0;right:0;',
-    sheetPanelBg: s.sheet === 'thought' ? 'rgba(255,255,255,0.92)' : '#F5F3EE',
-    sheetPanelRadius: s.sheet === 'thought' ? '18px 18px 0 0' : '16px 16px 0 0',
-    sheetPanelPad: s.sheet === 'thought' ? '0' : '12px 0 26px',
-    sheetPanelShadow: s.sheet === 'thought' ? '0 -8px 30px rgba(0,0,0,.06)' : 'none',
-    sheetPanelBlur: s.sheet === 'thought' ? 'backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);' : '',
-    sheetHandleW: s.sheet === 'thought' ? '0' : '36px',
-    sheetHandleMb: s.sheet === 'thought' ? '0' : '14px',
-    sheetOverlayBg: s.sheet === 'thought' ? 'transparent' : 'rgba(0,0,0,.18)',
+    // Nav backgrounds
+    navChatBg: s.tab === 'chat' ? '#ECEAE4' : 'transparent',
+    navHomeBg: s.tab === 'home' ? '#ECEAE4' : 'transparent',
+    navWbBg: s.tab === 'worldbook' ? '#ECEAE4' : 'transparent',
+    navMemBg: s.tab === 'memory' ? '#ECEAE4' : 'transparent',
+    navMoreBg: s.tab === 'more' ? '#ECEAE4' : 'transparent',
+    // Search
+    searchOpen: !!(s.searchQuery && s.searchQuery.trim()),
+    searchQuery: s.searchQuery || '',
+    searchResults: (s.searchResults || []).map(r => ({
+      ...r,
+      open: () => self.openSearchResult(r.chatId)
+    })),
     // API sheet
     apiOptions,
     apiName: apiDraft.name || '',
     apiModel: apiDraft.model || '',
     connectorUrl: apiDraft.url || '',
     accessValue: apiDraft.key || '',
-    apiDetailHint: apiDraft.apiType === 'anthropic' ? 'Anthropic format' : 'OpenAI format',
-    apiModelListHint: (apiDraft.models || []).length > 0 ? (apiDraft.models.length + ' models') : 'Click to fetch',
+    apiDetailHint: apiDraft.apiType === 'anthropic' ? 'Anthropic' : 'OpenAI',
+    apiModelListHint: (apiDraft.models || []).length > 0 ? (apiDraft.models.length + ' models') : '点击拉取',
     apiModelOptions,
     apiModelOptionsDisplay: (apiDraft.models || []).length > 0 ? 'flex' : 'none',
     isApiAdvanced: s.apiAdvanced,
@@ -2248,245 +2109,170 @@ renderVals() {
     noPrompts: (s.prompts || []).length === 0,
     promptEditName: s.promptEditName || '',
     promptEditContent: s.promptEditContent || '',
-    // Worldbook sheet (legacy simple)
-    wbPermanent: s.wbPermanent || '',
-    wbTriggers: s.wbTriggers || '',
     // Style sheet
     styleOptions,
     styleTitle: styleDraft.title || '',
     styleContent: styleDraft.content || '',
-    // Thought
-    thoughtText: s.currentThoughtText || '',
+    // CSS
+    customCss: s.customCss || '',
+    customFont: s.customFont || '',
 
     // ======== ACTIONS ========
     toggleDrawer: () => self.setState(v => ({ drawer: !v.drawer })),
     togglePlus: () => self.setState(v => ({ plus: !v.plus })),
-    toggleProfile: () => self.setState(v => ({ profile: !v.profile })),
-    toggleMemory: () => self.setState(v => ({ memory: !v.memory })),
-    navChat: () => { self.setState({ tab: 'chat', sub: null, drawer: false }); self.scrollToBottom(); },
-    navHome: () => self.setState({ tab: 'home', sub: null, drawer: false }),
-    navMore: () => self.setState({ tab: 'more', sub: null, drawer: false }),
-    navWorldbook: () => self.setState({ tab: 'worldbook', sub: null, drawer: false }),
-    navMemory: () => self.setState({ tab: 'memory', sub: null, drawer: false }),
-    openMoments: () => self.setState({ sub: 'moments' }),
-    openDiary: () => self.setState({ sub: 'diary' }),
-    openMood: () => self.setState({ sub: 'mood' }),
-    openAnniv: () => self.setState({ sub: 'anniversary' }),
-    closeSub: () => self.setState({ sub: null }),
+    toggleProfile: () => self.setState(v => ({ profile: !v.profile, drawer: false })),
+    navChat: () => { self.setState({ tab: 'chat', drawer: false }); self.scrollToBottom(); },
+    navHome: () => self.setState({ tab: 'home', drawer: false }),
+    navMore: () => self.setState({ tab: 'more', drawer: false }),
+    navWorldbook: () => self.setState({ tab: 'worldbook', drawer: false }),
+    navMemory: () => self.setState({ tab: 'memory', drawer: false }),
     newChat: () => self.newChat(),
-    pullCloud: () => self.show('仅本地存储'),
-    syncCloud: () => self.show('仅本地存储'),
-    githubBackup: () => self.exportData(),
-    textareaRef: (el) => self.textareaRef(el),
     // Input
     inputChange: (e) => self.setState({ input: e.target.value }),
     inputKey: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); self.sendMessage(); } },
     send: () => self.sendMessage(),
-    // File/Image
+    textareaRef: (el) => self.textareaRef(el),
+    // File
     pickImage: () => self.pickImageFile(),
     handleFileSelect: (e) => self.handleFile(e),
+    handleImportFile: (e) => self.handleImportFile(e),
     removeAttachment: () => self.setState({ attachment: null }),
     // Edit
     editTextChange: (e) => self.setState({ editText: e.target.value }),
     cancelEdit: () => self.setState({ editIdx: -1 }),
     saveEdit: () => {
-      const idx = s.editIdx;
-      if (idx < 0) return;
-      const chats = { ...s.chats };
-      const c = { ...chats[s.currentChatId] };
-      const newMsgs = [...c.messages];
-      const oldMsg = newMsgs[idx];
+      const idx = s.editIdx; if (idx < 0) return;
+      const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
+      const newMsgs = [...c.messages]; const oldMsg = newMsgs[idx];
       newMsgs[idx] = { ...oldMsg, text: s.editText, variants: [s.editText], variantIdx: 0 };
-      c.messages = newMsgs.slice(0, idx + 1);
-      chats[s.currentChatId] = c;
-      self.setState({ chats, editIdx: -1, input: '' });
-      self.persist();
-      if (oldMsg.role === 'user') {
-        self.setState({ isBusy: true });
-        self._regenerateFrom(s.currentChatId, c.messages, idx + 1);
-      }
+      c.messages = newMsgs.slice(0, idx + 1); chats[s.currentChatId] = c;
+      self.setState({ chats, editIdx: -1, input: '' }); self.persist();
+      if (oldMsg.role === 'user') { self.setState({ isBusy: true }); self._regenerateFrom(s.currentChatId, c.messages, null); }
     },
     // Sheets
-    closeSheet: () => self.setState({ sheet: null, plus: false, profile: false, promptEditId: null }),
+    closeSheet: () => self.setState({ sheet: null, promptEditId: null }),
     openApiSheet: () => self.setState({ sheet: 'api', plus: false, profile: false, apiDraft: { ...preset, models: [] } }),
     openAiSheet: () => self.setState({ sheet: 'ai', plus: false, profile: false, personaDraft: { ...persona } }),
     openPromptSheet: () => self.setState({ sheet: 'prompt', plus: false, profile: false, promptEditId: null }),
-    openWorldbookSheet: () => self.setState({ sheet: 'worldbook', plus: false, profile: false }),
+    openCssSheet: () => self.setState({ sheet: 'css', plus: false, profile: false }),
     openStyle: () => self.setState({ style: true, styleDraft: { ...styleObj } }),
     closeStyle: () => self.setState({ style: false }),
-    // Worldbook page actions
+    // Anniversary
+    openAnniv: () => {
+      const newDate = prompt('设置纪念日 (YYYY-MM-DD)', s.annivDate || '');
+      if (newDate !== null) { self.setState({ annivDate: newDate.trim() }); self.persist(); }
+    },
+    // Worldbook page
     newWorldbook: () => self.openWorldbookEditor(null),
-    // Worldbook editor actions
     wbEditNameChange: (e) => self.setState({ wbEditName: e.target.value }),
     wbEditContentChange: (e) => self.setState({ wbEditContent: e.target.value }),
     wbEditTriggersChange: (e) => self.setState({ wbEditTriggers: e.target.value }),
     wbEditAlwaysOnChange: (e) => self.setState({ wbEditAlwaysOn: e.target.checked }),
     wbEditWeightChange: (e) => self.setState({ wbEditWeight: e.target.value }),
-    wbEditPosBefore: () => self.setState({ wbEditPosition: 'before' }),
-    wbEditPosAfter: () => self.setState({ wbEditPosition: 'after' }),
+    wbEditSetPosBefore: () => self.setState({ wbEditPosition: 'before' }),
+    wbEditSetPosAfter: () => self.setState({ wbEditPosition: 'after' }),
     saveWorldbookEditor: () => self.saveWorldbookEditor(),
-    // Memory page actions
+    // Memory page
     newMemory: () => self.openMemoryEditor(null),
     generateMemoryFromChat: () => self.generateMemoryFromChat(),
-    // Memory editor actions
     memEditNameChange: (e) => self.setState({ memEditName: e.target.value }),
     memEditContentChange: (e) => self.setState({ memEditContent: e.target.value }),
     memEditTriggersChange: (e) => self.setState({ memEditTriggers: e.target.value }),
     memEditAlwaysOnChange: (e) => self.setState({ memEditAlwaysOn: e.target.checked }),
     memEditWeightChange: (e) => self.setState({ memEditWeight: e.target.value }),
     memEditTagChange: (e) => self.setState({ memEditTag: e.target.value }),
-    memEditPosBefore: () => self.setState({ memEditPosition: 'before' }),
-    memEditPosAfter: () => self.setState({ memEditPosition: 'after' }),
+    memEditSetPosBefore: () => self.setState({ memEditPosition: 'before' }),
+    memEditSetPosAfter: () => self.setState({ memEditPosition: 'after' }),
     saveMemoryEditor: () => self.saveMemoryEditor(),
     // API actions
     newApiDraft: () => {
       const id = genId();
       const newPreset = { id, name: 'New Preset', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: false };
-      const presets = [...s.apiPresets, newPreset];
-      self.setState({ apiPresets: presets, activePresetId: id, apiDraft: { ...newPreset, models: [] } });
-      self.persist();
-    },
-    fetchApiModels: () => self.fetchModels(),
-    saveApiDraft: () => {
-      const draft = s.apiDraft || {};
-      const presets = s.apiPresets.map(p => p.id === (draft.id || s.activePresetId) ? { ...p, name: draft.name || p.name, url: draft.url || p.url, key: draft.key || p.key, model: draft.model || p.model, apiType: draft.apiType || p.apiType } : p);
-      self.setState({ apiPresets: presets, sheet: null });
-      self.persist();
-      self.show('已保存');
-    },
-    deleteApiDraft: () => {
-      if (s.apiPresets.length <= 1) { self.show('Cannot delete last preset'); return; }
-      const presets = s.apiPresets.filter(p => p.id !== s.activePresetId);
-      self.setState({ apiPresets: presets, activePresetId: presets[0].id, sheet: null });
-      self.persist();
-      self.show('已删除');
-    },
-    apiNameChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), name: e.target.value } }),
-    apiModelChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), model: e.target.value } }),
-    connectorUrlChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), url: e.target.value } }),
-    accessValueChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), key: e.target.value } }),
-    setApiOpenAI: () => self.setState({ apiDraft: { ...(s.apiDraft || {}), apiType: 'openai' } }),
-    setApiAnthropic: () => self.setState({ apiDraft: { ...(s.apiDraft || {}), apiType: 'anthropic' } }),
-    toggleApiAdvanced: () => self.setState(v => ({ apiAdvanced: !v.apiAdvanced })),
-    // Persona actions
-    newPersona: () => {
-      const id = genId();
-      const newP = { id, name: 'New Persona', content: '' };
-      const personas = [...s.personas, newP];
-      self.setState({ personas, activePersonaId: id, personaDraft: { ...newP } });
-      self.persist();
-    },
-    personaNameChange: (e) => self.setState({ personaDraft: { ...(s.personaDraft || {}), name: e.target.value } }),
-    personaContentChange: (e) => self.setState({ personaDraft: { ...(s.personaDraft || {}), content: e.target.value } }),
-    savePersona: () => {
-      const draft = s.personaDraft || {};
-      const personas = s.personas.map(p => p.id === s.activePersonaId ? { ...p, name: draft.name || p.name, content: draft.content !== undefined ? draft.content : p.content } : p);
-      self.setState({ personas, sheet: null });
-      self.persist();
-      self.show('Persona saved');
-    },
-    deletePersona: () => {
-      if (s.personas.length <= 1) { self.show('Cannot delete last persona'); return; }
-      const personas = s.personas.filter(p => p.id !== s.activePersonaId);
-      self.setState({ personas, activePersonaId: personas[0].id, personaDraft: { ...personas[0] }, sheet: null });
-      self.persist();
-      self.show('已删除');
-    },
-    // Prompt actions
-    newPrompt: () => {
-      const id = genId();
-      self.setState({ promptEditId: id, promptEditName: '', promptEditContent: '' });
-    },
-    promptEditNameChange: (e) => self.setState({ promptEditName: e.target.value }),
-    promptEditContentChange: (e) => self.setState({ promptEditContent: e.target.value }),
-    savePromptEdit: () => {
-      const id = s.promptEditId;
-      const existing = (s.prompts || []).find(p => p.id === id);
-      let prompts;
-      if (existing) {
-        prompts = s.prompts.map(p => p.id === id ? { ...p, name: s.promptEditName, content: s.promptEditContent } : p);
-      } else {
-        prompts = [...(s.prompts || []), { id, name: s.promptEditName, content: s.promptEditContent }];
-      }
-      self.setState({ prompts, promptEditId: null });
-      self.persist();
-      self.show('已保存');
-    },
-    cancelPromptEdit: () => self.setState({ promptEditId: null }),
-    // Worldbook sheet (legacy simple) actions
-    wbPermanentChange: (e) => self.setState({ wbPermanent: e.target.value }),
-    wbTriggersChange: (e) => self.setState({ wbTriggers: e.target.value }),
-    saveWorldbook: () => {
-      self.persist();
-      self.setState({ sheet: null });
-      self.show('Worldbook saved');
-    },
-    // Style actions
-    styleTitleChange: (e) => self.setState({ styleDraft: { ...(s.styleDraft || {}), title: e.target.value } }),
-    styleContentChange: (e) => self.setState({ styleDraft: { ...(s.styleDraft || {}), content: e.target.value } }),
-    saveStyle: () => {
-      const draft = s.styleDraft || {};
-      const styles = s.styles.map(st => st.id === s.activeStyleId ? { ...st, title: draft.title || st.title, content: draft.content !== undefined ? draft.content : st.content } : st);
-      self.setState({ styles, style: false });
-      self.persist();
-      self.show('Style saved');
-    },
-    // Pet & Sound & Memory count
-    togglePet: () => {
-      const next = !s.petEnabled;
-      self.setState({ petEnabled: next });
-      self.persist();
-      self.show(next ? '小可' : '小可睡觉');
-    },
-    cyclePetSize: () => {
-      const next = (s.petSizeIdx + 1) % self.petSizes.length;
-      self.setState({ petSizeIdx: next });
-      self.persist();
-    },
-    toggleSound: () => {
-      const next = !s.soundEnabled;
-      self.setState({ soundEnabled: next });
-      self.persist();
-      self.show(next ? 'Sound on' : 'Sound off');
-    },
-    cycleMemoryCount: () => {
-      const options = [6, 10, 20, 30, 50];
-      const idx = options.indexOf(s.memoryCount);
-      const next = options[(idx + 1) % options.length];
-      self.setState({ memoryCount: next });
-      self.persist();
-      self.show('记忆读取: ' + next + ' 条');
-    },
-    // Export
-        // 头像
-    userAvatar: s.userAvatar || '',
-    aiAvatar: s.aiAvatar || '',
-    hasAiAvatar: !!s.aiAvatar,
-    pickUserAvatar: () => self.pickUserAvatar(),
-    pickAiAvatar: () => self.pickAiAvatar(),
-    // CSS
-    customCss: s.customCss || '',
-    customFont: s.customFont || '',
-    customCssChange: (e) => { self.setState({ customCss: e.target.value }); },
-    customFontChange: (e) => { self.setState({ customFont: e.target.value }); },
-    saveCssSettings: () => { self.persist(); self.applyCustomCss(); self.applyCustomFont(); self.show('样式已保存'); },
-    isCssSheet: s.sheet === 'css',
-    openCssSheet: () => self.setState({ sheet: 'css', plus: false }),
-    // 搜索
-    searchOpen: !!(s.searchQuery && s.searchQuery.trim()),
-    searchQuery: s.searchQuery || '',
-    searchResults: (s.searchResults || []).map(r => ({
-      ...r,
-      open: () => self.openSearchResult(r.chatId, r.msgIdx)
-    })),
-    toggleSearch: () => self.setState(v => ({ searchOpen: !v.searchOpen, searchQuery: '', searchResults: [] })),
-    searchChange: (e) => { self.setState({ searchQuery: e.target.value }); self.searchChats(e.target.value); },
-    exportData: () => self.exportData()
-  };
+      self.setState({ apiPresets: [...s.apiPresets, newPreset], activePresetId: id, apiDraft: { ...newPreset, models: [] } });
+self.persist();
+},
+fetchApiModels: () => self.fetchModels(),
+saveApiDraft: () => {
+const draft = s.apiDraft || {};
+const presets = s.apiPresets.map(p => p.id === (draft.id || s.activePresetId) ? { ...p, name: draft.name || p.name, url: draft.url || p.url, key: draft.key || p.key, model: draft.model || p.model, apiType: draft.apiType || p.apiType } : p);
+self.setState({ apiPresets: presets, sheet: null }); self.persist(); self.show('已保存');
+},
+deleteApiDraft: () => {
+if (s.apiPresets.length <= 1) { self.show('不能删除最后一个'); return; }
+const presets = s.apiPresets.filter(p => p.id !== s.activePresetId);
+self.setState({ apiPresets: presets, activePresetId: presets0.id, sheet: null }); self.persist(); self.show('已删除');
+},
+apiNameChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), name: e.target.value } }),
+apiModelChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), model: e.target.value } }),
+connectorUrlChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), url: e.target.value } }),
+accessValueChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), key: e.target.value } }),
+setApiOpenAI: () => self.setState({ apiDraft: { ...(s.apiDraft || {}), apiType: 'openai' } }),
+setApiAnthropic: () => self.setState({ apiDraft: { ...(s.apiDraft || {}), apiType: 'anthropic' } }),
+toggleApiAdvanced: () => self.setState(v => ({ apiAdvanced: !v.apiAdvanced })),
+// Persona actions
+newPersona: () => {
+const id = genId();
+const newP = { id, name: 'New Persona', content: '' };
+self.setState({ personas: [...s.personas, newP], activePersonaId: id, personaDraft: { ...newP } }); self.persist();
+},
+personaNameChange: (e) => self.setState({ personaDraft: { ...(s.personaDraft || {}), name: e.target.value } }),
+personaContentChange: (e) => self.setState({ personaDraft: { ...(s.personaDraft || {}), content: e.target.value } }),
+savePersona: () => {
+const draft = s.personaDraft || {};
+const personas = s.personas.map(p => p.id === s.activePersonaId ? { ...p, name: draft.name || p.name, content: draft.content !== undefined ? draft.content : p.content } : p);
+self.setState({ personas, sheet: null }); self.persist(); self.show('Persona saved');
+},
+deletePersona: () => {
+if (s.personas.length <= 1) { self.show('不能删除最后一个'); return; }
+const personas = s.personas.filter(p => p.id !== s.activePersonaId);
+self.setState({ personas, activePersonaId: personas0.id, personaDraft: { ...personas0 }, sheet: null }); self.persist(); self.show('已删除');
+},
+// Prompt actions
+newPrompt: () => { self.setState({ promptEditId: genId(), promptEditName: '', promptEditContent: '' }); },
+promptEditNameChange: (e) => self.setState({ promptEditName: e.target.value }),
+promptEditContentChange: (e) => self.setState({ promptEditContent: e.target.value }),
+savePromptEdit: () => {
+const id = s.promptEditId;
+const existing = (s.prompts || []).find(p => p.id === id);
+let prompts;
+if (existing) { prompts = s.prompts.map(p => p.id === id ? { ...p, name: s.promptEditName, content: s.promptEditContent } : p); }
+else { prompts = [...(s.prompts || []), { id, name: s.promptEditName, content: s.promptEditContent }]; }
+self.setState({ prompts, promptEditId: null }); self.persist(); self.show('已保存');
+},
+cancelPromptEdit: () => self.setState({ promptEditId: null }),
+// Style actions
+styleTitleChange: (e) => self.setState({ styleDraft: { ...(s.styleDraft || {}), title: e.target.value } }),
+styleContentChange: (e) => self.setState({ styleDraft: { ...(s.styleDraft || {}), content: e.target.value } }),
+saveStyle: () => {
+const draft = s.styleDraft || {};
+const styles = s.styles.map(st => st.id === s.activeStyleId ? { ...st, title: draft.title || st.title, content: draft.content !== undefined ? draft.content : st.content } : st);
+self.setState({ styles, style: false }); self.persist(); self.show('Style saved');
+},
+// Pet & Sound & Memory count
+togglePet: () => { const next = !s.petEnabled; self.setState({ petEnabled: next }); self.persist(); self.show(next ? '小可出现了' : '小可休息了'); },
+cyclePetSize: () => { const next = (s.petSizeIdx + 1) % self.petSizes.length; self.setState({ petSizeIdx: next }); self.persist(); },
+toggleSound: () => { const next = !s.soundEnabled; self.setState({ soundEnabled: next }); self.persist(); self.show(next ? 'Sound on' : 'Sound off'); },
+cycleMemoryCount: () => {
+const options = [6, 10, 20, 30, 50];
+const idx = options.indexOf(s.memoryCount);
+const next = options[(idx + 1) % options.length];
+self.setState({ memoryCount: next }); self.persist(); self.show('记忆读取: ' + next + ' 条');
+},
+// Export / Import
+exportData: () => self.exportData(),
+importData: () => self.importData(),
+// Avatar & CSS
+pickUserAvatar: () => self.pickUserAvatar(),
+pickAiAvatar: () => self.pickAiAvatar(),
+avatarSizeChange: (e) => { self.setState({ avatarSize: parseInt(e.target.value) || 36 }); self.persist(); },
+customCssChange: (e) => self.setState({ customCss: e.target.value }),
+customFontChange: (e) => self.setState({ customFont: e.target.value }),
+saveCssSettings: () => { self.persist(); self.applyCustomCss(); self.applyCustomFont(); self.setState({ sheet: null }); self.show('样式已保存'); },
+// Search
+searchChange: (e) => { self.setState({ searchQuery: e.target.value }); self.searchChats(e.target.value); }
+};
 }
 }
-    
 </script>
 </body>
 </html>
-<!-- PUBLIC-UI-BEAUTIFICATION-TEMPLATE -->
