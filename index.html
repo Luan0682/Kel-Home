@@ -83,11 +83,14 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <!-- thinking -->
 <sc-if value="{{ m.hasThink }}" hint-placeholder-val="{{ false }}">
 <div style="margin-bottom:14px;">
-<button onClick="{{ m.openThink }}" style="display:flex;align-items:center;gap:10px;width:100%;border:none;background:transparent;padding:4px 0;cursor:pointer;font-family:inherit;text-align:left;">
-<svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.55;"><circle cx="12" cy="12" r="8.5" stroke="#9A958B" stroke-width="1.4"/><path d="M12 8v4l2.5 1.5" stroke="#9A958B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="flex:1;font-size:13.5px;color:#9A958B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.thinkSummary }}</span>
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.45;"><path d="M9 6l6 6-6 6" stroke="#B8B3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</button>
+  <button onClick="{{ m.toggleThink }}" style="display:flex;align-items:center;gap:10px;width:100%;border:none;background:transparent;padding:4px 0;cursor:pointer;font-family:inherit;text-align:left;">
+    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.55;"><circle cx="12" cy="12" r="8.5" stroke="#9A958B" stroke-width="1.4"/><path d="M12 8v4l2.5 1.5" stroke="#9A958B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span style="flex:1;font-size:13.5px;color:#9A958B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.thinkSummary }}</span>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.45;transform:{{ m.thinkRot }};transition:transform .2s;"><path d="M9 6l6 6-6 6" stroke="#B8B3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
+  <sc-if value="{{ m.thinkOpen }}" hint-placeholder-val="{{ false }}">
+    <div style="margin-top:6px;padding:12px 14px;background:#F2EFE8;border-radius:12px;font-size:13px;line-height:1.7;color:#6B665E;white-space:pre-wrap;word-break:break-word;border-left:3px solid #D1CCC2;">{{ m.thinkContent }}</div>
+  </sc-if>
 </div>
 </sc-if>
 
@@ -134,12 +137,15 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
-<!-- user actions: edit -->
+<!-- user actions -->
 <sc-if value="{{ m.showUserActions }}" hint-placeholder-val="{{ false }}">
-<div style="display:flex;justify-content:flex-end;margin-top:6px;opacity:.45;">
-<button onClick="{{ m.edit }}" style="width:25px;height:25px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</button>
+<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px;opacity:.45;">
+  <button onClick="{{ m.copy }}" style="width:25px;height:25px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2.5" stroke="#48453E" stroke-width="1.5"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1" stroke="#48453E" stroke-width="1.5"/></svg>
+  </button>
+  <button onClick="{{ m.edit }}" style="width:25px;height:25px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </button>
 </div>
 </sc-if>
 
@@ -179,21 +185,26 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 
 <!-- input bar -->
-<div style="flex:none;padding:8px 14px calc(env(safe-area-inset-bottom, 0px) + 6px);">
+<div style="flex:none;padding:6px 14px calc(env(safe-area-inset-bottom, 0px) + 4px);">
 <!-- image preview -->
 <sc-if value="{{ hasAttachment }}" hint-placeholder-val="{{ false }}">
 <div style="padding:0 4px 8px;display:flex;align-items:center;gap:10px;">
-<div style="position:relative;width:56px;height:56px;border-radius:12px;overflow:hidden;border:1px solid #E7E3DA;">
-<img src="{{ attachmentPreview }}" style="width:100%;height:100%;object-fit:cover;" alt="">
-<button onClick="{{ removeAttachment }}" style="position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.55);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/></svg>
-</button>
-</div>
-<span style="font-size:12px;color:#9A958B;">Image attached</span>
+  <div style="position:relative;width:56px;height:56px;border-radius:12px;overflow:hidden;border:1px solid #E7E3DA;display:flex;align-items:center;justify-content:center;background:#F2EFE8;">
+    <sc-if value="{{ attachmentIsImage }}" hint-placeholder-val="{{ false }}">
+      <img src="{{ attachmentPreview }}" style="width:100%;height:100%;object-fit:cover;" alt="">
+    </sc-if>
+    <sc-if value="{{ !attachmentIsImage }}" hint-placeholder-val="{{ true }}">
+      <span style="font-size:22px;">📄</span>
+    </sc-if>
+    <button onClick="{{ removeAttachment }}" style="position:absolute;top:2px;right:2px;width:20px;height:20px;border-radius:50%;background:rgba(0,0,0,.55);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <span style="font-size:12px;color:#9A958B;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ attachmentFileName }}</span>
 </div>
 </sc-if>
-<div style="background:#FBFAF7;border:1px solid #E7E3DA;border-radius:26px;padding:17px 17px 12px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
-<textarea value="{{ input }}" onInput="{{ inputChange }}" onKeyDown="{{ inputKey }}" placeholder="Message companion..." rows="1" style="display:block;width:100%;min-height:30px;max-height:96px;border:none;background:transparent;resize:none;outline:none;font-family:inherit;font-size:16px;line-height:1.55;color:#2B2620;padding:2px 4px 17px;font-weight:300;"></textarea>
+<div style="background:#FBFAF7;border:1px solid #E7E3DA;border-radius:26px;padding:14px 17px 8px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
+<textarea value="{{ input }}" onInput="{{ inputChange }}" onKeyDown="{{ inputKey }}" placeholder="Message companion..." rows="1" style="display:block;width:100%;min-height:32px;max-height:calc(80vh - 180px);border:none;background:transparent;resize:none;outline:none;font-family:inherit;font-size:16px;line-height:1.6;color:#2B2620;padding:4px 4px 6px;font-weight:300;overflow-y:auto;" ref="{{ textareaRef }}"></textarea>
 <div style="display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:9px;">
 <button onClick="{{ togglePlus }}" style="width:32px;height:32px;border-radius:50%;background:#F2EFE8;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -371,6 +382,84 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
+<!-- ========== WORLDBOOK ========== -->
+<sc-if value="{{ isWorldbookPage }}" hint-placeholder-val="{{ false }}">
+<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
+
+  <div style="padding:4px 0 6px;">
+    <button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+
+  <div style="padding:6px 0 20px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">世界书</div>
+    <button onClick="{{ newWorldbook }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
+  </div>
+
+  <!-- 世界书列表 -->
+  <sc-if value="{{ wbList.length > 0 }}" hint-placeholder-val="{{ true }}">
+    <sc-for list="{{ wbList }}" as="wb" hint-placeholder-count="3">
+      <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ wb.open }}">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:10px;">
+            <span style="font-size:16px;font-weight:500;color:#1A1815;">{{ wb.name }}</span>
+            <span style="font-size:11px;color:#9A958B;background:#F2EFE8;border-radius:8px;padding:2px 8px;">{{ wb.triggerCount }} 触发</span>
+            <span style="font-size:11px;color:#9A958B;background:{{ wb.activeBg }};border-radius:8px;padding:2px 8px;">{{ wb.activeLabel }}</span>
+          </div>
+          <button onClick="{{ wb.del }}" style="border:none;background:transparent;padding:0;cursor:pointer;opacity:.35;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div style="font-size:13px;color:#9A958B;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ wb.preview }}</div>
+      </div>
+    </sc-for>
+  </sc-if>
+  <sc-if value="{{ wbList.length === 0 }}" hint-placeholder-val="{{ false }}">
+    <div style="text-align:center;padding:50px 0;color:#B8B3A8;font-size:14px;">还没有世界书，点击右上角新建</div>
+  </sc-if>
+</div>
+</sc-if>
+
+<!-- ========== MEMORY ========== -->
+<sc-if value="{{ isMemoryPage }}" hint-placeholder-val="{{ false }}">
+<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
+  <div style="padding:4px 0 6px;">
+    <button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
+    </button>
+  </div>
+  <div style="padding:6px 0 20px;display:flex;align-items:center;justify-content:space-between;">
+    <div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">记忆</div>
+    <div style="display:flex;gap:8px;">
+      <button onClick="{{ generateMemoryFromChat }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">✨ AI 总结</button>
+      <button onClick="{{ newMemory }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
+    </div>
+  </div>
+  <!-- 记忆列表 -->
+  <sc-if value="{{ memoryList.length > 0 }}" hint-placeholder-val="{{ true }}">
+    <sc-for list="{{ memoryList }}" as="mem" hint-placeholder-count="3">
+      <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ mem.open }}">
+        <div style="display:flex;align-items:center;justify-content:space-between;">
+          <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+            <span style="font-size:15px;font-weight:500;color:#1A1815;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ mem.name }}</span>
+            <span style="font-size:11px;color:#9A958B;background:#F2EFE8;border-radius:8px;padding:2px 8px;flex:none;">{{ mem.tag }}</span>
+            <span style="font-size:11px;color:#9A958B;background:{{ mem.activeBg }};border-radius:8px;padding:2px 8px;flex:none;">{{ mem.activeLabel }}</span>
+          </div>
+          <button onClick="{{ mem.del }}" style="border:none;background:transparent;padding:0;cursor:pointer;opacity:.35;flex:none;">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
+          </button>
+        </div>
+        <div style="font-size:13px;color:#6B665E;margin-top:6px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ mem.preview }}</div>
+      </div>
+    </sc-for>
+  </sc-if>
+  <sc-if value="{{ memoryList.length === 0 }}" hint-placeholder-val="{{ false }}">
+    <div style="text-align:center;padding:50px 0;color:#B8B3A8;font-size:14px;">还没有记忆，点击「AI 总结」从对话生成</div>
+  </sc-if>
+</div>
+</sc-if>
+
 <!-- ========== SUB PAGES ========== -->
 <sc-if value="{{ showSub }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;background:#F5F3EE;display:flex;flex-direction:column;animation:slideIn .25s ease both;">
@@ -441,6 +530,14 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="5" cy="6" r="1.5" fill="#48453E"/><circle cx="5" cy="12" r="1.5" fill="#48453E"/><circle cx="5" cy="18" r="1.5" fill="#48453E"/><path d="M10.5 6h9M10.5 12h9M10.5 18h9" stroke="#48453E" stroke-width="1.5" stroke-linecap="round"/></svg>
 <span>More</span>
 </div>
+  <div onClick="{{ navWorldbook }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 4h11a2 2 0 0 1 2 2v14H7a2 2 0 0 1-2-2V4Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 4v6l2-1.3L13 10V4" stroke="#48453E" stroke-width="1.4" stroke-linejoin="round"/></svg>
+    <span>世界书</span>
+  </div>
+  <div onClick="{{ navMemory }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;">
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span>记忆</span>
+  </div>
 </div>
 <!-- recents label -->
 <div style="padding:28px 24px 10px;font-size:12px;color:#B8B3A8;font-weight:600;letter-spacing:1px;">RECENTS</div>
@@ -723,6 +820,114 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
+<!-- Worldbook Editor Sheet -->
+<sc-if value="{{ isWorldbookEditorSheet }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:270;">
+  <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:88%;overflow-y:auto;">
+    <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <span style="font-size:16px;font-weight:600;color:#1A1815;">编辑世界书</span>
+      <button onClick="{{ saveWorldbookEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
+    </div>
+    <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
+      <!-- 名称 -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
+        <input value="{{ wbEditName }}" onInput="{{ wbEditNameChange }}" placeholder="世界书名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
+      </div>
+      <!-- 常驻激活 -->
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <input type="checkbox" checked="{{ wbEditAlwaysOn }}" onChange="{{ wbEditAlwaysOnChange }}" style="width:16px;height:16px;accent-color:#1A1815;">
+          常驻激活
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <span>权重</span>
+          <input value="{{ wbEditWeight }}" onInput="{{ wbEditWeightChange }}" type="number" min="0" max="10" step="0.5" style="width:50px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 6px;font-family:inherit;font-size:13px;text-align:center;">
+        </label>
+      </div>
+      <!-- 插入位置 -->
+      <div style="display:flex;gap:12px;margin-bottom:14px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <input type="radio" name="wbPos" value="before" checked="{{ wbEditPosBefore }}" onChange="{{ wbEditPosBefore }}" style="accent-color:#1A1815;">
+          字符前
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <input type="radio" name="wbPos" value="after" checked="{{ wbEditPosAfter }}" onChange="{{ wbEditPosAfter }}" style="accent-color:#1A1815;">
+          字符后
+        </label>
+      </div>
+      <!-- 触发关键词 -->
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个）</div>
+        <textarea value="{{ wbEditTriggers }}" onInput="{{ wbEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="3" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+      </div>
+      <!-- 内容 -->
+      <div>
+        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">内容（触发时插入）</div>
+        <textarea value="{{ wbEditContent }}" onInput="{{ wbEditContentChange }}" placeholder="触发后注入的设定、背景、规则……" rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- Memory Editor Sheet -->
+<sc-if value="{{ isMemoryEditorSheet }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:270;">
+  <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:88%;overflow-y:auto;">
+    <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+      <button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+      </button>
+      <span style="font-size:16px;font-weight:600;color:#1A1815;">编辑记忆</span>
+      <button onClick="{{ saveMemoryEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
+    </div>
+    <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
+        <input value="{{ memEditName }}" onInput="{{ memEditNameChange }}" placeholder="记忆名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <input type="checkbox" checked="{{ memEditAlwaysOn }}" onChange="{{ memEditAlwaysOnChange }}" style="width:16px;height:16px;accent-color:#1A1815;"> 常驻
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <span>权重</span>
+          <input value="{{ memEditWeight }}" onInput="{{ memEditWeightChange }}" type="number" min="0" max="10" step="0.5" style="width:50px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 6px;font-family:inherit;font-size:13px;text-align:center;">
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <span>标签</span>
+          <input value="{{ memEditTag }}" onInput="{{ memEditTagChange }}" placeholder="标签" style="width:80px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 8px;font-family:inherit;font-size:13px;">
+        </label>
+      </div>
+      <div style="display:flex;gap:12px;margin-bottom:14px;">
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <input type="radio" name="memPos" value="before" checked="{{ memEditPosBefore }}" onChange="{{ memEditPosBefore }}" style="accent-color:#1A1815;"> 字符前
+        </label>
+        <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+          <input type="radio" name="memPos" value="after" checked="{{ memEditPosAfter }}" onChange="{{ memEditPosAfter }}" style="accent-color:#1A1815;"> 字符后
+        </label>
+      </div>
+      <div style="margin-bottom:14px;">
+        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个，留空则常驻）</div>
+        <textarea value="{{ memEditTriggers }}" onInput="{{ memEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="2" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+      </div>
+      <div>
+        <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">内容</div>
+        <textarea value="{{ memEditContent }}" onInput="{{ memEditContentChange }}" placeholder="记忆内容……" rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+      </div>
+    </div>
+  </div>
+</div>
+</sc-if>
+
 <!-- Persona Sheet (with edit) -->
 <sc-if value="{{ isAiSheet }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="max-height:calc(82vh - 40px);overflow-y:auto;padding:0 16px 8px;">
@@ -855,7 +1060,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </sc-if>
 
 <!-- hidden file input -->
-<input type="file" accept="image/*" style="display:none;" id="kelFileInput" onChange="{{ handleFileSelect }}">
+<input type="file" accept=".txt,.html,.htm,.md,.zip,.json,.csv,.xml,.pdf,.doc,.docx" style="display:none;" id="kelFileInput" onChange="{{ handleFileSelect }}">
 
 </div>
 </x-dc>
@@ -908,6 +1113,24 @@ constructor(props) {
 super(props);
 const saved = loadData();
 this.state = {
+  thinkOpenMap: {},
+  worldbooks: saved.worldbooks || [],        // [{ id, name, content, triggers: [], alwaysOn, weight, position:'before'|'after' }]
+  wbEditId: null,
+  wbEditName: '',
+  wbEditContent: '',
+  wbEditTriggers: '',
+  wbEditAlwaysOn: false,
+  wbEditWeight: 1,
+  wbEditPosition: 'before',
+    memories: saved.memories || [],           // [{ id, name, content, triggers: [], alwaysOn, weight, position, tag }]
+  memEditId: null,
+  memEditName: '',
+  memEditContent: '',
+  memEditTriggers: '',
+  memEditAlwaysOn: false,
+  memEditWeight: 1,
+  memEditPosition: 'before',
+  memEditTag: '',
 tab: 'chat',
 sub: null,
 memory: false,
@@ -963,6 +1186,169 @@ if (!this.state.chats[this.state.currentChatId]) {
 this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: 'New Chat', messages: [], lastTime: Date.now() };
 }
 }
+textareaRef: (el) => {
+  if (el && !el._listener) {
+    el._listener = true;
+    const adjust = () => {
+      el.style.height = 'auto';
+      const maxHeight = window.innerHeight * 0.8 - 180;
+      el.style.height = Math.min(el.scrollHeight, maxHeight) + 'px';
+      if (el.scrollHeight > maxHeight) {
+        el.style.overflowY = 'auto';
+      } else {
+        el.style.overflowY = 'hidden';
+      }
+    };
+    el.addEventListener('input', adjust);
+    setTimeout(adjust, 50);
+  }
+},
+openWorldbookEditor(id) {
+  const wb = id ? this.state.worldbooks.find(w => w.id === id) : null;
+  this.setState({
+    sheet: 'wbEditor',
+    wbEditId: id || genId(),
+    wbEditName: wb ? wb.name : '',
+    wbEditContent: wb ? wb.content : '',
+    wbEditTriggers: wb ? (wb.triggers || []).join('\n') : '',
+    wbEditAlwaysOn: wb ? wb.alwaysOn : false,
+    wbEditWeight: wb ? wb.weight : 1,
+    wbEditPosition: wb ? wb.position : 'before'
+  });
+}
+openMemoryEditor(id) {
+  const mem = id ? this.state.memories.find(m => m.id === id) : null;
+  this.setState({
+    sheet: 'memEditor',
+    memEditId: id || genId(),
+    memEditName: mem ? mem.name : '',
+    memEditContent: mem ? mem.content : '',
+    memEditTriggers: mem ? (mem.triggers || []).join('\n') : '',
+    memEditAlwaysOn: mem ? mem.alwaysOn : false,
+    memEditWeight: mem ? mem.weight : 1,
+    memEditPosition: mem ? mem.position : 'before',
+    memEditTag: mem ? mem.tag : ''
+  });
+}
+saveMemoryEditor() {
+  const s = this.state;
+  const triggers = s.memEditTriggers.split('\n').map(t => t.trim()).filter(Boolean);
+  const newMem = {
+    id: s.memEditId || genId(),
+    name: s.memEditName || '未命名记忆',
+    content: s.memEditContent || '',
+    triggers,
+    alwaysOn: s.memEditAlwaysOn,
+    weight: parseFloat(s.memEditWeight) || 1,
+    position: s.memEditPosition || 'before',
+    tag: s.memEditTag || 'general',
+    createdAt: Date.now()
+  };
+  let memories = s.memories.filter(m => m.id !== newMem.id);
+  memories.push(newMem);
+  this.setState({ memories, sheet: null });
+  this.persist();
+  this.show('记忆已保存');
+}
+// 聊天区消息滚动
+scrollToBottom() {
+  setTimeout(() => {
+    const container = document.querySelector('.sa[style*="overflow-y:auto"]');
+    if (container) {
+      container.scrollTop = container.scrollHeight;
+    }
+    // 也尝试找消息区域
+    const msgArea = document.querySelector('.sa');
+    if (msgArea && msgArea.scrollHeight > msgArea.clientHeight) {
+      msgArea.scrollTop = msgArea.scrollHeight;
+    }
+  }, 80);
+}
+deleteMemory(id) {
+  const memories = this.state.memories.filter(m => m.id !== id);
+  this.setState({ memories });
+  this.persist();
+  this.show('已删除');
+}
+
+// 🆕 AI 自动生成记忆总结
+async generateMemoryFromChat() {
+  const chat = this.currentChat;
+  if (!chat.messages || chat.messages.length < 2) {
+    this.show('对话太短，至少需要一轮交流');
+    return;
+  }
+  this.setState({ isBusy: true });
+  try {
+    const preset = this.activePreset;
+    const sysPrompt = '你是一个记忆提炼助手。请根据以下对话，生成一条简洁的记忆条目（不超过200字），总结关键信息、人物关系或重要事件。直接输出记忆内容，不要加前缀。';
+    const userPrompt = chat.messages.map(m => (m.role === 'user' ? 'User: ' : 'AI: ') + m.text).join('\n');
+    const apiMessages = [{ role: 'user', content: userPrompt }];
+    const headers = { 'Content-Type': 'application/json' };
+    let url = preset.url, body;
+    if (preset.apiType === 'anthropic') {
+      headers['x-api-key'] = preset.key;
+      headers['anthropic-version'] = '2023-06-01';
+      url += '/messages';
+      body = { model: preset.model, max_tokens: 1024, messages: apiMessages, system: sysPrompt };
+    } else {
+      headers['Authorization'] = 'Bearer ' + preset.key;
+      url += '/chat/completions';
+      body = { model: preset.model, max_tokens: 1024, messages: [{ role: 'system', content: sysPrompt }, ...apiMessages] };
+    }
+    const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
+    if (!res.ok) throw new Error('API ' + res.status);
+    const data = await res.json();
+    let reply = preset.apiType === 'anthropic' ? data.content?.[0]?.text || '' : data.choices?.[0]?.message?.content || '';
+    if (reply.trim()) {
+      const newMem = {
+        id: genId(),
+        name: 'AI 记忆 ' + new Date().toLocaleDateString(),
+        content: reply.trim(),
+        triggers: [],
+        alwaysOn: false,
+        weight: 0.5,
+        position: 'before',
+        tag: 'auto',
+        createdAt: Date.now()
+      };
+      const memories = [...this.state.memories, newMem];
+      this.setState({ memories, isBusy: false });
+      this.persist();
+      this.show('AI 已生成一条记忆');
+    } else {
+      this.show('AI 未生成内容，请重试');
+    }
+  } catch(e) {
+    this.setState({ isBusy: false });
+    this.show('生成失败: ' + e.message);
+  }
+}
+saveWorldbookEditor() {
+  const s = this.state;
+  const triggers = s.wbEditTriggers.split('\n').map(t => t.trim()).filter(Boolean);
+  const newWb = {
+    id: s.wbEditId || genId(),
+    name: s.wbEditName || '未命名世界书',
+    content: s.wbEditContent || '',
+    triggers,
+    alwaysOn: s.wbEditAlwaysOn,
+    weight: parseFloat(s.wbEditWeight) || 1,
+    position: s.wbEditPosition || 'before'
+  };
+  let worldbooks = s.worldbooks.filter(w => w.id !== newWb.id);
+  worldbooks.push(newWb);
+  this.setState({ worldbooks, sheet: null });
+  this.persist();
+  this.show('世界书已保存');
+}
+
+deleteWorldbook(id) {
+  const worldbooks = this.state.worldbooks.filter(w => w.id !== id);
+  this.setState({ worldbooks });
+  this.persist();
+  this.show('已删除');
+}
 
 get currentChat() {
 return this.state.chats[this.state.currentChatId] || { messages: [] };
@@ -999,8 +1385,10 @@ currentChatId: s.currentChatId,
 chats: s.chats,
 petEnabled: s.petEnabled,
 petSizeIdx: s.petSizeIdx,
-      soundEnabled: s.soundEnabled,
-      memoryCount: s.memoryCount
+soundEnabled: s.soundEnabled,
+memoryCount: s.memoryCount,
+worldbooks: s.worldbooks,      // 🆕
+memories: s.memories           // 🆕
 });
 }
 
@@ -1050,11 +1438,28 @@ if (!preset.key) { this.show('请先设置 API Key'); return; }
 const chatId = this.state.currentChatId;
 const chats = { ...this.state.chats };
 const chat = { ...chats[chatId] };
-const newMsg = { role: 'user', text: text || '[image]', variants: [text || '[image]'], variantIdx: 0 };
-if (hasAttachment) {
-newMsg.image = this.state.attachment.base64;
-newMsg.imageMime = this.state.attachment.mimeType;
-newMsg.imageUrl = this.state.attachment.preview;
+const s = this.state;
+const newMsg = {
+  role: 'user',
+  text: text || '[File: ' + (s.attachment?.fileName || 'attachment') + ']',
+  variants: [text || '[File: ' + (s.attachment?.fileName || 'attachment') + ']'],
+  variantIdx: 0
+};
+if (s.attachment) {
+  newMsg.file = {
+    base64: s.attachment.base64,
+    mimeType: s.attachment.mimeType,
+    fileName: s.attachment.fileName,
+    fileSize: s.attachment.fileSize,
+    isImage: s.attachment.isImage,
+    isText: s.attachment.isText,
+    textContent: s.attachment.textContent
+  };
+  if (s.attachment.isImage) {
+    newMsg.image = s.attachment.base64;
+    newMsg.imageMime = s.attachment.mimeType;
+    newMsg.imageUrl = s.attachment.preview;
+  }
 }
 const msgs = [...chat.messages, newMsg];
 chat.messages = msgs;
@@ -1065,6 +1470,7 @@ chat.title = (text || 'Image').slice(0, 30) + ((text || '').length > 30 ? '...' 
 chats[chatId] = chat;
 this.setState({ input: '', attachment: null, chats, isBusy: true });
 this.persist();
+this.scrollToBottom();
 
 try {
 const sysPrompt = this.buildSystemPrompt();
@@ -1072,15 +1478,24 @@ let apiMessages;
 
 if (preset.apiType === 'anthropic') {
 apiMessages = msgs.map(m => {
-const content = [];
-if (m.image) {
-content.push({ type: 'image', source: { type: 'base64', media_type: m.imageMime || 'image/jpeg', data: m.image } });
-}
-const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
-if (t) content.push({ type: 'text', text: t });
-return { role: m.role === 'user' ? 'user' : 'assistant', content: content.length === 1 && content[0].type === 'text' ? t : content };
+  const content = [];
+  // 图片
+  if (m.image) {
+    content.push({ type: 'image', source: { type: 'base64', media_type: m.imageMime || 'image/jpeg', data: m.image } });
+  }
+  // 文件（文本类）
+  if (m.file && m.file.isText && m.file.textContent) {
+    content.push({ type: 'text', text: '[File: ' + m.file.fileName + ']\n' + m.file.textContent });
+  }
+  // 文件（二进制，只提示）
+  if (m.file && !m.file.isImage && !m.file.isText) {
+    content.push({ type: 'text', text: '[File: ' + m.file.fileName + '] (binary, ' + (m.file.fileSize / 1024).toFixed(1) + 'KB)' });
+  }
+  const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
+  if (t) content.push({ type: 'text', text: t });
+  return { role: m.role === 'user' ? 'user' : 'assistant', content: content.length === 1 && content[0].type === 'text' ? t : content };
 });
-} else {
+  } else {
 apiMessages = msgs.map(m => {
 const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
 if (m.image) {
@@ -1231,6 +1646,7 @@ const chat2 = { ...chats2[chatId] };
       chats[chatId] = chat;
       this.setState({ chats, isBusy: false, petState: 'happy' });
       this.persist();
+      this.scrollToBottom();
       if (this.state.soundEnabled) { try { new Audio('./notification.mp3').play(); } catch(e) {} }
       setTimeout(() => this.setState({ petState: 'idle' }), 3000);
     } catch(e) {
@@ -1245,11 +1661,13 @@ const chat2 = { ...chats2[chatId] };
     chats[id] = { id, title: 'New Chat', messages: [], lastTime: Date.now() };
     this.setState({ currentChatId: id, chats, drawer: false, tab: 'chat', input: '', attachment: null });
     this.persist();
+    this.scrollToBottom();
   }
 
   openChat(id) {
     this.setState({ currentChatId: id, drawer: false, tab: 'chat' });
     this.persist();
+    this.scrollToBottom();
   }
 
   deleteChat(id) {
@@ -1323,458 +1741,584 @@ const chat2 = { ...chats2[chatId] };
     if (input) input.click();
   }
 
-  handleFile(e) {
-    const file = e.target.files && e.target.files[0];
-    if (!file) return;
-    if (!file.type.startsWith('image/')) { this.show('Only images supported'); return; }
-    if (file.size > 5 * 1024 * 1024) { this.show('Max 5MB'); return; }
-    const reader = new FileReader();
+handleFile(e) {
+  const file = e.target.files && e.target.files[0];
+  if (!file) return;
+  const maxSize = 20 * 1024 * 1024; // 20MB
+  if (file.size > maxSize) { this.show('文件超过 20MB'); return; }
+  
+  // 判断是否为图片
+  const isImage = file.type.startsWith('image/');
+  // 判断是否为文本类文件
+  const textExts = ['.txt', '.html', '.htm', '.md', '.json', '.csv', '.xml'];
+  const isText = textExts.some(ext => file.name.toLowerCase().endsWith(ext));
+  
+  const reader = new FileReader();
+  if (isImage || isText) {
+    reader.onload = () => {
+      const result = reader.result;
+      const base64 = isImage ? result.split(',')[1] : btoa(unescape(encodeURIComponent(result)));
+      this.setState({
+        attachment: {
+          base64,
+          mimeType: file.type || 'application/octet-stream',
+          preview: isImage ? result : null,
+          fileName: file.name,
+          fileSize: file.size,
+          isImage,
+          isText,
+          textContent: isText ? result : null
+        },
+        plus: false
+      });
+    };
+    if (isImage) reader.readAsDataURL(file);
+    else reader.readAsText(file);
+  } else {
+    // 二进制文件（zip 等）直接读 base64
     reader.onload = () => {
       const base64 = reader.result.split(',')[1];
-      this.setState({ attachment: { base64, mimeType: file.type, preview: reader.result }, plus: false });
+      this.setState({
+        attachment: {
+          base64,
+          mimeType: file.type || 'application/octet-stream',
+          preview: null,
+          fileName: file.name,
+          fileSize: file.size,
+          isImage: false,
+          isText: false,
+          textContent: null
+        },
+        plus: false
+      });
     };
     reader.readAsDataURL(file);
-    e.target.value = '';
   }
-
-  renderVals() {
-    const s = this.state;
-    const chat = this.currentChat;
-    const msgs = chat.messages || [];
-    const preset = this.activePreset;
-    const persona = this.activePersona;
-    const styleObj = this.activeStyleObj;
-
-    const messages = msgs.map((m, i) => {
-      const isUser = m.role === 'user';
-      const isLast = i === msgs.length - 1;
-      const variants = m.variants || [m.text];
-      const vIdx = m.variantIdx || 0;
-      const displayText = variants[vIdx] || m.text;
-      return {
-        align: isUser ? 'flex-end' : 'flex-start',
-        maxW: isUser ? '82%' : '100%',
-        fullW: 'auto',
-        bg: isUser ? '#ECEAE4' : 'transparent',
-        color: '#2B2620',
-        radius: isUser ? '22px' : '0',
-        pad: isUser ? '12px 18px' : '0 2px',
-        gap: '24px',
-        text: displayText,
-        hasThink: !isUser && !!m.thinking,
-        thinkSummary: m.thinking ? '思考过程 (' + m.thinking.length + ' 字符)' : '',
-        openThink: () => this.setState({ sheet: 'thought', currentThoughtText: m.thinking || '' }),
-        hasMemory: !isUser && i === 0 && !!buildMemorySummary(s.chats, s.currentChatId),
-        memoryList: !isUser && i === 0 ? [{ text: '来自上一轮对话的记忆摘要', tag: 'auto' }] : [],
-        hasImage: !!m.imageUrl,
-        imageUrl: m.imageUrl || '',
-        showNormal: s.editIdx !== i,
-        showEdit: s.editIdx === i,
-        showActions: !isUser && isLast && !s.isBusy,
-        showUserActions: isUser && !s.isBusy,
-        variantText: variants.length > 1 ? (vIdx + 1) + ' / ' + variants.length : '1 / 1',
-        copy: () => { navigator.clipboard.writeText(displayText).then(() => this.show('Copied')); },
-        refresh: () => this.regenerate(i),
-        prev: () => {
-          if (vIdx > 0) {
-            const chats = { ...s.chats };
-            const c = { ...chats[s.currentChatId] };
-            const newMsgs = [...c.messages];
-            newMsgs[i] = { ...newMsgs[i], variantIdx: vIdx - 1 };
-            c.messages = newMsgs;
-            chats[s.currentChatId] = c;
-            this.setState({ chats });
-            this.persist();
-          }
-        },
-        next: () => {
-          if (vIdx < variants.length - 1) {
-            const chats = { ...s.chats };
-            const c = { ...chats[s.currentChatId] };
-            const newMsgs = [...c.messages];
-            newMsgs[i] = { ...newMsgs[i], variantIdx: vIdx + 1 };
-            c.messages = newMsgs;
-            chats[s.currentChatId] = c;
-            this.setState({ chats });
-            this.persist();
-          }
-        },
-        edit: () => this.setState({ editIdx: i, editText: displayText })
-      };
-    });
-
-    const chatList = Object.values(s.chats)
-      .filter(c => c.messages && c.messages.length > 0)
-      .sort((a, b) => (b.lastTime || 0) - (a.lastTime || 0))
-      .slice(0, 30);
-    const recentChats = chatList.map(c => ({
-      title: c.title || 'New Chat',
-      open: () => this.openChat(c.id),
-      del: (e) => { e.stopPropagation(); this.deleteChat(c.id); },
-      rename: (e) => {
-        e.stopPropagation();
-        const newName = prompt('修改标题', c.title || '');
-        if (newName !== null && newName.trim()) {
-          const chats = { ...s.chats };
-          chats[c.id] = { ...chats[c.id], title: newName.trim() };
-          this.setState({ chats });
-          this.persist();
-        }
-      }
-    }));
-
-    // API preset options
-    const apiDraft = s.apiDraft || preset;
-    const apiOptions = s.apiPresets.map(p => ({
-      title: p.name || 'Untitled',
-      model: p.model || '',
-      bg: p.id === s.activePresetId ? '#1A1815' : '#FFF',
-      bd: p.id === s.activePresetId ? '#1A1815' : '#E7E3DA',
-      fg: p.id === s.activePresetId ? '#F5F3EE' : '#2B2620',
-      subFg: p.id === s.activePresetId ? '#D8D3CA' : '#9A958B',
-      badgeDisplay: p.isDefault ? 'inline-flex' : 'none',
-      badgeBg: '#F2EFE8',
-      badgeFg: '#6B665E',
-      pick: () => {
-        this.setState({ activePresetId: p.id, apiDraft: { ...p, models: [] } });
-        this.persist();
-      }
-    }));
-
-    // Persona options
-    const personaDraft = s.personaDraft || persona;
-    const personaOptions = s.personas.map(p => ({
-      name: p.name || 'Untitled',
-      bg: p.id === s.activePersonaId ? '#1A1815' : '#FFF',
-      bd: p.id === s.activePersonaId ? '#1A1815' : '#E7E3DA',
-      fg: p.id === s.activePersonaId ? '#F5F3EE' : '#2B2620',
-      pick: () => {
-        this.setState({ activePersonaId: p.id, personaDraft: { ...p } });
-        this.persist();
-      }
-    }));
-
-    // Prompt options
-    const promptOptions = (s.prompts || []).map(p => ({
-      name: p.name || 'Untitled',
-      preview: (p.content || '').slice(0, 60),
-      use: () => { this.setState({ input: p.content || '', sheet: null }); },
-      edit: () => { this.setState({ promptEditId: p.id, promptEditName: p.name || '', promptEditContent: p.content || '' }); },
-      del: (e) => {
-        e.stopPropagation();
-        const prompts = s.prompts.filter(x => x.id !== p.id);
-        this.setState({ prompts });
-        this.persist();
-        this.show('已删除');
-      }
-    }));
-
-    // Style options
-    const styleDraft = s.styleDraft || styleObj;
-    const styleOptions = s.styles.map(st => ({
-      name: st.title || 'Untitled',
-      bg: st.id === s.activeStyleId ? '#1A1815' : '#FFF',
-      bd: st.id === s.activeStyleId ? '#1A1815' : '#E7E3DA',
-      fg: st.id === s.activeStyleId ? '#F5F3EE' : '#2B2620',
-      pick: () => {
-        this.setState({ activeStyleId: st.id, styleDraft: { ...st } });
-        this.persist();
-      }
-    }));
-
-    // API model options from draft
-    const apiModelOptions = (apiDraft.models || []).map(m => ({
-      name: m,
-      bg: m === apiDraft.model ? '#1A1815' : '#FFF',
-      bd: m === apiDraft.model ? '#1A1815' : '#E7E3DA',
-      fg: m === apiDraft.model ? '#F5F3EE' : '#2B2620',
-      pick: () => this.setState({ apiDraft: { ...this.state.apiDraft, model: m } })
-    }));
-
-    // Pet
-    const petGif = s.isBusy ? './sprites/clawd-thinking.gif' : (s.petState === 'happy' ? './sprites/clawd-happy.gif' : './sprites/clawd-idle.gif');
-
-    return {
-      true: true, false: false,
-      // Page routing
-      isChat: s.tab === 'chat' && !s.sub,
-      isHome: s.tab === 'home' && !s.sub,
-      isMore: s.tab === 'more' && !s.sub,
-      showSub: !!s.sub,
-      isMoments: s.sub === 'moments',
-      isDiary: s.sub === 'diary',
-      isMood: s.sub === 'mood',
-      isAnniv: s.sub === 'anniversary',
-      subTitle: ({ moments: 'Moments', diary: 'Diary / Letters', mood: 'Mood', anniversary: 'Anniversaries' }[s.sub] || ''),
-      // Messages
-      messages,
-      recentChats,
-      homeGreeting: getGreeting(),
-      isBusy: s.isBusy,
-      input: s.input,
-      editText: s.editText,
-      // Attachment
-      hasAttachment: !!s.attachment,
-      attachmentPreview: s.attachment ? s.attachment.preview : '',
-      // Active labels
-      activeModel: preset.model || 'Not set',
-      activeStyle: styleObj.title || 'Default',
-      activeCompanion: persona.name || 'Kel',
-      wbHint: s.wbPermanent ? (s.wbPermanent.length + ' chars') : 'Not set',
-      promptCount: (s.prompts || []).length + ' items',
-      // Pet
-      petGif,
-      petSize: this.currentPetSize,
-      petEnabled: s.petEnabled,
-      petStatus: s.petEnabled ? 'On' : 'Off',
-      petSizeLabel: this.currentPetSize + 'px',
-      soundStatus: s.soundEnabled ? 'On' : 'Off',
-      memoryCount: s.memoryCount,
-      memoryCountLabel: s.memoryCount + ' 条',
-      // Memory
-      memoryOpen: s.memory,
-      memRot: s.memory ? 'rotate(180deg)' : 'rotate(0deg)',
-      // Overlays
-      drawerOpen: s.drawer,
-      plusOpen: s.plus,
-      profileOpen: s.profile,
-      styleOpen: s.style,
-      sheetOpen: !!s.sheet,
-      isApiSheet: s.sheet === 'api',
-      isAiSheet: s.sheet === 'ai',
-      isPromptSheet: s.sheet === 'prompt',
-      isWorldbookSheet: s.sheet === 'worldbook',
-      isThoughtSheet: s.sheet === 'thought',
-      toastShow: s.toastShow,
-      toastText: s.toastText,
-      // Sheet panel styles
-      sheetPanelPos: s.sheet === 'thought' ? 'top:36px;bottom:0;left:0;right:0;' : 'bottom:0;left:0;right:0;',
-      sheetPanelBg: s.sheet === 'thought' ? 'rgba(255,255,255,0.92)' : '#F5F3EE',
-      sheetPanelRadius: s.sheet === 'thought' ? '18px 18px 0 0' : '16px 16px 0 0',
-      sheetPanelPad: s.sheet === 'thought' ? '0' : '12px 0 26px',
-      sheetPanelShadow: s.sheet === 'thought' ? '0 -8px 30px rgba(0,0,0,.06)' : 'none',
-      sheetPanelBlur: s.sheet === 'thought' ? 'backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);' : '',
-      sheetHandleW: s.sheet === 'thought' ? '0' : '36px',
-      sheetHandleMb: s.sheet === 'thought' ? '0' : '14px',
-      sheetOverlayBg: s.sheet === 'thought' ? 'transparent' : 'rgba(0,0,0,.18)',
-      // API sheet
-      apiOptions,
-      apiName: apiDraft.name || '',
-      apiModel: apiDraft.model || '',
-      connectorUrl: apiDraft.url || '',
-      accessValue: apiDraft.key || '',
-      apiDetailHint: apiDraft.apiType === 'anthropic' ? 'Anthropic format' : 'OpenAI format',
-      apiModelListHint: (apiDraft.models || []).length > 0 ? (apiDraft.models.length + ' models') : 'Click to fetch',
-      apiModelOptions,
-      apiModelOptionsDisplay: (apiDraft.models || []).length > 0 ? 'flex' : 'none',
-      isApiAdvanced: s.apiAdvanced,
-      apiAdvancedRot: s.apiAdvanced ? 'rotate(180deg)' : 'rotate(0deg)',
-      apiOpenAiBg: apiDraft.apiType === 'openai' ? '#1A1815' : '#FFF',
-      apiOpenAiBd: apiDraft.apiType === 'openai' ? '#1A1815' : '#E7E3DA',
-      apiAnthropicBg: apiDraft.apiType !== 'openai' ? '#1A1815' : '#FFF',
-      apiAnthropicBd: apiDraft.apiType !== 'openai' ? '#1A1815' : '#E7E3DA',
-      // Persona sheet
-      personaOptions,
-      personaName: personaDraft.name || '',
-      personaContent: personaDraft.content || '',
-      // Prompt sheet
-      promptOptions,
-      showPromptList: !s.promptEditId,
-      showPromptEdit: !!s.promptEditId,
-      noPrompts: (s.prompts || []).length === 0,
-      promptEditName: s.promptEditName || '',
-      promptEditContent: s.promptEditContent || '',
-      // Worldbook
-      wbPermanent: s.wbPermanent || '',
-      wbTriggers: s.wbTriggers || '',
-      // Style sheet
-      styleOptions,
-      styleTitle: styleDraft.title || '',
-      styleContent: styleDraft.content || '',
-      // Thought
-      thoughtText: s.currentThoughtText || '',
-
-      // ======== ACTIONS ========
-      toggleDrawer: () => this.setState(v => ({ drawer: !v.drawer })),
-      togglePlus: () => this.setState(v => ({ plus: !v.plus })),
-      toggleProfile: () => this.setState(v => ({ profile: !v.profile })),
-      toggleMemory: () => this.setState(v => ({ memory: !v.memory })),
-      navChat: () => this.setState({ tab: 'chat', sub: null, drawer: false }),
-      navHome: () => this.setState({ tab: 'home', sub: null, drawer: false }),
-      navMore: () => this.setState({ tab: 'more', sub: null, drawer: false }),
-      openMoments: () => this.setState({ sub: 'moments' }),
-      openDiary: () => this.setState({ sub: 'diary' }),
-      openMood: () => this.setState({ sub: 'mood' }),
-      openAnniv: () => this.setState({ sub: 'anniversary' }),
-      closeSub: () => this.setState({ sub: null }),
-      newChat: () => this.newChat(),
-      pullCloud: () => this.show('Local storage only'),
-      syncCloud: () => this.show('Local storage only'),
-      githubBackup: () => this.exportData(),
-      // Input
-      inputChange: (e) => this.setState({ input: e.target.value }),
-      inputKey: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); this.sendMessage(); } },
-      send: () => this.sendMessage(),
-      // Image
-      pickImage: () => this.pickImageFile(),
-      handleFileSelect: (e) => this.handleFile(e),
-      removeAttachment: () => this.setState({ attachment: null }),
-      // Edit
-      editTextChange: (e) => this.setState({ editText: e.target.value }),
-      cancelEdit: () => this.setState({ editIdx: -1 }),
-      saveEdit: () => {
-        const idx = s.editIdx;
-        if (idx < 0) return;
-        const chats = { ...s.chats };
-        const chat = { ...chats[s.currentChatId] };
-        const newMsgs = [...chat.messages];
-        const m = { ...newMsgs[idx] };
-        m.text = s.editText;
-        m.variants = [s.editText];
-        m.variantIdx = 0;
-        newMsgs[idx] = m;
-        chat.messages = newMsgs.slice(0, idx + 1);
-        chats[s.currentChatId] = chat;
-        this.setState({ chats, editIdx: -1, input: '' });
-        this.persist();
-        if (newMsgs[idx].role === 'user') {
-          this.setState({ isBusy: true });
-          this._regenerateFrom(s.currentChatId, chat.messages, idx + 1);
-        }
-      },
-      // Sheets
-      closeSheet: () => this.setState({ sheet: null, plus: false, profile: false, promptEditId: null }),
-      openApiSheet: () => this.setState({ sheet: 'api', plus: false, profile: false, apiDraft: { ...preset, models: [] } }),
-      openAiSheet: () => this.setState({ sheet: 'ai', plus: false, profile: false, personaDraft: { ...persona } }),
-      openPromptSheet: () => this.setState({ sheet: 'prompt', plus: false, profile: false, promptEditId: null }),
-      openWorldbookSheet: () => this.setState({ sheet: 'worldbook', plus: false, profile: false }),
-      openStyle: () => this.setState({ style: true, styleDraft: { ...styleObj } }),
-      closeStyle: () => this.setState({ style: false }),
-      // API actions
-      newApiDraft: () => {
-        const id = genId();
-        const newPreset = { id, name: 'New Preset', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: false };
-        const presets = [...s.apiPresets, newPreset];
-        this.setState({ apiPresets: presets, activePresetId: id, apiDraft: { ...newPreset, models: [] } });
-        this.persist();
-      },
-      fetchApiModels: () => this.fetchModels(),
-      saveApiDraft: () => {
-        const draft = s.apiDraft || {};
-        const presets = s.apiPresets.map(p => p.id === (draft.id || s.activePresetId) ? { ...p, name: draft.name || p.name, url: draft.url || p.url, key: draft.key || p.key, model: draft.model || p.model, apiType: draft.apiType || p.apiType } : p);
-        this.setState({ apiPresets: presets, sheet: null });
-        this.persist();
-        this.show('已保存');
-      },
-      deleteApiDraft: () => {
-        if (s.apiPresets.length <= 1) { this.show('Cannot delete last preset'); return; }
-        const presets = s.apiPresets.filter(p => p.id !== s.activePresetId);
-        this.setState({ apiPresets: presets, activePresetId: presets[0].id, sheet: null });
-        this.persist();
-        this.show('已删除');
-      },
-      apiNameChange: (e) => this.setState({ apiDraft: { ...(s.apiDraft || {}), name: e.target.value } }),
-      apiModelChange: (e) => this.setState({ apiDraft: { ...(s.apiDraft || {}), model: e.target.value } }),
-      connectorUrlChange: (e) => this.setState({ apiDraft: { ...(s.apiDraft || {}), url: e.target.value } }),           
-      accessValueChange: (e) => this.setState({ apiDraft: { ...(s.apiDraft || {}), key: e.target.value } }),
-      setApiOpenAI: () => this.setState({ apiDraft: { ...(s.apiDraft || {}), apiType: 'openai' } }),
-      setApiAnthropic: () => this.setState({ apiDraft: { ...(s.apiDraft || {}), apiType: 'anthropic' } }),
-      toggleApiAdvanced: () => this.setState(v => ({ apiAdvanced: !v.apiAdvanced })),
-      // Persona actions
-      newPersona: () => {
-        const id = genId();
-        const newP = { id, name: 'New Persona', content: '' };
-        const personas = [...s.personas, newP];
-        this.setState({ personas, activePersonaId: id, personaDraft: { ...newP } });
-        this.persist();
-      },
-      personaNameChange: (e) => this.setState({ personaDraft: { ...(s.personaDraft || {}), name: e.target.value } }),
-      personaContentChange: (e) => this.setState({ personaDraft: { ...(s.personaDraft || {}), content: e.target.value } }),
-      savePersona: () => {
-        const draft = s.personaDraft || {};
-        const personas = s.personas.map(p => p.id === s.activePersonaId ? { ...p, name: draft.name || p.name, content: draft.content !== undefined ? draft.content : p.content } : p);
-        this.setState({ personas, sheet: null });
-        this.persist();
-        this.show('Persona saved');
-      },
-      deletePersona: () => {
-        if (s.personas.length <= 1) { this.show('Cannot delete last persona'); return; }
-        const personas = s.personas.filter(p => p.id !== s.activePersonaId);
-        this.setState({ personas, activePersonaId: personas[0].id, personaDraft: { ...personas[0] }, sheet: null });
-        this.persist();
-        this.show('已删除');
-      },
-      // Prompt actions
-      newPrompt: () => {
-        const id = genId();
-        this.setState({ promptEditId: id, promptEditName: '', promptEditContent: '' });
-      },
-      promptEditNameChange: (e) => this.setState({ promptEditName: e.target.value }),
-      promptEditContentChange: (e) => this.setState({ promptEditContent: e.target.value }),
-      savePromptEdit: () => {
-        const id = s.promptEditId;
-        const existing = (s.prompts || []).find(p => p.id === id);
-        let prompts;
-        if (existing) {
-          prompts = s.prompts.map(p => p.id === id ? { ...p, name: s.promptEditName, content: s.promptEditContent } : p);
-        } else {
-          prompts = [...(s.prompts || []), { id, name: s.promptEditName, content: s.promptEditContent }];
-        }
-        this.setState({ prompts, promptEditId: null });
-        this.persist();
-        this.show('已保存');
-      },
-      cancelPromptEdit: () => this.setState({ promptEditId: null }),
-      // Worldbook actions
-      wbPermanentChange: (e) => this.setState({ wbPermanent: e.target.value }),
-      wbTriggersChange: (e) => this.setState({ wbTriggers: e.target.value }),
-      saveWorldbook: () => {
-        this.persist();
-        this.setState({ sheet: null });
-        this.show('Worldbook saved');
-      },
-      // Style actions
-      styleTitleChange: (e) => this.setState({ styleDraft: { ...(s.styleDraft || {}), title: e.target.value } }),
-      styleContentChange: (e) => this.setState({ styleDraft: { ...(s.styleDraft || {}), content: e.target.value } }),
-      saveStyle: () => {
-        const draft = s.styleDraft || {};
-        const styles = s.styles.map(st => st.id === s.activeStyleId ? { ...st, title: draft.title || st.title, content: draft.content !== undefined ? draft.content : st.content } : st);
-        this.setState({ styles, style: false });
-        this.persist();
-        this.show('Style saved');
-      },
-      // Pet & Sound
-      togglePet: () => {
-        const next = !s.petEnabled;
-        this.setState({ petEnabled: next });
-        this.persist();
-        this.show(next ? 'Pet on' : 'Pet off');
-      },
-      cyclePetSize: () => {
-        const next = (s.petSizeIdx + 1) % this.petSizes.length;
-        this.setState({ petSizeIdx: next });
-        this.persist();
-      },
-      toggleSound: () => {
-        const next = !s.soundEnabled;
-        this.setState({ soundEnabled: next });
-        this.persist();
-        this.show(next ? 'Sound on' : 'Sound off');
-      }, 
-        cycleMemoryCount: () => {
-        const options = [6, 10, 20, 30, 50];
-        const idx = options.indexOf(s.memoryCount);
-        const next = options[(idx + 1) % options.length];
-        this.setState({ memoryCount: next });
-        this.persist();
-        this.show('记忆读取: ' + next + ' 条');
-      },
-
-      // Export
-      exportData: () => this.exportData()
-    };
-  }
+  e.target.value = '';
 }
+
+renderVals() {
+  const s = this.state;
+  const chat = this.currentChat;
+  const msgs = chat.messages || [];
+  const preset = this.activePreset;
+  const persona = this.activePersona;
+  const styleObj = this.activeStyleObj;
+  const self = this;
+
+  const messages = msgs.map((m, i) => {
+    const isUser = m.role === 'user';
+    const isLast = i === msgs.length - 1;
+    const variants = m.variants || [m.text];
+    const vIdx = m.variantIdx || 0;
+    const displayText = variants[vIdx] || m.text;
+    return {
+      isUser,
+      isLast,
+      variants,
+      vIdx,
+      displayText,
+      hasThink: !isUser && !!m.thinking,
+      thinkSummary: m.thinking ? '思考过程 (' + m.thinking.length + '字)' : '',
+      thinkContent: m.thinking || '',
+      thinkOpen: s.thinkOpenMap && s.thinkOpenMap[i] || false,
+      thinkRot: (s.thinkOpenMap && s.thinkOpenMap[i]) ? 'rotate(180deg)' : 'rotate(0deg)',
+      toggleThink: () => {
+        const map = { ...(s.thinkOpenMap || {}) };
+        map[i] = !map[i];
+        self.setState({ thinkOpenMap: map });
+      },
+      openThink: () => self.setState({ sheet: 'thought', currentThoughtText: m.thinking || '' }),
+      align: isUser ? 'flex-end' : 'flex-start',
+      maxW: isUser ? '82%' : '100%',
+      fullW: 'auto',
+      bg: isUser ? '#ECEAE4' : 'transparent',
+      color: '#2B2620',
+      radius: isUser ? '22px' : '0',
+      pad: isUser ? '12px 18px' : '0 2px',
+      gap: '24px',
+      text: displayText,
+      hasMemory: !isUser && i === 0 && !!buildMemorySummary(s.chats, s.currentChatId),
+      memoryList: !isUser && i === 0 ? [{ text: '来自上一轮对话的记忆摘要', tag: 'auto' }] : [],
+      hasImage: !!m.imageUrl,
+      imageUrl: m.imageUrl || '',
+      showNormal: s.editIdx !== i,
+      showEdit: s.editIdx === i,
+      showActions: !isUser && isLast && !s.isBusy,
+      showUserActions: isUser && !s.isBusy,
+      variantText: variants.length > 1 ? (vIdx + 1) + ' / ' + variants.length : '1 / 1',
+      copy: () => { navigator.clipboard.writeText(displayText).then(() => self.show('Copied')); },
+      refresh: () => self.regenerate(i),
+      prev: () => {
+        if (vIdx > 0) {
+          const chats = { ...s.chats };
+          const c = { ...chats[s.currentChatId] };
+          const newMsgs = [...c.messages];
+          newMsgs[i] = { ...newMsgs[i], variantIdx: vIdx - 1 };
+          c.messages = newMsgs;
+          chats[s.currentChatId] = c;
+          self.setState({ chats });
+          self.persist();
+        }
+      },
+      next: () => {
+        if (vIdx < variants.length - 1) {
+          const chats = { ...s.chats };
+          const c = { ...chats[s.currentChatId] };
+          const newMsgs = [...c.messages];
+          newMsgs[i] = { ...newMsgs[i], variantIdx: vIdx + 1 };
+          c.messages = newMsgs;
+          chats[s.currentChatId] = c;
+          self.setState({ chats });
+          self.persist();
+        }
+      },
+      edit: () => self.setState({ editIdx: i, editText: displayText })
+    };
+  });
+
+  const chatList = Object.values(s.chats)
+    .filter(c => c.messages && c.messages.length > 0)
+    .sort((a, b) => (b.lastTime || 0) - (a.lastTime || 0))
+    .slice(0, 30);
+  const recentChats = chatList.map(c => ({
+    title: c.title || 'New Chat',
+    open: () => self.openChat(c.id),
+    del: (e) => { e.stopPropagation(); self.deleteChat(c.id); },
+    rename: (e) => {
+      e.stopPropagation();
+      const newName = prompt('修改标题', c.title || '');
+      if (newName !== null && newName.trim()) {
+        const chats = { ...s.chats };
+        chats[c.id] = { ...chats[c.id], title: newName.trim() };
+        self.setState({ chats });
+        self.persist();
+      }
+    }
+  }));
+
+  // API preset options
+  const apiDraft = s.apiDraft || preset;
+  const apiOptions = s.apiPresets.map(p => ({
+    title: p.name || 'Untitled',
+    model: p.model || '',
+    bg: p.id === s.activePresetId ? '#1A1815' : '#FFF',
+    bd: p.id === s.activePresetId ? '#1A1815' : '#E7E3DA',
+    fg: p.id === s.activePresetId ? '#F5F3EE' : '#2B2620',
+    subFg: p.id === s.activePresetId ? '#D8D3CA' : '#9A958B',
+    badgeDisplay: p.isDefault ? 'inline-flex' : 'none',
+    badgeBg: '#F2EFE8',
+    badgeFg: '#6B665E',
+    pick: () => {
+      self.setState({ activePresetId: p.id, apiDraft: { ...p, models: [] } });
+      self.persist();
+    }
+  }));
+
+  // Persona options
+  const personaDraft = s.personaDraft || persona;
+  const personaOptions = s.personas.map(p => ({
+    name: p.name || 'Untitled',
+    bg: p.id === s.activePersonaId ? '#1A1815' : '#FFF',
+    bd: p.id === s.activePersonaId ? '#1A1815' : '#E7E3DA',
+    fg: p.id === s.activePersonaId ? '#F5F3EE' : '#2B2620',
+    pick: () => {
+      self.setState({ activePersonaId: p.id, personaDraft: { ...p } });
+      self.persist();
+    }
+  }));
+
+  // Prompt options
+  const promptOptions = (s.prompts || []).map(p => ({
+    name: p.name || 'Untitled',
+    preview: (p.content || '').slice(0, 60),
+    use: () => { self.setState({ input: p.content || '', sheet: null }); },
+    edit: () => { self.setState({ promptEditId: p.id, promptEditName: p.name || '', promptEditContent: p.content || '' }); },
+    del: (e) => {
+      e.stopPropagation();
+      const prompts = s.prompts.filter(x => x.id !== p.id);
+      self.setState({ prompts });
+      self.persist();
+      self.show('已删除');
+    }
+  }));
+
+  // Style options
+  const styleDraft = s.styleDraft || styleObj;
+  const styleOptions = s.styles.map(st => ({
+    name: st.title || 'Untitled',
+    bg: st.id === s.activeStyleId ? '#1A1815' : '#FFF',
+    bd: st.id === s.activeStyleId ? '#1A1815' : '#E7E3DA',
+    fg: st.id === s.activeStyleId ? '#F5F3EE' : '#2B2620',
+    pick: () => {
+      self.setState({ activeStyleId: st.id, styleDraft: { ...st } });
+      self.persist();
+    }
+  }));
+
+  // API model options
+  const apiModelOptions = (apiDraft.models || []).map(m => ({
+    name: m,
+    bg: m === apiDraft.model ? '#1A1815' : '#FFF',
+    bd: m === apiDraft.model ? '#1A1815' : '#E7E3DA',
+    fg: m === apiDraft.model ? '#F5F3EE' : '#2B2620',
+    pick: () => self.setState({ apiDraft: { ...self.state.apiDraft, model: m } })
+  }));
+
+  // Worldbook list
+  const wbList = s.worldbooks.map(wb => ({
+    ...wb,
+    triggerCount: (wb.triggers || []).length,
+    activeLabel: wb.alwaysOn ? '常驻' : '触发',
+    activeBg: wb.alwaysOn ? '#E8F0E8' : '#F2EFE8',
+    preview: (wb.content || '').slice(0, 80) + ((wb.content || '').length > 80 ? '...' : ''),
+    open: () => self.openWorldbookEditor(wb.id),
+    del: (e) => { e.stopPropagation(); self.deleteWorldbook(wb.id); }
+  }));
+
+  // Memory list
+  const memoryList = s.memories.map(mem => ({
+    ...mem,
+    activeLabel: mem.alwaysOn ? '常驻' : '触发',
+    activeBg: mem.alwaysOn ? '#E8F0E8' : '#F2EFE8',
+    preview: (mem.content || '').slice(0, 120) + ((mem.content || '').length > 120 ? '...' : ''),
+    open: () => self.openMemoryEditor(mem.id),
+    del: (e) => { e.stopPropagation(); self.deleteMemory(mem.id); }
+  }));
+
+  // Pet
+  const petGif = s.isBusy ? './sprites/clawd-thinking.gif' : (s.petState === 'happy' ? './sprites/clawd-happy.gif' : './sprites/clawd-idle.gif');
+
+  return {
+    true: true, false: false,
+    // Page routing
+    isChat: s.tab === 'chat' && !s.sub,
+    isHome: s.tab === 'home' && !s.sub,
+    isMore: s.tab === 'more' && !s.sub,
+    isWorldbookPage: s.tab === 'worldbook' && !s.sub,
+    isMemoryPage: s.tab === 'memory' && !s.sub,
+    showSub: !!s.sub,
+    isMoments: s.sub === 'moments',
+    isDiary: s.sub === 'diary',
+    isMood: s.sub === 'mood',
+    isAnniv: s.sub === 'anniversary',
+    subTitle: ({ moments: 'Moments', diary: 'Diary / Letters', mood: 'Mood', anniversary: 'Anniversaries' }[s.sub] || ''),
+    // Messages
+    messages,
+    recentChats,
+    homeGreeting: getGreeting(),
+    isBusy: s.isBusy,
+    input: s.input,
+    editText: s.editText,
+    // Attachment
+    hasAttachment: !!s.attachment,
+    attachmentPreview: s.attachment ? s.attachment.preview : '',
+    attachmentIsImage: !!(s.attachment && s.attachment.isImage),
+    attachmentFileName: s.attachment ? s.attachment.fileName : '附件',
+    // Active labels
+    activeModel: preset.model || 'Not set',
+    activeStyle: styleObj.title || 'Default',
+    activeCompanion: persona.name || 'Kel',
+    wbHint: s.wbPermanent ? (s.wbPermanent.length + ' chars') : 'Not set',
+    promptCount: (s.prompts || []).length + ' items',
+    // Worldbook & Memory lists
+    wbList,
+    memoryList,
+    // Worldbook editor
+    isWorldbookEditorSheet: s.sheet === 'wbEditor',
+    wbEditName: s.wbEditName || '',
+    wbEditContent: s.wbEditContent || '',
+    wbEditTriggers: s.wbEditTriggers || '',
+    wbEditAlwaysOn: s.wbEditAlwaysOn || false,
+    wbEditWeight: s.wbEditWeight || 1,
+    wbEditPosBefore: s.wbEditPosition === 'before',
+    wbEditPosAfter: s.wbEditPosition === 'after',
+    // Memory editor
+    isMemoryEditorSheet: s.sheet === 'memEditor',
+    memEditName: s.memEditName || '',
+    memEditContent: s.memEditContent || '',
+    memEditTriggers: s.memEditTriggers || '',
+    memEditAlwaysOn: s.memEditAlwaysOn || false,
+    memEditWeight: s.memEditWeight || 1,
+    memEditTag: s.memEditTag || '',
+    memEditPosBefore: s.memEditPosition === 'before',
+    memEditPosAfter: s.memEditPosition === 'after',
+    // Pet
+    petGif,
+    petSize: this.currentPetSize,
+    petEnabled: s.petEnabled,
+    petStatus: s.petEnabled ? 'On' : 'Off',
+    petSizeLabel: this.currentPetSize + 'px',
+    soundStatus: s.soundEnabled ? 'On' : 'Off',
+    memoryCount: s.memoryCount,
+    memoryCountLabel: s.memoryCount + ' 条',
+    // Memory expand
+    memoryOpen: s.memory,
+    memRot: s.memory ? 'rotate(180deg)' : 'rotate(0deg)',
+    // Overlays
+    drawerOpen: s.drawer,
+    plusOpen: s.plus,
+    profileOpen: s.profile,
+    styleOpen: s.style,
+    sheetOpen: !!s.sheet,
+    isApiSheet: s.sheet === 'api',
+    isAiSheet: s.sheet === 'ai',
+    isPromptSheet: s.sheet === 'prompt',
+    isWorldbookSheet: s.sheet === 'worldbook',
+    isThoughtSheet: s.sheet === 'thought',
+    toastShow: s.toastShow,
+    toastText: s.toastText,
+    // Sheet panel styles
+    sheetPanelPos: s.sheet === 'thought' ? 'top:36px;bottom:0;left:0;right:0;' : 'bottom:0;left:0;right:0;',
+    sheetPanelBg: s.sheet === 'thought' ? 'rgba(255,255,255,0.92)' : '#F5F3EE',
+    sheetPanelRadius: s.sheet === 'thought' ? '18px 18px 0 0' : '16px 16px 0 0',
+    sheetPanelPad: s.sheet === 'thought' ? '0' : '12px 0 26px',
+    sheetPanelShadow: s.sheet === 'thought' ? '0 -8px 30px rgba(0,0,0,.06)' : 'none',
+    sheetPanelBlur: s.sheet === 'thought' ? 'backdrop-filter:blur(30px) saturate(180%);-webkit-backdrop-filter:blur(30px) saturate(180%);' : '',
+    sheetHandleW: s.sheet === 'thought' ? '0' : '36px',
+    sheetHandleMb: s.sheet === 'thought' ? '0' : '14px',
+    sheetOverlayBg: s.sheet === 'thought' ? 'transparent' : 'rgba(0,0,0,.18)',
+    // API sheet
+    apiOptions,
+    apiName: apiDraft.name || '',
+    apiModel: apiDraft.model || '',
+    connectorUrl: apiDraft.url || '',
+    accessValue: apiDraft.key || '',
+    apiDetailHint: apiDraft.apiType === 'anthropic' ? 'Anthropic format' : 'OpenAI format',
+    apiModelListHint: (apiDraft.models || []).length > 0 ? (apiDraft.models.length + ' models') : 'Click to fetch',
+    apiModelOptions,
+    apiModelOptionsDisplay: (apiDraft.models || []).length > 0 ? 'flex' : 'none',
+    isApiAdvanced: s.apiAdvanced,
+    apiAdvancedRot: s.apiAdvanced ? 'rotate(180deg)' : 'rotate(0deg)',
+    apiOpenAiBg: apiDraft.apiType === 'openai' ? '#1A1815' : '#FFF',
+    apiOpenAiBd: apiDraft.apiType === 'openai' ? '#1A1815' : '#E7E3DA',
+    apiAnthropicBg: apiDraft.apiType !== 'openai' ? '#1A1815' : '#FFF',
+    apiAnthropicBd: apiDraft.apiType !== 'openai' ? '#1A1815' : '#E7E3DA',
+    // Persona sheet
+    personaOptions,
+    personaName: personaDraft.name || '',
+    personaContent: personaDraft.content || '',
+    // Prompt sheet
+    promptOptions,
+    showPromptList: !s.promptEditId,
+    showPromptEdit: !!s.promptEditId,
+    noPrompts: (s.prompts || []).length === 0,
+    promptEditName: s.promptEditName || '',
+    promptEditContent: s.promptEditContent || '',
+    // Worldbook sheet (legacy simple)
+    wbPermanent: s.wbPermanent || '',
+    wbTriggers: s.wbTriggers || '',
+    // Style sheet
+    styleOptions,
+    styleTitle: styleDraft.title || '',
+    styleContent: styleDraft.content || '',
+    // Thought
+    thoughtText: s.currentThoughtText || '',
+
+    // ======== ACTIONS ========
+    toggleDrawer: () => self.setState(v => ({ drawer: !v.drawer })),
+    togglePlus: () => self.setState(v => ({ plus: !v.plus })),
+    toggleProfile: () => self.setState(v => ({ profile: !v.profile })),
+    toggleMemory: () => self.setState(v => ({ memory: !v.memory })),
+    navChat: () => { self.setState({ tab: 'chat', sub: null, drawer: false }); self.scrollToBottom(); },
+    navHome: () => self.setState({ tab: 'home', sub: null, drawer: false }),
+    navMore: () => self.setState({ tab: 'more', sub: null, drawer: false }),
+    navWorldbook: () => self.setState({ tab: 'worldbook', sub: null, drawer: false }),
+    navMemory: () => self.setState({ tab: 'memory', sub: null, drawer: false }),
+    openMoments: () => self.setState({ sub: 'moments' }),
+    openDiary: () => self.setState({ sub: 'diary' }),
+    openMood: () => self.setState({ sub: 'mood' }),
+    openAnniv: () => self.setState({ sub: 'anniversary' }),
+    closeSub: () => self.setState({ sub: null }),
+    newChat: () => self.newChat(),
+    pullCloud: () => self.show('Local storage only'),
+    syncCloud: () => self.show('Local storage only'),
+    githubBackup: () => self.exportData(),
+    // Input
+    inputChange: (e) => self.setState({ input: e.target.value }),
+    inputKey: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); self.sendMessage(); } },
+    send: () => self.sendMessage(),
+    // File/Image
+    pickImage: () => self.pickImageFile(),
+    handleFileSelect: (e) => self.handleFile(e),
+    removeAttachment: () => self.setState({ attachment: null }),
+    // Edit
+    editTextChange: (e) => self.setState({ editText: e.target.value }),
+    cancelEdit: () => self.setState({ editIdx: -1 }),
+    saveEdit: () => {
+      const idx = s.editIdx;
+      if (idx < 0) return;
+      const chats = { ...s.chats };
+      const c = { ...chats[s.currentChatId] };
+      const newMsgs = [...c.messages];
+      const oldMsg = newMsgs[idx];
+      newMsgs[idx] = { ...oldMsg, text: s.editText, variants: [s.editText], variantIdx: 0 };
+      c.messages = newMsgs.slice(0, idx + 1);
+      chats[s.currentChatId] = c;
+      self.setState({ chats, editIdx: -1, input: '' });
+      self.persist();
+      if (oldMsg.role === 'user') {
+        self.setState({ isBusy: true });
+        self._regenerateFrom(s.currentChatId, c.messages, idx + 1);
+      }
+    },
+    // Sheets
+    closeSheet: () => self.setState({ sheet: null, plus: false, profile: false, promptEditId: null }),
+    openApiSheet: () => self.setState({ sheet: 'api', plus: false, profile: false, apiDraft: { ...preset, models: [] } }),
+    openAiSheet: () => self.setState({ sheet: 'ai', plus: false, profile: false, personaDraft: { ...persona } }),
+    openPromptSheet: () => self.setState({ sheet: 'prompt', plus: false, profile: false, promptEditId: null }),
+    openWorldbookSheet: () => self.setState({ sheet: 'worldbook', plus: false, profile: false }),
+    openStyle: () => self.setState({ style: true, styleDraft: { ...styleObj } }),
+    closeStyle: () => self.setState({ style: false }),
+    // Worldbook page actions
+    newWorldbook: () => self.openWorldbookEditor(null),
+    // Worldbook editor actions
+    wbEditNameChange: (e) => self.setState({ wbEditName: e.target.value }),
+    wbEditContentChange: (e) => self.setState({ wbEditContent: e.target.value }),
+    wbEditTriggersChange: (e) => self.setState({ wbEditTriggers: e.target.value }),
+    wbEditAlwaysOnChange: (e) => self.setState({ wbEditAlwaysOn: e.target.checked }),
+    wbEditWeightChange: (e) => self.setState({ wbEditWeight: e.target.value }),
+    wbEditPosBefore: () => self.setState({ wbEditPosition: 'before' }),
+    wbEditPosAfter: () => self.setState({ wbEditPosition: 'after' }),
+    saveWorldbookEditor: () => self.saveWorldbookEditor(),
+    // Memory page actions
+    newMemory: () => self.openMemoryEditor(null),
+    generateMemoryFromChat: () => self.generateMemoryFromChat(),
+    // Memory editor actions
+    memEditNameChange: (e) => self.setState({ memEditName: e.target.value }),
+    memEditContentChange: (e) => self.setState({ memEditContent: e.target.value }),
+    memEditTriggersChange: (e) => self.setState({ memEditTriggers: e.target.value }),
+    memEditAlwaysOnChange: (e) => self.setState({ memEditAlwaysOn: e.target.checked }),
+    memEditWeightChange: (e) => self.setState({ memEditWeight: e.target.value }),
+    memEditTagChange: (e) => self.setState({ memEditTag: e.target.value }),
+    memEditPosBefore: () => self.setState({ memEditPosition: 'before' }),
+    memEditPosAfter: () => self.setState({ memEditPosition: 'after' }),
+    saveMemoryEditor: () => self.saveMemoryEditor(),
+    // API actions
+    newApiDraft: () => {
+      const id = genId();
+      const newPreset = { id, name: 'New Preset', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: false };
+      const presets = [...s.apiPresets, newPreset];
+      self.setState({ apiPresets: presets, activePresetId: id, apiDraft: { ...newPreset, models: [] } });
+      self.persist();
+    },
+    fetchApiModels: () => self.fetchModels(),
+    saveApiDraft: () => {
+      const draft = s.apiDraft || {};
+      const presets = s.apiPresets.map(p => p.id === (draft.id || s.activePresetId) ? { ...p, name: draft.name || p.name, url: draft.url || p.url, key: draft.key || p.key, model: draft.model || p.model, apiType: draft.apiType || p.apiType } : p);
+      self.setState({ apiPresets: presets, sheet: null });
+      self.persist();
+      self.show('已保存');
+    },
+    deleteApiDraft: () => {
+      if (s.apiPresets.length <= 1) { self.show('Cannot delete last preset'); return; }
+      const presets = s.apiPresets.filter(p => p.id !== s.activePresetId);
+      self.setState({ apiPresets: presets, activePresetId: presets[0].id, sheet: null });
+      self.persist();
+      self.show('已删除');
+    },
+    apiNameChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), name: e.target.value } }),
+    apiModelChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), model: e.target.value } }),
+    connectorUrlChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), url: e.target.value } }),
+    accessValueChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), key: e.target.value } }),
+    setApiOpenAI: () => self.setState({ apiDraft: { ...(s.apiDraft || {}), apiType: 'openai' } }),
+    setApiAnthropic: () => self.setState({ apiDraft: { ...(s.apiDraft || {}), apiType: 'anthropic' } }),
+    toggleApiAdvanced: () => self.setState(v => ({ apiAdvanced: !v.apiAdvanced })),
+    // Persona actions
+    newPersona: () => {
+      const id = genId();
+      const newP = { id, name: 'New Persona', content: '' };
+      const personas = [...s.personas, newP];
+      self.setState({ personas, activePersonaId: id, personaDraft: { ...newP } });
+      self.persist();
+    },
+    personaNameChange: (e) => self.setState({ personaDraft: { ...(s.personaDraft || {}), name: e.target.value } }),
+    personaContentChange: (e) => self.setState({ personaDraft: { ...(s.personaDraft || {}), content: e.target.value } }),
+    savePersona: () => {
+      const draft = s.personaDraft || {};
+      const personas = s.personas.map(p => p.id === s.activePersonaId ? { ...p, name: draft.name || p.name, content: draft.content !== undefined ? draft.content : p.content } : p);
+      self.setState({ personas, sheet: null });
+      self.persist();
+      self.show('Persona saved');
+    },
+    deletePersona: () => {
+      if (s.personas.length <= 1) { self.show('Cannot delete last persona'); return; }
+      const personas = s.personas.filter(p => p.id !== s.activePersonaId);
+      self.setState({ personas, activePersonaId: personas[0].id, personaDraft: { ...personas[0] }, sheet: null });
+      self.persist();
+      self.show('已删除');
+    },
+    // Prompt actions
+    newPrompt: () => {
+      const id = genId();
+      self.setState({ promptEditId: id, promptEditName: '', promptEditContent: '' });
+    },
+    promptEditNameChange: (e) => self.setState({ promptEditName: e.target.value }),
+    promptEditContentChange: (e) => self.setState({ promptEditContent: e.target.value }),
+    savePromptEdit: () => {
+      const id = s.promptEditId;
+      const existing = (s.prompts || []).find(p => p.id === id);
+      let prompts;
+      if (existing) {
+        prompts = s.prompts.map(p => p.id === id ? { ...p, name: s.promptEditName, content: s.promptEditContent } : p);
+      } else {
+        prompts = [...(s.prompts || []), { id, name: s.promptEditName, content: s.promptEditContent }];
+      }
+      self.setState({ prompts, promptEditId: null });
+      self.persist();
+      self.show('已保存');
+    },
+    cancelPromptEdit: () => self.setState({ promptEditId: null }),
+    // Worldbook sheet (legacy simple) actions
+    wbPermanentChange: (e) => self.setState({ wbPermanent: e.target.value }),
+    wbTriggersChange: (e) => self.setState({ wbTriggers: e.target.value }),
+    saveWorldbook: () => {
+      self.persist();
+      self.setState({ sheet: null });
+      self.show('Worldbook saved');
+    },
+    // Style actions
+    styleTitleChange: (e) => self.setState({ styleDraft: { ...(s.styleDraft || {}), title: e.target.value } }),
+    styleContentChange: (e) => self.setState({ styleDraft: { ...(s.styleDraft || {}), content: e.target.value } }),
+    saveStyle: () => {
+      const draft = s.styleDraft || {};
+      const styles = s.styles.map(st => st.id === s.activeStyleId ? { ...st, title: draft.title || st.title, content: draft.content !== undefined ? draft.content : st.content } : st);
+      self.setState({ styles, style: false });
+      self.persist();
+      self.show('Style saved');
+    },
+    // Pet & Sound & Memory count
+    togglePet: () => {
+      const next = !s.petEnabled;
+      self.setState({ petEnabled: next });
+      self.persist();
+      self.show(next ? 'Pet on' : 'Pet off');
+    },
+    cyclePetSize: () => {
+      const next = (s.petSizeIdx + 1) % self.petSizes.length;
+      self.setState({ petSizeIdx: next });
+      self.persist();
+    },
+    toggleSound: () => {
+      const next = !s.soundEnabled;
+      self.setState({ soundEnabled: next });
+      self.persist();
+      self.show(next ? 'Sound on' : 'Sound off');
+    },
+    cycleMemoryCount: () => {
+      const options = [6, 10, 20, 30, 50];
+      const idx = options.indexOf(s.memoryCount);
+      const next = options[(idx + 1) % options.length];
+      self.setState({ memoryCount: next });
+      self.persist();
+      self.show('记忆读取: ' + next + ' 条');
+    },
+    // Export
+    exportData: () => self.exportData()
+  };
+}
+}
+    
 </script>
 </body>
 </html>
