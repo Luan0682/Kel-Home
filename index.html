@@ -115,6 +115,13 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
+<!-- AI avatar -->
+<sc-if value="{{ m.showAiAvatar }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+<img src="{{ aiAvatar }}" style="width:28px;height:28px;border-radius:50%;object-fit:cover;" alt="">
+</div>
+</sc-if>
+
 <!-- image attachment -->
 <sc-if value="{{ m.hasImage }}" hint-placeholder-val="{{ false }}">
 <div style="margin-bottom:10px;">
@@ -204,7 +211,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 <div style="background:#FBFAF7;border:1px solid #E7E3DA;border-radius:26px;padding:14px 17px 8px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
-<textarea value="{{ input }}" onInput="{{ inputChange }}" onKeyDown="{{ inputKey }}" placeholder="Message companion..." rows="1" style="display:block;width:100%;min-height:32px;max-height:calc(80vh - 180px);border:none;background:transparent;resize:none;outline:none;font-family:inherit;font-size:16px;line-height:1.6;color:#2B2620;padding:4px 4px 6px;font-weight:300;overflow-y:auto;" ref="{{ textareaRef }}"></textarea>
+<textarea value="{{ input }}" onInput="{{ inputChange }}" onKeyDown="{{ inputKey }}" placeholder="发送消息..." rows="1" style="display:block;width:100%;min-height:32px;max-height:calc(80vh - 180px);border:none;background:transparent;resize:none;outline:none;font-family:inherit;font-size:16px;line-height:1.6;color:#2B2620;padding:4px 4px 6px;font-weight:300;overflow-y:auto;" ref="{{ textareaRef }}"></textarea>
 <div style="display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:9px;">
 <button onClick="{{ togglePlus }}" style="width:32px;height:32px;border-radius:50%;background:#F2EFE8;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -539,6 +546,26 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
     <span>记忆</span>
   </div>
 </div>
+
+<!-- search -->
+<div style="padding:8px 16px 4px;">
+<div style="background:#FFF;border:1px solid #E7E3DA;border-radius:14px;padding:8px 12px;display:flex;align-items:center;gap:8px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#9A958B" stroke-width="1.5"/><path d="M16 16l4 4" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
+<input value="{{ searchQuery }}" onInput="{{ searchChange }}" placeholder="搜索聊天内容..." style="flex:1;border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;color:#1A1815;">
+</div>
+</div>
+<!-- search results -->
+<sc-if value="{{ searchOpen }}" hint-placeholder-val="{{ false }}">
+<div class="sa" style="max-height:200px;overflow-y:auto;padding:4px 16px;">
+<sc-for list="{{ searchResults }}" as="r" hint-placeholder-count="5">
+<div onClick="{{ r.open }}" style="padding:8px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px;background:#FFF;border:1px solid #EDE9E0;">
+<div style="font-size:11px;color:#B8B3A8;">{{ r.chatTitle }}</div>
+<div style="font-size:13px;color:#3A362F;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.snippet }}</div>
+</div>
+</sc-for>
+</div>
+</sc-if>
+
 <!-- recents label -->
 <div style="padding:28px 24px 10px;font-size:12px;color:#B8B3A8;font-weight:600;letter-spacing:1px;">RECENTS</div>
 <!-- recent chats list with delete -->
@@ -603,6 +630,13 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div><div style="font-size:15px;font-weight:500;color:#1A1815;">Export backup</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">JSON download</div></div>
 </div>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div><div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ openCssSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:13px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4V4Z" stroke="#48453E" stroke-width="1.5"/><path d="M8 10l2 2-2 2M12 14h4" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span style="font-size:15px;font-weight:500;color:#1A1815;">界面美化</span>
+</div>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 </div>
 </div>
@@ -659,7 +693,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div onClick="{{ pickImage }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:13px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="3" stroke="#48453E" stroke-width="1.5"/><circle cx="8.5" cy="10" r="1.5" stroke="#48453E" stroke-width="1.3"/><path d="M5 18l4.5-4 3 2.5L16 12l3 3" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">Send image</span>
+<span style="font-size:15px;font-weight:500;color:#1A1815;">发送图片</span>
 </div>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
@@ -722,7 +756,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div onClick="{{ togglePet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:13px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#48453E" stroke-width="1.5"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#48453E" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="10" r="1" fill="#48453E"/><circle cx="15" cy="10" r="1" fill="#48453E"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">Pixel Pet</span>
+<span style="font-size:15px;font-weight:500;color:#1A1815;">小可宝宝</span>
 </div>
 <span style="font-size:14px;color:#9A958B;">{{ petStatus }}</span>
 </div>
@@ -824,7 +858,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ isWorldbookEditorSheet }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:270;">
   <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:88%;overflow-y:auto;">
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:70vh;overflow-y:auto;">
     <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
       <button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -880,7 +914,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ isMemoryEditorSheet }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:270;">
   <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-  <div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:88%;overflow-y:auto;">
+  <div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:70vh;overflow-y:auto;">
     <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
     <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
       <button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -1031,6 +1065,49 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
+<!-- CSS Editor Sheet -->
+<sc-if value="{{ isCssSheet }}" hint-placeholder-val="{{ false }}">
+<div class="sa" style="max-height:calc(85vh - 40px);overflow-y:auto;padding:0 16px 8px;">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;">
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+<span style="font-size:16px;font-weight:600;color:#1A1815;">界面美化</span>
+<button onClick="{{ saveCssSettings }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
+</div>
+<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
+<!-- 头像设置 -->
+<div style="padding:14px 16px;border-bottom:1px solid #ECE8DF;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:10px;">头像设置</div>
+<div style="display:flex;gap:20px;align-items:center;">
+<div style="text-align:center;">
+<div onClick="{{ pickUserAvatar }}" style="width:48px;height:48px;border-radius:50%;background:#ECEAE4;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;border:2px solid #E7E3DA;">
+<sc-if value="{{ userAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
+<sc-if value="{{ !userAvatar }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg></sc-if>
+</div>
+<div style="font-size:11px;color:#9A958B;margin-top:4px;">我的头像</div>
+</div>
+<div style="text-align:center;">
+<div onClick="{{ pickAiAvatar }}" style="width:48px;height:48px;border-radius:50%;background:#ECEAE4;overflow:hidden;cursor:pointer;display:flex;align-items:center;justify-content:center;border:2px solid #E7E3DA;">
+<sc-if value="{{ aiAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ aiAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
+<sc-if value="{{ !aiAvatar }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#9A958B" stroke-width="1.5"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="10" r="1" fill="#9A958B"/><circle cx="15" cy="10" r="1" fill="#9A958B"/></svg></sc-if>
+</div>
+<div style="font-size:11px;color:#9A958B;margin-top:4px;">AI 头像</div>
+</div>
+</div>
+</div>
+<!-- 字体 -->
+<div style="padding:14px 16px;border-bottom:1px solid #ECE8DF;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">自定义字体</div>
+<input value="{{ customFont }}" onInput="{{ customFontChange }}" placeholder="例: 'LXGW WenKai', serif" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:13px;color:#1A1815;">
+</div>
+<!-- CSS -->
+<div style="padding:14px 16px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">自定义 CSS</div>
+<textarea value="{{ customCss }}" onInput="{{ customCssChange }}" placeholder="/* 在这里写 CSS */&#10;body { }&#10;.sa { }" rows="10" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:'SF Mono',monospace;font-size:12px;line-height:1.6;color:#1A1815;resize:vertical;min-height:160px;"></textarea>
+</div>
+</div>
+</div>
+</sc-if>
+
 <!-- Thought Process Sheet -->
 <sc-if value="{{ isThoughtSheet }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="height:calc(100vh - 36px);overflow-y:auto;-webkit-overflow-scrolling:touch;padding:0 24px 44px;">
@@ -1047,7 +1124,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
-<!-- pixel pet -->
+<!-- 小可宝宝 -->
 <sc-if value="{{ petEnabled }}" hint-placeholder-val="{{ true }}">
 <div style="position:fixed;bottom:90px;right:16px;z-index:50;pointer-events:none;">
 <img src="{{ petGif }}" width="{{ petSize }}" height="{{ petSize }}" style="image-rendering:pixelated;" alt="Kel">
@@ -1180,10 +1257,21 @@ chats: saved.chats || {},
 // Draft states
 apiDraft: null,
 styleDraft: null,
-wbDraft: null
+wbDraft: null,
+// 头像
+userAvatar: saved.userAvatar || '',
+aiAvatar: saved.aiAvatar || '',
+// 自定义 CSS
+customCss: saved.customCss || '',
+customFont: saved.customFont || '',
+// 搜索
+searchOpen: false,
+searchQuery: '',
+searchResults: []
 };
+setTimeout(() => { this.applyCustomCss(); this.applyCustomFont(); }, 100);
 if (!this.state.chats[this.state.currentChatId]) {
-this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: 'New Chat', messages: [], lastTime: Date.now() };
+this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
 }
 }
 textareaRef(el) {
@@ -1387,8 +1475,12 @@ petEnabled: s.petEnabled,
 petSizeIdx: s.petSizeIdx,
 soundEnabled: s.soundEnabled,
 memoryCount: s.memoryCount,
-worldbooks: s.worldbooks,      // 🆕
-memories: s.memories           // 🆕
+worldbooks: s.worldbooks,
+memories: s.memories,
+userAvatar: s.userAvatar,
+aiAvatar: s.aiAvatar,
+customCss: s.customCss,
+customFont: s.customFont,
 });
 }
 
@@ -1658,7 +1750,7 @@ const chat2 = { ...chats2[chatId] };
   newChat() {
     const id = genId();
     const chats = { ...this.state.chats };
-    chats[id] = { id, title: 'New Chat', messages: [], lastTime: Date.now() };
+    chats[id] = { id, title: '新对话', messages: [], lastTime: Date.now() };
     this.setState({ currentChatId: id, chats, drawer: false, tab: 'chat', input: '', attachment: null });
     this.persist();
     this.scrollToBottom();
@@ -1680,7 +1772,7 @@ const chat2 = { ...chats2[chatId] };
         newCurrentId = remaining[0];
       } else {
         newCurrentId = genId();
-        chats[newCurrentId] = { id: newCurrentId, title: 'New Chat', messages: [], lastTime: Date.now() };
+        chats[newCurrentId] = { id: newCurrentId, title: '新对话', messages: [], lastTime: Date.now() };
       }
     }
     this.setState({ chats, currentChatId: newCurrentId });
@@ -1740,61 +1832,111 @@ const chat2 = { ...chats2[chatId] };
     const input = document.getElementById('kelFileInput');
     if (input) input.click();
   }
-
+  
 handleFile(e) {
   const file = e.target.files && e.target.files[0];
   if (!file) return;
-  const maxSize = 20 * 1024 * 1024; // 20MB
+  const maxSize = 20 * 1024 * 1024;
   if (file.size > maxSize) { this.show('文件超过 20MB'); return; }
-  
-  // 判断是否为图片
   const isImage = file.type.startsWith('image/');
-  // 判断是否为文本类文件
   const textExts = ['.txt', '.html', '.htm', '.md', '.json', '.csv', '.xml'];
   const isText = textExts.some(ext => file.name.toLowerCase().endsWith(ext));
-  
   const reader = new FileReader();
   if (isImage || isText) {
     reader.onload = () => {
       const result = reader.result;
       const base64 = isImage ? result.split(',')[1] : btoa(unescape(encodeURIComponent(result)));
       this.setState({
-        attachment: {
-          base64,
-          mimeType: file.type || 'application/octet-stream',
-          preview: isImage ? result : null,
-          fileName: file.name,
-          fileSize: file.size,
-          isImage,
-          isText,
-          textContent: isText ? result : null
-        },
+        attachment: { base64, mimeType: file.type || 'application/octet-stream', preview: isImage ? result : null, fileName: file.name, fileSize: file.size, isImage, isText, textContent: isText ? result : null },
         plus: false
       });
     };
     if (isImage) reader.readAsDataURL(file);
     else reader.readAsText(file);
   } else {
-    // 二进制文件（zip 等）直接读 base64
     reader.onload = () => {
       const base64 = reader.result.split(',')[1];
       this.setState({
-        attachment: {
-          base64,
-          mimeType: file.type || 'application/octet-stream',
-          preview: null,
-          fileName: file.name,
-          fileSize: file.size,
-          isImage: false,
-          isText: false,
-          textContent: null
-        },
+        attachment: { base64, mimeType: file.type || 'application/octet-stream', preview: null, fileName: file.name, fileSize: file.size, isImage: false, isText: false, textContent: null },
         plus: false
       });
     };
     reader.readAsDataURL(file);
   }
   e.target.value = '';
+}
+
+pickUserAvatar() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { this.setState({ userAvatar: reader.result }); this.persist(); this.show('头像已更新'); };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+pickAiAvatar() {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'image/*';
+  input.onchange = (e) => {
+    const file = e.target.files[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = () => { this.setState({ aiAvatar: reader.result }); this.persist(); this.show('AI 头像已更新'); };
+    reader.readAsDataURL(file);
+  };
+  input.click();
+}
+
+applyCustomCss() {
+  let el = document.getElementById('kel-custom-css');
+  if (!el) { el = document.createElement('style'); el.id = 'kel-custom-css'; document.head.appendChild(el); }
+  el.textContent = this.state.customCss || '';
+}
+
+applyCustomFont() {
+  const font = this.state.customFont;
+  if (font) { document.body.style.fontFamily = font + ", -apple-system, 'Noto Sans SC', sans-serif"; }
+  else { document.body.style.fontFamily = ''; }
+}
+
+searchChats(query) {
+  if (!query.trim()) { this.setState({ searchResults: [] }); return; }
+  const q = query.toLowerCase();
+  const results = [];
+  const chats = Object.values(this.state.chats);
+  for (const chat of chats) {
+    if (!chat.messages) continue;
+    for (let i = 0; i < chat.messages.length; i++) {
+      const m = chat.messages[i];
+      const text = (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text || '';
+      if (text.toLowerCase().includes(q)) {
+        results.push({ chatId: chat.id, chatTitle: chat.title || '新对话', msgIdx: i, role: m.role, snippet: text.slice(0, 120) });
+        if (results.length >= 30) break;
+      }
+    }
+    if (results.length >= 30) break;
+  }
+  this.setState({ searchResults: results });
+}
+
+openSearchResult(chatId, msgIdx) {
+  this.setState({ currentChatId: chatId, tab: 'chat', sub: null, drawer: false, searchOpen: false, searchQuery: '' });
+  this.persist();
+  setTimeout(() => {
+    const msgs = document.querySelectorAll('.sa [style*="margin-bottom"]');
+    if (msgs[msgIdx]) {
+      msgs[msgIdx].scrollIntoView({ behavior: 'smooth', block: 'center' });
+      msgs[msgIdx].style.background = '#FFF3CD';
+      setTimeout(() => { msgs[msgIdx].style.background = ''; }, 2000);
+    }
+  }, 200);
 }
 
 renderVals() {
@@ -1840,6 +1982,7 @@ renderVals() {
       text: displayText,
       hasMemory: !isUser && i === 0 && !!buildMemorySummary(s.chats, s.currentChatId),
       memoryList: !isUser && i === 0 ? [{ text: '来自上一轮对话的记忆摘要', tag: 'auto' }] : [],
+      showAiAvatar: !isUser && !!s.aiAvatar,
       hasImage: !!m.imageUrl,
       imageUrl: m.imageUrl || '',
       showNormal: s.editIdx !== i,
@@ -1847,7 +1990,7 @@ renderVals() {
       showActions: !isUser && isLast && !s.isBusy,
       showUserActions: isUser && !s.isBusy,
       variantText: variants.length > 1 ? (vIdx + 1) + ' / ' + variants.length : '1 / 1',
-      copy: () => { navigator.clipboard.writeText(displayText).then(() => self.show('Copied')); },
+      copy: () => { navigator.clipboard.writeText(displayText).then(() => self.show('复制')); },
       refresh: () => self.regenerate(i),
       prev: () => {
         if (vIdx > 0) {
@@ -1882,7 +2025,7 @@ renderVals() {
     .sort((a, b) => (b.lastTime || 0) - (a.lastTime || 0))
     .slice(0, 30);
   const recentChats = chatList.map(c => ({
-    title: c.title || 'New Chat',
+    title: c.title || '新对话',
     open: () => self.openChat(c.id),
     del: (e) => { e.stopPropagation(); self.deleteChat(c.id); },
     rename: (e) => {
@@ -2002,7 +2145,7 @@ renderVals() {
     isDiary: s.sub === 'diary',
     isMood: s.sub === 'mood',
     isAnniv: s.sub === 'anniversary',
-    subTitle: ({ moments: 'Moments', diary: 'Diary / Letters', mood: 'Mood', anniversary: 'Anniversaries' }[s.sub] || ''),
+    subTitle: ({ moments: '动态', diary: '日记 / 信件', mood: '心情', anniversary: '纪念日' }[s.sub] || ''),
     // Messages
     messages,
     recentChats,
@@ -2019,7 +2162,7 @@ renderVals() {
     activeModel: preset.model || 'Not set',
     activeStyle: styleObj.title || 'Default',
     activeCompanion: persona.name || 'Kel',
-    wbHint: s.wbPermanent ? (s.wbPermanent.length + ' chars') : 'Not set',
+    wbHint: s.wbPermanent ? (s.wbPermanent.length + ' chars') : '未设置',
     promptCount: (s.prompts || []).length + ' items',
     // Worldbook & Memory lists
     wbList,
@@ -2131,8 +2274,8 @@ renderVals() {
     openAnniv: () => self.setState({ sub: 'anniversary' }),
     closeSub: () => self.setState({ sub: null }),
     newChat: () => self.newChat(),
-    pullCloud: () => self.show('Local storage only'),
-    syncCloud: () => self.show('Local storage only'),
+    pullCloud: () => self.show('仅本地存储'),
+    syncCloud: () => self.show('仅本地存储'),
     githubBackup: () => self.exportData(),
     textareaRef: (el) => self.textareaRef(el),
     // Input
@@ -2293,7 +2436,7 @@ renderVals() {
       const next = !s.petEnabled;
       self.setState({ petEnabled: next });
       self.persist();
-      self.show(next ? 'Pet on' : 'Pet off');
+      self.show(next ? '小可' : '小可睡觉');
     },
     cyclePetSize: () => {
       const next = (s.petSizeIdx + 1) % self.petSizes.length;
@@ -2315,6 +2458,29 @@ renderVals() {
       self.show('记忆读取: ' + next + ' 条');
     },
     // Export
+        // 头像
+    userAvatar: s.userAvatar || '',
+    aiAvatar: s.aiAvatar || '',
+    hasAiAvatar: !!s.aiAvatar,
+    pickUserAvatar: () => self.pickUserAvatar(),
+    pickAiAvatar: () => self.pickAiAvatar(),
+    // CSS
+    customCss: s.customCss || '',
+    customFont: s.customFont || '',
+    customCssChange: (e) => { self.setState({ customCss: e.target.value }); },
+    customFontChange: (e) => { self.setState({ customFont: e.target.value }); },
+    saveCssSettings: () => { self.persist(); self.applyCustomCss(); self.applyCustomFont(); self.show('样式已保存'); },
+    isCssSheet: s.sheet === 'css',
+    openCssSheet: () => self.setState({ sheet: 'css', plus: false }),
+    // 搜索
+    searchOpen: !!(s.searchQuery && s.searchQuery.trim()),
+    searchQuery: s.searchQuery || '',
+    searchResults: (s.searchResults || []).map(r => ({
+      ...r,
+      open: () => self.openSearchResult(r.chatId, r.msgIdx)
+    })),
+    toggleSearch: () => self.setState(v => ({ searchOpen: !v.searchOpen, searchQuery: '', searchResults: [] })),
+    searchChange: (e) => { self.setState({ searchQuery: e.target.value }); self.searchChats(e.target.value); },
     exportData: () => self.exportData()
   };
 }
