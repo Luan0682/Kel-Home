@@ -92,6 +92,14 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
+<!-- User avatar -->
+<sc-if value="{{ m.showUserAvatar }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:6px;">
+<span style="font-size:11px;color:#B8B3A8;">{{ currentTime }}</span>
+<img src="{{ userAvatar }}" style="width:{{ avatarSize }}px;height:{{ avatarSize }}px;border-radius:50%;object-fit:cover;" alt="">
+</div>
+</sc-if>
+
 <!-- AI avatar + time -->
 <sc-if value="{{ m.showAiAvatar }}" hint-placeholder-val="{{ false }}">
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
@@ -266,8 +274,8 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">{{ totalWorldbooks }}</div>
 </div>
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
-<div style="font-size:11px;color:#B8B3A8;font-weight:500;">记忆</div>
-<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">{{ totalMemories }}</div>
+<div style="font-size:11px;color:#B8B3A8;font-weight:500;">日记</div>
+<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">{{ totalDiaries }}</div>
 </div>
 </div>
 
@@ -389,6 +397,123 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
+<!-- ========== DIARY PAGE ========== -->
+<sc-if value="{{ isDiaryPage }}" hint-placeholder-val="{{ false }}">
+<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
+
+<div style="padding:4px 0 6px;">
+<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
+</button>
+</div>
+
+<div style="padding:6px 0 20px;display:flex;align-items:center;justify-content:space-between;">
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">日记</div>
+<div style="font-size:13px;color:#9A958B;">{{ diaryMonthLabel }}</div>
+</div>
+
+<!-- Calendar navigation -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+<button onClick="{{ diaryPrevMonth }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:1px solid #EDE9E0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14 6l-6 6 6 6" stroke="#48453E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div style="font-size:16px;font-weight:600;color:#1A1815;">{{ diaryYearMonth }}</div>
+<button onClick="{{ diaryNextMonth }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:1px solid #EDE9E0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M10 6l6 6-6 6" stroke="#48453E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+</div>
+
+<!-- Calendar weekday headers -->
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:8px;">
+<div style="text-align:center;font-size:11px;color:#B8B3A8;font-weight:500;padding:6px 0;">日</div>
+<div style="text-align:center;font-size:11px;color:#B8B3A8;font-weight:500;padding:6px 0;">一</div>
+<div style="text-align:center;font-size:11px;color:#B8B3A8;font-weight:500;padding:6px 0;">二</div>
+<div style="text-align:center;font-size:11px;color:#B8B3A8;font-weight:500;padding:6px 0;">三</div>
+<div style="text-align:center;font-size:11px;color:#B8B3A8;font-weight:500;padding:6px 0;">四</div>
+<div style="text-align:center;font-size:11px;color:#B8B3A8;font-weight:500;padding:6px 0;">五</div>
+<div style="text-align:center;font-size:11px;color:#B8B3A8;font-weight:500;padding:6px 0;">六</div>
+</div>
+
+<!-- Calendar grid -->
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:20px;">
+<sc-for list="{{ diaryCalendarCells }}" as="cell" hint-placeholder-count="35">
+<div onClick="{{ cell.tap }}" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px;cursor:{{ cell.cursor }};background:{{ cell.bg }};border:{{ cell.border }};position:relative;min-height:40px;">
+<span style="font-size:14px;font-weight:{{ cell.fw }};color:{{ cell.color }};">{{ cell.day }}</span>
+<sc-if value="{{ cell.hasSticker }}" hint-placeholder-val="{{ false }}">
+<span style="font-size:10px;position:absolute;bottom:2px;">{{ cell.sticker }}</span>
+</sc-if>
+<sc-if value="{{ cell.hasDot }}" hint-placeholder-val="{{ false }}">
+<div style="width:4px;height:4px;border-radius:50%;background:#9A958B;position:absolute;bottom:4px;"></div>
+</sc-if>
+</div>
+</sc-for>
+</div>
+
+<!-- Selected date diary view -->
+<sc-if value="{{ diaryHasSelected }}" hint-placeholder-val="{{ false }}">
+<div style="margin-bottom:16px;">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+<div style="font-size:16px;font-weight:600;color:#1A1815;">{{ diarySelectedLabel }}</div>
+<button onClick="{{ diarySetSticker }}" style="border:none;background:#FFF;border-radius:14px;padding:6px 12px;font-size:13px;color:#6B665E;cursor:pointer;border:1px solid #EDE9E0;">{{ diaryStickerBtnLabel }}</button>
+</div>
+
+<!-- My diary card -->
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+<div style="display:flex;align-items:center;gap:8px;">
+<sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}">
+<img src="{{ userAvatar }}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;">
+</sc-if>
+<sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
+</sc-if>
+<span style="font-size:14px;font-weight:600;color:#1A1815;">我的日记</span>
+</div>
+<button onClick="{{ diaryEditMine }}" style="border:none;background:#F2EFE8;border-radius:12px;padding:5px 10px;font-size:12px;color:#6B665E;cursor:pointer;">{{ diaryMineBtn }}</button>
+</div>
+<sc-if value="{{ diaryMineIsEdit }}" hint-placeholder-val="{{ false }}">
+<textarea value="{{ diaryMineText }}" onInput="{{ diaryMineInput }}" placeholder="写下今天的故事..." rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:12px;font-family:inherit;font-size:14px;line-height:1.7;color:#1A1815;resize:vertical;min-height:120px;"></textarea>
+<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;">
+<button onClick="{{ diaryCancelMine }}" style="padding:6px 14px;border:1px solid #DDD8CE;background:#FFF;border-radius:14px;font-size:13px;font-family:inherit;color:#6B665E;cursor:pointer;">取消</button>
+<button onClick="{{ diarySaveMine }}" style="padding:6px 14px;border:none;background:#1A1815;border-radius:14px;font-size:13px;font-family:inherit;color:#F5F3EE;cursor:pointer;">保存</button>
+</div>
+</sc-if>
+<sc-if value="{{ !diaryMineIsEdit }}" hint-placeholder-val="{{ true }}">
+<div style="font-size:14px;line-height:1.7;color:#3A362F;white-space:pre-wrap;word-break:break-word;min-height:30px;">{{ diaryMineDisplay }}</div>
+</sc-if>
+</div>
+
+<!-- Kel's diary card -->
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+<div style="display:flex;align-items:center;gap:8px;">
+<sc-if value="{{ hasAiAvatar }}" hint-placeholder-val="{{ false }}">
+<img src="{{ aiAvatar }}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;">
+</sc-if>
+<sc-if value="{{ !hasAiAvatar }}" hint-placeholder-val="{{ true }}">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#9A958B" stroke-width="1.5"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="10" r="1" fill="#9A958B"/><circle cx="15" cy="10" r="1" fill="#9A958B"/></svg>
+</sc-if>
+<span style="font-size:14px;font-weight:600;color:#1A1815;">Kel 的日记</span>
+</div>
+<button onClick="{{ diaryEditKel }}" style="border:none;background:#F2EFE8;border-radius:12px;padding:5px 10px;font-size:12px;color:#6B665E;cursor:pointer;">{{ diaryKelBtn }}</button>
+</div>
+<sc-if value="{{ diaryKelIsEdit }}" hint-placeholder-val="{{ false }}">
+<textarea value="{{ diaryKelText }}" onInput="{{ diaryKelInput }}" placeholder="Kel 的日记..." rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:12px;font-family:inherit;font-size:14px;line-height:1.7;color:#1A1815;resize:vertical;min-height:120px;"></textarea>
+<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;">
+<button onClick="{{ diaryCancelKel }}" style="padding:6px 14px;border:1px solid #DDD8CE;background:#FFF;border-radius:14px;font-size:13px;font-family:inherit;color:#6B665E;cursor:pointer;">取消</button>
+<button onClick="{{ diarySaveKel }}" style="padding:6px 14px;border:none;background:#1A1815;border-radius:14px;font-size:13px;font-family:inherit;color:#F5F3EE;cursor:pointer;">保存</button>
+</div>
+</sc-if>
+<sc-if value="{{ !diaryKelIsEdit }}" hint-placeholder-val="{{ true }}">
+<div style="font-size:14px;line-height:1.7;color:#3A362F;white-space:pre-wrap;word-break:break-word;min-height:30px;">{{ diaryKelDisplay }}</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+</div>
+</sc-if>
+
 <!-- ========== MEMORY PAGE ========== -->
 <sc-if value="{{ isMemoryPage }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
@@ -402,10 +527,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <span style="font-size:24px;">📓</span>
 <div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">记忆</div>
 </div>
-<div style="display:flex;gap:8px;">
-<button onClick="{{ generateMemoryFromChat }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">✨ AI 总结</button>
 <button onClick="{{ newMemory }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
-</div>
 </div>
 <sc-if value="{{ memListHasItems }}" hint-placeholder-val="{{ true }}">
 <sc-for list="{{ memoryList }}" as="mem" hint-placeholder-count="3">
@@ -460,8 +582,12 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <span>世界书</span>
 </div>
 <div onClick="{{ navMemory }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navMemBg }};">
-<span style="font-size:18px;width:20px;text-align:center;">📓</span>
+<span style="font-size:18px;width:20px;text-align:center;">🗒</span>
 <span>记忆</span>
+</div>
+<div onClick="{{ navDiary }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navDiaryBg }};">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex:none;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 7h8M8 11h5" stroke="#48453E" stroke-width="1.3" stroke-linecap="round"/></svg>
+<span>日记</span>
 </div>
 <div onClick="{{ navMore }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navMoreBg }};">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#48453E" stroke-width="1.5"/><path d="M19 12c0-.4 0-.8-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6c-.1.4-.1.8-.1 1.2s0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#48453E" stroke-width="1.4" stroke-linejoin="round"/></svg>
@@ -591,7 +717,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">📁 编辑世界书</span>
+<span style="font-size:16px;font-weight:600;color:#1A1815;">编辑世界书</span>
 <button onClick="{{ saveWorldbookEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
 </div>
 <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
@@ -642,7 +768,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">📓 编辑记忆</span>
+<span style="font-size:16px;font-weight:600;color:#1A1815;">编辑记忆</span>
 <button onClick="{{ saveMemoryEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
 </div>
 <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
@@ -994,7 +1120,7 @@ const chatList = Object.values(chats)
 .filter(c => c.id !== currentChatId && c.messages && c.messages.length > 0)
 .sort((a, b) => (b.lastTime || 0) - (a.lastTime || 0));
 if (chatList.length === 0) return '';
-const prev = chatList0;
+const prev = chatList[0];
 const msgs = prev.messages.slice(-(count || 10));
 let summary = '[Memory from previous conversation: "' + (prev.title || 'Untitled') + '"]\n';
 for (const m of msgs) {
@@ -1074,7 +1200,15 @@ searchOpen: false,
 searchQuery: '',
 searchResults: [],
 annivDate: saved.annivDate || '',
-currentTime: getCurrentTime()
+currentTime: getCurrentTime(),
+diaries: saved.diaries || {},
+diaryViewYear: new Date().getFullYear(),
+diaryViewMonth: new Date().getMonth(),
+diarySelectedDate: null,
+diaryMineEdit: false,
+diaryMineText: '',
+diaryKelEdit: false,
+diaryKelText: ''
 };
 if (!this.state.chats[this.state.currentChatId]) {
 this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
@@ -1116,15 +1250,15 @@ return this.state.chats[this.state.currentChatId] || { messages: [] };
 }
 
 get activePreset() {
-return this.state.apiPresets.find(p => p.id === this.state.activePresetId) || this.state.apiPresets0 || { url: '', key: '', model: '', apiType: 'anthropic', name: 'Default' };
+return this.state.apiPresets.find(p => p.id === this.state.activePresetId) || this.state.apiPresets[0] || { url: '', key: '', model: '', apiType: 'anthropic', name: 'Default' };
 }
 
 get activePersona() {
-return this.state.personas.find(p => p.id === this.state.activePersonaId) || this.state.personas0 || { name: 'Kel', content: '' };
+return this.state.personas.find(p => p.id === this.state.activePersonaId) || this.state.personas[0] || { name: 'Kel', content: '' };
 }
 
 get activeStyleObj() {
-return this.state.styles.find(st => st.id === this.state.activeStyleId) || this.state.styles0 || { title: 'Default', content: '' };
+return this.state.styles.find(st => st.id === this.state.activeStyleId) || this.state.styles[0] || { title: 'Default', content: '' };
 }
 
 get petSizes() { return [32, 48, 64, 80, 96]; }
@@ -1153,7 +1287,8 @@ userAvatar: s.userAvatar,
 aiAvatar: s.aiAvatar,
 customCss: s.customCss,
 customFont: s.customFont,
-annivDate: s.annivDate
+annivDate: s.annivDate,
+diaries: s.diaries
 });
 }
 
@@ -1244,60 +1379,6 @@ deleteMemory(id) {
 const memories = this.state.memories.filter(m => m.id !== id);
 this.setState({ memories }, () => { this.persist(); });
 this.show('已删除');
-}
-
-async generateMemoryFromChat() {
-const chat = this.currentChat;
-if (!chat.messages || chat.messages.length < 2) {
-this.show('对话太短，至少需要一轮交流');
-return;
-}
-this.setState({ isBusy: true });
-try {
-const preset = this.activePreset;
-if (!preset.key) { this.show('请先设置 API Key'); this.setState({ isBusy: false }); return; }
-const sysPrompt = '你是一个记忆提炼助手。请根据以下对话，生成一条简洁的记忆条目（不超过200字），总结关键信息、人物关系或重要事件。直接输出记忆内容，不要加前缀。';
-const userPrompt = chat.messages.map(m => (m.role === 'user' ? 'User: ' : 'AI: ') + (m.text || '').slice(0, 300)).join('\n');
-const apiMessages = [{ role: 'user', content: userPrompt }];
-const headers = { 'Content-Type': 'application/json' };
-let url = preset.url, body;
-if (preset.apiType === 'anthropic') {
-headers['x-api-key'] = preset.key;
-headers['anthropic-version'] = '2023-06-01';
-url += '/messages';
-body = { model: preset.model, max_tokens: 1024, messages: apiMessages, system: sysPrompt };
-} else {
-headers['Authorization'] = 'Bearer ' + preset.key;
-url += '/chat/completions';
-body = { model: preset.model, max_tokens: 1024, messages: [{ role: 'system', content: sysPrompt }, ...apiMessages] };
-}
-const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
-if (!res.ok) throw new Error('API ' + res.status);
-const data = await res.json();
-let reply = preset.apiType === 'anthropic' ? (data.content?.0?.text || '') : (data.choices?.0?.message?.content || '');
-if (reply.trim()) {
-const newMem = {
-id: genId(),
-name: 'AI 记忆 ' + new Date().toLocaleDateString(),
-content: reply.trim(),
-triggers: [],
-alwaysOn: false,
-weight: 0.5,
-position: 'before',
-tag: 'auto',
-createdAt: Date.now()
-};
-const memories = [...this.state.memories, newMem];
-this.setState({ memories, isBusy: false }, () => { this.persist(); });
-this.show('AI 已生成一条记忆');
-} else {
-this.setState({ isBusy: false });
-this.show('AI 未生成内容');
-}
-} catch(e) {
-this.setState({ isBusy: false });
-this.show('生成失败: ' + e.message);
-}
 }
 
 // ====== System Prompt Builder ======
@@ -1429,7 +1510,7 @@ content.push({ type: 'text', text: '[File: ' + m.file.fileName + ']\n' + m.file.
 }
 const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
 if (t) content.push({ type: 'text', text: t });
-return { role: m.role === 'user' ? 'user' : 'assistant', content: content.length === 1 && content0.type === 'text' ? t : content };
+return { role: m.role === 'user' ? 'user' : 'assistant', content: content.length === 1 && content[0].type === 'text' ? t : content };
 });
 } else {
 apiMessages = msgs.map(m => {
@@ -1479,7 +1560,7 @@ if (block.type === 'thinking') thinking += block.thinking;
 else if (block.type === 'text') reply += block.text;
 }
 } else {
-reply = data.choices?.0?.message?.content || '';
+reply = data.choices?.[0]?.message?.content || '';
 }
 
 const chats2 = { ...this.state.chats };
@@ -1517,7 +1598,7 @@ const content = [];
 if (m.image) content.push({ type: 'image', source: { type: 'base64', media_type: m.imageMime || 'image/jpeg', data: m.image } });
 const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
 if (t) content.push({ type: 'text', text: t });
-return { role: m.role === 'user' ? 'user' : 'assistant', content: content.length === 1 && content0.type === 'text' ? t : content };
+return { role: m.role === 'user' ? 'user' : 'assistant', content: content.length === 1 && content[0].type === 'text' ? t : content };
 });
 } else {
 apiMessages = msgs.map(m => {
@@ -1557,7 +1638,7 @@ if (block.type === 'thinking') thinking += block.thinking;
 else if (block.type === 'text') reply += block.text;
 }
 } else {
-reply = data.choices?.0?.message?.content || '';
+reply = data.choices?.[0]?.message?.content || '';
 }
 
 const chats = { ...this.state.chats };
@@ -1598,7 +1679,7 @@ delete chats[id];
 let newCurrentId = this.state.currentChatId;
 if (id === newCurrentId) {
 const remaining = Object.keys(chats);
-if (remaining.length > 0) { newCurrentId = remaining0; }
+if (remaining.length > 0) { newCurrentId = remaining[0]; }
 else { newCurrentId = genId(); chats[newCurrentId] = { id: newCurrentId, title: '新对话', messages: [], lastTime: Date.now() }; }
 }
 this.setState({ chats, currentChatId: newCurrentId });
@@ -1626,7 +1707,8 @@ aiAvatar: s.aiAvatar,
 customCss: s.customCss,
 customFont: s.customFont,
 avatarSize: s.avatarSize,
-annivDate: s.annivDate
+annivDate: s.annivDate,
+diaries: s.diaries
 };
 const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
 const url = URL.createObjectURL(blob);
@@ -1646,7 +1728,7 @@ if (input) input.click();
 }
 
 handleImportFile(e) {
-const file = e.target.files && e.target.files0;
+const file = e.target.files && e.target.files[0];
 if (!file) return;
 const reader = new FileReader();
 reader.onload = () => {
@@ -1664,6 +1746,7 @@ if (data.userAvatar) this.setState({ userAvatar: data.userAvatar });
       if (data.customFont) this.setState({ customFont: data.customFont });
       if (data.avatarSize) this.setState({ avatarSize: data.avatarSize });
       if (data.annivDate) this.setState({ annivDate: data.annivDate });
+      if (data.diaries) this.setState({ diaries: { ...this.state.diaries, ...data.diaries } });
       this.persist();
       this.applyCustomCss();
       this.applyCustomFont();
@@ -1805,6 +1888,74 @@ async fetchModels() {
   }
 }
 
+// ====== Diary ======
+getDiaryKey(dateStr) {
+  return dateStr; // format: 'YYYY-MM-DD'
+}
+
+getDiaryEntry(dateStr) {
+  return this.state.diaries[dateStr] || { mine: '', kel: '', sticker: '' };
+}
+
+saveDiaryEntry(dateStr, field, value) {
+  const diaries = { ...this.state.diaries };
+  if (!diaries[dateStr]) diaries[dateStr] = { mine: '', kel: '', sticker: '' };
+  diaries[dateStr] = { ...diaries[dateStr], [field]: value };
+  this.setState({ diaries }, () => this.persist());
+}
+
+diarySelectDate(dateStr) {
+  const entry = this.getDiaryEntry(dateStr);
+  this.setState({
+    diarySelectedDate: dateStr,
+    diaryMineEdit: false,
+    diaryMineText: entry.mine || '',
+    diaryKelEdit: false,
+    diaryKelText: entry.kel || ''
+  });
+}
+
+buildCalendarCells() {
+  const year = this.state.diaryViewYear;
+  const month = this.state.diaryViewMonth;
+  const firstDay = new Date(year, month, 1).getDay();
+  const daysInMonth = new Date(year, month + 1, 0).getDate();
+  const today = new Date();
+  const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+  const selectedStr = this.state.diarySelectedDate;
+  const cells = [];
+  const self = this;
+
+  // Empty cells before first day
+  for (let i = 0; i < firstDay; i++) {
+    cells.push({ day: '', cursor: 'default', bg: 'transparent', border: 'none', color: 'transparent', fw: '400', hasSticker: false, sticker: '', hasDot: false, tap: () => {} });
+  }
+
+  for (let d = 1; d <= daysInMonth; d++) {
+    const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+    const entry = this.state.diaries[dateStr];
+    const isToday = dateStr === todayStr;
+    const isSelected = dateStr === selectedStr;
+    const hasDiary = entry && (entry.mine || entry.kel);
+    const hasSticker = entry && entry.sticker;
+
+    cells.push({
+      day: String(d),
+      cursor: 'pointer',
+      bg: isSelected ? '#1A1815' : (isToday ? '#F2EFE8' : 'transparent'),
+      border: isToday && !isSelected ? '1px solid #D1CCC2' : (isSelected ? '1px solid #1A1815' : '1px solid transparent'),
+      color: isSelected ? '#F5F3EE' : (isToday ? '#1A1815' : '#3A362F'),
+      fw: isToday ? '700' : '400',
+      hasSticker: !!hasSticker,
+      sticker: hasSticker ? entry.sticker : '',
+      hasDot: !!hasDiary && !hasSticker,
+      tap: () => self.diarySelectDate(dateStr)
+    });
+  }
+
+  return cells;
+}
+
 // ====== Anniversary ======
 getAnnivDays() {
   if (!this.state.annivDate) return '—';
@@ -1854,6 +2005,7 @@ renderVals() {
         self.setState({ thinkOpenMap: map });
       },
       showAiAvatar: !isUser && !!s.aiAvatar,
+      showUserAvatar: isUser && !!s.userAvatar,
       hasImage: !!m.imageUrl,
       imageUrl: m.imageUrl || '',
       showNormal: s.editIdx !== i,
@@ -1992,6 +2144,7 @@ renderVals() {
     isMore: s.tab === 'more',
     isWorldbookPage: s.tab === 'worldbook',
     isMemoryPage: s.tab === 'memory',
+    isDiaryPage: s.tab === 'diary',
     // Messages
     messages,
     recentChats,
@@ -2015,7 +2168,7 @@ renderVals() {
     // Counts for Home
     totalChats: Object.values(s.chats).filter(c => c.messages && c.messages.length > 0).length,
     totalWorldbooks: s.worldbooks.length,
-    totalMemories: s.memories.length,
+    totalDiaries: Object.keys(s.diaries || {}).filter(k => { const e = s.diaries[k]; return e && (e.mine || e.kel); }).length,
     // Anniversary
     annivDate: s.annivDate || '点击设置',
     annivDays: self.getAnnivDays(),
@@ -2075,6 +2228,7 @@ renderVals() {
     navWbBg: s.tab === 'worldbook' ? '#ECEAE4' : 'transparent',
     navMemBg: s.tab === 'memory' ? '#ECEAE4' : 'transparent',
     navMoreBg: s.tab === 'more' ? '#ECEAE4' : 'transparent',
+    navDiaryBg: s.tab === 'diary' ? '#ECEAE4' : 'transparent',
     // Search
     searchOpen: !!(s.searchQuery && s.searchQuery.trim()),
     searchQuery: s.searchQuery || '',
@@ -2126,6 +2280,7 @@ renderVals() {
     navMore: () => self.setState({ tab: 'more', drawer: false }),
     navWorldbook: () => self.setState({ tab: 'worldbook', drawer: false }),
     navMemory: () => self.setState({ tab: 'memory', drawer: false }),
+    navDiary: () => self.setState({ tab: 'diary', drawer: false }),
     newChat: () => self.newChat(),
     // Input
     inputChange: (e) => self.setState({ input: e.target.value }),
@@ -2174,7 +2329,6 @@ renderVals() {
     saveWorldbookEditor: () => self.saveWorldbookEditor(),
     // Memory page
     newMemory: () => self.openMemoryEditor(null),
-    generateMemoryFromChat: () => self.generateMemoryFromChat(),
     memEditNameChange: (e) => self.setState({ memEditName: e.target.value }),
     memEditContentChange: (e) => self.setState({ memEditContent: e.target.value }),
     memEditTriggersChange: (e) => self.setState({ memEditTriggers: e.target.value }),
@@ -2200,7 +2354,7 @@ self.setState({ apiPresets: presets, sheet: null }); self.persist(); self.show('
 deleteApiDraft: () => {
 if (s.apiPresets.length <= 1) { self.show('不能删除最后一个'); return; }
 const presets = s.apiPresets.filter(p => p.id !== s.activePresetId);
-self.setState({ apiPresets: presets, activePresetId: presets0.id, sheet: null }); self.persist(); self.show('已删除');
+self.setState({ apiPresets: presets, activePresetId: presets[0].id, sheet: null }); self.persist(); self.show('已删除');
 },
 apiNameChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), name: e.target.value } }),
 apiModelChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), model: e.target.value } }),
@@ -2225,7 +2379,7 @@ self.setState({ personas, sheet: null }); self.persist(); self.show('Persona sav
 deletePersona: () => {
 if (s.personas.length <= 1) { self.show('不能删除最后一个'); return; }
 const personas = s.personas.filter(p => p.id !== s.activePersonaId);
-self.setState({ personas, activePersonaId: personas0.id, personaDraft: { ...personas0 }, sheet: null }); self.persist(); self.show('已删除');
+self.setState({ personas, activePersonaId: personas[0].id, personaDraft: { ...personas[0] }, sheet: null }); self.persist(); self.show('已删除');
 },
 // Prompt actions
 newPrompt: () => { self.setState({ promptEditId: genId(), promptEditName: '', promptEditContent: '' }); },
@@ -2269,7 +2423,59 @@ customCssChange: (e) => self.setState({ customCss: e.target.value }),
 customFontChange: (e) => self.setState({ customFont: e.target.value }),
 saveCssSettings: () => { self.persist(); self.applyCustomCss(); self.applyCustomFont(); self.setState({ sheet: null }); self.show('样式已保存'); },
 // Search
-searchChange: (e) => { self.setState({ searchQuery: e.target.value }); self.searchChats(e.target.value); }
+searchChange: (e) => { self.setState({ searchQuery: e.target.value }); self.searchChats(e.target.value); },
+// Diary
+
+diaryMonthLabel: (() => { const m = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']; return m[s.diaryViewMonth] || ''; })(),
+diaryYearMonth: s.diaryViewYear + '年' + (s.diaryViewMonth + 1) + '月',
+diaryCalendarCells: self.buildCalendarCells(),
+diaryHasSelected: !!s.diarySelectedDate,
+diarySelectedLabel: s.diarySelectedDate ? s.diarySelectedDate.replace(/-/g, '.') : '',
+diaryStickerBtnLabel: (() => { if (!s.diarySelectedDate) return '贴纸'; const e = s.diaries[s.diarySelectedDate]; return (e && e.sticker) ? e.sticker + ' 更换' : '+ 心情'; })(),
+diaryMineIsEdit: s.diaryMineEdit,
+diaryMineText: s.diaryMineText,
+diaryMineDisplay: (() => { if (!s.diarySelectedDate) return ''; const e = s.diaries[s.diarySelectedDate]; return (e && e.mine) ? e.mine : '还没有写...'; })(),
+diaryMineBtn: s.diaryMineEdit ? '取消' : '编辑',
+diaryKelIsEdit: s.diaryKelEdit,
+diaryKelText: s.diaryKelText,
+diaryKelDisplay: (() => { if (!s.diarySelectedDate) return ''; const e = s.diaries[s.diarySelectedDate]; return (e && e.kel) ? e.kel : '还没有写...'; })(),
+diaryKelBtn: s.diaryKelEdit ? '取消' : '编辑',
+diaryPrevMonth: () => {
+  let y = s.diaryViewYear, m = s.diaryViewMonth - 1;
+  if (m < 0) { m = 11; y--; }
+  self.setState({ diaryViewYear: y, diaryViewMonth: m, diarySelectedDate: null });
+},
+diaryNextMonth: () => {
+  let y = s.diaryViewYear, m = s.diaryViewMonth + 1;
+  if (m > 11) { m = 0; y++; }
+  self.setState({ diaryViewYear: y, diaryViewMonth: m, diarySelectedDate: null });
+},
+diaryEditMine: () => {
+  if (s.diaryMineEdit) { self.setState({ diaryMineEdit: false }); return; }
+  const entry = self.getDiaryEntry(s.diarySelectedDate);
+  self.setState({ diaryMineEdit: true, diaryMineText: entry.mine || '' });
+},
+diaryEditKel: () => {
+  if (s.diaryKelEdit) { self.setState({ diaryKelEdit: false }); return; }
+  const entry = self.getDiaryEntry(s.diarySelectedDate);
+  self.setState({ diaryKelEdit: true, diaryKelText: entry.kel || '' });
+},
+diaryMineInput: (e) => self.setState({ diaryMineText: e.target.value }),
+diaryKelInput: (e) => self.setState({ diaryKelText: e.target.value }),
+diarySaveMine: () => { self.saveDiaryEntry(s.diarySelectedDate, 'mine', s.diaryMineText); self.setState({ diaryMineEdit: false }); self.show('日记已保存'); },
+diarySaveKel: () => { self.saveDiaryEntry(s.diarySelectedDate, 'kel', s.diaryKelText); self.setState({ diaryKelEdit: false }); self.show('日记已保存'); },
+diaryCancelMine: () => self.setState({ diaryMineEdit: false }),
+diaryCancelKel: () => self.setState({ diaryKelEdit: false }),
+diarySetSticker: () => {
+  if (!s.diarySelectedDate) return;
+  const emojis = ['😊','😢','😡','🥰','😴','🤔','✨','🌧️','☀️','🌈','💪','😭','🎉','💕','😤','🫠'];
+  const entry = self.getDiaryEntry(s.diarySelectedDate);
+  const current = entry.sticker || '';
+  const idx = emojis.indexOf(current);
+  const next = emojis[(idx + 1) % emojis.length];
+  self.saveDiaryEntry(s.diarySelectedDate, 'sticker', next);
+  self.show('心情: ' + next);
+}
 };
 }
 }
