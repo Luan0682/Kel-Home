@@ -9,5 +9,3 @@ Public-safety notes:
 - No live data sync is included.
 - No network call is sent.
 - No credential, account, or personal host is included.
-
-Open index.html in a browser.
