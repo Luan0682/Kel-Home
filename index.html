@@ -2197,17 +2197,23 @@ else if (block.type === 'text') reply += (block.text || '');
 } else {
   const msg = data.choices?.[0]?.message || {};
   reply = msg.content || '';
+  // 清除 content 中可能包裹的 <thinking> 标签
+reply = reply.replace(/<thinking>[\s\S]*?<\/thinking>/g, '').trim();
   // 新增：读取 OpenAI 兼容格式下的思维链字段
   if (msg.reasoning_content) {
     thinking = msg.reasoning_content;
   }
+  // 清除 content 中可能包裹的 <thinking> 标签（因为有些网关会把 reasoning 也放进 content）
+  reply = reply.replace(/<thinking>[\s\S]*?<\/thinking>/g, '').trim();
 }
 
 console.log('[Kel Debug] thinking length:', thinking.length, 'reply length:', reply.length);
 if (thinking) console.log('[Kel Debug] thinking preview:', thinking.slice(0, 100));
 
 // Apply regex rules to output
-reply = this.applyRegexRules(reply, 'output');
+const regexResult = this.applyRegexRules(reply, 'output');
+reply = regexResult.text;
+const regexPetState = regexResult.petState; // 可能为 null
 
 // Split AI reply
 // ===== 按段落分割（用空行 \n\n 分隔），过滤掉空白段落 =====
@@ -2224,6 +2230,19 @@ if (thinking) {
   if (t.includes('love') || t.includes('❤') || t.includes('想') || t.includes('亲') || t.includes('抱') || t.includes('宝贝')) mood = 'happy';
   else if (t.includes('worry') || t.includes('concern') || t.includes('担心')) mood = 'thinking';
   else mood = 'happy';
+}
+
+// ---- 从回复内容中检测情感（但正则触发优先级更高） ----
+let detectedPet = regexPetState || ''; // 如果正则给了表情，直接用
+if (!detectedPet) {
+  const lowerReply = reply.toLowerCase();
+  if (lowerReply.includes('难过') || lowerReply.includes('伤心') || lowerReply.includes('sorry') || lowerReply.includes('sad') || lowerReply.includes('😢')) {
+    detectedPet = 'sad';
+  } else if (lowerReply.includes('开心') || lowerReply.includes('快乐') || lowerReply.includes('love') || lowerReply.includes('kiss') || lowerReply.includes('🥰') || lowerReply.includes('喜欢')) {
+    detectedPet = 'happy';
+  } else if (lowerReply.includes('思考') || lowerReply.includes('想') || lowerReply.includes('考虑') || lowerReply.includes('琢磨') || lowerReply.includes('🤔')) {
+    detectedPet = 'thinking';
+  }
 }
 const thinkingContent = thinking || this.state.lastThinking || '';
 
@@ -2257,7 +2276,7 @@ for (let i = 0; i < finalParagraphs.length; i++) {
   // 更新状态：最后一条推送完后才把 isBusy 置为 false
   this.setState({
     chats: updatedChats,
-    petState: (i === 0 ? 'happy' : this.state.petState),
+    petState: (i === 0 ? (detectedPet || 'happy') : this.state.petState),
     lastThinking: thinkingContent,
     kelMood: mood,
     isBusy: (i < finalParagraphs.length - 1) // 不是最后一条时保持 busy
@@ -2590,8 +2609,9 @@ this.setState({ regexRules: rules }, () => { this.persist(); });
 }
 
 applyRegexRules(text, target) {
-const rules = this.state.regexRules.filter(r => r.enabled && (r.target === target || r.target === 'both'));
-let result = text;
+  this._lastRegexPet = null; // 重置
+  const rules = this.state.regexRules.filter(r => r.enabled && (r.target === target || r.target === 'both'));
+  let result = text;
 for (const rule of rules) {
 if (!rule.pattern) continue;
 const patterns = rule.pattern.split('\n').map(p => p.trim()).filter(Boolean);
@@ -2613,9 +2633,10 @@ regex.lastIndex = 0;
 const actions = (rule.action || '').split('\n').map(a => a.trim()).filter(Boolean);
 for (const action of actions) {
 if (action.startsWith('pet:')) {
-const petState = action.slice(4).trim();
-this.setState({ petState });
-setTimeout(() => this.setState({ petState: 'idle' }), 5000);
+  const petState = action.slice(4).trim();
+  this.setState({ petState });
+  this._lastRegexPet = petState; // 新增
+  setTimeout(() => this.setState({ petState: 'idle' }), 5000);
 } else if (action.startsWith('mood:')) {
 const mood = action.slice(5).trim();
 this.setState({ kelMood: mood });
@@ -2627,10 +2648,11 @@ result = result.replace(regex, replacement);
 result = result.replace(regex, '');
 }
 }
+    }
+  }
 }
-}
-}
-return result;
+// 记录正则触发的 pet 状态（如果有）
+return { text: result, petState: this._lastRegexPet || null };
 }
 
 // ====== Search ======
@@ -2768,10 +2790,14 @@ for (const block of (data.content || [])) { if (block.type === 'text') reply += 
 } else {
   const msg = data.choices?.[0]?.message || {};
   reply = msg.content || '';
+  // 清除 content 中可能包裹的 <thinking> 标签
+reply = reply.replace(/<thinking>[\s\S]*?<\/thinking>/g, '').trim();
   // 新增：读取 OpenAI 兼容格式下的思维链字段
   if (msg.reasoning_content) {
     thinking = msg.reasoning_content;
   }
+  // 清除 content 中可能包裹的 <thinking> 标签（因为有些网关会把 reasoning 也放进 content）
+  reply = reply.replace(/<thinking>[\s\S]*?<\/thinking>/g, '').trim();
 }
 if (reply) this.addDiaryComment('kel', reply);
 } catch(e) {
