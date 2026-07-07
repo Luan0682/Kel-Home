@@ -137,7 +137,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- message body: normal -->
 <sc-if value="{{ m.showNormal }}" hint-placeholder-val="{{ true }}">
-<div ref="{{ m.contentRef }}" style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:{{ m.pad }};font-size:var(--msg-font-size, 16px);line-height:1.75;letter-spacing:-0.008em;word-break:break-word;"></div>
+<div ref="{{ m.contentRef }}" style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:var(--msg-padding, 8px 14px);font-size:var(--msg-font-size, 16px);line-height:var(--msg-line-height, 1.5);letter-spacing:-0.008em;word-break:break-word;"></div>
 </sc-if>
 
 <!-- message body: edit mode -->
@@ -2265,9 +2265,9 @@ for (let i = 0; i < finalParagraphs.length; i++) {
   this.persist();
   this.scrollToBottom();
 
-  // 段落之间间隔 4000ms（4 秒），让音效完整播放完毕
+  // 段落之间间隔秒数，让音效完整播放完毕
   if (i < finalParagraphs.length - 1) {
-    await new Promise(resolve => setTimeout(resolve, 4000));
+    await new Promise(resolve => setTimeout(resolve, 1000));
   }
 }
 
@@ -2880,7 +2880,6 @@ if (last) return '6px 6px 22px 6px';
 return '6px 6px 6px 6px';
 }
 })(),
-pad: '12px 18px',
 gap: isLastInGroup(i) ? '24px' : '4px',
 text: displayText,
 rendered: rendered,
@@ -3554,11 +3553,15 @@ cancelEdit: () => self.setState({ editIdx: -1 }),
 saveEdit: () => {
 const idx = s.editIdx; if (idx < 0) return;
 const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
-const newMsgs = [...c.messages]; const oldMsg = newMsgs[idx];
+const newMsgs = [...c.messages];
+const oldMsg = newMsgs[idx];
+// 只修改当前消息的文字，不截断列表，不重新生成
 newMsgs[idx] = { ...oldMsg, text: s.editText, variants: [s.editText], variantIdx: 0 };
-c.messages = newMsgs.slice(0, idx + 1); chats[s.currentChatId] = c;
-self.setState({ chats, editIdx: -1, input: '' }); self.persist();
-if (oldMsg.role === 'user') { self.setState({ isBusy: true }); self._callApi(s.currentChatId, c.messages).catch(e => { self.setState({ isBusy: false }); self.show('Error: ' + e.message); }); }
+c.messages = newMsgs;
+chats[s.currentChatId] = c;
+self.setState({ chats, editIdx: -1, input: '' });
+self.persist();
+self.show('已修改');
 },
 closeSheet: () => self.setState({ sheet: null, promptEditId: null, annivEditing: false, pledgeEditing: false }),
 openApiSheet: () => self.setState({ sheet: 'api', plus: false, profile: false, apiDraft: { ...preset, models: [] } }),
