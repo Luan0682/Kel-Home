@@ -86,7 +86,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- messages -->
 <sc-for list="{{ messages }}" as="m" hint-placeholder-count="4">
-<div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;">
+<div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;" onContextMenu="{{ m.longPress }}">
 <div style="max-width:{{ m.maxW }};width:{{ m.fullW }};">
 
 <!-- thinking block -->
@@ -137,7 +137,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- message body: normal -->
 <sc-if value="{{ m.showNormal }}" hint-placeholder-val="{{ true }}">
-<div style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:{{ m.pad }};font-size:16px;line-height:1.75;letter-spacing:-0.008em;white-space:pre-wrap;word-break:break-word;">{{ m.text }}</div>
+<div ref="{{ m.contentRef }}" style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:{{ m.pad }};font-size:var(--msg-font-size, 16px);line-height:1.75;letter-spacing:-0.008em;word-break:break-word;"></div>
 </sc-if>
 
 <!-- message body: edit mode -->
@@ -409,6 +409,13 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <button onClick="{{ newWorldbook }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
 </div>
 
+<!-- worldbook tag filter -->
+<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:14px;">
+<sc-for list="{{ wbCategoryOptions }}" as="wc" hint-placeholder-count="4">
+<button onClick="{{ wc.pick }}" style="flex:none;border:1px solid {{ wc.bd }};background:{{ wc.bg }};border-radius:16px;padding:6px 14px;font-size:13px;color:{{ wc.fg }};font-family:inherit;cursor:pointer;">{{ wc.label }}</button>
+</sc-for>
+</div>
+
 <sc-if value="{{ wbListHasItems }}" hint-placeholder-val="{{ true }}">
 <sc-for list="{{ wbList }}" as="wb" hint-placeholder-count="3">
 <div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ wb.open }}">
@@ -419,9 +426,6 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <span style="font-size:11px;color:#9A958B;background:#F2EFE8;border-radius:8px;padding:2px 8px;flex:none;">{{ wb.triggerCount }} 触发</span>
 <span style="font-size:11px;color:#9A958B;background:{{ wb.activeBg }};border-radius:8px;padding:2px 8px;flex:none;">{{ wb.activeLabel }}</span>
 </div>
-<button onClick="{{ wb.del }}" style="border:none;background:transparent;padding:0;cursor:pointer;opacity:.35;flex:none;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
-</button>
 </div>
 <div style="font-size:13px;color:#9A958B;margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ wb.preview }}</div>
 </div>
@@ -642,6 +646,49 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </sc-if>
 </div>
 </sc-if>
+<!-- ========== REGEX PAGE ========== -->
+<sc-if value="{{ isRegexPage }}" hint-placeholder-val="{{ false }}">
+<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
+
+<div style="padding:4px 0 6px;">
+<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
+</button>
+</div>
+
+<div style="padding:6px 0 20px;display:flex;align-items:center;justify-content:space-between;">
+<div style="display:flex;align-items:center;gap:10px;">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 4v4M12 16v4M4 12h4M16 12h4M6.3 6.3l2.8 2.8M14.9 14.9l2.8 2.8M6.3 17.7l2.8-2.8M14.9 9.1l2.8-2.8" stroke="#1A1815" stroke-width="1.5" stroke-linecap="round"/></svg>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:var(--text-primary, #1A1815);letter-spacing:-.01em;">正则</div>
+</div>
+<button onClick="{{ newRegex }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
+</div>
+
+<div style="font-size:13px;color:#9A958B;line-height:1.6;margin-bottom:16px;padding:12px 14px;background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:14px;">扫描 AI 输出文字，匹配关键词时触发动作（如切换像素小人表情、替换文本等）</div>
+
+<sc-if value="{{ regexListHasItems }}" hint-placeholder-val="{{ true }}">
+<sc-for list="{{ regexList }}" as="rx" hint-placeholder-count="3">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ rx.edit }}">
+<div style="display:flex;align-items:center;justify-content:space-between;">
+<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+<div style="width:8px;height:8px;border-radius:50%;background:{{ rx.dotColor }};flex:none;"></div>
+<span style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ rx.name }}</span>
+<span style="font-size:11px;color:#9A958B;background:#F2EFE8;border-radius:8px;padding:2px 8px;flex:none;">{{ rx.targetLabel }}</span>
+</div>
+<div style="display:flex;align-items:center;gap:8px;">
+<button onClick="{{ rx.toggle }}" style="border:none;background:{{ rx.toggleBg }};border-radius:12px;padding:4px 10px;font-size:11px;color:{{ rx.toggleFg }};cursor:pointer;font-family:inherit;">{{ rx.toggleLabel }}</button>
+</div>
+</div>
+<div style="font-size:12px;color:#6B665E;margin-top:6px;font-family:'SF Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ rx.patternPreview }}</div>
+<div style="font-size:12px;color:#9A958B;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">→ {{ rx.actionPreview }}</div>
+</div>
+</sc-for>
+</sc-if>
+<sc-if value="{{ !regexListHasItems }}" hint-placeholder-val="{{ false }}">
+<div style="text-align:center;padding:50px 0;color:#B8B3A8;font-size:14px;">还没有正则规则，点击右上角新建</div>
+</sc-if>
+</div>
+</sc-if>
 
 </div>
 
@@ -680,6 +727,12 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex:none;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 7h8M8 11h5" stroke="#48453E" stroke-width="1.3" stroke-linecap="round"/></svg>
 <span>日记</span>
 </div>
+
+<div onClick="{{ navRegex }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navRegexBg }};">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 4v4M12 16v4M4 12h4M16 12h4M6.3 6.3l2.8 2.8M14.9 14.9l2.8 2.8M6.3 17.7l2.8-2.8M14.9 9.1l2.8-2.8" stroke="#48453E" stroke-width="1.5" stroke-linecap="round"/></svg>
+<span>正则</span>
+</div>
+
 <div onClick="{{ navMore }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navMoreBg }};">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#48453E" stroke-width="1.5"/><path d="M19 12c0-.4 0-.8-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6c-.1.4-.1.8-.1 1.2s0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#48453E" stroke-width="1.4" stroke-linejoin="round"/></svg>
 <span>Settings</span>
@@ -839,7 +892,10 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
 <span style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">编辑世界书</span>
+<div style="display:flex;gap:8px;">
+<button onClick="{{ deleteWorldbookFromEditor }}" style="border:none;background:var(--bg-card, #FFF);color:#9A958B;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;border:1px solid var(--border-card, #EDE9E0);">删除</button>
 <button onClick="{{ saveWorldbookEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
+</div>
 </div>
 <div style="background:var(--bg-card, #FFF);border-radius:16px;overflow:hidden;border:1px solid var(--border-card, #EDE9E0);padding:16px;">
 <div style="margin-bottom:14px;">
@@ -856,6 +912,46 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <input value="{{ wbEditWeight }}" onInput="{{ wbEditWeightChange }}" type="number" min="0" max="10" step="0.5" style="width:50px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 6px;font-family:inherit;font-size:13px;text-align:center;">
 </label>
 </div>
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">分类</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<sc-for list="{{ wbTagOptions }}" as="wt" hint-placeholder-count="4">
+<button onClick="{{ wt.pick }}" style="border:1px solid {{ wt.bd }};background:{{ wt.bg }};color:{{ wt.fg }};border-radius:14px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;">{{ wt.label }}</button>
+</sc-for>
+</div>
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">分类</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<sc-for list="{{ wbTagOptions }}" as="wt" hint-placeholder-count="4">
+<button onClick="{{ wt.pick }}" style="border:1px solid {{ wt.bd }};background:{{ wt.bg }};color:{{ wt.fg }};border-radius:14px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;">{{ wt.label }}</button>
+</sc-for>
+</div>
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">分类</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<sc-for list="{{ wbTagOptions }}" as="wt" hint-placeholder-count="4">
+<button onClick="{{ wt.pick }}" style="border:1px solid {{ wt.bd }};background:{{ wt.bg }};color:{{ wt.fg }};border-radius:14px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;">{{ wt.label }}</button>
+</sc-for>
+</div>
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">分类</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<sc-for list="{{ wbTagOptions }}" as="wt" hint-placeholder-count="4">
+<button onClick="{{ wt.pick }}" style="border:1px solid {{ wt.bd }};background:{{ wt.bg }};color:{{ wt.fg }};border-radius:14px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;">{{ wt.label }}</button>
+</sc-for>
+</div>
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">分类</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<sc-for list="{{ wbTagOptions }}" as="wt" hint-placeholder-count="4">
+<button onClick="{{ wt.pick }}" style="border:1px solid {{ wt.bd }};background:{{ wt.bg }};color:{{ wt.fg }};border-radius:14px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;">{{ wt.label }}</button>
+</sc-for>
+</div>
+</div>
 <div style="display:flex;gap:12px;margin-bottom:14px;">
 <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
 <input type="radio" name="wbPos" value="before" checked="{{ wbEditPosBefore }}" onChange="{{ wbEditSetPosBefore }}" style="accent-color:#1A1815;">
@@ -865,14 +961,17 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <input type="radio" name="wbPos" value="after" checked="{{ wbEditPosAfter }}" onChange="{{ wbEditSetPosAfter }}" style="accent-color:#1A1815;">
 字符后
 </label>
-</div>
+</div
 <div style="margin-bottom:14px;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个）</div>
 <textarea value="{{ wbEditTriggers }}" onInput="{{ wbEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="3" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
 </div>
 <div>
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">内容（触发时插入）</div>
-<textarea value="{{ wbEditContent }}" onInput="{{ wbEditContentChange }}" placeholder="触发后注入的设定、背景、规则……" rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+<div style="font-size:12px;color:#B8B3A8;">内容（触发时插入）</div>
+<button onClick="{{ wbToggleFullscreen }}" style="border:none;background:#F2EFE8;border-radius:10px;padding:4px 10px;font-size:11px;color:#6B665E;cursor:pointer;">{{ wbFullscreenLabel }}</button>
+</div>
+<textarea value="{{ wbEditContent }}" onInput="{{ wbEditContentChange }}" placeholder="触发后注入的设定、背景、规则……" rows="{{ wbContentRows }}" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:{{ wbContentFontSize }};color:#1A1815;resize:vertical;min-height:{{ wbContentMinH }};"></textarea>
 </div>
 </div>
 </div>
@@ -930,8 +1029,57 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <textarea value="{{ memEditTriggers }}" onInput="{{ memEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="2" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
 </div>
 <div>
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">内容</div>
-<textarea value="{{ memEditContent }}" onInput="{{ memEditContentChange }}" placeholder="记忆内容……" rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+<div style="font-size:12px;color:#B8B3A8;">内容</div>
+<button onClick="{{ memToggleFullscreen }}" style="border:none;background:#F2EFE8;border-radius:10px;padding:4px 10px;font-size:11px;color:#6B665E;cursor:pointer;">{{ memFullscreenLabel }}</button>
+</div>
+<textarea value="{{ memEditContent }}" onInput="{{ memEditContentChange }}" placeholder="记忆内容……" rows="{{ memContentRows }}" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:{{ memContentFontSize }};color:#1A1815;resize:vertical;min-height:{{ memContentMinH }};"></textarea>
+</div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- Regex Editor Sheet -->
+<sc-if value="{{ isRegexEditorSheet }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:270;">
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;background:var(--bg-main, #F5F3EE);border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:60vh;overflow-y:auto;">
+<div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button>
+<span style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">编辑正则</span>
+<div style="display:flex;gap:8px;">
+<button onClick="{{ deleteRegex }}" style="border:none;background:var(--bg-card, #FFF);color:#9A958B;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;border:1px solid var(--border-card, #EDE9E0);">删除</button>
+<button onClick="{{ saveRegex }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
+</div>
+</div>
+<div style="background:var(--bg-card, #FFF);border-radius:16px;overflow:hidden;border:1px solid var(--border-card, #EDE9E0);padding:16px;">
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">规则名称</div>
+<input value="{{ regexEditName }}" onInput="{{ regexEditNameChange }}" placeholder="例：亲亲→love表情" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">作用范围</div>
+<div style="display:flex;gap:8px;">
+<button onClick="{{ regexSetOutput }}" style="border:1px solid {{ regexOutputBd }};background:{{ regexOutputBg }};color:{{ regexOutputFg }};border-radius:14px;padding:6px 14px;font-size:13px;font-family:inherit;cursor:pointer;">AI输出</button>
+<button onClick="{{ regexSetInput }}" style="border:1px solid {{ regexInputBd }};background:{{ regexInputBg }};color:{{ regexInputFg }};border-radius:14px;padding:6px 14px;font-size:13px;font-family:inherit;cursor:pointer;">用户输入</button>
+<button onClick="{{ regexSetBoth }}" style="border:1px solid {{ regexBothBd }};background:{{ regexBothBg }};color:{{ regexBothFg }};border-radius:14px;padding:6px 14px;font-size:13px;font-family:inherit;cursor:pointer;">双向</button>
+</div>
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">匹配模式（正则或关键词，每行一个）</div>
+<textarea value="{{ regexEditPattern }}" onInput="{{ regexEditPatternChange }}" placeholder="亲亲|kiss|😘&#10;对不起|sorry&#10;/开心|快乐/gi" rows="4" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:'SF Mono',monospace;font-size:13px;line-height:1.6;color:#1A1815;resize:vertical;"></textarea>
+</div>
+<div>
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">执行动作</div>
+<textarea value="{{ regexEditAction }}" onInput="{{ regexEditActionChange }}" placeholder="pet:love（切换像素小人为love动画）&#10;pet:sad&#10;replace:替换文本&#10;mood:happy（更改心情）" rows="4" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:'SF Mono',monospace;font-size:13px;line-height:1.6;color:#1A1815;resize:vertical;"></textarea>
+</div>
+<div style="margin-top:14px;padding:12px;background:#F7F5F0;border-radius:12px;">
+<div style="font-size:11px;color:#9A958B;font-weight:500;margin-bottom:6px;">动作参考</div>
+<div style="font-size:12px;color:#6B665E;line-height:1.8;font-family:'SF Mono',monospace;">pet:idle / pet:happy / pet:love / pet:sad / pet:thinking<br>mood:happy / mood:idle / mood:thinking<br>replace:要替换成的文字<br>remove（删除匹配文字）</div>
 </div>
 </div>
 </div>
@@ -1333,7 +1481,13 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <!-- 字体 -->
 <div style="padding:14px 16px;border-bottom:1px solid #ECE8DF;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">自定义字体</div>
-<input value="{{ customFont }}" onInput="{{ customFontChange }}" placeholder="例: 'LXGW WenKai', serif" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:13px;color:#1A1815;">
+<input value="{{ customFont }}" onInput="{{ customFontChange }}" placeholder="例: 'LXGW WenKai', serif" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:13px;color:#1A1815;margin-bottom:8px;">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+<button onClick="{{ pickFontFile }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:12px;padding:7px 14px;font-size:12px;font-family:inherit;cursor:pointer;">上传 TTF/OTF</button>
+<span style="font-size:11px;color:#9A958B;">{{ localFontName }}</span>
+</div>
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">消息字体大小 (px)</div>
+<input value="{{ msgFontSize }}" onInput="{{ msgFontSizeChange }}" type="number" min="12" max="24" style="width:80px;border:1px solid #E7E3DA;border-radius:12px;padding:8px 12px;font-family:inherit;font-size:14px;color:#1A1815;text-align:center;">
 </div>
 <!-- CSS -->
 <div style="padding:14px 16px;">
@@ -1352,6 +1506,33 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <sc-if value="{{ petEnabled }}" hint-placeholder-val="{{ true }}">
 <div style="position:fixed;bottom:90px;right:16px;z-index:50;pointer-events:none;">
 <img src="{{ petGif }}" width="{{ petSize }}" height="{{ petSize }}" style="image-rendering:pixelated;" alt="Kel">
+</div>
+</sc-if>
+
+<!-- context menu -->
+<sc-if value="{{ contextMenuOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:500;" onClick="{{ closeContextMenu }}">
+<div style="position:absolute;top:{{ contextMenuTop }};left:50%;transform:translateX(-50%);background:#1A1815;border-radius:14px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.3);display:flex;gap:2px;animation:fadeUp .15s ease both;" onClick="{{ stopProp }}">
+<button onClick="{{ ctxCopy }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">复制</button>
+<button onClick="{{ ctxEdit }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">编辑</button>
+<button onClick="{{ ctxResend }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">重发</button>
+<button onClick="{{ ctxDelete }}" style="border:none;background:transparent;color:#FF6B6B;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">删除</button>
+</div>
+</div>
+</sc-if>
+
+<!-- delete confirm modal -->
+<sc-if value="{{ deleteConfirmOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:600;display:flex;align-items:center;justify-content:center;">
+<div onClick="{{ cancelDelete }}" style="position:absolute;inset:0;background:rgba(0,0,0,.3);"></div>
+<div style="position:relative;background:var(--bg-main, #F5F3EE);border-radius:20px;padding:24px;width:280px;box-shadow:0 10px 40px rgba(0,0,0,.2);animation:fadeUp .2s ease both;">
+<div style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);text-align:center;margin-bottom:8px;">确认删除</div>
+<div style="font-size:14px;color:#6B665E;text-align:center;margin-bottom:20px;">{{ deleteConfirmText }}</div>
+<div style="display:flex;gap:10px;">
+<button onClick="{{ cancelDelete }}" style="flex:1;padding:11px;border:1px solid #DDD8CE;background:var(--bg-card, #FFF);border-radius:14px;font-size:14px;font-family:inherit;color:#6B665E;cursor:pointer;">取消</button>
+<button onClick="{{ confirmDelete }}" style="flex:1;padding:11px;border:none;background:#FF4757;border-radius:14px;font-size:14px;font-family:inherit;color:#FFF;cursor:pointer;">删除</button>
+</div>
+</div>
 </div>
 </sc-if>
 
@@ -1453,7 +1634,7 @@ html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
 if (!html.includes('<pre')) {
 html = html.replace(/\n/g, '<br>');
 } else {
-const parts = html.split(/(<div style="position:relative[\s\S]*?<\/div><\/div>)/);
+const parts = html.split(/(<div style="position:relative[\s\S]*?<\/pre><\/div>)/);
 html = parts.map(p => p.startsWith('<div style="position:relative') ? p : p.replace(/\n/g, '<br>')).join('');
 }
 return html;
@@ -1486,6 +1667,8 @@ wbEditTriggers: '',
 wbEditAlwaysOn: false,
 wbEditWeight: 1,
 wbEditPosition: 'before',
+wbEditTag: '',
+wbFilterTag: 'all',
 memories: saved.memories || [],
 memEditId: null,
 memEditName: '',
@@ -1538,6 +1721,9 @@ userAvatar: saved.userAvatar || '',
 aiAvatar: saved.aiAvatar || '',
 customCss: saved.customCss || '',
 customFont: saved.customFont || '',
+localFontName: saved.localFontName || '',
+localFontData: saved.localFontData || '',
+msgFontSize: saved.msgFontSize || 16,
 activeThemeId: saved.activeThemeId || 'default',
 customTheme: saved.customTheme || { bgBase:'', bgMain:'', bgCard:'', bgInput:'', borderCard:'', borderInput:'', textPrimary:'', textSecondary:'', bubbleUser:'', bubbleAi:'' },
 searchOpen: false,
@@ -1570,7 +1756,22 @@ kelMood: saved.kelMood || 'idle',
 imagePreviewOpen: false,
 imagePreviewUrl: '',
 // Pending lines for Enter-to-send
-pendingLines: []
+pendingLines: [],
+contextMenuIdx: -1,
+contextMenuX: 0,
+contextMenuY: 0,
+deleteConfirmOpen: false,
+deleteConfirmType: '',
+deleteConfirmId: null,
+deleteConfirmText: '',
+wbFullscreen: false,
+memFullscreen: false,
+regexRules: saved.regexRules || [],
+regexEditId: null,
+regexEditName: '',
+regexEditPattern: '',
+regexEditAction: '',
+regexEditTarget: 'output'
 };
 if (saved.annivDate && (!saved.anniversaries || saved.anniversaries.length === 0)) {
 this.state.anniversaries = [{ id: genId(), name: '纪念日', date: saved.annivDate }];
@@ -1578,7 +1779,7 @@ this.state.anniversaries = [{ id: genId(), name: '纪念日', date: saved.annivD
 if (!this.state.chats[this.state.currentChatId]) {
 this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
 }
-setTimeout(() => { this.applyTheme(this.state.activeThemeId); this.applyCustomCss(); this.applyCustomFont(); }, 100);
+setTimeout(() => { this.applyTheme(this.state.activeThemeId); this.applyCustomCss(); this.applyCustomFont(); this.applyMsgFontSize(); }, 100);
 this._clockTimer = setInterval(() => {
 this.setState({ currentTime: getCurrentTime() });
 }, 1000);
@@ -1664,6 +1865,9 @@ userAvatar: s.userAvatar,
 aiAvatar: s.aiAvatar,
 customCss: s.customCss,
 customFont: s.customFont,
+localFontName: s.localFontName,
+localFontData: s.localFontData,
+msgFontSize: s.msgFontSize,
 activeThemeId: s.activeThemeId,
 customTheme: s.customTheme,
 anniversaries: s.anniversaries,
@@ -1671,7 +1875,8 @@ activeAnnivIdx: s.activeAnnivIdx,
 pledges: s.pledges,
 diaries: s.diaries,
 lastThinking: s.lastThinking,
-kelMood: s.kelMood
+kelMood: s.kelMood,
+regexRules: s.regexRules
 });
 }
 
@@ -1714,7 +1919,8 @@ wbEditContent: wb ? wb.content : '',
 wbEditTriggers: wb ? (wb.triggers || []).join('\n') : '',
 wbEditAlwaysOn: wb ? !!wb.alwaysOn : false,
 wbEditWeight: wb ? wb.weight : 1,
-wbEditPosition: wb ? wb.position : 'before'
+wbEditPosition: wb ? wb.position : 'before',
+wbEditTag: wb ? (wb.tag || 'general') : 'general'
 });
 }
 
@@ -1728,7 +1934,8 @@ content: s.wbEditContent || '',
 triggers,
 alwaysOn: s.wbEditAlwaysOn,
 weight: parseFloat(s.wbEditWeight) || 1,
-position: s.wbEditPosition || 'before'
+position: s.wbEditPosition || 'before',
+tag: s.wbEditTag || 'general'
 };
 let worldbooks = [...s.worldbooks.filter(w => w.id !== newWb.id), newWb];
 this.setState({ worldbooks, sheet: null }, () => { this.persist(); });
@@ -2017,14 +2224,17 @@ const data = await res.json();
 let reply = '', thinking = '';
 if (preset.apiType === 'anthropic') {
 for (const block of (data.content || [])) {
-if (block.type === 'thinking') thinking += block.thinking;
-else if (block.type === 'text') reply += block.text;
+if (block.type === 'thinking') thinking += (block.thinking || block.text || '');
+else if (block.type === 'text') reply += (block.text || '');
 }
 } else {
 reply = data.choices?.[0]?.message?.content || '';
 }
 
-// Split AI reply by paragraphs into multiple messages (but keep code blocks together)
+// Apply regex rules to output
+reply = this.applyRegexRules(reply, 'output');
+
+// Split AI reply
 const aiMessages = this._splitReplyIntoMessages(reply, thinking);
 
 const timestamp = getFixedTimestamp();
@@ -2070,13 +2280,7 @@ setTimeout(() => this.setState({ petState: 'idle' }), 3000);
 }
 
 _splitReplyIntoMessages(reply, thinking) {
-  if (!reply) return [reply];
-  // If reply contains code blocks, keep as single message
-  if (reply.includes('```')) return [reply];
-  // Split by double newline (paragraphs)
-  const parts = reply.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
-  if (parts.length <= 1) return [reply];
-  return parts;
+  return [reply];
 }
 
 regenerate(msgIdx) {
@@ -2311,6 +2515,123 @@ applyCustomFont() {
 const font = this.state.customFont;
 if (font) { document.body.style.fontFamily = font + ", -apple-system, 'Noto Sans SC', sans-serif"; }
 else { document.body.style.fontFamily = ''; }
+this.applyLocalFont();
+this.applyMsgFontSize();
+}
+
+applyLocalFont() {
+const data = this.state.localFontData;
+const name = this.state.localFontName;
+if (!data || !name) return;
+let el = document.getElementById('kel-local-font');
+if (!el) { el = document.createElement('style'); el.id = 'kel-local-font'; document.head.appendChild(el); }
+const fontName = 'KelLocal';
+el.textContent = '@font-face { font-family: "' + fontName + '"; src: url(' + data + '); }';
+document.body.style.fontFamily = '"' + fontName + '", ' + (this.state.customFont || "-apple-system, 'Noto Sans SC', sans-serif");
+}
+
+applyMsgFontSize() {
+document.documentElement.style.setProperty('--msg-font-size', (this.state.msgFontSize || 16) + 'px');
+}
+
+pickFontFile() {
+const input = document.createElement('input');
+input.type = 'file';
+input.accept = '.ttf,.otf,.woff,.woff2';
+input.onchange = (e) => {
+const file = e.target.files[0];
+if (!file) return;
+const reader = new FileReader();
+reader.onload = () => {
+this.setState({ localFontData: reader.result, localFontName: file.name });
+this.persist();
+this.applyLocalFont();
+this.show('字体已加载: ' + file.name);
+};
+reader.readAsDataURL(file);
+};
+input.click();
+}
+
+// ====== Regex ======
+openRegexEditor(id) {
+const rule = id ? this.state.regexRules.find(r => r.id === id) : null;
+this.setState({
+sheet: 'regexEditor',
+regexEditId: id || genId(),
+regexEditName: rule ? rule.name : '',
+regexEditPattern: rule ? rule.pattern : '',
+regexEditAction: rule ? rule.action : '',
+regexEditTarget: rule ? (rule.target || 'output') : 'output'
+});
+}
+
+saveRegexRule() {
+const s = this.state;
+const newRule = {
+id: s.regexEditId || genId(),
+name: s.regexEditName || '未命名规则',
+pattern: s.regexEditPattern || '',
+action: s.regexEditAction || '',
+target: s.regexEditTarget || 'output',
+enabled: true
+};
+let rules = [...s.regexRules.filter(r => r.id !== newRule.id), newRule];
+this.setState({ regexRules: rules, sheet: null }, () => { this.persist(); });
+this.show('正则已保存');
+}
+
+deleteRegexRule(id) {
+const rules = this.state.regexRules.filter(r => r.id !== id);
+this.setState({ regexRules: rules, sheet: null }, () => { this.persist(); });
+this.show('已删除');
+}
+
+toggleRegexRule(id) {
+const rules = this.state.regexRules.map(r => r.id === id ? { ...r, enabled: !r.enabled } : r);
+this.setState({ regexRules: rules }, () => { this.persist(); });
+}
+
+applyRegexRules(text, target) {
+const rules = this.state.regexRules.filter(r => r.enabled && (r.target === target || r.target === 'both'));
+let result = text;
+for (const rule of rules) {
+if (!rule.pattern) continue;
+const patterns = rule.pattern.split('\n').map(p => p.trim()).filter(Boolean);
+for (const pat of patterns) {
+let regex;
+try {
+if (pat.startsWith('/') && pat.lastIndexOf('/') > 0) {
+const lastSlash = pat.lastIndexOf('/');
+const expr = pat.slice(1, lastSlash);
+const flags = pat.slice(lastSlash + 1) || 'gi';
+regex = new RegExp(expr, flags);
+} else {
+regex = new RegExp(pat, 'gi');
+}
+} catch(e) { continue; }
+if (regex.test(result)) {
+const actions = (rule.action || '').split('\n').map(a => a.trim()).filter(Boolean);
+for (const action of actions) {
+if (action.startsWith('pet:')) {
+const petState = action.slice(4).trim();
+this.setState({ petState });
+setTimeout(() => this.setState({ petState: 'idle' }), 5000);
+} else if (action.startsWith('mood:')) {
+const mood = action.slice(5).trim();
+this.setState({ kelMood: mood });
+this.persist();
+} else if (action.startsWith('replace:')) {
+const replacement = action.slice(8);
+result = result.replace(regex, replacement);
+} else if (action === 'remove') {
+result = result.replace(regex, '');
+}
+}
+}
+}
+}
+return result;
 }
 
 // ====== Search ======
@@ -2536,7 +2857,7 @@ if (msgs[j].role === 'assistant') { isLastAi = false; break; }
 return {
 isUser,
 align: isUser ? 'flex-end' : 'flex-start',
-maxW: isUser ? '82%' : '92%',
+maxW: isUser ? '82%' : '96%',
 fullW: 'auto',
 bg: isUser ? 'var(--bubble-user, #ECEAE4)' : 'var(--bubble-ai, #FFF)',
 color: 'var(--text-primary, #2B2620)',
@@ -2560,8 +2881,8 @@ gap: isLastInGroup(i) ? '24px' : '4px',
 text: displayText,
 rendered: rendered,
 timestamp: m.timestamp || '',
-hasThink: !isUser && !!m.thinking && m.thinking.length > 0 && isFirstInGroup(i),
-thinkSummary: hasThinking ? '思考过程 (' + m.thinking.length + '字)' : '',
+hasThink: !isUser && !!m.thinking && m.thinking.length > 0,
+thinkSummary: hasThinking ? m.thinking.replace(/\n/g, ' ').slice(0, 50) + (m.thinking.length > 50 ? '…' : '') : '',
 thinkContent: m.thinking || '',
 thinkOpen: s.thinkOpenMap && s.thinkOpenMap[i] || false,
 thinkRot: (s.thinkOpenMap && s.thinkOpenMap[i]) ? 'rotate(90deg)' : 'rotate(0deg)',
@@ -2618,6 +2939,17 @@ del: () => {
   self.show('已删除');
 },
 edit: () => self.setState({ editIdx: i, editText: displayText }),
+longPress: (e) => {
+e.preventDefault();
+const rect = e.target.getBoundingClientRect();
+self.setState({ contextMenuIdx: i, contextMenuX: rect.left, contextMenuY: rect.top - 10 });
+},
+contentRef: (el) => {
+if (el && el._lastText !== rendered) {
+el._lastText = rendered;
+el.innerHTML = rendered;
+}
+},
 };
 });
 
@@ -2698,14 +3030,26 @@ pick: () => self.setState({ apiDraft: { ...self.state.apiDraft, model: m } })
 }));
 
 // Worldbook list
-const wbList = s.worldbooks.map(wb => ({
+// Worldbook category filter
+const wbTagList = ['all', 'core', 'character', 'scene', 'general'];
+const wbCategoryOptions = wbTagList.map(tag => ({
+label: tag === 'all' ? '全部' : tag === 'core' ? '核心' : tag === 'character' ? '角色' : tag === 'scene' ? '场景' : '通用',
+bg: s.wbFilterTag === tag ? '#1A1815' : 'var(--bg-card, #FFF)',
+bd: s.wbFilterTag === tag ? '#1A1815' : '#E7E3DA',
+fg: s.wbFilterTag === tag ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
+pick: () => self.setState({ wbFilterTag: tag })
+}));
+
+const filteredWorldbooks = s.worldbooks.filter(wb => s.wbFilterTag === 'all' || (wb.tag || 'general') === s.wbFilterTag);
+
+const wbList = filteredWorldbooks.map(wb => ({
 ...wb,
 triggerCount: (wb.triggers || []).length,
 activeLabel: wb.alwaysOn ? '常驻' : '触发',
 activeBg: wb.alwaysOn ? '#E8F5E8' : '#F2EFE8',
 preview: (wb.content || '').slice(0, 80),
 open: () => self.openWorldbookEditor(wb.id),
-del: (e) => { e.stopPropagation(); self.deleteWorldbook(wb.id); }
+del: (e) => { e.stopPropagation(); self.setState({ deleteConfirmOpen: true, deleteConfirmType: 'worldbook', deleteConfirmId: wb.id, deleteConfirmText: '确定删除世界书「' + (wb.name || '未命名') + '」？' }); }
 }));
 
 // Memory list with filter
@@ -2729,7 +3073,7 @@ activeLabel: mem.alwaysOn ? '常驻' : '触发',
 activeBg: mem.alwaysOn ? '#E8F5E8' : '#F2EFE8',
 preview: (mem.content || '').slice(0, 120),
 open: () => self.openMemoryEditor(mem.id),
-del: (e) => { e.stopPropagation(); self.deleteMemory(mem.id); }
+del: (e) => { e.stopPropagation(); self.setState({ deleteConfirmOpen: true, deleteConfirmType: 'memory', deleteConfirmId: mem.id, deleteConfirmText: '确定删除记忆「' + (mem.name || '未命名') + '」？' }); }
 }));
 
 const memTagOptions = ['core', 'daily', 'monthly', 'general'].map(tag => ({
@@ -2741,7 +3085,14 @@ pick: () => self.setState({ memEditTag: tag })
 }));
 
 // Pet
-const petGif = s.isBusy ? './sprites/clawd-thinking.gif' : (s.petState === 'happy' ? './sprites/clawd-happy.gif' : './sprites/clawd-idle.gif');
+const petGifMap = {
+idle: './sprites/clawd-idle.gif',
+happy: './sprites/clawd-happy.gif',
+thinking: './sprites/clawd-thinking.gif',
+love: './sprites/clawd-love.gif',
+sad: './sprites/clawd-sad.gif'
+};
+const petGif = s.isBusy ? petGifMap.thinking : (petGifMap[s.petState] || petGifMap.idle);
 
 // Anniversary list
 const annivList = (s.anniversaries || []).map((av, idx) => ({
@@ -2919,7 +3270,8 @@ pledgeEditName: s.pledgeEditName || '',
 pledgeEditDate: s.pledgeEditDate || '',
 isPledgesSheet: s.sheet === 'pledges',
 wbList,
-wbListHasItems: s.worldbooks.length > 0,
+wbListHasItems: filteredWorldbooks.length > 0,
+wbCategoryOptions,
 memoryList,
 memListHasItems: filteredMemories.length > 0,
 memCategoryOptions,
@@ -2930,6 +3282,18 @@ wbEditContent: s.wbEditContent || '',
 wbEditTriggers: s.wbEditTriggers || '',
 wbEditAlwaysOn: s.wbEditAlwaysOn || false,
 wbEditWeight: s.wbEditWeight || 1,
+wbTagOptions: ['core', 'character', 'scene', 'general'].map(tag => ({
+label: tag === 'core' ? '核心' : tag === 'character' ? '角色' : tag === 'scene' ? '场景' : '通用',
+bg: s.wbEditTag === tag ? '#1A1815' : 'var(--bg-card, #FFF)',
+bd: s.wbEditTag === tag ? '#1A1815' : '#E7E3DA',
+fg: s.wbEditTag === tag ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
+pick: () => self.setState({ wbEditTag: tag })
+})),
+wbToggleFullscreen: () => self.setState(v => ({ wbFullscreen: !v.wbFullscreen })),
+wbFullscreenLabel: s.wbFullscreen ? '收起' : '全屏编辑',
+wbContentRows: s.wbFullscreen ? '20' : '6',
+wbContentFontSize: s.wbFullscreen ? '15px' : '14px',
+wbContentMinH: s.wbFullscreen ? '60vh' : '120px',
 wbEditPosBefore: s.wbEditPosition === 'before',
 wbEditPosAfter: s.wbEditPosition === 'after',
 isMemoryEditorSheet: s.sheet === 'memEditor',
@@ -2939,6 +3303,11 @@ memEditTriggers: s.memEditTriggers || '',
 memEditAlwaysOn: s.memEditAlwaysOn || false,
 memEditWeight: s.memEditWeight || 1,
 memEditTag: s.memEditTag || '',
+memToggleFullscreen: () => self.setState(v => ({ memFullscreen: !v.memFullscreen })),
+memFullscreenLabel: s.memFullscreen ? '收起' : '全屏编辑',
+memContentRows: s.memFullscreen ? '20' : '6',
+memContentFontSize: s.memFullscreen ? '15px' : '14px',
+memContentMinH: s.memFullscreen ? '60vh' : '120px',
 memEditPosBefore: s.memEditPosition === 'before',
 memEditPosAfter: s.memEditPosition === 'after',
 avatarSize: s.avatarSize || 36,
@@ -2957,7 +3326,7 @@ drawerOpen: s.drawer,
 plusOpen: s.plus,
 profileOpen: s.profile,
 styleOpen: s.style,
-sheetOpen: !!s.sheet && s.sheet !== 'wbEditor' && s.sheet !== 'memEditor' && s.sheet !== 'anniv' && s.sheet !== 'pledges',
+sheetOpen: !!s.sheet && s.sheet !== 'wbEditor' && s.sheet !== 'memEditor' && s.sheet !== 'anniv' && s.sheet !== 'pledges' && s.sheet !== 'regexEditor',
 isApiSheet: s.sheet === 'api',
 isAiSheet: s.sheet === 'ai',
 isPromptSheet: s.sheet === 'prompt',
@@ -2977,6 +3346,8 @@ navWbBg: s.tab === 'worldbook' ? '#ECEAE4' : 'transparent',
 navMemBg: s.tab === 'memory' ? '#ECEAE4' : 'transparent',
 navMoreBg: s.tab === 'more' ? '#ECEAE4' : 'transparent',
 navDiaryBg: s.tab === 'diary' ? '#ECEAE4' : 'transparent',
+navRegexBg: s.tab === 'regex' ? '#ECEAE4' : 'transparent',
+isRegexPage: s.tab === 'regex',
 searchOpen: !!(s.searchQuery && s.searchQuery.trim()),
 searchQuery: s.searchQuery || '',
 searchResults: (s.searchResults || []).map(r => ({
@@ -3014,6 +3385,42 @@ customCss: s.customCss || '',
 customFont: s.customFont || '',
 themeOptions,
 ...customThemeVals,
+// Regex
+regexListHasItems: (s.regexRules || []).length > 0,
+regexList: (s.regexRules || []).map(rx => ({
+name: rx.name || '未命名',
+dotColor: rx.enabled ? '#7ED87E' : '#D1CCC2',
+targetLabel: rx.target === 'output' ? 'AI输出' : rx.target === 'input' ? '用户输入' : '双向',
+patternPreview: (rx.pattern || '').split('\n')[0] || '无模式',
+actionPreview: (rx.action || '').split('\n')[0] || '无动作',
+toggleBg: rx.enabled ? '#E8F5E8' : '#F2EFE8',
+toggleFg: rx.enabled ? '#3D5C47' : '#9A958B',
+toggleLabel: rx.enabled ? '启用' : '禁用',
+toggle: (e) => { e.stopPropagation(); self.toggleRegexRule(rx.id); },
+edit: () => self.openRegexEditor(rx.id)
+})),
+isRegexEditorSheet: s.sheet === 'regexEditor',
+regexEditName: s.regexEditName || '',
+regexEditPattern: s.regexEditPattern || '',
+regexEditAction: s.regexEditAction || '',
+regexEditNameChange: (e) => self.setState({ regexEditName: e.target.value }),
+regexEditPatternChange: (e) => self.setState({ regexEditPattern: e.target.value }),
+regexEditActionChange: (e) => self.setState({ regexEditAction: e.target.value }),
+regexOutputBg: s.regexEditTarget === 'output' ? '#1A1815' : 'var(--bg-card, #FFF)',
+regexOutputBd: s.regexEditTarget === 'output' ? '#1A1815' : '#E7E3DA',
+regexOutputFg: s.regexEditTarget === 'output' ? '#F5F3EE' : '#3A362F',
+regexInputBg: s.regexEditTarget === 'input' ? '#1A1815' : 'var(--bg-card, #FFF)',
+regexInputBd: s.regexEditTarget === 'input' ? '#1A1815' : '#E7E3DA',
+regexInputFg: s.regexEditTarget === 'input' ? '#F5F3EE' : '#3A362F',
+regexBothBg: s.regexEditTarget === 'both' ? '#1A1815' : 'var(--bg-card, #FFF)',
+regexBothBd: s.regexEditTarget === 'both' ? '#1A1815' : '#E7E3DA',
+regexBothFg: s.regexEditTarget === 'both' ? '#F5F3EE' : '#3A362F',
+regexSetOutput: () => self.setState({ regexEditTarget: 'output' }),
+regexSetInput: () => self.setState({ regexEditTarget: 'input' }),
+regexSetBoth: () => self.setState({ regexEditTarget: 'both' }),
+newRegex: () => self.openRegexEditor(null),
+saveRegex: () => self.saveRegexRule(),
+deleteRegex: () => { if (s.regexEditId) self.deleteRegexRule(s.regexEditId); },
 diaryMonthLabel: (() => { const m = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']; return m[s.diaryViewMonth] || ''; })(),
 diaryYearMonth: s.diaryViewYear + '年' + (s.diaryViewMonth + 1) + '月',
 diaryCalendarCells: self.buildCalendarCells(),
@@ -3037,6 +3444,72 @@ diaryKelDisplay: (() => { if (!s.diarySelectedDate) return ''; const e = s.diari
 diaryKelBtn: s.diaryKelEdit ? '取消' : '编辑',
 diaryComments,
 diaryCommentText: s.diaryCommentText || '',
+contextMenuOpen: s.contextMenuIdx >= 0,
+contextMenuTop: Math.max(60, s.contextMenuY) + 'px',
+closeContextMenu: () => self.setState({ contextMenuIdx: -1 }),
+stopProp: (e) => e.stopPropagation(),
+ctxCopy: () => {
+const idx = s.contextMenuIdx;
+const m = msgs[idx];
+const text = m ? (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text : '';
+navigator.clipboard.writeText(text).then(() => self.show('已复制'));
+self.setState({ contextMenuIdx: -1 });
+},
+ctxEdit: () => {
+const idx = s.contextMenuIdx;
+const m = msgs[idx];
+const text = m ? (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text : '';
+self.setState({ editIdx: idx, editText: text, contextMenuIdx: -1 });
+},
+ctxResend: () => {
+const idx = s.contextMenuIdx;
+self.setState({ contextMenuIdx: -1 });
+if (idx < 0) return;
+const m = msgs[idx];
+if (m.role === 'user') {
+const chats = { ...s.chats };
+const c = { ...chats[s.currentChatId] };
+c.messages = c.messages.slice(0, idx + 1);
+chats[s.currentChatId] = c;
+self.setState({ chats, isBusy: true });
+self.persist();
+self._callApi(s.currentChatId, c.messages).catch(e => { self.setState({ isBusy: false }); self.show('Error: ' + e.message); });
+} else {
+self.regenerate(idx);
+}
+},
+ctxDelete: () => {
+const idx = s.contextMenuIdx;
+self.setState({ contextMenuIdx: -1, deleteConfirmOpen: true, deleteConfirmType: 'message', deleteConfirmId: idx, deleteConfirmText: '删除这条消息？此操作不可撤销。' });
+},
+deleteConfirmOpen: s.deleteConfirmOpen,
+deleteConfirmText: s.deleteConfirmText || '',
+cancelDelete: () => self.setState({ deleteConfirmOpen: false, deleteConfirmType: '', deleteConfirmId: null }),
+confirmDelete: () => {
+const type = s.deleteConfirmType;
+const id = s.deleteConfirmId;
+if (type === 'message') {
+const chats = { ...s.chats };
+const c = { ...chats[s.currentChatId] };
+c.messages = [...c.messages];
+c.messages.splice(id, 1);
+chats[s.currentChatId] = c;
+self.setState({ chats, deleteConfirmOpen: false });
+self.persist();
+self.show('已删除');
+} else if (type === 'worldbook') {
+const worldbooks = s.worldbooks.filter(w => w.id !== id);
+self.setState({ worldbooks, deleteConfirmOpen: false });
+self.persist();
+self.show('世界书已删除');
+} else if (type === 'memory') {
+const memories = s.memories.filter(m => m.id !== id);
+self.setState({ memories, deleteConfirmOpen: false });
+self.persist();
+self.show('记忆已删除');
+}
+self.setState({ deleteConfirmType: '', deleteConfirmId: null });
+},
 
 // ======== ACTIONS ========
 toggleDrawer: () => self.setState(v => ({ drawer: !v.drawer })),
@@ -3050,6 +3523,7 @@ navMore: () => self.setState({ tab: 'more', drawer: false }),
 navWorldbook: () => self.setState({ tab: 'worldbook', drawer: false }),
 navMemory: () => self.setState({ tab: 'memory', drawer: false }),
 navDiary: () => self.setState({ tab: 'diary', drawer: false }),
+navRegex: () => self.setState({ tab: 'regex', drawer: false }),
 newChat: () => self.newChat(),
 inputChange: (e) => self.setState({ input: e.target.value }),
 inputKey: (e) => self.handleInputKey(e),
@@ -3112,6 +3586,11 @@ wbEditWeightChange: (e) => self.setState({ wbEditWeight: e.target.value }),
 wbEditSetPosBefore: () => self.setState({ wbEditPosition: 'before' }),
 wbEditSetPosAfter: () => self.setState({ wbEditPosition: 'after' }),
 saveWorldbookEditor: () => self.saveWorldbookEditor(),
+deleteWorldbookFromEditor: () => {
+if (s.wbEditId) {
+self.setState({ deleteConfirmOpen: true, deleteConfirmType: 'worldbook', deleteConfirmId: s.wbEditId, deleteConfirmText: '确定删除这个世界书？' });
+}
+},
 newMemory: () => self.openMemoryEditor(null),
 memEditNameChange: (e) => self.setState({ memEditName: e.target.value }),
 memEditContentChange: (e) => self.setState({ memEditContent: e.target.value }),
@@ -3200,6 +3679,10 @@ pickAiAvatar: () => self.pickAiAvatar(),
 avatarSizeChange: (e) => { self.setState({ avatarSize: parseInt(e.target.value) || 36 }); self.persist(); },
 customCssChange: (e) => self.setState({ customCss: e.target.value }),
 customFontChange: (e) => self.setState({ customFont: e.target.value }),
+pickFontFile: () => self.pickFontFile(),
+localFontName: s.localFontName || '未上传',
+msgFontSize: s.msgFontSize || 16,
+msgFontSizeChange: (e) => { self.setState({ msgFontSize: parseInt(e.target.value) || 16 }); self.persist(); self.applyMsgFontSize(); },
 saveCssSettings: () => { self.persist(); self.applyCustomCss(); self.applyCustomFont(); self.setState({ sheet: null }); self.show('样式已保存'); },
 searchChange: (e) => { self.setState({ searchQuery: e.target.value }); self.searchChats(e.target.value); },
 diaryPrevMonth: () => {
