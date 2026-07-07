@@ -2607,6 +2607,16 @@ c.messages = newMsgs; chats[s.currentChatId] = c;
 self.setState({ chats }); self.persist();
 }
 },
+del: () => {
+  const chats = { ...s.chats };
+  const c = { ...chats[s.currentChatId] };
+  c.messages = [...c.messages];
+  c.messages.splice(i, 1);
+  chats[s.currentChatId] = c;
+  self.setState({ chats });
+  self.persist();
+  self.show('已删除');
+},
 edit: () => self.setState({ editIdx: i, editText: displayText }),
 };
 });
@@ -2774,17 +2784,6 @@ self.setState({ pledges }, () => self.persist());
 self.show('已删除');
 }
 }));
-
-del: () => {
-  const chats = { ...s.chats };
-  const c = { ...chats[s.currentChatId] };
-  c.messages = [...c.messages];
-  c.messages.splice(i, 1);
-  chats[s.currentChatId] = c;
-  self.setState({ chats });
-  self.persist();
-  self.show('已删除');
-},
 
 // Diary comments
 const diaryEntry = s.diarySelectedDate ? self.getDiaryEntry(s.diarySelectedDate) : { comments: [] };
