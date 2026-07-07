@@ -646,8 +646,9 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <!-- drawer header -->
 <div style="flex:none;padding:56px 24px 0;display:flex;align-items:center;justify-content:space-between;">
 <div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:26px;font-weight:500;color:var(--text-primary, #1A1815);">Kel Home</div>
-<div style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;" onClick="{{ toggleProfile }}">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
+<div style="width:48px;height:48px;border-radius:50%;background:var(--bg-card, #FFF);box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;overflow:hidden;" onClick="{{ toggleProfile }}">
+<sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
+<sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg></sc-if>
 </div>
 </div>
 <!-- nav items -->
@@ -1286,6 +1287,14 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <input value="{{ customThemeTextSecondary }}" onInput="{{ customThemeTextSecondaryChange }}" placeholder="#48453E" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:10px;padding:7px 10px;font-family:inherit;font-size:12px;color:#1A1815;">
 </div>
 </div>
+<div>
+<div style="font-size:10px;color:#9A958B;margin-bottom:3px;">用户气泡</div>
+<input value="{{ customThemeBubbleUser }}" onInput="{{ customThemeBubbleUserChange }}" placeholder="#ECEAE4" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:10px;padding:7px 10px;font-family:inherit;font-size:12px;color:#1A1815;">
+</div>
+<div>
+<div style="font-size:10px;color:#9A958B;margin-bottom:3px;">AI气泡</div>
+<input value="{{ customThemeBubbleAi }}" onInput="{{ customThemeBubbleAiChange }}" placeholder="#FFF" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:10px;padding:7px 10px;font-family:inherit;font-size:12px;color:#1A1815;">
+</div>
 <button onClick="{{ applyCustomTheme }}" style="margin-top:10px;width:100%;border:none;background:#1A1815;color:#F5F3EE;border-radius:14px;padding:9px 16px;font-size:13px;font-family:inherit;cursor:pointer;">应用自定义配色</button>
 </div>
 </div>
@@ -1447,13 +1456,13 @@ const EMOJI_LIST = ['😊','😢','😡','🥰','😴','🤔','✨','🌧️','�
 
 // Theme presets
 const THEME_PRESETS = [
-{ id: 'default', name: '默认米白', preview: 'linear-gradient(135deg, #F5F3EE, #d6d2c8)', checkColor: '#1A1815', vars: { '--bg-base': '#d6d2c8', '--bg-main': '#F5F3EE', '--bg-card': '#FFF', '--bg-input': '#FBFAF7', '--border-card': '#EDE9E0', '--border-input': '#E7E3DA', '--text-primary': '#1A1815', '--text-secondary': '#48453E', '--text-bold': '#3A362F' } },
-{ id: 'dark', name: '深夜黑', preview: 'linear-gradient(135deg, #1A1A2E, #16213E)', checkColor: '#7EC8E3', vars: { '--bg-base': '#0F0F1A', '--bg-main': '#1A1A2E', '--bg-card': '#252540', '--bg-input': '#1E1E35', '--border-card': '#35355A', '--border-input': '#30304E', '--text-primary': '#E8E8F0', '--text-secondary': '#A0A0C0', '--text-bold': '#D0D0E8' } },
-{ id: 'mint', name: '薄荷巧克力', preview: 'linear-gradient(135deg, #D4EDDA, #8FBFA4)', checkColor: '#3D5C47', vars: { '--bg-base': '#8FBFA4', '--bg-main': '#D4EDDA', '--bg-card': '#E8F5ED', '--bg-input': '#E0F2E6', '--border-card': '#B8D9C4', '--border-input': '#AACFB8', '--text-primary': '#2B4035', '--text-secondary': '#4A7058', '--text-bold': '#3D5C47' } },
-{ id: 'deepBrown', name: '深棕', preview: 'linear-gradient(135deg, #4A3728, #2C1E14)', checkColor: '#D4A574', vars: { '--bg-base': '#1E1410', '--bg-main': '#2C1E14', '--bg-card': '#3E2C1E', '--bg-input': '#362618', '--border-card': '#5A4030', '--border-input': '#4E3828', '--text-primary': '#E8D8C8', '--text-secondary': '#B8A090', '--text-bold': '#D4B8A0' } },
-{ id: 'rose', name: '玫瑰粉', preview: 'linear-gradient(135deg, #FFF0F3, #E8C4C8)', checkColor: '#8B4557', vars: { '--bg-base': '#E8C4C8', '--bg-main': '#FFF0F3', '--bg-card': '#FFF8F9', '--bg-input': '#FFF5F7', '--border-card': '#F0D5DA', '--border-input': '#EDCDD2', '--text-primary': '#4A2030', '--text-secondary': '#8B5060', '--text-bold': '#6B3545' } },
-{ id: 'ocean', name: '海洋蓝', preview: 'linear-gradient(135deg, #EFF6FC, #B8D4E8)', checkColor: '#2C5F7C', vars: { '--bg-base': '#B8D4E8', '--bg-main': '#EFF6FC', '--bg-card': '#F8FBFF', '--bg-input': '#F2F8FE', '--border-card': '#D0E3F0', '--border-input': '#C8DCE8', '--text-primary': '#1A3A4C', '--text-secondary': '#4A7088', '--text-bold': '#2C5468' } },
-{ id: 'midnight', name: '午夜紫', preview: 'linear-gradient(135deg, #2D1B4E, #1A1025)', checkColor: '#C4A6E8', vars: { '--bg-base': '#1A1025', '--bg-main': '#2D1B4E', '--bg-card': '#3A2660', '--bg-input': '#321E55', '--border-card': '#4A3575', '--border-input': '#443068', '--text-primary': '#E8E0F5', '--text-secondary': '#B0A0C8', '--text-bold': '#D0C0E8' } }
+{ id: 'default', name: '默认米白', preview: 'linear-gradient(135deg, #F5F3EE, #d6d2c8)', checkColor: '#1A1815', vars: { '--bg-base': '#d6d2c8', '--bg-main': '#F5F3EE', '--bg-card': '#FFF', '--bg-input': '#FBFAF7', '--border-card': '#EDE9E0', '--border-input': '#E7E3DA', '--text-primary': '#1A1815', '--text-secondary': '#48453E', '--text-bold': '#3A362F', '--bubble-user': '#ECEAE4', '--bubble-ai': '#FFF' } },
+{ id: 'dark', name: '深夜黑', preview: 'linear-gradient(135deg, #1A1A2E, #16213E)', checkColor: '#7EC8E3', vars: { '--bg-base': '#0F0F1A', '--bg-main': '#1A1A2E', '--bg-card': '#252540', '--bg-input': '#1E1E35', '--border-card': '#35355A', '--border-input': '#30304E', '--text-primary': '#E8E8F0', '--text-secondary': '#A0A0C0', '--text-bold': '#D0D0E8', '--bubble-user': '#35355A', '--bubble-ai': '#252540' } },
+{ id: 'mint', name: '薄荷巧克力', preview: 'linear-gradient(135deg, #D4EDDA, #8FBFA4)', checkColor: '#3D5C47', vars: { '--bg-base': '#8FBFA4', '--bg-main': '#D4EDDA', '--bg-card': '#E8F5ED', '--bg-input': '#E0F2E6', '--border-card': '#B8D9C4', '--border-input': '#AACFB8', '--text-primary': '#2B4035', '--text-secondary': '#4A7058', '--text-bold': '#3D5C47', '--bubble-user': '#B8D9C4', '--bubble-ai': '#E8F5ED' } },
+{ id: 'deepBrown', name: '深棕', preview: 'linear-gradient(135deg, #4A3728, #2C1E14)', checkColor: '#D4A574', vars: { '--bg-base': '#1E1410', '--bg-main': '#2C1E14', '--bg-card': '#3E2C1E', '--bg-input': '#362618', '--border-card': '#5A4030', '--border-input': '#4E3828', '--text-primary': '#E8D8C8', '--text-secondary': '#B8A090', '--text-bold': '#D4B8A0','--bubble-user': '#5A4030', '--bubble-ai': '#3E2C1E' } },
+{ id: 'rose', name: '玫瑰粉', preview: 'linear-gradient(135deg, #FFF0F3, #E8C4C8)', checkColor: '#8B4557', vars: { '--bg-base': '#E8C4C8', '--bg-main': '#FFF0F3', '--bg-card': '#FFF8F9', '--bg-input': '#FFF5F7', '--border-card': '#F0D5DA', '--border-input': '#EDCDD2', '--text-primary': '#4A2030', '--text-secondary': '#8B5060', '--text-bold': '#6B3545', '--bubble-user': '#F0D5DA', '--bubble-ai': '#FFF8F9' } },
+{ id: 'ocean', name: '海洋蓝', preview: 'linear-gradient(135deg, #EFF6FC, #B8D4E8)', checkColor: '#2C5F7C', vars: { '--bg-base': '#B8D4E8', '--bg-main': '#EFF6FC', '--bg-card': '#F8FBFF', '--bg-input': '#F2F8FE', '--border-card': '#D0E3F0', '--border-input': '#C8DCE8', '--text-primary': '#1A3A4C', '--text-secondary': '#4A7088', '--text-bold': '#2C5468', '--bubble-user': '#C8DCE8', '--bubble-ai': '#F8FBFF' } },
+{ id: 'midnight', name: '午夜紫', preview: 'linear-gradient(135deg, #2D1B4E, #1A1025)', checkColor: '#C4A6E8', vars: { '--bg-base': '#1A1025', '--bg-main': '#2D1B4E', '--bg-card': '#3A2660', '--bg-input': '#321E55', '--border-card': '#4A3575', '--border-input': '#443068', '--text-primary': '#E8E0F5', '--text-secondary': '#B0A0C8', '--text-bold': '#D0C0E8', '--bubble-user': '#4A3575', '--bubble-ai': '#3A2660' } }
 ];
 
 class Component extends DCLogic {
@@ -1523,7 +1532,7 @@ aiAvatar: saved.aiAvatar || '',
 customCss: saved.customCss || '',
 customFont: saved.customFont || '',
 activeThemeId: saved.activeThemeId || 'default',
-customTheme: saved.customTheme || { bgBase:'', bgMain:'', bgCard:'', bgInput:'', borderCard:'', borderInput:'', textPrimary:'', textSecondary:'' },
+customTheme: saved.customTheme || { bgBase:'', bgMain:'', bgCard:'', bgInput:'', borderCard:'', borderInput:'', textPrimary:'', textSecondary:'', bubbleUser:'', bubbleAi:'' },
 searchOpen: false,
 searchQuery: '',
 searchResults: [],
@@ -1979,7 +1988,7 @@ url += '/messages';
 body = { model: preset.model, max_tokens: 16384, messages: apiMessages };
 if (sysPrompt) body.system = sysPrompt;
 const model = preset.model || '';
-const supportsThinking = model.includes('claude-3-5-sonnet') || model.includes('claude-sonnet-4') || model.includes('claude-opus') || model.includes('claude-3-7');
+const supportsThinking = model.includes('claude-3-5-sonnet') || model.includes('claude-sonnet-4') || model.includes('claude-opus') || model.includes('claude-3-7') || model.includes('claude-3.5') || model.includes('claude-4');
 if (supportsThinking) {
 body.thinking = { type: 'enabled', budget_tokens: 10000 };
 body.max_tokens = 16384;
@@ -2055,21 +2064,26 @@ setTimeout(() => this.setState({ petState: 'idle' }), 3000);
 
 _splitReplyIntoMessages(reply, thinking) {
 if (!reply) return [reply];
-// Contains code block = single message (functional reply)
+// Contains code block = single message
 if (reply.includes('```')) return [reply];
-// Split by double newline (paragraph level)
+// Split by double newline (paragraph breaks)
 const parts = reply.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
 if (parts.length <= 1) return [reply];
-// Merge tiny parts
+// Keep short paragraphs together, only split on substantial paragraphs
 const merged = [];
+let buffer = '';
 for (const part of parts) {
-if (merged.length > 0 && part.length < 15) {
-merged[merged.length - 1] += '\n\n' + part;
+if (buffer && (buffer.length + part.length > 200 || buffer.split('\n').length >= 3)) {
+merged.push(buffer);
+buffer = part;
 } else {
-merged.push(part);
+buffer = buffer ? buffer + '\n\n' + part : part;
 }
 }
-return merged.length > 0 ? merged : [reply];
+if (buffer) merged.push(buffer);
+// Only split if we get meaningful chunks (at least 2 substantial ones)
+if (merged.length >= 2 && merged.every(m => m.length > 10)) return merged;
+return [reply];
 }
 
 regenerate(msgIdx) {
@@ -2499,7 +2513,15 @@ const preset = this.activePreset;
 const persona = this.activePersona;
 const styleObj = this.activeStyleObj;
 const self = this;
-
+// Group messages: same role consecutive = same group, only first shows avatar/time
+function isFirstInGroup(idx) {
+if (idx === 0) return true;
+return msgs[idx].role !== msgs[idx - 1].role;
+}
+function isLastInGroup(idx) {
+if (idx === msgs.length - 1) return true;
+return msgs[idx].role !== msgs[idx + 1].role;
+}
 const messages = msgs.map((m, i) => {
 const isUser = m.role === 'user';
 const isLast = i === msgs.length - 1;
@@ -2523,15 +2545,29 @@ isUser,
 align: isUser ? 'flex-end' : 'flex-start',
 maxW: isUser ? '82%' : '92%',
 fullW: 'auto',
-bg: isUser ? 'var(--bg-card, #ECEAE4)' : 'var(--bg-card, #FFF)',
+bg: isUser ? 'var(--bubble-user, #ECEAE4)' : 'var(--bubble-ai, #FFF)',
 color: 'var(--text-primary, #2B2620)',
-radius: isUser ? '22px 22px 6px 22px' : '22px 22px 22px 6px',
+radius: (() => {
+const first = isFirstInGroup(i);
+const last = isLastInGroup(i);
+if (isUser) {
+if (first && last) return '22px 22px 6px 22px';
+if (first) return '22px 22px 6px 6px';
+if (last) return '6px 22px 6px 22px';
+return '6px 22px 6px 6px';
+} else {
+if (first && last) return '22px 22px 22px 6px';
+if (first) return '22px 22px 6px 6px';
+if (last) return '6px 6px 22px 6px';
+return '6px 6px 6px 6px';
+}
+})(),
 pad: '12px 18px',
-gap: '16px',
+gap: isLastInGroup(i) ? '16px' : '3px',
 text: displayText,
 rendered: rendered,
 timestamp: m.timestamp || '',
-hasThink: hasThinking,
+hasThink: hasThinking && isFirstInGroup(i),
 thinkSummary: hasThinking ? '思考过程 (' + m.thinking.length + '字)' : '',
 thinkContent: m.thinking || '',
 thinkOpen: s.thinkOpenMap && s.thinkOpenMap[i] || false,
@@ -2541,9 +2577,9 @@ const map = { ...(s.thinkOpenMap || {}) };
 map[i] = !map[i];
 self.setState({ thinkOpenMap: map });
 },
-showAiAvatar: !isUser && !!s.aiAvatar,
-showUserAvatar: isUser && !!s.userAvatar,
-showTimestampOnly: (!isUser && !s.aiAvatar) || (isUser && !s.userAvatar),
+showAiAvatar: !isUser && !!s.aiAvatar && isFirstInGroup(i),
+showUserAvatar: isUser && !!s.userAvatar && isFirstInGroup(i),
+showTimestampOnly: isFirstInGroup(i) && ((!isUser && !s.aiAvatar) || (isUser && !s.userAvatar)),
 tsAlign: isUser ? 'flex-end' : 'flex-start',
 hasImage: !!m.imageUrl,
 imageUrl: m.imageUrl || '',
@@ -2557,8 +2593,8 @@ self.deleteImageFromMessage(i);
 },
 showNormal: s.editIdx !== i,
 showEdit: s.editIdx === i,
-showActions: !isUser && isLastAi && !s.isBusy,
-showUserActions: isUser && !s.isBusy,
+showActions: !isUser && isLastAi && !s.isBusy && isLastInGroup(i),
+showUserActions: isUser && !s.isBusy && isLastInGroup(i),
 variantText: variants.length > 1 ? (vIdx + 1) + ' / ' + variants.length : '1 / 1',
 copy: () => { navigator.clipboard.writeText(displayText).then(() => self.show('已复制')); },
 refresh: () => self.regenerate(i),
@@ -2798,6 +2834,10 @@ self.show(theme.name);
 
 // Custom theme values - these go in the return object below, NOT inside themeOptions
 const customThemeVals = {
+customThemeBubbleUser: (s.customTheme || {}).bubbleUser || '',
+customThemeBubbleAi: (s.customTheme || {}).bubbleAi || '',
+customThemeBubbleUserChange: (e) => self.setState({ customTheme: { ...s.customTheme, bubbleUser: e.target.value } }),
+customThemeBubbleAiChange: (e) => self.setState({ customTheme: { ...s.customTheme, bubbleAi: e.target.value } }),
 customThemeBgBase: (s.customTheme || {}).bgBase || '',
 customThemeBgMain: (s.customTheme || {}).bgMain || '',
 customThemeBgCard: (s.customTheme || {}).bgCard || '',
@@ -2817,6 +2857,8 @@ customThemeTextSecondaryChange: (e) => self.setState({ customTheme: { ...s.custo
 applyCustomTheme: () => {
 const ct = s.customTheme || {};
 const root = document.documentElement;
+if (ct.bubbleUser) root.style.setProperty('--bubble-user', ct.bubbleUser);
+if (ct.bubbleAi) root.style.setProperty('--bubble-ai', ct.bubbleAi);
 if (ct.bgBase) root.style.setProperty('--bg-base', ct.bgBase);
 if (ct.bgMain) root.style.setProperty('--bg-main', ct.bgMain);
 if (ct.bgCard) root.style.setProperty('--bg-card', ct.bgCard);
