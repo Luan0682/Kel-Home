@@ -22,7 +22,7 @@
 <style>
 * { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
 html,body { margin:0; padding:0; height:100%; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility; }
-body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
+body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0 0 0; }
 .sa::-webkit-scrollbar { width:0; display:none; }
 .sa { scrollbar-width:none; -webkit-overflow-scrolling:touch; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
@@ -36,7 +36,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </style>
 </helmet>
 
-<div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#F5F3EE;color:#1A1815;font-family:-apple-system,'Noto Sans SC','Helvetica Neue',sans-serif;overflow:hidden;letter-spacing:-0.01em;">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;background:var(--bg-main, #F5F3EE);color:var(--text-primary, #1A1815);font-family:-apple-system,'Noto Sans SC','Helvetica Neue',sans-serif;overflow:hidden;letter-spacing:-0.01em;">
 
 <div style="flex:1;min-height:0;position:relative;">
 
@@ -47,11 +47,11 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <!-- header -->
 <div style="flex:none;padding:18px 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:9px;">
 <div style="display:flex;align-items:center;gap:9px;min-width:0;">
-<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
+<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="var(--text-secondary, #48453E)" stroke-width="1.7" stroke-linecap="round"/></svg>
 </button>
-<button onClick="{{ openStyle }}" style="height:40px;display:flex;align-items:center;gap:6px;background:#FFF;border:none;border-radius:20px;padding:0 14px;cursor:pointer;font-family:inherit;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);min-width:0;max-width:150px;">
-<img src="./uploads/feather.svg" width="22" height="20" style="flex:none;display:block;" alt=""><span style="font-size:13.5px;font-weight:600;color:#3A362F;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ activeStyle }}</span>
+<button onClick="{{ openStyle }}" style="height:40px;display:flex;align-items:center;gap:6px;background:var(--bg-card, #FFF);border:none;border-radius:20px;padding:0 14px;cursor:pointer;font-family:inherit;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);min-width:0;max-width:150px;">
+<img src="./uploads/feather.svg" width="22" height="20" style="flex:none;display:block;" alt=""><span style="font-size:13.5px;font-weight:600;color:var(--text-bold, #3A362F);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ activeStyle }}</span>
 </button>
 </div>
 
@@ -62,19 +62,19 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </button>
 
 <div style="display:flex;align-items:center;gap:9px;">
-<button onClick="{{ newChat }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
+<button onClick="{{ newChat }}" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="var(--text-secondary, #48453E)" stroke-width="1.7" stroke-linecap="round"/></svg>
 </button>
-<button onClick="{{ togglePlus }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="1.5" fill="#48453E"/><circle cx="12" cy="12" r="1.5" fill="#48453E"/><circle cx="12" cy="18" r="1.5" fill="#48453E"/></svg>
+<button onClick="{{ togglePlus }}" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="1.5" fill="var(--text-secondary, #48453E)"/><circle cx="12" cy="12" r="1.5" fill="var(--text-secondary, #48453E)"/><circle cx="12" cy="18" r="1.5" fill="var(--text-secondary, #48453E)"/></svg>
 </button>
 </div>
 </div>
 
 <!-- messages area -->
 <div style="flex:1;min-height:0;position:relative;">
-<div style="position:absolute;top:0;left:0;right:0;height:24px;background:linear-gradient(#F5F3EE,rgba(245,243,238,0));z-index:5;pointer-events:none;"></div>
-<div style="position:absolute;bottom:0;left:0;right:0;height:20px;background:linear-gradient(rgba(245,243,238,0),#F5F3EE);z-index:5;pointer-events:none;"></div>
+<div style="position:absolute;top:0;left:0;right:0;height:24px;background:linear-gradient(var(--bg-main, #F5F3EE),rgba(245,243,238,0));z-index:5;pointer-events:none;"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:20px;background:linear-gradient(rgba(245,243,238,0),var(--bg-main, #F5F3EE));z-index:5;pointer-events:none;"></div>
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:10px 20px 10px;">
 
 <div style="position:sticky;top:50%;left:50%;transform:translate(-50%,-50%);width:0;height:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0;">
@@ -126,10 +126,10 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
-<!-- image attachment -->
+<!-- image attachment with long-press delete -->
 <sc-if value="{{ m.hasImage }}" hint-placeholder-val="{{ false }}">
 <div style="margin-bottom:10px;display:flex;justify-content:{{ m.imgJustify }};">
-<div style="position:relative;width:160px;height:160px;border-radius:14px;overflow:hidden;cursor:pointer;" onClick="{{ m.previewImage }}">
+<div style="position:relative;width:160px;height:160px;border-radius:14px;overflow:hidden;cursor:pointer;" onClick="{{ m.previewImage }}" onContextMenu="{{ m.longPressImage }}">
 <img src="{{ m.imageUrl }}" style="width:100%;height:100%;object-fit:cover;" alt="attachment">
 </div>
 </div>
@@ -216,8 +216,8 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
   <span style="font-size:12px;color:#9A958B;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ attachmentFileName }}</span>
 </div>
 </sc-if>
-<div style="background:#FBFAF7;border:1px solid #E7E3DA;border-radius:26px;padding:14px 17px 8px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
-<textarea value="{{ input }}" onInput="{{ inputChange }}" placeholder="发送消息..." rows="1" style="display:block;width:100%;min-height:32px;max-height:calc(80vh - 180px);border:none;background:transparent;resize:none;outline:none;font-family:inherit;font-size:16px;line-height:1.6;color:#2B2620;padding:4px 4px 6px;font-weight:300;overflow-y:auto;" ref="{{ textareaRef }}"></textarea>
+<div style="background:var(--bg-input, #FBFAF7);border:1px solid var(--border-input, #E7E3DA);border-radius:26px;padding:14px 17px 8px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
+<textarea value="{{ input }}" onInput="{{ inputChange }}" onKeyDown="{{ inputKey }}" placeholder="发送消息..." rows="1" style="display:block;width:100%;min-height:32px;max-height:calc(80vh - 180px);border:none;background:transparent;resize:none;outline:none;font-family:inherit;font-size:16px;line-height:1.6;color:#2B2620;padding:4px 4px 6px;font-weight:300;overflow-y:auto;" ref="{{ textareaRef }}"></textarea>
 <div style="display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:9px;">
 <button onClick="{{ togglePlus }}" style="width:32px;height:32px;border-radius:50%;background:#F2EFE8;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -246,63 +246,63 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
 
 <div style="padding:4px 0 6px;">
-<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
+<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
 </button>
 </div>
 
 <div style="padding:6px 0 24px;">
 <div style="font-size:12px;color:#B8B3A8;letter-spacing:2.5px;font-weight:600;">COMPANION</div>
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:29px;font-weight:400;color:#1A1815;margin-top:10px;line-height:1.25;letter-spacing:-.01em;">{{ homeGreeting }}</div>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:29px;font-weight:400;color:var(--text-primary, #1A1815);margin-top:10px;line-height:1.25;letter-spacing:-.01em;">{{ homeGreeting }}</div>
 <div style="font-size:14px;color:#9A958B;margin-top:6px;">{{ currentTime }}</div>
 </div>
 
 <!-- Persona card -->
-<div onClick="{{ openAiSheet }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:20px;margin-bottom:14px;cursor:pointer;">
+<div onClick="{{ openAiSheet }}" style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:20px;margin-bottom:14px;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
 <sc-if value="{{ hasAiAvatar }}" hint-placeholder-val="{{ false }}">
 <img src="{{ aiAvatar }}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;">
 </sc-if>
 <div>
-<div style="font-size:16px;font-weight:600;color:#1A1815;">{{ activeCompanion }}</div>
+<div style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">{{ activeCompanion }}</div>
 <div style="font-size:12px;color:#B8B3A8;margin-top:2px;">Persona · 点击编辑</div>
 </div>
 </div>
 <div style="font-size:13px;color:#6B665E;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">{{ personaPreview }}</div>
 </div>
 
-<!-- Anniversary card with multiple anniversaries -->
-<div onClick="{{ openAnnivSheet }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<!-- Anniversary card -->
+<div onClick="{{ openAnnivSheet }}" style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div>
-<div style="font-size:15px;font-weight:500;color:#1A1815;">{{ annivDisplayName }}</div>
+<div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">{{ annivDisplayName }}</div>
 <div style="font-size:13px;color:#B8B3A8;margin-top:4px;">{{ annivDisplayDate }}</div>
 </div>
 <div style="display:flex;align-items:baseline;gap:3px;">
-<span style="font-family:'Newsreader',serif;font-size:38px;font-weight:400;color:#1A1815;line-height:1;letter-spacing:-.02em;">{{ annivDays }}</span>
+<span style="font-family:'Newsreader',serif;font-size:38px;font-weight:400;color:var(--text-primary, #1A1815);line-height:1;letter-spacing:-.02em;">{{ annivDays }}</span>
 <span style="font-size:13px;color:#9A958B;">days</span>
 </div>
 </div>
 
 <!-- Promises/Pledges card -->
-<div onClick="{{ openPledgesSheet }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div onClick="{{ openPledgesSheet }}" style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div>
-<div style="font-size:15px;font-weight:500;color:#1A1815;">约定</div>
+<div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">约定</div>
 <div style="font-size:13px;color:#B8B3A8;margin-top:4px;">{{ pledgeSummary }}</div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 
-<!-- status row - revised -->
+<!-- status row -->
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:22px;">
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
 <div style="font-size:11px;color:#B8B3A8;font-weight:500;">Chats</div>
-<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">{{ totalChats }}</div>
+<div style="font-family:'Newsreader',serif;font-size:22px;color:var(--text-primary, #1A1815);margin-top:6px;">{{ totalChats }}</div>
 </div>
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
 <div style="font-size:11px;color:#B8B3A8;font-weight:500;">Memories</div>
-<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">{{ totalMemories }}</div>
+<div style="font-family:'Newsreader',serif;font-size:22px;color:var(--text-primary, #1A1815);margin-top:6px;">{{ totalMemories }}</div>
 </div>
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
 <div style="font-size:11px;color:#B8B3A8;font-weight:500;">Kel 心情</div>
 <div style="font-size:22px;margin-top:6px;">{{ kelMoodEmoji }}</div>
 </div>
@@ -311,7 +311,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <!-- recent chats preview -->
 <div style="font-size:13px;font-weight:500;color:#9A958B;margin-bottom:12px;">最近对话</div>
 <sc-for list="{{ homeRecentChats }}" as="rc" hint-placeholder-count="3">
-<div onClick="{{ rc.open }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:14px 16px;margin-bottom:10px;cursor:pointer;">
+<div onClick="{{ rc.open }}" style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:14px 16px;margin-bottom:10px;cursor:pointer;">
 <div style="font-size:12px;color:#B8B3A8;font-weight:500;">{{ rc.time }}</div>
 <div style="font-size:14.5px;color:#3A362F;line-height:1.55;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ rc.title }}</div>
 </div>
@@ -324,21 +324,21 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
 
 <div style="padding:4px 0 6px;">
-<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
+<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
 </button>
 </div>
 
 <div style="padding:6px 0 20px;">
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">Settings</div>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:var(--text-primary, #1A1815);letter-spacing:-.01em;">Settings</div>
 </div>
 
 <!-- API Settings -->
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;margin-bottom:14px;">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;margin-bottom:14px;">
 <div onClick="{{ openApiSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M19 12a7 7 0 0 0-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6A7 7 0 0 0 3 12c0 .4 0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#9A958B" stroke-width="1.4" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">API 设置</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ activeModel }}</div></div>
+<div><div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">API 设置</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ activeModel }}</div></div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
@@ -346,7 +346,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div onClick="{{ openCssSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 4h16v16H4V4Z" stroke="#9A958B" stroke-width="1.5"/><path d="M8 10l2 2-2 2M12 14h4" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">界面美化</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">头像 · 字体 · CSS</div></div>
+<div><div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">界面美化</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">头像 · 字体 · 配色 · CSS</div></div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
@@ -354,18 +354,18 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div onClick="{{ openPromptSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="8" width="16" height="12" rx="2" stroke="#9A958B" stroke-width="1.5"/><path d="M4 12h16M9 8V5h6v3M12 14v3" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">Prompt 模板</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ promptCount }}</div></div>
+<div><div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">Prompt 模板</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ promptCount }}</div></div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 </div>
 
 <!-- Data management -->
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;margin-bottom:14px;">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;overflow:hidden;margin-bottom:14px;">
 <div onClick="{{ exportData }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M8 7l4-4 4 4M5 15v3a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-3" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">导出备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">JSON download</div></div>
+<div><div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">导出备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">JSON download</div></div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
@@ -373,14 +373,14 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div onClick="{{ importData }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">导入备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">从 JSON 恢复</div></div>
+<div><div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">导入备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">从 JSON 恢复</div></div>
 </div>
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 </div>
 
 <!-- About -->
-<div style="text-align:center;padding:20px 0;font-size:12px;color:#B8B3A8;">Kel Home · v3.0</div>
+<div style="text-align:center;padding:20px 0;font-size:12px;color:#B8B3A8;">Kel Home · v3.1</div>
 </div>
 </sc-if>
 
@@ -389,7 +389,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
 
 <div style="padding:4px 0 6px;">
-<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
+<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
 </button>
 </div>
@@ -397,18 +397,18 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="padding:6px 0 20px;display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:10px;">
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11Z" stroke="#1A1815" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">世界书</div>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:var(--text-primary, #1A1815);letter-spacing:-.01em;">世界书</div>
 </div>
 <button onClick="{{ newWorldbook }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
 </div>
 
 <sc-if value="{{ wbListHasItems }}" hint-placeholder-val="{{ true }}">
 <sc-for list="{{ wbList }}" as="wb" hint-placeholder-count="3">
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ wb.open }}">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ wb.open }}">
 <div style="display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex:none;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11Z" stroke="#9A958B" stroke-width="1.5"/></svg>
-<span style="font-size:16px;font-weight:500;color:#1A1815;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ wb.name }}</span>
+<span style="font-size:16px;font-weight:500;color:var(--text-primary, #1A1815);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ wb.name }}</span>
 <span style="font-size:11px;color:#9A958B;background:#F2EFE8;border-radius:8px;padding:2px 8px;flex:none;">{{ wb.triggerCount }} 触发</span>
 <span style="font-size:11px;color:#9A958B;background:{{ wb.activeBg }};border-radius:8px;padding:2px 8px;flex:none;">{{ wb.activeLabel }}</span>
 </div>
@@ -431,23 +431,23 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
 
 <div style="padding:4px 0 6px;">
-<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
+<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
 </button>
 </div>
 
 <div style="padding:6px 0 20px;display:flex;align-items:center;justify-content:space-between;">
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">日记</div>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:var(--text-primary, #1A1815);letter-spacing:-.01em;">日记</div>
 <div style="font-size:13px;color:#9A958B;">{{ diaryMonthLabel }}</div>
 </div>
 
 <!-- Calendar navigation -->
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
-<button onClick="{{ diaryPrevMonth }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:1px solid #EDE9E0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<button onClick="{{ diaryPrevMonth }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14 6l-6 6 6 6" stroke="#48453E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
-<div style="font-size:16px;font-weight:600;color:#1A1815;">{{ diaryYearMonth }}</div>
-<button onClick="{{ diaryNextMonth }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:1px solid #EDE9E0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<div style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">{{ diaryYearMonth }}</div>
+<button onClick="{{ diaryNextMonth }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M10 6l6 6-6 6" stroke="#48453E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
 </div>
@@ -485,13 +485,13 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ diaryHasSelected }}" hint-placeholder-val="{{ false }}">
 <div style="margin-bottom:16px;">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-<div style="font-size:16px;font-weight:600;color:#1A1815;">{{ diarySelectedLabel }}</div>
-<button onClick="{{ diaryOpenStickerPicker }}" style="border:none;background:#FFF;border-radius:14px;padding:6px 12px;font-size:13px;color:#6B665E;cursor:pointer;border:1px solid #EDE9E0;">{{ diaryStickerBtnLabel }}</button>
+<div style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">{{ diarySelectedLabel }}</div>
+<button onClick="{{ diaryOpenStickerPicker }}" style="border:none;background:var(--bg-card, #FFF);border-radius:14px;padding:6px 12px;font-size:13px;color:#6B665E;cursor:pointer;border:1px solid var(--border-card, #EDE9E0);">{{ diaryStickerBtnLabel }}</button>
 </div>
 
 <!-- Emoji picker popup -->
 <sc-if value="{{ diaryStickerPickerOpen }}" hint-placeholder-val="{{ false }}">
-<div style="background:#FFF;border:1px solid #EDE9E0;border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,.08);">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,.08);">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:8px;">我的心情</div>
 <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
 <sc-for list="{{ emojiOptions }}" as="em" hint-placeholder-count="16">
@@ -511,7 +511,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </sc-if>
 
 <!-- My diary card -->
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
 <div style="display:flex;align-items:center;gap:8px;">
 <sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}">
@@ -520,7 +520,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}">
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
 </sc-if>
-<span style="font-size:14px;font-weight:600;color:#1A1815;">我的日记</span>
+<span style="font-size:14px;font-weight:600;color:var(--text-primary, #1A1815);">我的日记</span>
 </div>
 <button onClick="{{ diaryEditMine }}" style="border:none;background:#F2EFE8;border-radius:12px;padding:5px 10px;font-size:12px;color:#6B665E;cursor:pointer;">{{ diaryMineBtn }}</button>
 </div>
@@ -537,7 +537,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 
 <!-- Kel's diary card -->
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
 <div style="display:flex;align-items:center;gap:8px;">
 <sc-if value="{{ hasAiAvatar }}" hint-placeholder-val="{{ false }}">
@@ -546,7 +546,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ !hasAiAvatar }}" hint-placeholder-val="{{ true }}">
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#9A958B" stroke-width="1.5"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="10" r="1" fill="#9A958B"/><circle cx="15" cy="10" r="1" fill="#9A958B"/></svg>
 </sc-if>
-<span style="font-size:14px;font-weight:600;color:#1A1815;">Kel 的日记</span>
+<span style="font-size:14px;font-weight:600;color:var(--text-primary, #1A1815);">Kel 的日记</span>
 </div>
 <button onClick="{{ diaryEditKel }}" style="border:none;background:#F2EFE8;border-radius:12px;padding:5px 10px;font-size:12px;color:#6B665E;cursor:pointer;">{{ diaryKelBtn }}</button>
 </div>
@@ -563,14 +563,14 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 
 <!-- Comments section -->
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;">
-<div style="font-size:14px;font-weight:600;color:#1A1815;margin-bottom:12px;">评论区</div>
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;">
+<div style="font-size:14px;font-weight:600;color:var(--text-primary, #1A1815);margin-bottom:12px;">评论区</div>
 <sc-for list="{{ diaryComments }}" as="dc" hint-placeholder-count="0">
 <div style="display:flex;gap:10px;margin-bottom:12px;">
 <img src="{{ dc.avatar }}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;flex:none;" alt="">
 <div style="flex:1;">
 <div style="display:flex;align-items:center;gap:6px;">
-<span style="font-size:13px;font-weight:600;color:#1A1815;">{{ dc.name }}</span>
+<span style="font-size:13px;font-weight:600;color:var(--text-primary, #1A1815);">{{ dc.name }}</span>
 <span style="font-size:11px;color:#B8B3A8;">{{ dc.time }}</span>
 </div>
 <div style="font-size:13px;color:#3A362F;line-height:1.6;margin-top:3px;">{{ dc.text }}</div>
@@ -596,14 +596,14 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ isMemoryPage }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
 <div style="padding:4px 0 6px;">
-<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
+<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
 </button>
 </div>
 <div style="padding:6px 0 20px;display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:10px;">
 <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#1A1815" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">记忆</div>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:var(--text-primary, #1A1815);letter-spacing:-.01em;">记忆</div>
 </div>
 <button onClick="{{ newMemory }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
 </div>
@@ -617,11 +617,11 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 
 <sc-if value="{{ memListHasItems }}" hint-placeholder-val="{{ true }}">
 <sc-for list="{{ memoryList }}" as="mem" hint-placeholder-count="3">
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ mem.open }}">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ mem.open }}">
 <div style="display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex:none;"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ mem.name }}</span>
+<span style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ mem.name }}</span>
 <span style="font-size:11px;color:#9A958B;background:#F2EFE8;border-radius:8px;padding:2px 8px;flex:none;">{{ mem.tag }}</span>
 <span style="font-size:11px;color:#9A958B;background:{{ mem.activeBg }};border-radius:8px;padding:2px 8px;flex:none;">{{ mem.activeLabel }}</span>
 </div>
@@ -642,37 +642,37 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ drawerOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:100;">
 <div onClick="{{ toggleDrawer }}" style="position:absolute;inset:0;background:rgba(0,0,0,.12);animation:fadeIn .15s ease both;"></div>
-<div style="position:absolute;left:0;top:0;bottom:0;width:300px;background:#F5F3EE;display:flex;flex-direction:column;box-shadow:6px 0 24px rgba(0,0,0,.06);animation:slideInLeft .2s ease both;">
+<div style="position:absolute;left:0;top:0;bottom:0;width:300px;background:var(--bg-main, #F5F3EE);display:flex;flex-direction:column;box-shadow:6px 0 24px rgba(0,0,0,.06);animation:slideInLeft .2s ease both;">
 <!-- drawer header -->
 <div style="flex:none;padding:56px 24px 0;display:flex;align-items:center;justify-content:space-between;">
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:26px;font-weight:500;color:#1A1815;">Kel Home</div>
-<div style="width:40px;height:40px;border-radius:50%;background:#FFF;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;" onClick="{{ toggleProfile }}">
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:26px;font-weight:500;color:var(--text-primary, #1A1815);">Kel Home</div>
+<div style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;" onClick="{{ toggleProfile }}">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
 </div>
 </div>
 <!-- nav items -->
 <div style="flex:none;padding:24px 16px 0;display:flex;flex-direction:column;gap:2px;">
-<div onClick="{{ navChat }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navChatBg }};">
+<div onClick="{{ navChat }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navChatBg }};">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 5h16a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H9l-4 3.5V17H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/></svg>
 <span>Chat</span>
 </div>
-<div onClick="{{ navHome }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navHomeBg }};">
+<div onClick="{{ navHome }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navHomeBg }};">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 11l8-6.5L20 11M6 9.5V19a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V9.5" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span>Home</span>
 </div>
-<div onClick="{{ navWorldbook }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navWbBg }};">
+<div onClick="{{ navWorldbook }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navWbBg }};">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11Z" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span>世界书</span>
 </div>
-<div onClick="{{ navMemory }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navMemBg }};">
+<div onClick="{{ navMemory }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navMemBg }};">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span>记忆</span>
 </div>
-<div onClick="{{ navDiary }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navDiaryBg }};">
+<div onClick="{{ navDiary }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navDiaryBg }};">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex:none;"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 7h8M8 11h5" stroke="#48453E" stroke-width="1.3" stroke-linecap="round"/></svg>
 <span>日记</span>
 </div>
-<div onClick="{{ navMore }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navMoreBg }};">
+<div onClick="{{ navMore }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navMoreBg }};">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#48453E" stroke-width="1.5"/><path d="M19 12c0-.4 0-.8-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6c-.1.4-.1.8-.1 1.2s0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#48453E" stroke-width="1.4" stroke-linejoin="round"/></svg>
 <span>Settings</span>
 </div>
@@ -680,16 +680,16 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 
 <!-- search -->
 <div style="padding:12px 16px 4px;">
-<div style="background:#FFF;border:1px solid #E7E3DA;border-radius:14px;padding:8px 12px;display:flex;align-items:center;gap:8px;">
+<div style="background:var(--bg-card, #FFF);border:1px solid #E7E3DA;border-radius:14px;padding:8px 12px;display:flex;align-items:center;gap:8px;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="11" cy="11" r="7" stroke="#9A958B" stroke-width="1.5"/><path d="M16 16l4 4" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
-<input value="{{ searchQuery }}" onInput="{{ searchChange }}" placeholder="搜索聊天内容..." style="flex:1;border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;color:#1A1815;">
+<input value="{{ searchQuery }}" onInput="{{ searchChange }}" placeholder="搜索聊天内容..." style="flex:1;border:none;outline:none;background:transparent;font-family:inherit;font-size:13px;color:var(--text-primary, #1A1815);">
 </div>
 </div>
 <!-- search results -->
 <sc-if value="{{ searchOpen }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="max-height:200px;overflow-y:auto;padding:4px 16px;">
 <sc-for list="{{ searchResults }}" as="r" hint-placeholder-count="5">
-<div onClick="{{ r.open }}" style="padding:8px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px;background:#FFF;border:1px solid #EDE9E0;">
+<div onClick="{{ r.open }}" style="padding:8px 10px;border-radius:8px;cursor:pointer;margin-bottom:2px;background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);">
 <div style="font-size:11px;color:#B8B3A8;">{{ r.chatTitle }}</div>
 <div style="font-size:13px;color:#3A362F;margin-top:2px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ r.snippet }}</div>
 </div>
@@ -725,7 +725,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ profileOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:300;">
 <div onClick="{{ toggleProfile }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 0 30px;animation:slideUp .25s ease both;">
+<div style="position:absolute;bottom:0;left:0;right:0;background:var(--bg-main, #F5F3EE);border-radius:16px 16px 0 0;padding:12px 0 30px;animation:slideUp .25s ease both;">
 <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 20px;"></div>
 <div style="padding:0 24px 22px;display:flex;align-items:center;gap:14px;">
 <div style="width:48px;height:48px;border-radius:50%;background:#ECEAE4;overflow:hidden;display:flex;align-items:center;justify-content:center;">
@@ -733,15 +733,15 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg></sc-if>
 </div>
 <div>
-<div style="font-size:17px;font-weight:600;color:#1A1815;">User</div>
+<div style="font-size:17px;font-weight:600;color:var(--text-primary, #1A1815);">User</div>
 <div style="font-size:13px;color:#9A958B;margin-top:3px;">{{ currentTime }}</div>
 </div>
 </div>
-<div style="margin:0 16px 12px;background:#FFF;border-radius:16px;overflow:hidden;">
+<div style="margin:0 16px 12px;background:var(--bg-card, #FFF);border-radius:16px;overflow:hidden;">
 <div onClick="{{ exportData }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M8 7l4-4 4 4M5 15v3a3 3 0 0 0 3 3h8a3 3 0 0 0 3-3v-3" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">导出备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">JSON download</div></div>
+<div><div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">导出备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">JSON download</div></div>
 </div>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
@@ -749,7 +749,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div onClick="{{ importData }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:#1A1815;">导入备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">从 JSON 恢复</div></div>
+<div><div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">导入备份</div><div style="font-size:12px;color:#B8B3A8;margin-top:2px;">从 JSON 恢复</div></div>
 </div>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
@@ -792,13 +792,13 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ styleOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:250;">
 <div onClick="{{ closeStyle }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:82%;overflow-y:auto;">
+<div style="position:absolute;bottom:0;left:0;right:0;background:var(--bg-main, #F5F3EE);border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:82%;overflow-y:auto;">
 <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-<button onClick="{{ closeStyle }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<button onClick="{{ closeStyle }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">Style</span>
+<span style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">Style</span>
 <button onClick="{{ saveStyle }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
 </div>
 <div style="display:flex;gap:8px;overflow-x:auto;padding:0 0 12px;">
@@ -806,14 +806,14 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <button onClick="{{ st.pick }}" style="flex:none;border:1px solid {{ st.bd }};background:{{ st.bg }};border-radius:18px;padding:8px 12px;font-size:13px;color:{{ st.fg }};font-family:inherit;cursor:pointer;max-width:190px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ st.name }}</button>
 </sc-for>
 </div>
-<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
+<div style="background:var(--bg-card, #FFF);border-radius:16px;overflow:hidden;border:1px solid var(--border-card, #EDE9E0);">
 <div style="padding:13px 16px;border-bottom:1px solid #ECE8DF;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">名字</div>
-<input value="{{ styleTitle }}" onInput="{{ styleTitleChange }}" placeholder="比如：精简 / 小说感" style="width:100%;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;color:#1A1815;">
+<input value="{{ styleTitle }}" onInput="{{ styleTitleChange }}" placeholder="比如：精简 / 小说感" style="width:100%;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;color:var(--text-primary, #1A1815);">
 </div>
 <div style="padding:13px 16px;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">Style 内容</div>
-<textarea value="{{ styleContent }}" onInput="{{ styleContentChange }}" placeholder="这里写语气、文风、回复习惯，会随聊天带进 system。" rows="7" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:#1A1815;"></textarea>
+<textarea value="{{ styleContent }}" onInput="{{ styleContentChange }}" placeholder="这里写语气、文风、回复习惯，会随聊天带进 system。" rows="7" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:var(--text-primary, #1A1815);"></textarea>
 </div>
 </div>
 </div>
@@ -824,16 +824,16 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ isWorldbookEditorSheet }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:270;">
 <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:70vh;overflow-y:auto;">
+<div style="position:absolute;bottom:0;left:0;right:0;background:var(--bg-main, #F5F3EE);border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:70vh;overflow-y:auto;">
 <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">编辑世界书</span>
+<span style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">编辑世界书</span>
 <button onClick="{{ saveWorldbookEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
 </div>
-<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
+<div style="background:var(--bg-card, #FFF);border-radius:16px;overflow:hidden;border:1px solid var(--border-card, #EDE9E0);padding:16px;">
 <div style="margin-bottom:14px;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
 <input value="{{ wbEditName }}" onInput="{{ wbEditNameChange }}" placeholder="世界书名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
@@ -875,19 +875,19 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ isMemoryEditorSheet }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:270;">
 <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:70vh;overflow-y:auto;">
+<div style="position:absolute;bottom:0;left:0;right:0;background:var(--bg-main, #F5F3EE);border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:92%;min-height:70vh;overflow-y:auto;">
 <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">编辑记忆</span>
+<span style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">编辑记忆</span>
 <div style="display:flex;gap:8px;">
-<button onClick="{{ deleteMemoryFromEditor }}" style="border:none;background:#FFF;color:#9A958B;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;border:1px solid #EDE9E0;">删除</button>
+<button onClick="{{ deleteMemoryFromEditor }}" style="border:none;background:var(--bg-card, #FFF);color:#9A958B;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;border:1px solid var(--border-card, #EDE9E0);">删除</button>
 <button onClick="{{ saveMemoryEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
 </div>
 </div>
-<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
+<div style="background:var(--bg-card, #FFF);border-radius:16px;overflow:hidden;border:1px solid var(--border-card, #EDE9E0);padding:16px;">
 <div style="margin-bottom:14px;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
 <input value="{{ memEditName }}" onInput="{{ memEditNameChange }}" placeholder="记忆名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
@@ -934,24 +934,24 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ isAnnivSheet }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:270;">
 <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:85%;overflow-y:auto;">
+<div style="position:absolute;bottom:0;left:0;right:0;background:var(--bg-main, #F5F3EE);border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:85%;overflow-y:auto;">
 <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">纪念日</span>
+<span style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">纪念日</span>
 <button onClick="{{ addAnniv }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
 </div>
 <sc-for list="{{ annivList }}" as="av" hint-placeholder-count="2">
-<div style="background:#FFF;border:1px solid {{ av.bd }};border-radius:18px;padding:14px 16px;margin-bottom:10px;cursor:pointer;" onClick="{{ av.pick }}">
+<div style="background:var(--bg-card, #FFF);border:1px solid {{ av.bd }};border-radius:18px;padding:14px 16px;margin-bottom:10px;cursor:pointer;" onClick="{{ av.pick }}">
 <div style="display:flex;align-items:center;justify-content:space-between;">
 <div style="flex:1;min-width:0;">
-<div style="font-size:15px;font-weight:500;color:#1A1815;">{{ av.name }}</div>
+<div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">{{ av.name }}</div>
 <div style="font-size:13px;color:#B8B3A8;margin-top:2px;">{{ av.date }}</div>
 </div>
 <div style="display:flex;align-items:center;gap:8px;">
-<span style="font-family:'Newsreader',serif;font-size:24px;color:#1A1815;">{{ av.days }}</span>
+<span style="font-family:'Newsreader',serif;font-size:24px;color:var(--text-primary, #1A1815);">{{ av.days }}</span>
 <span style="font-size:12px;color:#9A958B;">days</span>
 <button onClick="{{ av.editBtn }}" style="border:none;background:transparent;cursor:pointer;opacity:.4;padding:4px;">
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#48453E" stroke-width="1.5"/></svg>
@@ -963,9 +963,8 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </div>
 </sc-for>
-<!-- Edit anniv inline -->
 <sc-if value="{{ annivEditing }}" hint-placeholder-val="{{ false }}">
-<div style="background:#FFF;border:1px solid #EDE9E0;border-radius:16px;padding:16px;margin-top:10px;">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;padding:16px;margin-top:10px;">
 <div style="margin-bottom:10px;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
 <input value="{{ annivEditName }}" onInput="{{ annivEditNameChange }}" placeholder="纪念日名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
@@ -988,17 +987,17 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ isPledgesSheet }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:270;">
 <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:85%;overflow-y:auto;">
+<div style="position:absolute;bottom:0;left:0;right:0;background:var(--bg-main, #F5F3EE);border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:85%;overflow-y:auto;">
 <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">约定</span>
+<span style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">约定</span>
 <button onClick="{{ addPledge }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
 </div>
 <sc-for list="{{ pledgeList }}" as="pl" hint-placeholder-count="0">
-<div style="background:#FFF;border:1px solid #EDE9E0;border-radius:18px;padding:14px 16px;margin-bottom:10px;">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:18px;padding:14px 16px;margin-bottom:10px;">
 <div style="display:flex;align-items:flex-start;gap:10px;">
 <button onClick="{{ pl.toggleDone }}" style="width:22px;height:22px;border-radius:6px;border:1.5px solid {{ pl.checkBd }};background:{{ pl.checkBg }};display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;margin-top:1px;">
 <sc-if value="{{ pl.done }}" hint-placeholder-val="{{ false }}">
@@ -1017,9 +1016,8 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </div>
 </sc-for>
-<!-- Add pledge inline -->
 <sc-if value="{{ pledgeEditing }}" hint-placeholder-val="{{ false }}">
-<div style="background:#FFF;border:1px solid #EDE9E0;border-radius:16px;padding:16px;margin-top:10px;">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;padding:16px;margin-top:10px;">
 <div style="margin-bottom:10px;">
 <input value="{{ pledgeEditName }}" onInput="{{ pledgeEditNameChange }}" placeholder="约定内容" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
 </div>
@@ -1043,17 +1041,17 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="position:absolute;bottom:0;left:0;right:0;background:#EDEAE3;border-radius:16px 16px 0 0;padding:12px 0 30px;animation:slideUp .25s ease both;">
 <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 14px;"></div>
 <div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 16px;">
-<button onClick="{{ togglePlus }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<button onClick="{{ togglePlus }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">Options</span>
+<span style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">Options</span>
 <span style="width:36px;"></span>
 </div>
-<div style="margin:0 16px;background:#FFF;border-radius:16px;overflow:hidden;">
+<div style="margin:0 16px;background:var(--bg-card, #FFF);border-radius:16px;overflow:hidden;">
 <div onClick="{{ openPromptSheet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:13px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3c-4.97 0-9 3.58-9 8 0 1.5.5 2.9 1.3 4.1L3 21l5.5-1.5C10 20.2 11 20.5 12 20.5c4.97 0 9-3.58 9-8s-4.03-8-9-8Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 11h.01M12 11h.01M15 11h.01" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">Prompt 模板</span>
+<span style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">Prompt 模板</span>
 </div>
 <div style="display:flex;align-items:center;gap:6px;">
 <span style="font-size:14px;color:#9A958B;">{{ promptCount }}</span>
@@ -1064,7 +1062,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div onClick="{{ togglePet }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:13px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#48453E" stroke-width="1.5"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#48453E" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="10" r="1" fill="#48453E"/><circle cx="15" cy="10" r="1" fill="#48453E"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">小可宝宝</span>
+<span style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">小可宝宝</span>
 </div>
 <span style="font-size:14px;color:#9A958B;">{{ petStatus }}</span>
 </div>
@@ -1072,7 +1070,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div onClick="{{ cyclePetSize }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:13px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M15 3h6v6M9 21H3v-6M21 3l-7 7M3 21l7-7" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">Pet Size</span>
+<span style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">Pet Size</span>
 </div>
 <span style="font-size:14px;color:#9A958B;">{{ petSizeLabel }}</span>
 </div>
@@ -1080,7 +1078,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div onClick="{{ toggleSound }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:13px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M11 5L6 9H2v6h4l5 4V5ZM15.5 8.5a5 5 0 0 1 0 7M19 5a9 9 0 0 1 0 14" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">Sound</span>
+<span style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">Sound</span>
 </div>
 <span style="font-size:14px;color:#9A958B;">{{ soundStatus }}</span>
 </div>
@@ -1088,7 +1086,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div onClick="{{ cycleMemoryCount }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:13px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:#1A1815;">Memory count</span>
+<span style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">Memory count</span>
 </div>
 <span style="font-size:14px;color:#9A958B;">{{ memoryCountLabel }}</span>
 </div>
@@ -1101,15 +1099,15 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ sheetOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:260;">
 <div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 0 26px;animation:slideUp .25s ease both;max-height:88%;overflow-y:auto;">
+<div style="position:absolute;bottom:0;left:0;right:0;background:var(--bg-main, #F5F3EE);border-radius:16px 16px 0 0;padding:12px 0 26px;animation:slideUp .25s ease both;max-height:88%;overflow-y:auto;">
 <div style="width:36px;height:5px;border-radius:3px;background:#CFCAC1;margin:0 auto 14px;"></div>
 
 <!-- API Sheet -->
 <sc-if value="{{ isApiSheet }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="max-height:calc(82vh - 40px);overflow-y:auto;padding:0 16px 8px;">
 <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;">
-<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">API settings</span>
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+<span style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">API settings</span>
 <button onClick="{{ newApiDraft }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">新建</button>
 </div>
 <div style="display:flex;gap:8px;overflow-x:auto;padding:0 2px 12px;">
@@ -1120,7 +1118,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </button>
 </sc-for>
 </div>
-<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
+<div style="background:var(--bg-card, #FFF);border-radius:16px;overflow:hidden;border:1px solid var(--border-card, #EDE9E0);">
 <div style="padding:12px 14px;border-bottom:1px solid #ECE8DF;">
 <div style="display:grid;grid-template-columns:0.72fr 1.28fr;gap:10px;align-items:end;">
 <label style="min-width:0;"><div style="font-size:11.5px;color:#B8B3A8;margin-bottom:6px;">preset</div><input value="{{ apiName }}" onInput="{{ apiNameChange }}" placeholder="渠道名" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 10px;font-family:inherit;font-size:13px;color:#1A1815;"></label>
@@ -1136,7 +1134,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </sc-for>
 </div>
 </div>
-<button onClick="{{ toggleApiAdvanced }}" style="width:100%;border:none;background:#FFF;padding:12px 14px;display:flex;align-items:center;justify-content:space-between;font-family:inherit;cursor:pointer;">
+<button onClick="{{ toggleApiAdvanced }}" style="width:100%;border:none;background:var(--bg-card, #FFF);padding:12px 14px;display:flex;align-items:center;justify-content:space-between;font-family:inherit;cursor:pointer;">
 <span style="font-size:13px;font-weight:600;color:#3A362F;">连接细节</span>
 <span style="display:flex;align-items:center;gap:7px;font-size:12px;color:#9A958B;"><span>{{ apiDetailHint }}</span><svg width="13" height="13" viewBox="0 0 24 24" fill="none" style="transform:{{ apiAdvancedRot }};transition:transform .2s;"><path d="M6 9l6 6 6-6" stroke="#B8B3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg></span>
 </button>
@@ -1150,7 +1148,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 </div>
-<div style="display:flex;gap:10px;padding-top:12px;"><button onClick="{{ saveApiDraft }}" style="flex:1;border:none;background:#1A1815;color:#F5F3EE;border-radius:20px;padding:12px 16px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;">保存并使用</button><button onClick="{{ deleteApiDraft }}" style="border:none;background:#FFF;color:#9A958B;border-radius:20px;padding:12px 16px;font-size:14px;font-family:inherit;cursor:pointer;">删除</button></div>
+<div style="display:flex;gap:10px;padding-top:12px;"><button onClick="{{ saveApiDraft }}" style="flex:1;border:none;background:#1A1815;color:#F5F3EE;border-radius:20px;padding:12px 16px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;">保存并使用</button><button onClick="{{ deleteApiDraft }}" style="border:none;background:var(--bg-card, #FFF);color:#9A958B;border-radius:20px;padding:12px 16px;font-size:14px;font-family:inherit;cursor:pointer;">删除</button></div>
 </div>
 </sc-if>
 
@@ -1158,8 +1156,8 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ isAiSheet }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="max-height:calc(82vh - 40px);overflow-y:auto;padding:0 16px 8px;">
 <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;">
-<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">Persona</span>
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+<span style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">Persona</span>
 <button onClick="{{ newPersona }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">新建</button>
 </div>
 <div style="display:flex;gap:8px;overflow-x:auto;padding:0 2px 12px;">
@@ -1167,19 +1165,19 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <button onClick="{{ p.pick }}" style="flex:none;border:1px solid {{ p.bd }};background:{{ p.bg }};border-radius:18px;padding:8px 14px;font-size:13px;color:{{ p.fg }};font-family:inherit;cursor:pointer;max-width:160px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ p.name }}</button>
 </sc-for>
 </div>
-<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
+<div style="background:var(--bg-card, #FFF);border-radius:16px;overflow:hidden;border:1px solid var(--border-card, #EDE9E0);">
 <div style="padding:13px 16px;border-bottom:1px solid #ECE8DF;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">名字</div>
-<input value="{{ personaName }}" onInput="{{ personaNameChange }}" placeholder="角色名" style="width:100%;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;color:#1A1815;">
+<input value="{{ personaName }}" onInput="{{ personaNameChange }}" placeholder="角色名" style="width:100%;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;color:var(--text-primary, #1A1815);">
 </div>
 <div style="padding:13px 16px;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">System Prompt</div>
-<textarea value="{{ personaContent }}" onInput="{{ personaContentChange }}" placeholder="写入角色的 system prompt，会在每次对话时带入……" rows="10" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:#1A1815;min-height:180px;"></textarea>
+<textarea value="{{ personaContent }}" onInput="{{ personaContentChange }}" placeholder="写入角色的 system prompt，会在每次对话时带入……" rows="10" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:var(--text-primary, #1A1815);min-height:180px;"></textarea>
 </div>
 </div>
 <div style="display:flex;gap:10px;padding-top:12px;">
 <button onClick="{{ savePersona }}" style="flex:1;border:none;background:#1A1815;color:#F5F3EE;border-radius:20px;padding:12px 16px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;">保存并使用</button>
-<button onClick="{{ deletePersona }}" style="border:none;background:#FFF;color:#9A958B;border-radius:20px;padding:12px 16px;font-size:14px;font-family:inherit;cursor:pointer;">删除</button>
+<button onClick="{{ deletePersona }}" style="border:none;background:var(--bg-card, #FFF);color:#9A958B;border-radius:20px;padding:12px 16px;font-size:14px;font-family:inherit;cursor:pointer;">删除</button>
 </div>
 </div>
 </sc-if>
@@ -1188,16 +1186,16 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ isPromptSheet }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="max-height:calc(82vh - 40px);overflow-y:auto;padding:0 16px 8px;">
 <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;">
-<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">Prompt templates</span>
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+<span style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">Prompt templates</span>
 <button onClick="{{ newPrompt }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">新建</button>
 </div>
 <sc-if value="{{ showPromptList }}" hint-placeholder-val="{{ true }}">
-<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
+<div style="background:var(--bg-card, #FFF);border-radius:16px;overflow:hidden;border:1px solid var(--border-card, #EDE9E0);">
 <sc-for list="{{ promptOptions }}" as="p" hint-placeholder-count="4">
 <div style="padding:15px 18px;border-bottom:1px solid #ECE8DF;display:flex;align-items:center;justify-content:space-between;gap:10px;">
 <div onClick="{{ p.edit }}" style="flex:1;min-width:0;cursor:pointer;">
-<div style="font-size:15px;color:#1A1815;">{{ p.name }}</div>
+<div style="font-size:15px;color:var(--text-primary, #1A1815);">{{ p.name }}</div>
 <div style="font-size:12px;color:#B8B3A8;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ p.preview }}</div>
 </div>
 <div style="display:flex;align-items:center;gap:8px;">
@@ -1214,19 +1212,19 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </sc-if>
 </sc-if>
 <sc-if value="{{ showPromptEdit }}" hint-placeholder-val="{{ false }}">
-<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
+<div style="background:var(--bg-card, #FFF);border-radius:16px;overflow:hidden;border:1px solid var(--border-card, #EDE9E0);">
 <div style="padding:13px 16px;border-bottom:1px solid #ECE8DF;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">模板名</div>
-<input value="{{ promptEditName }}" onInput="{{ promptEditNameChange }}" placeholder="例：翻译 / 续写" style="width:100%;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;color:#1A1815;">
+<input value="{{ promptEditName }}" onInput="{{ promptEditNameChange }}" placeholder="例：翻译 / 续写" style="width:100%;border:none;outline:none;background:transparent;font-family:inherit;font-size:15px;color:var(--text-primary, #1A1815);">
 </div>
 <div style="padding:13px 16px;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:7px;">内容</div>
-<textarea value="{{ promptEditContent }}" onInput="{{ promptEditContentChange }}" placeholder="模板内容，点击"填入"会替换输入框" rows="8" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:#1A1815;min-height:140px;"></textarea>
+<textarea value="{{ promptEditContent }}" onInput="{{ promptEditContentChange }}" placeholder="模板内容，点击"填入"会替换输入框" rows="8" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:15px;line-height:1.55;color:var(--text-primary, #1A1815);min-height:140px;"></textarea>
 </div>
 </div>
 <div style="display:flex;gap:10px;padding-top:12px;">
 <button onClick="{{ savePromptEdit }}" style="flex:1;border:none;background:#1A1815;color:#F5F3EE;border-radius:20px;padding:12px 16px;font-size:14px;font-weight:600;font-family:inherit;cursor:pointer;">保存</button>
-<button onClick="{{ cancelPromptEdit }}" style="border:none;background:#FFF;color:#9A958B;border-radius:20px;padding:12px 16px;font-size:14px;font-family:inherit;cursor:pointer;">返回</button>
+<button onClick="{{ cancelPromptEdit }}" style="border:none;background:var(--bg-card, #FFF);color:#9A958B;border-radius:20px;padding:12px 16px;font-size:14px;font-family:inherit;cursor:pointer;">返回</button>
 </div>
 </sc-if>
 </div>
@@ -1236,11 +1234,61 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <sc-if value="{{ isCssSheet }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="max-height:calc(85vh - 40px);overflow-y:auto;padding:0 16px 8px;">
 <div style="display:flex;align-items:center;justify-content:space-between;padding:0 4px 14px;">
-<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
-<span style="font-size:16px;font-weight:600;color:#1A1815;">界面美化</span>
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg></button>
+<span style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">界面美化</span>
 <button onClick="{{ saveCssSettings }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
 </div>
-<div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;">
+<div style="background:var(--bg-card, #FFF);border-radius:16px;overflow:hidden;border:1px solid var(--border-card, #EDE9E0);">
+<!-- 配色方案 -->
+<div style="padding:14px 16px;border-bottom:1px solid #ECE8DF;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:10px;">一键配色</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:14px;">
+<sc-for list="{{ themeOptions }}" as="th" hint-placeholder-count="7">
+<button onClick="{{ th.pick }}" style="width:40px;height:40px;border-radius:12px;border:{{ th.border }};background:{{ th.preview }};cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 1px 3px rgba(0,0,0,.1);">
+<sc-if value="{{ th.isActive }}" hint-placeholder-val="{{ false }}">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="{{ th.checkColor }}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</sc-if>
+</button>
+</sc-for>
+</div>
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:8px;">自定义配色（填写后保存覆盖当前主题）</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;">
+<div>
+<div style="font-size:10px;color:#9A958B;margin-bottom:3px;">外层背景</div>
+<input value="{{ customThemeBgBase }}" onInput="{{ customThemeBgBaseChange }}" placeholder="#d6d2c8" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:10px;padding:7px 10px;font-family:inherit;font-size:12px;color:#1A1815;">
+</div>
+<div>
+<div style="font-size:10px;color:#9A958B;margin-bottom:3px;">主背景</div>
+<input value="{{ customThemeBgMain }}" onInput="{{ customThemeBgMainChange }}" placeholder="#F5F3EE" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:10px;padding:7px 10px;font-family:inherit;font-size:12px;color:#1A1815;">
+</div>
+<div>
+<div style="font-size:10px;color:#9A958B;margin-bottom:3px;">卡片背景</div>
+<input value="{{ customThemeBgCard }}" onInput="{{ customThemeBgCardChange }}" placeholder="#FFF" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:10px;padding:7px 10px;font-family:inherit;font-size:12px;color:#1A1815;">
+</div>
+<div>
+<div style="font-size:10px;color:#9A958B;margin-bottom:3px;">输入框背景</div>
+<input value="{{ customThemeBgInput }}" onInput="{{ customThemeBgInputChange }}" placeholder="#FBFAF7" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:10px;padding:7px 10px;font-family:inherit;font-size:12px;color:#1A1815;">
+</div>
+<div>
+<div style="font-size:10px;color:#9A958B;margin-bottom:3px;">卡片边框</div>
+<input value="{{ customThemeBorderCard }}" onInput="{{ customThemeBorderCardChange }}" placeholder="#EDE9E0" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:10px;padding:7px 10px;font-family:inherit;font-size:12px;color:#1A1815;">
+</div>
+<div>
+<div style="font-size:10px;color:#9A958B;margin-bottom:3px;">输入框边框</div>
+<input value="{{ customThemeBorderInput }}" onInput="{{ customThemeBorderInputChange }}" placeholder="#E7E3DA" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:10px;padding:7px 10px;font-family:inherit;font-size:12px;color:#1A1815;">
+</div>
+<div>
+<div style="font-size:10px;color:#9A958B;margin-bottom:3px;">主文字</div>
+<input value="{{ customThemeTextPrimary }}" onInput="{{ customThemeTextPrimaryChange }}" placeholder="#1A1815" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:10px;padding:7px 10px;font-family:inherit;font-size:12px;color:#1A1815;">
+</div>
+<div>
+<div style="font-size:10px;color:#9A958B;margin-bottom:3px;">次文字</div>
+<input value="{{ customThemeTextSecondary }}" onInput="{{ customThemeTextSecondaryChange }}" placeholder="#48453E" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:10px;padding:7px 10px;font-family:inherit;font-size:12px;color:#1A1815;">
+</div>
+</div>
+<button onClick="{{ applyCustomTheme }}" style="margin-top:10px;width:100%;border:none;background:#1A1815;color:#F5F3EE;border-radius:14px;padding:9px 16px;font-size:13px;font-family:inherit;cursor:pointer;">应用自定义配色</button>
+</div>
+</div>
 <!-- 头像设置 -->
 <div style="padding:14px 16px;border-bottom:1px solid #ECE8DF;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:10px;">头像设置</div>
@@ -1363,17 +1411,20 @@ return summary.trim();
 
 // Render markdown-like content to HTML with code blocks
 function renderContent(text, isUser) {
-if (!text) return '';
+if (!text) return '<span style="opacity:.4;">...</span>';
 // Escape HTML first
 let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-// Code blocks
+// Code blocks - render as downloadable/copyable blocks
 html = html.replace(/```(\w*)\n([\s\S]*?)```/g, function(match, lang, code) {
 const langLabel = lang || 'code';
+const escapedCode = code.replace(/'/g, '&#39;').replace(/"/g, '&quot;');
 return '<div style="position:relative;background:#1A1815;border-radius:12px;margin:8px 0;overflow:hidden;">' +
 '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.06);">' +
 '<span style="font-size:11px;color:#9A958B;">' + langLabel + '</span>' +
-'<button onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="border:none;background:rgba(255,255,255,.1);color:#D8D3CA;border-radius:8px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;">Copy</button>' +
-'</div>' +
+'<div style="display:flex;gap:6px;">' +
+'<button onclick="navigator.clipboard.writeText(this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="border:none;background:rgba(255,255,255,.1);color:#D8D3CA;border-radius:8px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;">Copy</button>' +
+'<button onclick="var t=this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText;var b=new Blob([t],{type:\'text/plain\'});var u=URL.createObjectURL(b);var a=document.createElement(\'a\');a.href=u;a.download=\'' + langLabel + '.' + (lang||'txt') + '\';a.click();URL.revokeObjectURL(u);" style="border:none;background:rgba(255,255,255,.1);color:#D8D3CA;border-radius:8px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;">Download</button>' +
+'</div></div>' +
 '<pre style="margin:0;padding:12px 14px;overflow-x:auto;font-family:\'SF Mono\',\'Fira Code\',monospace;font-size:13px;line-height:1.6;color:#E8E4DC;white-space:pre;">' + code + '</pre></div>';
 });
 // Inline code
@@ -1386,14 +1437,24 @@ html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
 if (!html.includes('<pre')) {
 html = html.replace(/\n/g, '<br>');
 } else {
-// Only replace newlines outside of pre blocks
-const parts = html.split(/(<div style="position:relative[\s\S]*?<\/div>)/);
+const parts = html.split(/(<div style="position:relative[\s\S]*?<\/div><\/div>)/);
 html = parts.map(p => p.startsWith('<div style="position:relative') ? p : p.replace(/\n/g, '<br>')).join('');
 }
 return html;
 }
 
 const EMOJI_LIST = ['😊','😢','😡','🥰','😴','🤔','✨','🌧️','☀️','🌈','💪','😭','🎉','💕','😤','🫠'];
+
+// Theme presets
+const THEME_PRESETS = [
+{ id: 'default', name: '默认米白', preview: 'linear-gradient(135deg, #F5F3EE, #d6d2c8)', checkColor: '#1A1815', vars: { '--bg-base': '#d6d2c8', '--bg-main': '#F5F3EE', '--bg-card': '#FFF', '--bg-input': '#FBFAF7', '--border-card': '#EDE9E0', '--border-input': '#E7E3DA', '--text-primary': '#1A1815', '--text-secondary': '#48453E', '--text-bold': '#3A362F' } },
+{ id: 'dark', name: '深夜黑', preview: 'linear-gradient(135deg, #1A1A2E, #16213E)', checkColor: '#7EC8E3', vars: { '--bg-base': '#0F0F1A', '--bg-main': '#1A1A2E', '--bg-card': '#252540', '--bg-input': '#1E1E35', '--border-card': '#35355A', '--border-input': '#30304E', '--text-primary': '#E8E8F0', '--text-secondary': '#A0A0C0', '--text-bold': '#D0D0E8' } },
+{ id: 'mint', name: '薄荷巧克力', preview: 'linear-gradient(135deg, #D4EDDA, #8FBFA4)', checkColor: '#3D5C47', vars: { '--bg-base': '#8FBFA4', '--bg-main': '#D4EDDA', '--bg-card': '#E8F5ED', '--bg-input': '#E0F2E6', '--border-card': '#B8D9C4', '--border-input': '#AACFB8', '--text-primary': '#2B4035', '--text-secondary': '#4A7058', '--text-bold': '#3D5C47' } },
+{ id: 'deepBrown', name: '深棕', preview: 'linear-gradient(135deg, #4A3728, #2C1E14)', checkColor: '#D4A574', vars: { '--bg-base': '#1E1410', '--bg-main': '#2C1E14', '--bg-card': '#3E2C1E', '--bg-input': '#362618', '--border-card': '#5A4030', '--border-input': '#4E3828', '--text-primary': '#E8D8C8', '--text-secondary': '#B8A090', '--text-bold': '#D4B8A0' } },
+{ id: 'rose', name: '玫瑰粉', preview: 'linear-gradient(135deg, #FFF0F3, #E8C4C8)', checkColor: '#8B4557', vars: { '--bg-base': '#E8C4C8', '--bg-main': '#FFF0F3', '--bg-card': '#FFF8F9', '--bg-input': '#FFF5F7', '--border-card': '#F0D5DA', '--border-input': '#EDCDD2', '--text-primary': '#4A2030', '--text-secondary': '#8B5060', '--text-bold': '#6B3545' } },
+{ id: 'ocean', name: '海洋蓝', preview: 'linear-gradient(135deg, #EFF6FC, #B8D4E8)', checkColor: '#2C5F7C', vars: { '--bg-base': '#B8D4E8', '--bg-main': '#EFF6FC', '--bg-card': '#F8FBFF', '--bg-input': '#F2F8FE', '--border-card': '#D0E3F0', '--border-input': '#C8DCE8', '--text-primary': '#1A3A4C', '--text-secondary': '#4A7088', '--text-bold': '#2C5468' } },
+{ id: 'midnight', name: '午夜紫', preview: 'linear-gradient(135deg, #2D1B4E, #1A1025)', checkColor: '#C4A6E8', vars: { '--bg-base': '#1A1025', '--bg-main': '#2D1B4E', '--bg-card': '#3A2660', '--bg-input': '#321E55', '--border-card': '#4A3575', '--border-input': '#443068', '--text-primary': '#E8E0F5', '--text-secondary': '#B0A0C8', '--text-bold': '#D0C0E8' } }
+];
 
 class Component extends DCLogic {
 constructor(props) {
@@ -1461,22 +1522,21 @@ userAvatar: saved.userAvatar || '',
 aiAvatar: saved.aiAvatar || '',
 customCss: saved.customCss || '',
 customFont: saved.customFont || '',
+activeThemeId: saved.activeThemeId || 'default',
+customTheme: saved.customTheme || { bgBase:'', bgMain:'', bgCard:'', bgInput:'', borderCard:'', borderInput:'', textPrimary:'', textSecondary:'' },
 searchOpen: false,
 searchQuery: '',
 searchResults: [],
-// Anniversary - now supports multiple
 anniversaries: saved.anniversaries || [],
 activeAnnivIdx: saved.activeAnnivIdx || 0,
 annivEditing: false,
 annivEditId: null,
 annivEditName: '',
 annivEditDate: '',
-// Pledges
 pledges: saved.pledges || [],
 pledgeEditing: false,
 pledgeEditName: '',
 pledgeEditDate: '',
-// Diary
 currentTime: getCurrentTime(),
 diaries: saved.diaries || {},
 diaryViewYear: new Date().getFullYear(),
@@ -1488,22 +1548,21 @@ diaryKelEdit: false,
 diaryKelText: '',
 diaryStickerPickerOpen: false,
 diaryCommentText: '',
-// Dynamic Island
 islandOpen: false,
 lastThinking: saved.lastThinking || '',
 kelMood: saved.kelMood || 'idle',
-// Image preview
 imagePreviewOpen: false,
-imagePreviewUrl: ''
+imagePreviewUrl: '',
+// Pending lines for Enter-to-send
+pendingLines: []
 };
-// Migrate old annivDate to anniversaries
 if (saved.annivDate && (!saved.anniversaries || saved.anniversaries.length === 0)) {
 this.state.anniversaries = [{ id: genId(), name: '纪念日', date: saved.annivDate }];
 }
 if (!this.state.chats[this.state.currentChatId]) {
 this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
 }
-setTimeout(() => { this.applyCustomCss(); this.applyCustomFont(); }, 100);
+setTimeout(() => { this.applyTheme(this.state.activeThemeId); this.applyCustomCss(); this.applyCustomFont(); }, 100);
 this._clockTimer = setInterval(() => {
 this.setState({ currentTime: getCurrentTime() });
 }, 1000);
@@ -1589,6 +1648,8 @@ userAvatar: s.userAvatar,
 aiAvatar: s.aiAvatar,
 customCss: s.customCss,
 customFont: s.customFont,
+activeThemeId: s.activeThemeId,
+customTheme: s.customTheme,
 anniversaries: s.anniversaries,
 activeAnnivIdx: s.activeAnnivIdx,
 pledges: s.pledges,
@@ -1602,6 +1663,29 @@ show(text) {
 if (this._t) clearTimeout(this._t);
 this.setState({ toastShow: true, toastText: text });
 this._t = setTimeout(() => this.setState({ toastShow: false }), 1800);
+}
+
+// ====== Theme ======
+applyTheme(themeId) {
+applyTheme(themeId) {
+if (themeId === 'custom') {
+const ct = this.state.customTheme || {};
+const root = document.documentElement;
+if (ct.bgBase) root.style.setProperty('--bg-base', ct.bgBase);
+if (ct.bgMain) root.style.setProperty('--bg-main', ct.bgMain);
+if (ct.bgCard) root.style.setProperty('--bg-card', ct.bgCard);
+if (ct.bgInput) root.style.setProperty('--bg-input', ct.bgInput);
+if (ct.borderCard) root.style.setProperty('--border-card', ct.borderCard);
+if (ct.borderInput) root.style.setProperty('--border-input', ct.borderInput);
+if (ct.textPrimary) root.style.setProperty('--text-primary', ct.textPrimary);
+if (ct.textSecondary) root.style.setProperty('--text-secondary', ct.textSecondary);
+return;
+}
+const theme = THEME_PRESETS.find(t => t.id === themeId) || THEME_PRESETS[0];
+const root = document.documentElement;
+for (const [key, value] of Object.entries(theme.vars)) {
+root.style.setProperty(key, value);
+}
 }
 
 // ====== Worldbook ======
@@ -1723,41 +1807,39 @@ if (memorySummary) sys += '## Context Memory\n' + memorySummary + '\n\n';
 return sys.trim();
 }
 
-// ====== Chat ======
-async sendMessage() {
+// ====== Chat - Enter sends as line, black button sends to API ======
+handleInputKey(e) {
+if (e.key === 'Enter' && !e.shiftKey) {
+e.preventDefault();
 const text = (this.state.input || '').trim();
-const hasAttachment = !!this.state.attachment;
-if (!text && !hasAttachment) return;
+if (!text && !this.state.attachment) return;
 if (this.state.isBusy) return;
-const preset = this.activePreset;
-if (!preset.key) { this.show('请先设置 API Key'); return; }
 
 const chatId = this.state.currentChatId;
 const chats = { ...this.state.chats };
 const chat = { ...chats[chatId] };
-const s = this.state;
 const timestamp = getFixedTimestamp();
 const newMsg = {
 role: 'user',
-text: text || '[File: ' + (s.attachment?.fileName || 'attachment') + ']',
-variants: [text || '[File: ' + (s.attachment?.fileName || 'attachment') + ']'],
+text: text || '[File: ' + (this.state.attachment?.fileName || 'attachment') + ']',
+variants: [text || '[File: ' + (this.state.attachment?.fileName || 'attachment') + ']'],
 variantIdx: 0,
 timestamp: timestamp
 };
-if (s.attachment) {
+if (this.state.attachment) {
 newMsg.file = {
-base64: s.attachment.base64,
-mimeType: s.attachment.mimeType,
-fileName: s.attachment.fileName,
-fileSize: s.attachment.fileSize,
-isImage: s.attachment.isImage,
-isText: s.attachment.isText,
-textContent: s.attachment.textContent
+base64: this.state.attachment.base64,
+mimeType: this.state.attachment.mimeType,
+fileName: this.state.attachment.fileName,
+fileSize: this.state.attachment.fileSize,
+isImage: this.state.attachment.isImage,
+isText: this.state.attachment.isText,
+textContent: this.state.attachment.textContent
 };
-if (s.attachment.isImage) {
-newMsg.image = s.attachment.base64;
-newMsg.imageMime = s.attachment.mimeType;
-newMsg.imageUrl = s.attachment.preview;
+if (this.state.attachment.isImage) {
+newMsg.image = this.state.attachment.base64;
+newMsg.imageMime = this.state.attachment.mimeType;
+newMsg.imageUrl = this.state.attachment.preview;
 }
 }
 const msgs = [...chat.messages, newMsg];
@@ -1767,13 +1849,61 @@ if (msgs.filter(m => m.role === 'user').length === 1) {
 chat.title = (text || 'Image').slice(0, 30) + ((text || '').length > 30 ? '...' : '');
 }
 chats[chatId] = chat;
-this.setState({ input: '', attachment: null, chats, isBusy: true });
+this.setState({ input: '', attachment: null, chats, pendingLines: [...this.state.pendingLines, text] });
 this.resetTextarea();
 this.persist();
 this.scrollToBottom();
+}
+}
+
+async sendMessage() {
+// Black button: send all pending lines to API
+if (this.state.isBusy) return;
+const preset = this.activePreset;
+if (!preset.key) { this.show('请先设置 API Key'); return; }
+
+const chat = this.currentChat;
+const msgs = chat.messages || [];
+if (msgs.length === 0) return;
+
+// Check if last message is from user
+const lastMsg = msgs[msgs.length - 1];
+if (!lastMsg || lastMsg.role !== 'user') {
+// If input has text, add it first
+const text = (this.state.input || '').trim();
+if (text) {
+this.handleInputKey({ key: 'Enter', shiftKey: false, preventDefault: () => {} });
+// Wait a tick then send
+setTimeout(() => this.sendMessage(), 50);
+return;
+}
+return;
+}
+
+// Also add any remaining input text as a message first
+const remainingText = (this.state.input || '').trim();
+if (remainingText) {
+const chatId = this.state.currentChatId;
+const chats = { ...this.state.chats };
+const chatCopy = { ...chats[chatId] };
+const timestamp = getFixedTimestamp();
+chatCopy.messages = [...chatCopy.messages, {
+role: 'user', text: remainingText, variants: [remainingText], variantIdx: 0, timestamp
+}];
+chatCopy.lastTime = Date.now();
+chats[chatId] = chatCopy;
+this.setState({ input: '', chats });
+this.resetTextarea();
+this.persist();
+}
+
+const chatId = this.state.currentChatId;
+const finalMsgs = this.state.chats[chatId].messages;
+this.setState({ isBusy: true, pendingLines: [] });
+this.scrollToBottom();
 
 try {
-await this._callApi(chatId, msgs);
+await this._callApi(chatId, finalMsgs);
 } catch(e) {
 this.setState({ isBusy: false });
 this.show('Error: ' + e.message);
@@ -1786,7 +1916,10 @@ const sysPrompt = this.buildSystemPrompt();
 let apiMessages;
 
 if (preset.apiType === 'anthropic') {
-apiMessages = msgs.map(m => {
+// Merge consecutive same-role messages
+apiMessages = [];
+for (const m of msgs) {
+const role = m.role === 'user' ? 'user' : 'assistant';
 const content = [];
 if (m.image) {
 content.push({ type: 'image', source: { type: 'base64', media_type: m.imageMime || 'image/jpeg', data: m.image } });
@@ -1796,16 +1929,44 @@ content.push({ type: 'text', text: '[File: ' + m.file.fileName + ']\n' + m.file.
 }
 const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
 if (t) content.push({ type: 'text', text: t });
-return { role: m.role === 'user' ? 'user' : 'assistant', content: content.length === 1 && content[0].type === 'text' ? t : content };
-});
+
+// Merge with previous if same role
+if (apiMessages.length > 0 && apiMessages[apiMessages.length - 1].role === role) {
+const prev = apiMessages[apiMessages.length - 1];
+if (Array.isArray(prev.content)) {
+prev.content = prev.content.concat(content);
 } else {
-apiMessages = msgs.map(m => {
+const prevText = prev.content;
+prev.content = [{ type: 'text', text: prevText }].concat(content);
+}
+} else {
+apiMessages.push({ role, content: content.length === 1 && content[0].type === 'text' ? t : content });
+}
+}
+} else {
+apiMessages = [];
+for (const m of msgs) {
+const role = m.role === 'user' ? 'user' : 'assistant';
 const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
 if (m.image) {
-return { role: m.role === 'user' ? 'user' : 'assistant', content: [{ type: 'image_url', image_url: { url: 'data:' + (m.imageMime || 'image/jpeg') + ';base64,' + m.image } }, { type: 'text', text: t || '' }] };
+const entry = { role, content: [{ type: 'image_url', image_url: { url: 'data:' + (m.imageMime || 'image/jpeg') + ';base64,' + m.image } }, { type: 'text', text: t || '' }] };
+if (apiMessages.length > 0 && apiMessages[apiMessages.length - 1].role === role) {
+const prev = apiMessages[apiMessages.length - 1];
+if (typeof prev.content === 'string') prev.content = [{ type: 'text', text: prev.content }];
+prev.content = prev.content.concat(entry.content);
+} else {
+apiMessages.push(entry);
 }
-return { role: m.role === 'user' ? 'user' : 'assistant', content: t };
-});
+} else {
+if (apiMessages.length > 0 && apiMessages[apiMessages.length - 1].role === role) {
+const prev = apiMessages[apiMessages.length - 1];
+if (typeof prev.content === 'string') prev.content += '\n' + t;
+else prev.content.push({ type: 'text', text: t });
+} else {
+apiMessages.push({ role, content: t });
+}
+}
+}
 }
 
 const headers = { 'Content-Type': 'application/json' };
@@ -1848,18 +2009,33 @@ else if (block.type === 'text') reply += block.text;
 reply = data.choices?.[0]?.message?.content || '';
 }
 
+// Split AI reply by paragraphs into multiple messages (but keep code blocks together)
+const aiMessages = this._splitReplyIntoMessages(reply, thinking);
+
 const timestamp = getFixedTimestamp();
 const chats2 = { ...this.state.chats };
 const chat2 = { ...chats2[chatId] };
-chat2.messages = [...chat2.messages, { role: 'assistant', text: reply, thinking, variants: [reply], variantIdx: 0, timestamp: timestamp }];
+const newMsgs = [...chat2.messages];
+
+for (let i = 0; i < aiMessages.length; i++) {
+newMsgs.push({
+role: 'assistant',
+text: aiMessages[i],
+thinking: i === 0 ? thinking : '',
+variants: [aiMessages[i]],
+variantIdx: 0,
+timestamp: timestamp
+});
+}
+
+chat2.messages = newMsgs;
 chat2.lastTime = Date.now();
 chats2[chatId] = chat2;
 
-// Determine mood from thinking or reply
 let mood = 'idle';
 if (thinking) {
 const t = thinking.toLowerCase();
-if (t.includes('love') || t.includes('❤') || t.includes('想') || t.includes('亲') || t.includes('抱')) mood = 'happy';
+if (t.includes('love') || t.includes('❤') || t.includes('想') || t.includes('亲') || t.includes('抱') || t.includes('宝贝')) mood = 'happy';
 else if (t.includes('worry') || t.includes('concern') || t.includes('担心')) mood = 'thinking';
 else mood = 'happy';
 }
@@ -1867,8 +2043,34 @@ else mood = 'happy';
 this.setState({ chats: chats2, isBusy: false, petState: 'happy', lastThinking: thinking || this.state.lastThinking, kelMood: mood });
 this.persist();
 this.scrollToBottom();
-if (this.state.soundEnabled) { try { new Audio('./notification.mp3').play(); } catch(e) {} }
+
+// Play sound for each message with delay
+for (let i = 0; i < aiMessages.length; i++) {
+if (this.state.soundEnabled) {
+setTimeout(() => { try { new Audio('./notification.mp3').play(); } catch(e) {} }, i * 300);
+}
+}
+
 setTimeout(() => this.setState({ petState: 'idle' }), 3000);
+}
+
+_splitReplyIntoMessages(reply, thinking) {
+if (!reply) return [reply];
+// Contains code block = single message (functional reply)
+if (reply.includes('```')) return [reply];
+// Split by double newline (paragraph level)
+const parts = reply.split(/\n\n+/).map(p => p.trim()).filter(Boolean);
+if (parts.length <= 1) return [reply];
+// Merge tiny parts
+const merged = [];
+for (const part of parts) {
+if (merged.length > 0 && part.length < 15) {
+merged[merged.length - 1] += '\n\n' + part;
+} else {
+merged.push(part);
+}
+}
+return merged.length > 0 ? merged : [reply];
 }
 
 regenerate(msgIdx) {
@@ -1885,78 +2087,7 @@ this._regenerateFrom(chatId, msgs, origMsg);
 
 async _regenerateFrom(chatId, msgs, origMsg) {
 try {
-const preset = this.activePreset;
-const sysPrompt = this.buildSystemPrompt();
-let apiMessages;
-if (preset.apiType === 'anthropic') {
-apiMessages = msgs.map(m => {
-const content = [];
-if (m.image) content.push({ type: 'image', source: { type: 'base64', media_type: m.imageMime || 'image/jpeg', data: m.image } });
-const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
-if (t) content.push({ type: 'text', text: t });
-return { role: m.role === 'user' ? 'user' : 'assistant', content: content.length === 1 && content[0].type === 'text' ? t : content };
-});
-} else {
-apiMessages = msgs.map(m => {
-const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
-return { role: m.role === 'user' ? 'user' : 'assistant', content: t };
-});
-}
-
-const headers = { 'Content-Type': 'application/json' };
-let url = preset.url, body;
-if (preset.apiType === 'anthropic') {
-headers['x-api-key'] = preset.key;
-headers['anthropic-version'] = '2025-04-15';
-url += '/messages';
-body = { model: preset.model, max_tokens: 16384, messages: apiMessages };
-if (sysPrompt) body.system = sysPrompt;
-const model = preset.model || '';
-const supportsThinking = model.includes('claude-3-5-sonnet') || model.includes('claude-sonnet-4') || model.includes('claude-opus') || model.includes('claude-3-7');
-if (supportsThinking) {
-body.thinking = { type: 'enabled', budget_tokens: 10000 };
-body.max_tokens = 16384;
-}
-} else {
-headers['Authorization'] = 'Bearer ' + preset.key;
-url += '/chat/completions';
-body = { model: preset.model, max_tokens: 8192, messages: apiMessages };
-if (sysPrompt) body.messages = [{ role: 'system', content: sysPrompt }, ...body.messages];
-}
-
-const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
-if (!res.ok) throw new Error('API ' + res.status);
-const data = await res.json();
-let reply = '', thinking = '';
-if (preset.apiType === 'anthropic') {
-for (const block of (data.content || [])) {
-if (block.type === 'thinking') thinking += block.thinking;
-else if (block.type === 'text') reply += block.text;
-}
-} else {
-reply = data.choices?.[0]?.message?.content || '';
-}
-
-const timestamp = getFixedTimestamp();
-const chats = { ...this.state.chats };
-const chat = { ...chats[chatId] };
-const variants = origMsg && origMsg.variants ? [...origMsg.variants, reply] : [reply];
-chat.messages = [...msgs, { role: 'assistant', text: reply, thinking, variants, variantIdx: variants.length - 1, timestamp: timestamp }];
-chat.lastTime = Date.now();
-chats[chatId] = chat;
-
-let mood = 'idle';
-if (thinking) {
-const t = thinking.toLowerCase();
-if (t.includes('love') || t.includes('❤') || t.includes('想')) mood = 'happy';
-else mood = 'happy';
-}
-
-this.setState({ chats, isBusy: false, petState: 'happy', lastThinking: thinking || this.state.lastThinking, kelMood: mood });
-this.persist();
-this.scrollToBottom();
-if (this.state.soundEnabled) { try { new Audio('./notification.mp3').play(); } catch(e) {} }
-setTimeout(() => this.setState({ petState: 'idle' }), 3000);
+await this._callApi(chatId, msgs);
 } catch(e) {
 this.setState({ isBusy: false });
 this.show('Error: ' + e.message);
@@ -1968,12 +2099,12 @@ newChat() {
 const id = genId();
 const chats = { ...this.state.chats };
 chats[id] = { id, title: '新对话', messages: [], lastTime: Date.now() };
-this.setState({ currentChatId: id, chats, drawer: false, tab: 'chat', input: '', attachment: null });
+this.setState({ currentChatId: id, chats, drawer: false, tab: 'chat', input: '', attachment: null, pendingLines: [] });
 this.persist();
 }
 
 openChat(id) {
-this.setState({ currentChatId: id, drawer: false, tab: 'chat' });
+this.setState({ currentChatId: id, drawer: false, tab: 'chat', pendingLines: [] });
 this.persist();
 this.scrollToBottom();
 }
@@ -1992,12 +2123,31 @@ this.persist();
 this.show('已删除');
 }
 
-// ====== Export / Import (FIXED: now includes API, persona, style) ======
+// ====== Delete image from message ======
+deleteImageFromMessage(msgIdx) {
+const chatId = this.state.currentChatId;
+const chats = { ...this.state.chats };
+const chat = { ...chats[chatId] };
+const newMsgs = [...chat.messages];
+const msg = { ...newMsgs[msgIdx] };
+delete msg.image;
+delete msg.imageMime;
+delete msg.imageUrl;
+delete msg.file;
+newMsgs[msgIdx] = msg;
+chat.messages = newMsgs;
+chats[chatId] = chat;
+this.setState({ chats });
+this.persist();
+this.show('图片已删除');
+}
+
+// ====== Export / Import ======
 exportData() {
 const s = this.state;
 const exportObj = {
 exportDate: new Date().toISOString(),
-version: '3.0',
+version: '3.1',
 chats: s.chats,
 personas: s.personas,
 activePersonaId: s.activePersonaId,
@@ -2012,6 +2162,7 @@ userAvatar: s.userAvatar,
 aiAvatar: s.aiAvatar,
 customCss: s.customCss,
 customFont: s.customFont,
+activeThemeId: s.activeThemeId,
 avatarSize: s.avatarSize,
 anniversaries: s.anniversaries,
 activeAnnivIdx: s.activeAnnivIdx,
@@ -2059,12 +2210,14 @@ if (data.userAvatar) updates.userAvatar = data.userAvatar;
 if (data.aiAvatar) updates.aiAvatar = data.aiAvatar;
 if (data.customCss) updates.customCss = data.customCss;
 if (data.customFont) updates.customFont = data.customFont;
+if (data.activeThemeId) updates.activeThemeId = data.activeThemeId;
 if (data.avatarSize) updates.avatarSize = data.avatarSize;
 if (data.anniversaries) updates.anniversaries = data.anniversaries;
 if (data.pledges) updates.pledges = data.pledges;
 if (data.diaries) updates.diaries = { ...this.state.diaries, ...data.diaries };
 this.setState(updates, () => {
 this.persist();
+if (updates.activeThemeId) this.applyTheme(updates.activeThemeId);
 this.applyCustomCss();
 this.applyCustomFont();
 });
@@ -2353,16 +2506,26 @@ const isUser = m.role === 'user';
 const isLast = i === msgs.length - 1;
 const variants = m.variants || [m.text];
 const vIdx = m.variantIdx || 0;
-const displayText = variants[vIdx] || m.text;
+const displayText = variants[vIdx] || m.text || '';
 const rendered = renderContent(displayText, isUser);
 const hasThinking = !isUser && !!m.thinking && m.thinking.length > 0;
+
+// Find if this is the last AI message (for showing actions)
+let isLastAi = false;
+if (!isUser) {
+isLastAi = true;
+for (let j = i + 1; j < msgs.length; j++) {
+if (msgs[j].role === 'assistant') { isLastAi = false; break; }
+}
+}
+
 return {
 isUser,
 align: isUser ? 'flex-end' : 'flex-start',
 maxW: isUser ? '82%' : '92%',
 fullW: 'auto',
-bg: isUser ? '#ECEAE4' : '#FFF',
-color: '#2B2620',
+bg: isUser ? 'var(--bg-card, #ECEAE4)' : 'var(--bg-card, #FFF)',
+color: 'var(--text-primary, #2B2620)',
 radius: isUser ? '22px 22px 6px 22px' : '22px 22px 22px 6px',
 pad: '12px 18px',
 gap: '16px',
@@ -2387,9 +2550,15 @@ hasImage: !!m.imageUrl,
 imageUrl: m.imageUrl || '',
 imgJustify: isUser ? 'flex-end' : 'flex-start',
 previewImage: () => self.setState({ imagePreviewOpen: true, imagePreviewUrl: m.imageUrl }),
+longPressImage: (e) => {
+e.preventDefault();
+if (confirm('删除这张图片？')) {
+self.deleteImageFromMessage(i);
+}
+},
 showNormal: s.editIdx !== i,
 showEdit: s.editIdx === i,
-showActions: !isUser && isLast && !s.isBusy,
+showActions: !isUser && isLastAi && !s.isBusy,
 showUserActions: isUser && !s.isBusy,
 variantText: variants.length > 1 ? (vIdx + 1) + ' / ' + variants.length : '1 / 1',
 copy: () => { navigator.clipboard.writeText(displayText).then(() => self.show('已复制')); },
@@ -2433,7 +2602,6 @@ self.setState({ chats }); self.persist();
 }
 }));
 
-// Home recent chats (top 3)
 const homeRecentChats = chatList.slice(0, 3).map(c => ({
 title: c.title || '新对话',
 time: c.lastTime ? new Date(c.lastTime).toLocaleString() : '',
@@ -2444,9 +2612,9 @@ open: () => self.openChat(c.id)
 const apiDraft = s.apiDraft || preset;
 const apiOptions = s.apiPresets.map(p => ({
 title: p.name || 'Untitled', model: p.model || '',
-bg: p.id === s.activePresetId ? '#1A1815' : '#FFF',
+bg: p.id === s.activePresetId ? '#1A1815' : 'var(--bg-card, #FFF)',
 bd: p.id === s.activePresetId ? '#1A1815' : '#E7E3DA',
-fg: p.id === s.activePresetId ? '#F5F3EE' : '#2B2620',
+fg: p.id === s.activePresetId ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
 subFg: p.id === s.activePresetId ? '#D8D3CA' : '#9A958B',
 badgeDisplay: p.isDefault ? 'inline-flex' : 'none',
 badgeBg: '#F2EFE8', badgeFg: '#6B665E',
@@ -2457,9 +2625,9 @@ pick: () => { self.setState({ activePresetId: p.id, apiDraft: { ...p, models: []
 const personaDraft = s.personaDraft || persona;
 const personaOptions = s.personas.map(p => ({
 name: p.name || 'Untitled',
-bg: p.id === s.activePersonaId ? '#1A1815' : '#FFF',
+bg: p.id === s.activePersonaId ? '#1A1815' : 'var(--bg-card, #FFF)',
 bd: p.id === s.activePersonaId ? '#1A1815' : '#E7E3DA',
-fg: p.id === s.activePersonaId ? '#F5F3EE' : '#2B2620',
+fg: p.id === s.activePersonaId ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
 pick: () => { self.setState({ activePersonaId: p.id, personaDraft: { ...p } }); self.persist(); }
 }));
 
@@ -2476,18 +2644,18 @@ del: (e) => { e.stopPropagation(); self.setState({ prompts: s.prompts.filter(x =
 const styleDraft = s.styleDraft || styleObj;
 const styleOptions = s.styles.map(st => ({
 name: st.title || 'Untitled',
-bg: st.id === s.activeStyleId ? '#1A1815' : '#FFF',
+bg: st.id === s.activeStyleId ? '#1A1815' : 'var(--bg-card, #FFF)',
 bd: st.id === s.activeStyleId ? '#1A1815' : '#E7E3DA',
-fg: st.id === s.activeStyleId ? '#F5F3EE' : '#2B2620',
+fg: st.id === s.activeStyleId ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
 pick: () => { self.setState({ activeStyleId: st.id, styleDraft: { ...st } }); self.persist(); }
 }));
 
 // API model options
 const apiModelOptions = (apiDraft.models || []).map(m => ({
 name: m,
-bg: m === apiDraft.model ? '#1A1815' : '#FFF',
+bg: m === apiDraft.model ? '#1A1815' : 'var(--bg-card, #FFF)',
 bd: m === apiDraft.model ? '#1A1815' : '#E7E3DA',
-fg: m === apiDraft.model ? '#F5F3EE' : '#2B2620',
+fg: m === apiDraft.model ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
 pick: () => self.setState({ apiDraft: { ...self.state.apiDraft, model: m } })
 }));
 
@@ -2506,9 +2674,9 @@ del: (e) => { e.stopPropagation(); self.deleteWorldbook(wb.id); }
 const memTagList = ['all', 'core', 'daily', 'monthly', 'general'];
 const memCategoryOptions = memTagList.map(tag => ({
 label: tag === 'all' ? '全部' : tag === 'core' ? '核心' : tag === 'daily' ? '日常' : tag === 'monthly' ? '月度' : '通用',
-bg: s.memFilterTag === tag ? '#1A1815' : '#FFF',
+bg: s.memFilterTag === tag ? '#1A1815' : 'var(--bg-card, #FFF)',
 bd: s.memFilterTag === tag ? '#1A1815' : '#E7E3DA',
-fg: s.memFilterTag === tag ? '#F5F3EE' : '#2B2620',
+fg: s.memFilterTag === tag ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
 pick: () => self.setState({ memFilterTag: tag })
 }));
 
@@ -2526,12 +2694,11 @@ open: () => self.openMemoryEditor(mem.id),
 del: (e) => { e.stopPropagation(); self.deleteMemory(mem.id); }
 }));
 
-// Memory tag options for editor
 const memTagOptions = ['core', 'daily', 'monthly', 'general'].map(tag => ({
 label: tag === 'core' ? '核心' : tag === 'daily' ? '日常' : tag === 'monthly' ? '月度' : '通用',
-bg: s.memEditTag === tag ? '#1A1815' : '#FFF',
+bg: s.memEditTag === tag ? '#1A1815' : 'var(--bg-card, #FFF)',
 bd: s.memEditTag === tag ? '#1A1815' : '#E7E3DA',
-fg: s.memEditTag === tag ? '#F5F3EE' : '#2B2620',
+fg: s.memEditTag === tag ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
 pick: () => self.setState({ memEditTag: tag })
 }));
 
@@ -2543,7 +2710,7 @@ const annivList = (s.anniversaries || []).map((av, idx) => ({
 name: av.name || '纪念日',
 date: av.date || '未设置',
 days: self.getAnnivDays(av.date),
-bd: idx === s.activeAnnivIdx ? '#1A1815' : '#EDE9E0',
+bd: idx === s.activeAnnivIdx ? '#1A1815' : 'var(--border-card, #EDE9E0)',
 pick: () => { self.setState({ activeAnnivIdx: idx }); self.persist(); },
 editBtn: (e) => {
 e.stopPropagation();
@@ -2567,7 +2734,7 @@ hasDate: !!pl.date,
 done: !!pl.done,
 checkBd: pl.done ? '#1A1815' : '#D1CCC2',
 checkBg: pl.done ? '#1A1815' : 'transparent',
-textColor: pl.done ? '#B8B3A8' : '#1A1815',
+textColor: pl.done ? '#B8B3A8' : 'var(--text-primary, #1A1815)',
 textDeco: pl.done ? 'line-through' : 'none',
 toggleDone: () => {
 const pledges = s.pledges.map(p => p.id === pl.id ? { ...p, done: !p.done } : p);
@@ -2595,14 +2762,14 @@ self.setState({ diaries }, () => self.persist());
 }
 }));
 
-// Emoji options for diary sticker picker
+// Emoji options
 const emojiOptions = EMOJI_LIST.map(emoji => {
 const entry = s.diarySelectedDate ? self.getDiaryEntry(s.diarySelectedDate) : {};
 return {
 emoji,
-mineBg: entry.stickerMine === emoji ? '#ECEAE4' : '#FFF',
+mineBg: entry.stickerMine === emoji ? '#ECEAE4' : 'var(--bg-card, #FFF)',
 mineBd: entry.stickerMine === emoji ? '2px solid #1A1815' : '1px solid #E7E3DA',
-kelBg: entry.stickerKel === emoji ? '#ECEAE4' : '#FFF',
+kelBg: entry.stickerKel === emoji ? '#ECEAE4' : 'var(--bg-card, #FFF)',
 kelBd: entry.stickerKel === emoji ? '2px solid #1A1815' : '1px solid #E7E3DA',
 pickMine: () => { self.saveDiaryEntry(s.diarySelectedDate, 'stickerMine', emoji); },
 pickKel: () => { self.saveDiaryEntry(s.diarySelectedDate, 'stickerKel', emoji); }
@@ -2612,21 +2779,63 @@ pickKel: () => { self.saveDiaryEntry(s.diarySelectedDate, 'stickerKel', emoji); 
 // Dynamic Island
 const islandDotColor = s.isBusy ? '#FFB347' : (s.kelMood === 'happy' ? '#7ED87E' : '#9A958B');
 const islandLabel = s.isBusy ? '思考中...' : (s.kelMood === 'happy' ? '开心' : '在线');
-const lastThinkingPreview = (s.lastThinking || '').slice(0, 300) + (s.lastThinking && s.lastThinking.length > 300 ? '...' : '');
+const lastThinkingPreview = (s.lastThinking || '').slice(0, 500) + (s.lastThinking && s.lastThinking.length > 500 ? '...' : '');
 
-// Kel mood emoji for home
 const kelMoodEmoji = s.kelMood === 'happy' ? '🥰' : (s.kelMood === 'thinking' ? '🤔' : '😊');
+
+// Theme options
+const themeOptions = THEME_PRESETS.map(theme => ({
+preview: theme.preview,
+border: s.activeThemeId === theme.id ? '3px solid var(--text-primary, #1A1815)' : '2px solid #E7E3DA',
+isActive: s.activeThemeId === theme.id,
+checkColor: theme.checkColor,
+pick: () => {
+self.setState({ activeThemeId: theme.id });
+self.applyTheme(theme.id);
+self.persist();
+self.show(theme.name);
+customThemeBgBase: (s.customTheme || {}).bgBase || '',
+customThemeBgMain: (s.customTheme || {}).bgMain || '',
+customThemeBgCard: (s.customTheme || {}).bgCard || '',
+customThemeBgInput: (s.customTheme || {}).bgInput || '',
+customThemeBorderCard: (s.customTheme || {}).borderCard || '',
+customThemeBorderInput: (s.customTheme || {}).borderInput || '',
+customThemeTextPrimary: (s.customTheme || {}).textPrimary || '',
+customThemeTextSecondary: (s.customTheme || {}).textSecondary || '',
+customThemeBgBaseChange: (e) => self.setState({ customTheme: { ...s.customTheme, bgBase: e.target.value } }),
+customThemeBgMainChange: (e) => self.setState({ customTheme: { ...s.customTheme, bgMain: e.target.value } }),
+customThemeBgCardChange: (e) => self.setState({ customTheme: { ...s.customTheme, bgCard: e.target.value } }),
+customThemeBgInputChange: (e) => self.setState({ customTheme: { ...s.customTheme, bgInput: e.target.value } }),
+customThemeBorderCardChange: (e) => self.setState({ customTheme: { ...s.customTheme, borderCard: e.target.value } }),
+customThemeBorderInputChange: (e) => self.setState({ customTheme: { ...s.customTheme, borderInput: e.target.value } }),
+customThemeTextPrimaryChange: (e) => self.setState({ customTheme: { ...s.customTheme, textPrimary: e.target.value } }),
+customThemeTextSecondaryChange: (e) => self.setState({ customTheme: { ...s.customTheme, textSecondary: e.target.value } }),
+applyCustomTheme: () => {
+const ct = s.customTheme || {};
+const root = document.documentElement;
+if (ct.bgBase) root.style.setProperty('--bg-base', ct.bgBase);
+if (ct.bgMain) root.style.setProperty('--bg-main', ct.bgMain);
+if (ct.bgCard) root.style.setProperty('--bg-card', ct.bgCard);
+if (ct.bgInput) root.style.setProperty('--bg-input', ct.bgInput);
+if (ct.borderCard) root.style.setProperty('--border-card', ct.borderCard);
+if (ct.borderInput) root.style.setProperty('--border-input', ct.borderInput);
+if (ct.textPrimary) root.style.setProperty('--text-primary', ct.textPrimary);
+if (ct.textSecondary) root.style.setProperty('--text-secondary', ct.textSecondary);
+self.setState({ activeThemeId: 'custom' });
+self.persist();
+self.show('自定义配色已应用');
+},
+}
+}));
 
 return {
 true: true, false: false,
-// Pages
 isChat: s.tab === 'chat',
 isHome: s.tab === 'home',
 isMore: s.tab === 'more',
 isWorldbookPage: s.tab === 'worldbook',
 isMemoryPage: s.tab === 'memory',
 isDiaryPage: s.tab === 'diary',
-// Messages
 messages,
 recentChats,
 homeRecentChats,
@@ -2635,22 +2844,18 @@ currentTime: s.currentTime,
 isBusy: s.isBusy,
 input: s.input,
 editText: s.editText,
-// Attachment
 hasAttachment: !!s.attachment,
 attachmentPreview: s.attachment ? s.attachment.preview : '',
 attachmentIsImage: !!(s.attachment && s.attachment.isImage),
 attachmentFileName: s.attachment ? s.attachment.fileName : '',
-// Active labels
 activeModel: preset.model || 'Not set',
 activeStyle: styleObj.title || 'Default',
 activeCompanion: persona.name || 'Kel',
 personaPreview: (persona.content || '未设置 system prompt').slice(0, 120),
 promptCount: (s.prompts || []).length + ' items',
-// Counts for Home
 totalChats: Object.values(s.chats).filter(c => c.messages && c.messages.length > 0).length,
 totalMemories: s.memories.length,
 kelMoodEmoji: kelMoodEmoji,
-// Anniversary
 annivDisplayName: activeAnnivObj ? (activeAnnivObj.name || '纪念日') : '点击设置',
 annivDisplayDate: activeAnnivObj ? (activeAnnivObj.date || '未设置') : '',
 annivDays: activeAnnivObj ? self.getAnnivDays(activeAnnivObj.date) : '—',
@@ -2659,21 +2864,18 @@ annivEditing: s.annivEditing,
 annivEditName: s.annivEditName,
 annivEditDate: s.annivEditDate,
 isAnnivSheet: s.sheet === 'anniv',
-// Pledges
 pledgeList,
 pledgeSummary: (s.pledges || []).filter(p => !p.done).length + ' 个未完成',
 pledgeEditing: s.pledgeEditing,
 pledgeEditName: s.pledgeEditName || '',
 pledgeEditDate: s.pledgeEditDate || '',
 isPledgesSheet: s.sheet === 'pledges',
-// Worldbook & Memory
 wbList,
 wbListHasItems: s.worldbooks.length > 0,
 memoryList,
 memListHasItems: filteredMemories.length > 0,
 memCategoryOptions,
 memTagOptions,
-// Worldbook editor
 isWorldbookEditorSheet: s.sheet === 'wbEditor',
 wbEditName: s.wbEditName || '',
 wbEditContent: s.wbEditContent || '',
@@ -2682,7 +2884,6 @@ wbEditAlwaysOn: s.wbEditAlwaysOn || false,
 wbEditWeight: s.wbEditWeight || 1,
 wbEditPosBefore: s.wbEditPosition === 'before',
 wbEditPosAfter: s.wbEditPosition === 'after',
-// Memory editor
 isMemoryEditorSheet: s.sheet === 'memEditor',
 memEditName: s.memEditName || '',
 memEditContent: s.memEditContent || '',
@@ -2692,13 +2893,11 @@ memEditWeight: s.memEditWeight || 1,
 memEditTag: s.memEditTag || '',
 memEditPosBefore: s.memEditPosition === 'before',
 memEditPosAfter: s.memEditPosition === 'after',
-// Avatar
 avatarSize: s.avatarSize || 36,
 userAvatar: s.userAvatar || '',
 aiAvatar: s.aiAvatar || '',
 hasUserAvatar: !!s.userAvatar,
 hasAiAvatar: !!s.aiAvatar,
-// Pet
 petGif,
 petSize: this.currentPetSize,
 petEnabled: s.petEnabled,
@@ -2706,7 +2905,6 @@ petStatus: s.petEnabled ? 'On' : 'Off',
 petSizeLabel: this.currentPetSize + 'px',
 soundStatus: s.soundEnabled ? 'On' : 'Off',
 memoryCountLabel: s.memoryCount + ' 条',
-// Overlays
 drawerOpen: s.drawer,
 plusOpen: s.plus,
 profileOpen: s.profile,
@@ -2718,30 +2916,25 @@ isPromptSheet: s.sheet === 'prompt',
 isCssSheet: s.sheet === 'css',
 toastShow: s.toastShow,
 toastText: s.toastText,
-// Dynamic Island
 islandOpen: s.islandOpen,
 islandDotColor,
 islandLabel,
-hasLastThinking: !!(s.lastThinking),
+hasLastThinking: !!(s.lastThinking && s.lastThinking.length > 0),
 lastThinkingPreview,
-// Image preview
 imagePreviewOpen: s.imagePreviewOpen,
 imagePreviewUrl: s.imagePreviewUrl || '',
-// Nav backgrounds
 navChatBg: s.tab === 'chat' ? '#ECEAE4' : 'transparent',
 navHomeBg: s.tab === 'home' ? '#ECEAE4' : 'transparent',
 navWbBg: s.tab === 'worldbook' ? '#ECEAE4' : 'transparent',
 navMemBg: s.tab === 'memory' ? '#ECEAE4' : 'transparent',
 navMoreBg: s.tab === 'more' ? '#ECEAE4' : 'transparent',
 navDiaryBg: s.tab === 'diary' ? '#ECEAE4' : 'transparent',
-// Search
 searchOpen: !!(s.searchQuery && s.searchQuery.trim()),
 searchQuery: s.searchQuery || '',
 searchResults: (s.searchResults || []).map(r => ({
 ...r,
 open: () => self.openSearchResult(r.chatId)
 })),
-// API sheet
 apiOptions,
 apiName: apiDraft.name || '',
 apiModel: apiDraft.model || '',
@@ -2753,29 +2946,25 @@ apiModelOptions,
 apiModelOptionsDisplay: (apiDraft.models || []).length > 0 ? 'flex' : 'none',
 isApiAdvanced: s.apiAdvanced,
 apiAdvancedRot: s.apiAdvanced ? 'rotate(180deg)' : 'rotate(0deg)',
-apiOpenAiBg: apiDraft.apiType === 'openai' ? '#1A1815' : '#FFF',
+apiOpenAiBg: apiDraft.apiType === 'openai' ? '#1A1815' : 'var(--bg-card, #FFF)',
 apiOpenAiBd: apiDraft.apiType === 'openai' ? '#1A1815' : '#E7E3DA',
-apiAnthropicBg: apiDraft.apiType !== 'openai' ? '#1A1815' : '#FFF',
+apiAnthropicBg: apiDraft.apiType !== 'openai' ? '#1A1815' : 'var(--bg-card, #FFF)',
 apiAnthropicBd: apiDraft.apiType !== 'openai' ? '#1A1815' : '#E7E3DA',
-// Persona sheet
 personaOptions,
 personaName: personaDraft.name || '',
 personaContent: personaDraft.content || '',
-// Prompt sheet
 promptOptions,
 showPromptList: !s.promptEditId,
 showPromptEdit: !!s.promptEditId,
 noPrompts: (s.prompts || []).length === 0,
 promptEditName: s.promptEditName || '',
 promptEditContent: s.promptEditContent || '',
-// Style sheet
 styleOptions,
 styleTitle: styleDraft.title || '',
 styleContent: styleDraft.content || '',
-// CSS
 customCss: s.customCss || '',
 customFont: s.customFont || '',
-// Diary
+themeOptions,
 diaryMonthLabel: (() => { const m = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']; return m[s.diaryViewMonth] || ''; })(),
 diaryYearMonth: s.diaryViewYear + '年' + (s.diaryViewMonth + 1) + '月',
 diaryCalendarCells: self.buildCalendarCells(),
@@ -2813,17 +3002,14 @@ navWorldbook: () => self.setState({ tab: 'worldbook', drawer: false }),
 navMemory: () => self.setState({ tab: 'memory', drawer: false }),
 navDiary: () => self.setState({ tab: 'diary', drawer: false }),
 newChat: () => self.newChat(),
-// Input - Enter now only creates newline, no auto-send
 inputChange: (e) => self.setState({ input: e.target.value }),
-inputKey: (e) => {},
+inputKey: (e) => self.handleInputKey(e),
 send: () => self.sendMessage(),
 textareaRef: (el) => self.textareaRef(el),
-// File
 pickImage: () => self.pickImageFile(),
 handleFileSelect: (e) => self.handleFile(e),
 handleImportFile: (e) => self.handleImportFile(e),
 removeAttachment: () => self.setState({ attachment: null }),
-// Edit
 editTextChange: (e) => self.setState({ editText: e.target.value }),
 cancelEdit: () => self.setState({ editIdx: -1 }),
 saveEdit: () => {
@@ -2833,9 +3019,8 @@ const newMsgs = [...c.messages]; const oldMsg = newMsgs[idx];
 newMsgs[idx] = { ...oldMsg, text: s.editText, variants: [s.editText], variantIdx: 0 };
 c.messages = newMsgs.slice(0, idx + 1); chats[s.currentChatId] = c;
 self.setState({ chats, editIdx: -1, input: '' }); self.persist();
-if (oldMsg.role === 'user') { self.setState({ isBusy: true }); self._regenerateFrom(s.currentChatId, c.messages, null); }
+if (oldMsg.role === 'user') { self.setState({ isBusy: true }); self._callApi(s.currentChatId, c.messages).catch(e => { self.setState({ isBusy: false }); self.show('Error: ' + e.message); }); }
 },
-// Sheets
 closeSheet: () => self.setState({ sheet: null, promptEditId: null, annivEditing: false, pledgeEditing: false }),
 openApiSheet: () => self.setState({ sheet: 'api', plus: false, profile: false, apiDraft: { ...preset, models: [] } }),
 openAiSheet: () => self.setState({ sheet: 'ai', plus: false, profile: false, personaDraft: { ...persona } }),
@@ -2843,7 +3028,6 @@ openPromptSheet: () => self.setState({ sheet: 'prompt', plus: false, profile: fa
 openCssSheet: () => self.setState({ sheet: 'css', plus: false, profile: false }),
 openStyle: () => self.setState({ style: true, styleDraft: { ...styleObj } }),
 closeStyle: () => self.setState({ style: false }),
-// Anniversary sheet
 openAnnivSheet: () => self.setState({ sheet: 'anniv', annivEditing: false }),
 addAnniv: () => self.setState({ annivEditing: true, annivEditId: null, annivEditName: '', annivEditDate: '' }),
 annivEditNameChange: (e) => self.setState({ annivEditName: e.target.value }),
@@ -2860,7 +3044,6 @@ annivs = [...s.anniversaries, { id, name: s.annivEditName || '纪念日', date: 
 self.setState({ anniversaries: annivs, annivEditing: false }, () => self.persist());
 self.show('已保存');
 },
-// Pledges sheet
 openPledgesSheet: () => self.setState({ sheet: 'pledges', pledgeEditing: false }),
 addPledge: () => self.setState({ pledgeEditing: true, pledgeEditName: '', pledgeEditDate: '' }),
 pledgeEditNameChange: (e) => self.setState({ pledgeEditName: e.target.value }),
@@ -2871,7 +3054,6 @@ const pledges = [...s.pledges, { id: genId(), name: s.pledgeEditName || '新约�
 self.setState({ pledges, pledgeEditing: false }, () => self.persist());
 self.show('已保存');
 },
-// Worldbook page
 newWorldbook: () => self.openWorldbookEditor(null),
 wbEditNameChange: (e) => self.setState({ wbEditName: e.target.value }),
 wbEditContentChange: (e) => self.setState({ wbEditContent: e.target.value }),
@@ -2881,7 +3063,6 @@ wbEditWeightChange: (e) => self.setState({ wbEditWeight: e.target.value }),
 wbEditSetPosBefore: () => self.setState({ wbEditPosition: 'before' }),
 wbEditSetPosAfter: () => self.setState({ wbEditPosition: 'after' }),
 saveWorldbookEditor: () => self.saveWorldbookEditor(),
-// Memory page
 newMemory: () => self.openMemoryEditor(null),
 memEditNameChange: (e) => self.setState({ memEditName: e.target.value }),
 memEditContentChange: (e) => self.setState({ memEditContent: e.target.value }),
@@ -2894,7 +3075,6 @@ saveMemoryEditor: () => self.saveMemoryEditor(),
 deleteMemoryFromEditor: () => {
 if (s.memEditId) { self.deleteMemory(s.memEditId); self.setState({ sheet: null }); }
 },
-// API actions
 newApiDraft: () => {
 const id = genId();
 const newPreset = { id, name: 'New Preset', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: false };
@@ -2919,7 +3099,6 @@ accessValueChange: (e) => self.setState({ apiDraft: { ...(s.apiDraft || {}), key
 setApiOpenAI: () => self.setState({ apiDraft: { ...(s.apiDraft || {}), apiType: 'openai' } }),
 setApiAnthropic: () => self.setState({ apiDraft: { ...(s.apiDraft || {}), apiType: 'anthropic' } }),
 toggleApiAdvanced: () => self.setState(v => ({ apiAdvanced: !v.apiAdvanced })),
-// Persona actions
 newPersona: () => {
 const id = genId();
 const newP = { id, name: 'New Persona', content: '' };
@@ -2937,7 +3116,6 @@ if (s.personas.length <= 1) { self.show('不能删除最后一个'); return; }
 const personas = s.personas.filter(p => p.id !== s.activePersonaId);
 self.setState({ personas, activePersonaId: personas[0].id, personaDraft: { ...personas[0] }, sheet: null }); self.persist(); self.show('已删除');
 },
-// Prompt actions
 newPrompt: () => { self.setState({ promptEditId: genId(), promptEditName: '', promptEditContent: '' }); },
 promptEditNameChange: (e) => self.setState({ promptEditName: e.target.value }),
 promptEditContentChange: (e) => self.setState({ promptEditContent: e.target.value }),
@@ -2950,7 +3128,6 @@ else { prompts = [...(s.prompts || []), { id, name: s.promptEditName, content: s
 self.setState({ prompts, promptEditId: null }); self.persist(); self.show('已保存');
 },
 cancelPromptEdit: () => self.setState({ promptEditId: null }),
-// Style actions
 styleTitleChange: (e) => self.setState({ styleDraft: { ...(s.styleDraft || {}), title: e.target.value } }),
 styleContentChange: (e) => self.setState({ styleDraft: { ...(s.styleDraft || {}), content: e.target.value } }),
 saveStyle: () => {
@@ -2958,7 +3135,6 @@ const draft = s.styleDraft || {};
 const styles = s.styles.map(st => st.id === s.activeStyleId ? { ...st, title: draft.title || st.title, content: draft.content !== undefined ? draft.content : st.content } : st);
 self.setState({ styles, style: false }); self.persist(); self.show('Style saved');
 },
-// Pet & Sound & Memory count
 togglePet: () => { const next = !s.petEnabled; self.setState({ petEnabled: next }); self.persist(); self.show(next ? '小可出现了' : '小可休息了'); },
 cyclePetSize: () => { const next = (s.petSizeIdx + 1) % self.petSizes.length; self.setState({ petSizeIdx: next }); self.persist(); },
 toggleSound: () => { const next = !s.soundEnabled; self.setState({ soundEnabled: next }); self.persist(); self.show(next ? 'Sound on' : 'Sound off'); },
@@ -2968,19 +3144,15 @@ const idx = options.indexOf(s.memoryCount);
 const next = options[(idx + 1) % options.length];
 self.setState({ memoryCount: next }); self.persist(); self.show('记忆读取: ' + next + ' 条');
 },
-// Export / Import
 exportData: () => self.exportData(),
 importData: () => self.importData(),
-// Avatar & CSS
 pickUserAvatar: () => self.pickUserAvatar(),
 pickAiAvatar: () => self.pickAiAvatar(),
 avatarSizeChange: (e) => { self.setState({ avatarSize: parseInt(e.target.value) || 36 }); self.persist(); },
 customCssChange: (e) => self.setState({ customCss: e.target.value }),
 customFontChange: (e) => self.setState({ customFont: e.target.value }),
 saveCssSettings: () => { self.persist(); self.applyCustomCss(); self.applyCustomFont(); self.setState({ sheet: null }); self.show('样式已保存'); },
-// Search
 searchChange: (e) => { self.setState({ searchQuery: e.target.value }); self.searchChats(e.target.value); },
-// Diary
 diaryPrevMonth: () => {
 let y = s.diaryViewYear, m = s.diaryViewMonth - 1;
 if (m < 0) { m = 11; y--; }
