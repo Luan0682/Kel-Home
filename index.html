@@ -2189,31 +2189,45 @@ throw new Error('API ' + res.status + ': ' + err.slice(0, 200));
 
 const data = await res.json();
 let reply = '', thinking = '';
+
 if (preset.apiType === 'anthropic') {
-for (const block of (data.content || [])) {
-if (block.type === 'thinking') thinking += (block.thinking || block.text || '');
-else if (block.type === 'text') reply += (block.text || '');
-}
+  // 原生 Anthropic 格式（此分支不常用，保留备用）
+  for (const block of (data.content || [])) {
+    if (block.type === 'thinking') thinking += (block.thinking || block.text || '');
+    else if (block.type === 'text') reply += (block.text || '');
+  }
 } else {
+  // ===== OpenAI 兼容模式 =====
   const msg = data.choices?.[0]?.message || {};
   reply = msg.content || '';
-  // 清除 content 中可能包裹的 <thinking> 标签
-reply = reply.replace(/<thinking>[\s\S]*?<\/thinking>/g, '').trim();
-  // 新增：读取 OpenAI 兼容格式下的思维链字段
+
+  // 读取思维链（常用字段）
   if (msg.reasoning_content) {
     thinking = msg.reasoning_content;
   }
-  // 清除 content 中可能包裹的 <thinking> 标签（因为有些网关会把 reasoning 也放进 content）
-  reply = reply.replace(/<thinking>[\s\S]*?<\/thinking>/g, '').trim();
+
+  // ---- 深度清理 reply 中可能混入的 thinking 内容 ----
+  // 1. 移除各种 thinking 标签及其包裹的内容
+  reply = reply.replace(/<thinking[\s\S]*?<\/thinking>/gi, '');
+  reply = reply.replace(/<antThinking[\s\S]*?<\/antThinking>/gi, '');
+  reply = reply.replace(/<reasoning[\s\S]*?<\/reasoning>/gi, '');
+  // 2. 移除单独的 thinking 标签（以防成对缺失）
+  reply = reply.replace(/<\/?(?:thinking|antThinking|reasoning)>/gi, '');
+  // 3. 如果还有类似 "Thinking: " 前缀，也移除（可选）
+  reply = reply.replace(/^Thinking:\s*/i, '');
+  // 4. 最后整体 trim
+  reply = reply.trim();
 }
 
 console.log('[Kel Debug] thinking length:', thinking.length, 'reply length:', reply.length);
 if (thinking) console.log('[Kel Debug] thinking preview:', thinking.slice(0, 100));
+console.log('[Kel Debug] cleaned reply first 200 chars:', reply.slice(0, 200)); // 新增调试
 
-// Apply regex rules to output
+// 应用正则规则（会返回 { text, petState }）
 const regexResult = this.applyRegexRules(reply, 'output');
 reply = regexResult.text;
-const regexPetState = regexResult.petState; // 可能为 null
+const regexPetState = regexResult.petState;
+reply = regexResult.text;
 
 // Split AI reply
 // ===== 按段落分割（用空行 \n\n 分隔），过滤掉空白段落 =====
