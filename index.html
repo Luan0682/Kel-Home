@@ -827,7 +827,6 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
 <div style="width:8px;height:8px;border-radius:50%;background:{{ islandDotColor }};"></div>
 <span style="font-size:14px;font-weight:600;color:#F5F3EE;">Kel 的内心</span>
-<span style="font-size:22px;margin-left:auto;">{{ kelMoodEmoji }}</span>
 </div>
 <sc-if value="{{ hasLastThinking }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="font-size:13px;line-height:1.7;color:#B8B3A8;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;">{{ lastThinkingPreview }}</div>
@@ -2196,7 +2195,12 @@ if (block.type === 'thinking') thinking += (block.thinking || block.text || '');
 else if (block.type === 'text') reply += (block.text || '');
 }
 } else {
-reply = data.choices?.[0]?.message?.content || '';
+  const msg = data.choices?.[0]?.message || {};
+  reply = msg.content || '';
+  // 新增：读取 OpenAI 兼容格式下的思维链字段
+  if (msg.reasoning_content) {
+    thinking = msg.reasoning_content;
+  }
 }
 
 console.log('[Kel Debug] thinking length:', thinking.length, 'reply length:', reply.length);
@@ -2206,48 +2210,70 @@ if (thinking) console.log('[Kel Debug] thinking preview:', thinking.slice(0, 100
 reply = this.applyRegexRules(reply, 'output');
 
 // Split AI reply
-const aiMessages = this._splitReplyIntoMessages(reply, thinking);
+// ===== 按段落分割（用空行 \n\n 分隔），过滤掉空白段落 =====
+const paragraphs = reply.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+// 如果没有任何段落，就把整个回复当作一个段落
+const finalParagraphs = paragraphs.length > 0 ? paragraphs : [reply];
 
 const timestamp = getFixedTimestamp();
-const chats2 = { ...this.state.chats };
-const chat2 = { ...chats2[chatId] };
-const newMsgs = [...chat2.messages];
 
-for (let i = 0; i < aiMessages.length; i++) {
-newMsgs.push({
-role: 'assistant',
-text: aiMessages[i],
-thinking: i === 0 ? thinking : '',
-variants: [aiMessages[i]],
-variantIdx: 0,
-timestamp: timestamp
-});
-}
-
-chat2.messages = newMsgs;
-chat2.lastTime = Date.now();
-chats2[chatId] = chat2;
-
+// 计算心情（基于思维链）
 let mood = 'idle';
 if (thinking) {
-const t = thinking.toLowerCase();
-if (t.includes('love') || t.includes('❤') || t.includes('想') || t.includes('亲') || t.includes('抱') || t.includes('宝贝')) mood = 'happy';
-else if (t.includes('worry') || t.includes('concern') || t.includes('担心')) mood = 'thinking';
-else mood = 'happy';
+  const t = thinking.toLowerCase();
+  if (t.includes('love') || t.includes('❤') || t.includes('想') || t.includes('亲') || t.includes('抱') || t.includes('宝贝')) mood = 'happy';
+  else if (t.includes('worry') || t.includes('concern') || t.includes('担心')) mood = 'thinking';
+  else mood = 'happy';
 }
+const thinkingContent = thinking || this.state.lastThinking || '';
 
-this.setState({ chats: chats2, isBusy: false, petState: 'happy', lastThinking: thinking || this.state.lastThinking, kelMood: mood });
-this.persist();
-this.scrollToBottom();
+// 逐条推送段落（模拟流式），每条间隔 4 秒（因为音效时长 4 秒）
+for (let i = 0; i < finalParagraphs.length; i++) {
+  const text = finalParagraphs[i];
+  // 只有第一条消息携带思维链
+  const msgThinking = (i === 0) ? thinkingContent : '';
 
-// Play sound for each message with delay
-for (let i = 0; i < aiMessages.length; i++) {
+  // ---------- 先播放音效（每条都播放） ----------
   if (this.state.soundEnabled) {
-    setTimeout(() => { try { new Audio('./notification.mp3').play(); } catch(e) {} }, i * 400);
+    try { new Audio('./notification.mp3').play(); } catch(e) {}
+  }
+
+  // 从当前最新状态中读取消息列表，避免覆盖之前推送的内容
+  const currentChat = this.state.chats[chatId];
+  const currentMsgs = [...currentChat.messages];
+
+  currentMsgs.push({
+    role: 'assistant',
+    text: text,
+    thinking: msgThinking,
+    variants: [text],
+    variantIdx: 0,
+    timestamp: timestamp
+  });
+
+  const updatedChat = { ...currentChat, messages: currentMsgs, lastTime: Date.now() };
+  const updatedChats = { ...this.state.chats, [chatId]: updatedChat };
+
+  // 更新状态：最后一条推送完后才把 isBusy 置为 false
+  this.setState({
+    chats: updatedChats,
+    petState: (i === 0 ? 'happy' : this.state.petState),
+    lastThinking: thinkingContent,
+    kelMood: mood,
+    isBusy: (i < finalParagraphs.length - 1) // 不是最后一条时保持 busy
+  });
+  this.persist();
+  this.scrollToBottom();
+
+  // 段落之间间隔 4000ms（4 秒），让音效完整播放完毕
+  if (i < finalParagraphs.length - 1) {
+    await new Promise(resolve => setTimeout(resolve, 4000));
   }
 }
 
-setTimeout(() => this.setState({ petState: 'idle' }), 3000);
+// 全部推送完毕，确保 isBusy 为 false，并让小人恢复 idle
+this.setState({ isBusy: false });
+setTimeout(() => this.setState({ petState: 'idle' }), 800);
 }
 
 _splitReplyIntoMessages(reply, thinking) {
@@ -2740,7 +2766,12 @@ let reply = '';
 if (preset.apiType === 'anthropic') {
 for (const block of (data.content || [])) { if (block.type === 'text') reply += block.text; }
 } else {
-reply = data.choices?.[0]?.message?.content || '';
+  const msg = data.choices?.[0]?.message || {};
+  reply = msg.content || '';
+  // 新增：读取 OpenAI 兼容格式下的思维链字段
+  if (msg.reasoning_content) {
+    thinking = msg.reasoning_content;
+  }
 }
 if (reply) this.addDiaryComment('kel', reply);
 } catch(e) {
