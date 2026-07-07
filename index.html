@@ -31,6 +31,8 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 @keyframes slideIn { from{opacity:0;transform:translateX(16px)} to{opacity:1;transform:none} }
 @keyframes slideInLeft { from{transform:translateX(-100%)} to{transform:none} }
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:none} }
+@keyframes breathe { 0%,100%{box-shadow:0 0 4px rgba(26,24,21,.15)} 50%{box-shadow:0 0 12px rgba(26,24,21,.35)} }
+@keyframes pulseGlow { 0%,100%{opacity:.6} 50%{opacity:1} }
 </style>
 </helmet>
 
@@ -52,6 +54,13 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <img src="./uploads/feather.svg" width="22" height="20" style="flex:none;display:block;" alt=""><span style="font-size:13.5px;font-weight:600;color:#3A362F;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ activeStyle }}</span>
 </button>
 </div>
+
+<!-- Dynamic Island Capsule -->
+<button onClick="{{ toggleIsland }}" style="height:36px;min-width:80px;max-width:160px;border-radius:20px;background:#1A1815;border:none;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 14px;cursor:pointer;animation:breathe 3s ease-in-out infinite;">
+<div style="width:7px;height:7px;border-radius:50%;background:{{ islandDotColor }};animation:pulseGlow 2s ease-in-out infinite;"></div>
+<span style="font-size:12px;color:#D8D3CA;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;">{{ islandLabel }}</span>
+</button>
+
 <div style="display:flex;align-items:center;gap:9px;">
 <button onClick="{{ newChat }}" style="width:40px;height:40px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
@@ -80,7 +89,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;">
 <div style="max-width:{{ m.maxW }};width:{{ m.fullW }};">
 
-<!-- thinking -->
+<!-- thinking block -->
 <sc-if value="{{ m.hasThink }}" hint-placeholder-val="{{ false }}">
 <div style="margin-bottom:14px;">
   <button onClick="{{ m.toggleThink }}" style="display:flex;align-items:center;gap:10px;width:100%;border:none;background:transparent;padding:4px 0;cursor:pointer;font-family:inherit;text-align:left;">
@@ -89,37 +98,46 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
     <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.45;transform:{{ m.thinkRot }};transition:transform .2s;"><path d="M9 6l6 6-6 6" stroke="#B8B3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
   <sc-if value="{{ m.thinkOpen }}" hint-placeholder-val="{{ false }}">
-    <div style="margin-top:6px;padding:12px 14px;background:#F2EFE8;border-radius:12px;font-size:13px;line-height:1.7;color:#6B665E;white-space:pre-wrap;word-break:break-word;border-left:3px solid #D1CCC2;max-height:300px;overflow-y:auto;">{{ m.thinkContent }}</div>
+    <div class="sa" style="margin-top:6px;padding:12px 14px;background:#F2EFE8;border-radius:12px;font-size:13px;line-height:1.7;color:#6B665E;white-space:pre-wrap;word-break:break-word;border-left:3px solid #D1CCC2;max-height:300px;overflow-y:auto;">{{ m.thinkContent }}</div>
   </sc-if>
 </div>
 </sc-if>
 
-<!-- User avatar -->
+<!-- User avatar + fixed timestamp -->
 <sc-if value="{{ m.showUserAvatar }}" hint-placeholder-val="{{ false }}">
 <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:6px;">
-<span style="font-size:11px;color:#B8B3A8;">{{ currentTime }}</span>
+<span style="font-size:11px;color:#B8B3A8;">{{ m.timestamp }}</span>
 <img src="{{ userAvatar }}" style="width:{{ avatarSize }}px;height:{{ avatarSize }}px;border-radius:50%;object-fit:cover;" alt="">
 </div>
 </sc-if>
 
-<!-- AI avatar + time -->
+<!-- AI avatar + fixed timestamp -->
 <sc-if value="{{ m.showAiAvatar }}" hint-placeholder-val="{{ false }}">
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
 <img src="{{ aiAvatar }}" style="width:{{ avatarSize }}px;height:{{ avatarSize }}px;border-radius:50%;object-fit:cover;" alt="">
-<span style="font-size:11px;color:#B8B3A8;">{{ currentTime }}</span>
+<span style="font-size:11px;color:#B8B3A8;">{{ m.timestamp }}</span>
+</div>
+</sc-if>
+
+<!-- timestamp if no avatar -->
+<sc-if value="{{ m.showTimestampOnly }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;justify-content:{{ m.tsAlign }};margin-bottom:4px;">
+<span style="font-size:11px;color:#B8B3A8;">{{ m.timestamp }}</span>
 </div>
 </sc-if>
 
 <!-- image attachment -->
 <sc-if value="{{ m.hasImage }}" hint-placeholder-val="{{ false }}">
-<div style="margin-bottom:10px;">
-<img src="{{ m.imageUrl }}" style="max-width:100%;max-height:280px;border-radius:14px;object-fit:cover;" alt="attachment">
+<div style="margin-bottom:10px;display:flex;justify-content:{{ m.imgJustify }};">
+<div style="position:relative;width:160px;height:160px;border-radius:14px;overflow:hidden;cursor:pointer;" onClick="{{ m.previewImage }}">
+<img src="{{ m.imageUrl }}" style="width:100%;height:100%;object-fit:cover;" alt="attachment">
+</div>
 </div>
 </sc-if>
 
 <!-- message body: normal -->
 <sc-if value="{{ m.showNormal }}" hint-placeholder-val="{{ true }}">
-<div style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:{{ m.pad }};font-size:16px;line-height:1.75;letter-spacing:-0.008em;white-space:pre-wrap;word-break:break-word;">{{ m.text }}</div>
+<div style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:{{ m.pad }};font-size:16px;line-height:1.75;letter-spacing:-0.008em;word-break:break-word;" innerHTML="{{ m.rendered }}"></div>
 </sc-if>
 <!-- message body: edit mode -->
 <sc-if value="{{ m.showEdit }}" hint-placeholder-val="{{ false }}">
@@ -199,7 +217,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 <div style="background:#FBFAF7;border:1px solid #E7E3DA;border-radius:26px;padding:14px 17px 8px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
-<textarea value="{{ input }}" onInput="{{ inputChange }}" onKeyDown="{{ inputKey }}" placeholder="发送消息..." rows="1" style="display:block;width:100%;min-height:32px;max-height:calc(80vh - 180px);border:none;background:transparent;resize:none;outline:none;font-family:inherit;font-size:16px;line-height:1.6;color:#2B2620;padding:4px 4px 6px;font-weight:300;overflow-y:auto;" ref="{{ textareaRef }}"></textarea>
+<textarea value="{{ input }}" onInput="{{ inputChange }}" placeholder="发送消息..." rows="1" style="display:block;width:100%;min-height:32px;max-height:calc(80vh - 180px);border:none;background:transparent;resize:none;outline:none;font-family:inherit;font-size:16px;line-height:1.6;color:#2B2620;padding:4px 4px 6px;font-weight:300;overflow-y:auto;" ref="{{ textareaRef }}"></textarea>
 <div style="display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:9px;">
 <button onClick="{{ togglePlus }}" style="width:32px;height:32px;border-radius:50%;background:#F2EFE8;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -253,11 +271,11 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="font-size:13px;color:#6B665E;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">{{ personaPreview }}</div>
 </div>
 
-<!-- countdown -->
-<div onClick="{{ openAnniv }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<!-- Anniversary card with multiple anniversaries -->
+<div onClick="{{ openAnnivSheet }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div>
-<div style="font-size:15px;font-weight:500;color:#1A1815;">纪念日</div>
-<div style="font-size:13px;color:#B8B3A8;margin-top:4px;">{{ annivDate }}</div>
+<div style="font-size:15px;font-weight:500;color:#1A1815;">{{ annivDisplayName }}</div>
+<div style="font-size:13px;color:#B8B3A8;margin-top:4px;">{{ annivDisplayDate }}</div>
 </div>
 <div style="display:flex;align-items:baseline;gap:3px;">
 <span style="font-family:'Newsreader',serif;font-size:38px;font-weight:400;color:#1A1815;line-height:1;letter-spacing:-.02em;">{{ annivDays }}</span>
@@ -265,19 +283,28 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </div>
 
-<!-- status row -->
+<!-- Promises/Pledges card -->
+<div onClick="{{ openPledgesSheet }}" style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div>
+<div style="font-size:15px;font-weight:500;color:#1A1815;">约定</div>
+<div style="font-size:13px;color:#B8B3A8;margin-top:4px;">{{ pledgeSummary }}</div>
+</div>
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+
+<!-- status row - revised -->
 <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:22px;">
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
 <div style="font-size:11px;color:#B8B3A8;font-weight:500;">Chats</div>
 <div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">{{ totalChats }}</div>
 </div>
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
-<div style="font-size:11px;color:#B8B3A8;font-weight:500;">世界书</div>
-<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">{{ totalWorldbooks }}</div>
+<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Memories</div>
+<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">{{ totalMemories }}</div>
 </div>
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
-<div style="font-size:11px;color:#B8B3A8;font-weight:500;">日记</div>
-<div style="font-family:'Newsreader',serif;font-size:22px;color:#1A1815;margin-top:6px;">{{ totalDiaries }}</div>
+<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Kel 心情</div>
+<div style="font-size:22px;margin-top:6px;">{{ kelMoodEmoji }}</div>
 </div>
 </div>
 
@@ -353,7 +380,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 
 <!-- About -->
-<div style="text-align:center;padding:20px 0;font-size:12px;color:#B8B3A8;">Kel Home · v2.0</div>
+<div style="text-align:center;padding:20px 0;font-size:12px;color:#B8B3A8;">Kel Home · v3.0</div>
 </div>
 </sc-if>
 
@@ -369,7 +396,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 
 <div style="padding:6px 0 20px;display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:10px;">
-<span style="font-size:24px;">📁</span>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11Z" stroke="#1A1815" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">世界书</div>
 </div>
 <button onClick="{{ newWorldbook }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
@@ -380,7 +407,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ wb.open }}">
 <div style="display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
-<span style="font-size:18px;">📁</span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex:none;"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11Z" stroke="#9A958B" stroke-width="1.5"/></svg>
 <span style="font-size:16px;font-weight:500;color:#1A1815;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ wb.name }}</span>
 <span style="font-size:11px;color:#9A958B;background:#F2EFE8;border-radius:8px;padding:2px 8px;flex:none;">{{ wb.triggerCount }} 触发</span>
 <span style="font-size:11px;color:#9A958B;background:{{ wb.activeBg }};border-radius:8px;padding:2px 8px;flex:none;">{{ wb.activeLabel }}</span>
@@ -440,9 +467,12 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:20px;">
 <sc-for list="{{ diaryCalendarCells }}" as="cell" hint-placeholder-count="35">
 <div onClick="{{ cell.tap }}" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px;cursor:{{ cell.cursor }};background:{{ cell.bg }};border:{{ cell.border }};position:relative;min-height:40px;">
-<span style="font-size:14px;font-weight:{{ cell.fw }};color:{{ cell.color }};">{{ cell.day }}</span>
-<sc-if value="{{ cell.hasSticker }}" hint-placeholder-val="{{ false }}">
-<span style="font-size:10px;position:absolute;bottom:2px;">{{ cell.sticker }}</span>
+<span style="font-size:13px;font-weight:{{ cell.fw }};color:{{ cell.color }};line-height:1;">{{ cell.day }}</span>
+<sc-if value="{{ cell.hasStickers }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;gap:1px;position:absolute;bottom:2px;">
+<span style="font-size:8px;">{{ cell.stickerMine }}</span>
+<span style="font-size:8px;">{{ cell.stickerKel }}</span>
+</div>
 </sc-if>
 <sc-if value="{{ cell.hasDot }}" hint-placeholder-val="{{ false }}">
 <div style="width:4px;height:4px;border-radius:50%;background:#9A958B;position:absolute;bottom:4px;"></div>
@@ -456,8 +486,29 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="margin-bottom:16px;">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
 <div style="font-size:16px;font-weight:600;color:#1A1815;">{{ diarySelectedLabel }}</div>
-<button onClick="{{ diarySetSticker }}" style="border:none;background:#FFF;border-radius:14px;padding:6px 12px;font-size:13px;color:#6B665E;cursor:pointer;border:1px solid #EDE9E0;">{{ diaryStickerBtnLabel }}</button>
+<button onClick="{{ diaryOpenStickerPicker }}" style="border:none;background:#FFF;border-radius:14px;padding:6px 12px;font-size:13px;color:#6B665E;cursor:pointer;border:1px solid #EDE9E0;">{{ diaryStickerBtnLabel }}</button>
 </div>
+
+<!-- Emoji picker popup -->
+<sc-if value="{{ diaryStickerPickerOpen }}" hint-placeholder-val="{{ false }}">
+<div style="background:#FFF;border:1px solid #EDE9E0;border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,.08);">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:8px;">我的心情</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+<sc-for list="{{ emojiOptions }}" as="em" hint-placeholder-count="16">
+<button onClick="{{ em.pickMine }}" style="width:36px;height:36px;border-radius:10px;border:{{ em.mineBd }};background:{{ em.mineBg }};display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;">{{ em.emoji }}</button>
+</sc-for>
+</div>
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:8px;">Kel 的心情</div>
+<div style="display:flex;flex-wrap:wrap;gap:8px;">
+<sc-for list="{{ emojiOptions }}" as="em" hint-placeholder-count="16">
+<button onClick="{{ em.pickKel }}" style="width:36px;height:36px;border-radius:10px;border:{{ em.kelBd }};background:{{ em.kelBg }};display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;">{{ em.emoji }}</button>
+</sc-for>
+</div>
+<div style="display:flex;justify-content:flex-end;margin-top:10px;">
+<button onClick="{{ diaryCloseStickerPicker }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:14px;padding:6px 14px;font-size:13px;font-family:inherit;cursor:pointer;">完成</button>
+</div>
+</div>
+</sc-if>
 
 <!-- My diary card -->
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;">
@@ -486,7 +537,7 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 
 <!-- Kel's diary card -->
-<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;">
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
 <div style="display:flex;align-items:center;gap:8px;">
 <sc-if value="{{ hasAiAvatar }}" hint-placeholder-val="{{ false }}">
@@ -510,6 +561,31 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <div style="font-size:14px;line-height:1.7;color:#3A362F;white-space:pre-wrap;word-break:break-word;min-height:30px;">{{ diaryKelDisplay }}</div>
 </sc-if>
 </div>
+
+<!-- Comments section -->
+<div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;">
+<div style="font-size:14px;font-weight:600;color:#1A1815;margin-bottom:12px;">评论区</div>
+<sc-for list="{{ diaryComments }}" as="dc" hint-placeholder-count="0">
+<div style="display:flex;gap:10px;margin-bottom:12px;">
+<img src="{{ dc.avatar }}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;flex:none;" alt="">
+<div style="flex:1;">
+<div style="display:flex;align-items:center;gap:6px;">
+<span style="font-size:13px;font-weight:600;color:#1A1815;">{{ dc.name }}</span>
+<span style="font-size:11px;color:#B8B3A8;">{{ dc.time }}</span>
+</div>
+<div style="font-size:13px;color:#3A362F;line-height:1.6;margin-top:3px;">{{ dc.text }}</div>
+</div>
+<button onClick="{{ dc.del }}" style="border:none;background:transparent;cursor:pointer;opacity:.3;flex:none;padding:0;">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
+</button>
+</div>
+</sc-for>
+<div style="display:flex;gap:8px;align-items:flex-end;">
+<textarea value="{{ diaryCommentText }}" onInput="{{ diaryCommentInput }}" placeholder="写评论..." rows="1" style="flex:1;border:1px solid #E7E3DA;outline:none;background:#F7F5F0;border-radius:14px;padding:8px 12px;font-family:inherit;font-size:13px;color:#1A1815;resize:none;min-height:36px;"></textarea>
+<button onClick="{{ diaryAddComment }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:14px;padding:8px 12px;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;">发送</button>
+<button onClick="{{ diaryAskKelComment }}" style="border:none;background:#F2EFE8;color:#3A362F;border-radius:14px;padding:8px 12px;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;">召唤Kel</button>
+</div>
+</div>
 </div>
 </sc-if>
 
@@ -526,31 +602,36 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 <div style="padding:6px 0 20px;display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:10px;">
-<span style="font-size:24px;">📓</span>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#1A1815" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#1A1815;letter-spacing:-.01em;">记忆</div>
 </div>
 <button onClick="{{ newMemory }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
 </div>
+
+<!-- Memory category filter -->
+<div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:14px;">
+<sc-for list="{{ memCategoryOptions }}" as="mc" hint-placeholder-count="4">
+<button onClick="{{ mc.pick }}" style="flex:none;border:1px solid {{ mc.bd }};background:{{ mc.bg }};border-radius:16px;padding:6px 14px;font-size:13px;color:{{ mc.fg }};font-family:inherit;cursor:pointer;">{{ mc.label }}</button>
+</sc-for>
+</div>
+
 <sc-if value="{{ memListHasItems }}" hint-placeholder-val="{{ true }}">
 <sc-for list="{{ memoryList }}" as="mem" hint-placeholder-count="3">
 <div style="background:#FFF;border:1px solid #EDE9E0;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ mem.open }}">
 <div style="display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
-<span style="font-size:18px;">📓</span>
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex:none;"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span style="font-size:15px;font-weight:500;color:#1A1815;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ mem.name }}</span>
 <span style="font-size:11px;color:#9A958B;background:#F2EFE8;border-radius:8px;padding:2px 8px;flex:none;">{{ mem.tag }}</span>
 <span style="font-size:11px;color:#9A958B;background:{{ mem.activeBg }};border-radius:8px;padding:2px 8px;flex:none;">{{ mem.activeLabel }}</span>
 </div>
-<button onClick="{{ mem.del }}" style="border:none;background:transparent;padding:0;cursor:pointer;opacity:.35;flex:none;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
-</button>
 </div>
 <div style="font-size:13px;color:#6B665E;margin-top:6px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ mem.preview }}</div>
 </div>
 </sc-for>
 </sc-if>
 <sc-if value="{{ !memListHasItems }}" hint-placeholder-val="{{ false }}">
-<div style="text-align:center;padding:50px 0;color:#B8B3A8;font-size:14px;">还没有记忆，点击「AI 总结」从对话生成</div>
+<div style="text-align:center;padding:50px 0;color:#B8B3A8;font-size:14px;">还没有记忆，点击右上角新建</div>
 </sc-if>
 </div>
 </sc-if>
@@ -580,11 +661,11 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <span>Home</span>
 </div>
 <div onClick="{{ navWorldbook }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navWbBg }};">
-<span style="font-size:18px;width:20px;text-align:center;">📁</span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11Z" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span>世界书</span>
 </div>
 <div onClick="{{ navMemory }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navMemBg }};">
-<span style="font-size:18px;width:20px;text-align:center;">🗒</span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span>记忆</span>
 </div>
 <div onClick="{{ navDiary }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:#1A1815;cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navDiaryBg }};">
@@ -674,6 +755,36 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </div>
 </div>
+</div>
+</sc-if>
+
+<!-- Dynamic Island popup -->
+<sc-if value="{{ islandOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:180;">
+<div onClick="{{ toggleIsland }}" style="position:absolute;inset:0;background:rgba(0,0,0,.12);animation:fadeIn .15s ease both;"></div>
+<div style="position:absolute;top:70px;left:20px;right:20px;background:#1A1815;border-radius:20px;padding:18px 20px;box-shadow:0 8px 30px rgba(0,0,0,.25);animation:fadeUp .2s ease both;">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
+<div style="width:8px;height:8px;border-radius:50%;background:{{ islandDotColor }};"></div>
+<span style="font-size:14px;font-weight:600;color:#F5F3EE;">Kel 的内心</span>
+<span style="font-size:22px;margin-left:auto;">{{ kelMoodEmoji }}</span>
+</div>
+<sc-if value="{{ hasLastThinking }}" hint-placeholder-val="{{ false }}">
+<div class="sa" style="font-size:13px;line-height:1.7;color:#B8B3A8;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;">{{ lastThinkingPreview }}</div>
+</sc-if>
+<sc-if value="{{ !hasLastThinking }}" hint-placeholder-val="{{ true }}">
+<div style="font-size:13px;color:#6B665E;">还没有思考记录...</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<!-- Image preview overlay -->
+<sc-if value="{{ imagePreviewOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:400;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;animation:fadeIn .15s ease both;" onClick="{{ closeImagePreview }}">
+<img src="{{ imagePreviewUrl }}" style="max-width:95%;max-height:90%;object-fit:contain;border-radius:8px;" alt="">
+<button onClick="{{ closeImagePreview }}" style="position:absolute;top:16px;right:16px;width:36px;height:36px;border-radius:50%;background:rgba(255,255,255,.15);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#FFF" stroke-width="2" stroke-linecap="round"/></svg>
+</button>
 </div>
 </sc-if>
 
@@ -771,7 +882,10 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
 <span style="font-size:16px;font-weight:600;color:#1A1815;">编辑记忆</span>
+<div style="display:flex;gap:8px;">
+<button onClick="{{ deleteMemoryFromEditor }}" style="border:none;background:#FFF;color:#9A958B;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;border:1px solid #EDE9E0;">删除</button>
 <button onClick="{{ saveMemoryEditor }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
+</div>
 </div>
 <div style="background:#FFF;border-radius:16px;overflow:hidden;border:1px solid #EDE9E0;padding:16px;">
 <div style="margin-bottom:14px;">
@@ -786,10 +900,14 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 <span>权重</span>
 <input value="{{ memEditWeight }}" onInput="{{ memEditWeightChange }}" type="number" min="0" max="10" step="0.5" style="width:50px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 6px;font-family:inherit;font-size:13px;text-align:center;">
 </label>
-<label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-<span>标签</span>
-<input value="{{ memEditTag }}" onInput="{{ memEditTagChange }}" placeholder="标签" style="width:80px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 8px;font-family:inherit;font-size:13px;">
-</label>
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">分类</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<sc-for list="{{ memTagOptions }}" as="mt" hint-placeholder-count="5">
+<button onClick="{{ mt.pick }}" style="border:1px solid {{ mt.bd }};background:{{ mt.bg }};color:{{ mt.fg }};border-radius:14px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;">{{ mt.label }}</button>
+</sc-for>
+</div>
 </div>
 <div style="display:flex;gap:12px;margin-bottom:14px;">
 <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
@@ -812,7 +930,113 @@ body { background:#d6d2c8; padding:env(safe-area-inset-top, 0) 0 0 0; }
 </div>
 </sc-if>
 
-<!-- plus sheet (simplified) -->
+<!-- Anniversary Sheet -->
+<sc-if value="{{ isAnnivSheet }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:270;">
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:85%;overflow-y:auto;">
+<div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button>
+<span style="font-size:16px;font-weight:600;color:#1A1815;">纪念日</span>
+<button onClick="{{ addAnniv }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
+</div>
+<sc-for list="{{ annivList }}" as="av" hint-placeholder-count="2">
+<div style="background:#FFF;border:1px solid {{ av.bd }};border-radius:18px;padding:14px 16px;margin-bottom:10px;cursor:pointer;" onClick="{{ av.pick }}">
+<div style="display:flex;align-items:center;justify-content:space-between;">
+<div style="flex:1;min-width:0;">
+<div style="font-size:15px;font-weight:500;color:#1A1815;">{{ av.name }}</div>
+<div style="font-size:13px;color:#B8B3A8;margin-top:2px;">{{ av.date }}</div>
+</div>
+<div style="display:flex;align-items:center;gap:8px;">
+<span style="font-family:'Newsreader',serif;font-size:24px;color:#1A1815;">{{ av.days }}</span>
+<span style="font-size:12px;color:#9A958B;">days</span>
+<button onClick="{{ av.editBtn }}" style="border:none;background:transparent;cursor:pointer;opacity:.4;padding:4px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#48453E" stroke-width="1.5"/></svg>
+</button>
+<button onClick="{{ av.del }}" style="border:none;background:transparent;cursor:pointer;opacity:.4;padding:4px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
+</button>
+</div>
+</div>
+</div>
+</sc-for>
+<!-- Edit anniv inline -->
+<sc-if value="{{ annivEditing }}" hint-placeholder-val="{{ false }}">
+<div style="background:#FFF;border:1px solid #EDE9E0;border-radius:16px;padding:16px;margin-top:10px;">
+<div style="margin-bottom:10px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
+<input value="{{ annivEditName }}" onInput="{{ annivEditNameChange }}" placeholder="纪念日名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
+</div>
+<div style="margin-bottom:10px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">日期 (YYYY-MM-DD)</div>
+<input value="{{ annivEditDate }}" onInput="{{ annivEditDateChange }}" placeholder="2025-01-01" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
+</div>
+<div style="display:flex;gap:8px;justify-content:flex-end;">
+<button onClick="{{ annivCancelEdit }}" style="padding:7px 14px;border:1px solid #DDD8CE;background:#FFF;border-radius:14px;font-size:13px;font-family:inherit;color:#6B665E;cursor:pointer;">取消</button>
+<button onClick="{{ annivSaveEdit }}" style="padding:7px 14px;border:none;background:#1A1815;border-radius:14px;font-size:13px;font-family:inherit;color:#F5F3EE;cursor:pointer;">保存</button>
+</div>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<!-- Pledges Sheet -->
+<sc-if value="{{ isPledgesSheet }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:270;">
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;background:#F5F3EE;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:85%;overflow-y:auto;">
+<div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button>
+<span style="font-size:16px;font-weight:600;color:#1A1815;">约定</span>
+<button onClick="{{ addPledge }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
+</div>
+<sc-for list="{{ pledgeList }}" as="pl" hint-placeholder-count="0">
+<div style="background:#FFF;border:1px solid #EDE9E0;border-radius:18px;padding:14px 16px;margin-bottom:10px;">
+<div style="display:flex;align-items:flex-start;gap:10px;">
+<button onClick="{{ pl.toggleDone }}" style="width:22px;height:22px;border-radius:6px;border:1.5px solid {{ pl.checkBd }};background:{{ pl.checkBg }};display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;margin-top:1px;">
+<sc-if value="{{ pl.done }}" hint-placeholder-val="{{ false }}">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="#FFF" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</sc-if>
+</button>
+<div style="flex:1;min-width:0;">
+<div style="font-size:15px;color:{{ pl.textColor }};text-decoration:{{ pl.textDeco }};">{{ pl.name }}</div>
+<sc-if value="{{ pl.hasDate }}" hint-placeholder-val="{{ false }}">
+<div style="font-size:12px;color:#B8B3A8;margin-top:2px;">{{ pl.date }}</div>
+</sc-if>
+</div>
+<button onClick="{{ pl.del }}" style="border:none;background:transparent;cursor:pointer;opacity:.35;padding:4px;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
+</button>
+</div>
+</div>
+</sc-for>
+<!-- Add pledge inline -->
+<sc-if value="{{ pledgeEditing }}" hint-placeholder-val="{{ false }}">
+<div style="background:#FFF;border:1px solid #EDE9E0;border-radius:16px;padding:16px;margin-top:10px;">
+<div style="margin-bottom:10px;">
+<input value="{{ pledgeEditName }}" onInput="{{ pledgeEditNameChange }}" placeholder="约定内容" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
+</div>
+<div style="margin-bottom:10px;">
+<input value="{{ pledgeEditDate }}" onInput="{{ pledgeEditDateChange }}" placeholder="截止日期 (可选)" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
+</div>
+<div style="display:flex;gap:8px;justify-content:flex-end;">
+<button onClick="{{ pledgeCancelEdit }}" style="padding:7px 14px;border:1px solid #DDD8CE;background:#FFF;border-radius:14px;font-size:13px;font-family:inherit;color:#6B665E;cursor:pointer;">取消</button>
+<button onClick="{{ pledgeSaveEdit }}" style="padding:7px 14px;border:none;background:#1A1815;border-radius:14px;font-size:13px;font-family:inherit;color:#F5F3EE;cursor:pointer;">保存</button>
+</div>
+</div>
+</sc-if>
+</div>
+</div>
+</sc-if>
+
+<!-- plus sheet -->
 <sc-if value="{{ plusOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:200;">
 <div onClick="{{ togglePlus }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
@@ -1117,6 +1341,10 @@ const s = String(now.getSeconds()).padStart(2,'0');
 return y + '.' + mo + '.' + d + ' ' + h + ':' + mi + ':' + s;
 }
 
+function getFixedTimestamp() {
+return getCurrentTime();
+}
+
 function buildMemorySummary(chats, currentChatId, count) {
 const chatList = Object.values(chats)
 .filter(c => c.id !== currentChatId && c.messages && c.messages.length > 0)
@@ -1132,6 +1360,40 @@ summary += role + ': ' + text.slice(0, 500) + (text.length > 500 ? '...' : '') +
 }
 return summary.trim();
 }
+
+// Render markdown-like content to HTML with code blocks
+function renderContent(text, isUser) {
+if (!text) return '';
+// Escape HTML first
+let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// Code blocks
+html = html.replace(/```(\w*)\n([\s\S]*?)```/g, function(match, lang, code) {
+const langLabel = lang || 'code';
+return '<div style="position:relative;background:#1A1815;border-radius:12px;margin:8px 0;overflow:hidden;">' +
+'<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.06);">' +
+'<span style="font-size:11px;color:#9A958B;">' + langLabel + '</span>' +
+'<button onclick="navigator.clipboard.writeText(this.parentElement.nextElementSibling.innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="border:none;background:rgba(255,255,255,.1);color:#D8D3CA;border-radius:8px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;">Copy</button>' +
+'</div>' +
+'<pre style="margin:0;padding:12px 14px;overflow-x:auto;font-family:\'SF Mono\',\'Fira Code\',monospace;font-size:13px;line-height:1.6;color:#E8E4DC;white-space:pre;">' + code + '</pre></div>';
+});
+// Inline code
+html = html.replace(/`([^`]+)`/g, '<code style="background:#ECEAE4;padding:2px 6px;border-radius:5px;font-family:\'SF Mono\',monospace;font-size:14px;">$1</code>');
+// Bold
+html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+// Italic
+html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+// Newlines (but not inside code blocks)
+if (!html.includes('<pre')) {
+html = html.replace(/\n/g, '<br>');
+} else {
+// Only replace newlines outside of pre blocks
+const parts = html.split(/(<div style="position:relative[\s\S]*?<\/div>)/);
+html = parts.map(p => p.startsWith('<div style="position:relative') ? p : p.replace(/\n/g, '<br>')).join('');
+}
+return html;
+}
+
+const EMOJI_LIST = ['😊','😢','😡','🥰','😴','🤔','✨','🌧️','☀️','🌈','💪','😭','🎉','💕','😤','🫠'];
 
 class Component extends DCLogic {
 constructor(props) {
@@ -1156,6 +1418,7 @@ memEditAlwaysOn: false,
 memEditWeight: 1,
 memEditPosition: 'before',
 memEditTag: '',
+memFilterTag: 'all',
 tab: 'chat',
 sub: null,
 memory: false,
@@ -1201,7 +1464,19 @@ customFont: saved.customFont || '',
 searchOpen: false,
 searchQuery: '',
 searchResults: [],
-annivDate: saved.annivDate || '',
+// Anniversary - now supports multiple
+anniversaries: saved.anniversaries || [],
+activeAnnivIdx: saved.activeAnnivIdx || 0,
+annivEditing: false,
+annivEditId: null,
+annivEditName: '',
+annivEditDate: '',
+// Pledges
+pledges: saved.pledges || [],
+pledgeEditing: false,
+pledgeEditName: '',
+pledgeEditDate: '',
+// Diary
 currentTime: getCurrentTime(),
 diaries: saved.diaries || {},
 diaryViewYear: new Date().getFullYear(),
@@ -1210,13 +1485,25 @@ diarySelectedDate: null,
 diaryMineEdit: false,
 diaryMineText: '',
 diaryKelEdit: false,
-diaryKelText: ''
+diaryKelText: '',
+diaryStickerPickerOpen: false,
+diaryCommentText: '',
+// Dynamic Island
+islandOpen: false,
+lastThinking: saved.lastThinking || '',
+kelMood: saved.kelMood || 'idle',
+// Image preview
+imagePreviewOpen: false,
+imagePreviewUrl: ''
 };
+// Migrate old annivDate to anniversaries
+if (saved.annivDate && (!saved.anniversaries || saved.anniversaries.length === 0)) {
+this.state.anniversaries = [{ id: genId(), name: '纪念日', date: saved.annivDate }];
+}
 if (!this.state.chats[this.state.currentChatId]) {
 this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
 }
 setTimeout(() => { this.applyCustomCss(); this.applyCustomFont(); }, 100);
-// 实时时钟
 this._clockTimer = setInterval(() => {
 this.setState({ currentTime: getCurrentTime() });
 }, 1000);
@@ -1225,6 +1512,7 @@ this.setState({ currentTime: getCurrentTime() });
 textareaRef(el) {
 if (el && !el._listener) {
 el._listener = true;
+this._textareaEl = el;
 const adjust = () => {
 el.style.height = 'auto';
 const maxHeight = window.innerHeight * 0.8 - 180;
@@ -1233,6 +1521,14 @@ el.style.overflowY = el.scrollHeight > maxHeight ? 'auto' : 'hidden';
 };
 el.addEventListener('input', adjust);
 setTimeout(adjust, 50);
+}
+}
+
+resetTextarea() {
+if (this._textareaEl) {
+this._textareaEl.style.height = 'auto';
+this._textareaEl.style.height = '32px';
+this._textareaEl.style.overflowY = 'hidden';
 }
 }
 
@@ -1266,6 +1562,10 @@ return this.state.styles.find(st => st.id === this.state.activeStyleId) || this.
 get petSizes() { return [32, 48, 64, 80, 96]; }
 get currentPetSize() { return this.petSizes[this.state.petSizeIdx] || 48; }
 
+get activeAnniv() {
+return this.state.anniversaries[this.state.activeAnnivIdx] || this.state.anniversaries[0] || null;
+}
+
 persist() {
 const s = this.state;
 saveData({
@@ -1289,8 +1589,12 @@ userAvatar: s.userAvatar,
 aiAvatar: s.aiAvatar,
 customCss: s.customCss,
 customFont: s.customFont,
-annivDate: s.annivDate,
-diaries: s.diaries
+anniversaries: s.anniversaries,
+activeAnnivIdx: s.activeAnnivIdx,
+pledges: s.pledges,
+diaries: s.diaries,
+lastThinking: s.lastThinking,
+kelMood: s.kelMood
 });
 }
 
@@ -1328,9 +1632,7 @@ weight: parseFloat(s.wbEditWeight) || 1,
 position: s.wbEditPosition || 'before'
 };
 let worldbooks = [...s.worldbooks.filter(w => w.id !== newWb.id), newWb];
-this.setState({ worldbooks, sheet: null }, () => {
-this.persist();
-});
+this.setState({ worldbooks, sheet: null }, () => { this.persist(); });
 this.show('世界书已保存');
 }
 
@@ -1352,7 +1654,7 @@ memEditTriggers: mem ? (mem.triggers || []).join('\n') : '',
 memEditAlwaysOn: mem ? !!mem.alwaysOn : false,
 memEditWeight: mem ? mem.weight : 1,
 memEditPosition: mem ? mem.position : 'before',
-memEditTag: mem ? mem.tag : ''
+memEditTag: mem ? (mem.tag || 'general') : 'general'
 });
 }
 
@@ -1368,12 +1670,10 @@ alwaysOn: s.memEditAlwaysOn,
 weight: parseFloat(s.memEditWeight) || 1,
 position: s.memEditPosition || 'before',
 tag: s.memEditTag || 'general',
-createdAt: Date.now()
+updatedAt: Date.now()
 };
 let memories = [...s.memories.filter(m => m.id !== newMem.id), newMem];
-this.setState({ memories, sheet: null }, () => {
-this.persist();
-});
+this.setState({ memories, sheet: null }, () => { this.persist(); });
 this.show('记忆已保存');
 }
 
@@ -1388,57 +1688,38 @@ buildSystemPrompt() {
 let sys = '';
 const persona = this.activePersona;
 if (persona.content) sys += persona.content + '\n\n';
-  
-// Worldbooks - always-on entries
 const alwaysOnWb = this.state.worldbooks.filter(w => w.alwaysOn && w.content);
 if (alwaysOnWb.length > 0) {
 sys += '## Worldbook\n';
-for (const wb of alwaysOnWb) {
-sys += '[' + wb.name + ']\n' + wb.content + '\n\n';
+for (const wb of alwaysOnWb) { sys += '[' + wb.name + ']\n' + wb.content + '\n\n'; }
 }
-}
-  
-// Worldbooks - triggered entries
 const msgs = this.currentChat.messages;
 const lastMsgs = msgs.slice(-5).map(m => (m.text || '').toLowerCase()).join(' ');
 const triggeredWb = this.state.worldbooks.filter(w => !w.alwaysOn && w.triggers && w.triggers.length > 0);
 for (const wb of triggeredWb) {
 for (const trigger of wb.triggers) {
 if (trigger && lastMsgs.includes(trigger.toLowerCase())) {
-sys += '[Triggered WB: ' + wb.name + ']\n' + wb.content + '\n\n';
-break;
+sys += '[Triggered WB: ' + wb.name + ']\n' + wb.content + '\n\n'; break;
 }
 }
 }
-  
-// Memories - always-on
 const alwaysOnMem = this.state.memories.filter(m => m.alwaysOn && m.content);
 if (alwaysOnMem.length > 0) {
 sys += '## Memories\n';
-for (const mem of alwaysOnMem) {
-sys += '[' + mem.name + ']\n' + mem.content + '\n\n';
+for (const mem of alwaysOnMem) { sys += '[' + mem.name + ']\n' + mem.content + '\n\n'; }
 }
-}
-  
-// Memories - triggered
 const triggeredMem = this.state.memories.filter(m => !m.alwaysOn && m.triggers && m.triggers.length > 0);
 for (const mem of triggeredMem) {
 for (const trigger of mem.triggers) {
 if (trigger && lastMsgs.includes(trigger.toLowerCase())) {
-sys += '[Triggered Memory: ' + mem.name + ']\n' + mem.content + '\n\n';
-break;
+sys += '[Triggered Memory: ' + mem.name + ']\n' + mem.content + '\n\n'; break;
 }
 }
 }
-  
-// Style
 const style = this.activeStyleObj;
 if (style.content) sys += '## Style: ' + style.title + '\n' + style.content + '\n\n';
-  
-// Memory summary from previous chat
 const memorySummary = buildMemorySummary(this.state.chats, this.state.currentChatId, this.state.memoryCount);
 if (memorySummary) sys += '## Context Memory\n' + memorySummary + '\n\n';
-  
 return sys.trim();
 }
 
@@ -1455,11 +1736,13 @@ const chatId = this.state.currentChatId;
 const chats = { ...this.state.chats };
 const chat = { ...chats[chatId] };
 const s = this.state;
+const timestamp = getFixedTimestamp();
 const newMsg = {
 role: 'user',
 text: text || '[File: ' + (s.attachment?.fileName || 'attachment') + ']',
 variants: [text || '[File: ' + (s.attachment?.fileName || 'attachment') + ']'],
-variantIdx: 0
+variantIdx: 0,
+timestamp: timestamp
 };
 if (s.attachment) {
 newMsg.file = {
@@ -1485,6 +1768,7 @@ chat.title = (text || 'Image').slice(0, 30) + ((text || '').length > 30 ? '...' 
 }
 chats[chatId] = chat;
 this.setState({ input: '', attachment: null, chats, isBusy: true });
+this.resetTextarea();
 this.persist();
 this.scrollToBottom();
 
@@ -1534,9 +1818,8 @@ headers['anthropic-version'] = '2025-04-15';
 url += '/messages';
 body = { model: preset.model, max_tokens: 16384, messages: apiMessages };
 if (sysPrompt) body.system = sysPrompt;
-// Extended thinking - only for supported models
 const model = preset.model || '';
-const supportsThinking = model.includes('claude-3-5-sonnet') || model.includes('claude-sonnet-4') || model.includes('claude-opus');
+const supportsThinking = model.includes('claude-3-5-sonnet') || model.includes('claude-sonnet-4') || model.includes('claude-opus') || model.includes('claude-3-7');
 if (supportsThinking) {
 body.thinking = { type: 'enabled', budget_tokens: 10000 };
 body.max_tokens = 16384;
@@ -1558,7 +1841,6 @@ const data = await res.json();
 let reply = '', thinking = '';
 if (preset.apiType === 'anthropic') {
 for (const block of (data.content || [])) {
-console.log('API response blocks:', JSON.stringify(data.content?.map(b => b.type)));
 if (block.type === 'thinking') thinking += block.thinking;
 else if (block.type === 'text') reply += block.text;
 }
@@ -1566,12 +1848,23 @@ else if (block.type === 'text') reply += block.text;
 reply = data.choices?.[0]?.message?.content || '';
 }
 
+const timestamp = getFixedTimestamp();
 const chats2 = { ...this.state.chats };
 const chat2 = { ...chats2[chatId] };
-chat2.messages = [...chat2.messages, { role: 'assistant', text: reply, thinking, variants: [reply], variantIdx: 0 }];
+chat2.messages = [...chat2.messages, { role: 'assistant', text: reply, thinking, variants: [reply], variantIdx: 0, timestamp: timestamp }];
 chat2.lastTime = Date.now();
 chats2[chatId] = chat2;
-this.setState({ chats: chats2, isBusy: false, petState: 'happy' });
+
+// Determine mood from thinking or reply
+let mood = 'idle';
+if (thinking) {
+const t = thinking.toLowerCase();
+if (t.includes('love') || t.includes('❤') || t.includes('想') || t.includes('亲') || t.includes('抱')) mood = 'happy';
+else if (t.includes('worry') || t.includes('concern') || t.includes('担心')) mood = 'thinking';
+else mood = 'happy';
+}
+
+this.setState({ chats: chats2, isBusy: false, petState: 'happy', lastThinking: thinking || this.state.lastThinking, kelMood: mood });
 this.persist();
 this.scrollToBottom();
 if (this.state.soundEnabled) { try { new Audio('./notification.mp3').play(); } catch(e) {} }
@@ -1619,7 +1912,7 @@ url += '/messages';
 body = { model: preset.model, max_tokens: 16384, messages: apiMessages };
 if (sysPrompt) body.system = sysPrompt;
 const model = preset.model || '';
-const supportsThinking = model.includes('claude-3-5-sonnet') || model.includes('claude-sonnet-4') || model.includes('claude-opus');
+const supportsThinking = model.includes('claude-3-5-sonnet') || model.includes('claude-sonnet-4') || model.includes('claude-opus') || model.includes('claude-3-7');
 if (supportsThinking) {
 body.thinking = { type: 'enabled', budget_tokens: 10000 };
 body.max_tokens = 16384;
@@ -1637,7 +1930,6 @@ const data = await res.json();
 let reply = '', thinking = '';
 if (preset.apiType === 'anthropic') {
 for (const block of (data.content || [])) {
-console.log('API response blocks:', JSON.stringify(data.content?.map(b => b.type)));
 if (block.type === 'thinking') thinking += block.thinking;
 else if (block.type === 'text') reply += block.text;
 }
@@ -1645,13 +1937,22 @@ else if (block.type === 'text') reply += block.text;
 reply = data.choices?.[0]?.message?.content || '';
 }
 
+const timestamp = getFixedTimestamp();
 const chats = { ...this.state.chats };
 const chat = { ...chats[chatId] };
 const variants = origMsg && origMsg.variants ? [...origMsg.variants, reply] : [reply];
-chat.messages = [...msgs, { role: 'assistant', text: reply, thinking, variants, variantIdx: variants.length - 1 }];
+chat.messages = [...msgs, { role: 'assistant', text: reply, thinking, variants, variantIdx: variants.length - 1, timestamp: timestamp }];
 chat.lastTime = Date.now();
 chats[chatId] = chat;
-this.setState({ chats, isBusy: false, petState: 'happy' });
+
+let mood = 'idle';
+if (thinking) {
+const t = thinking.toLowerCase();
+if (t.includes('love') || t.includes('❤') || t.includes('想')) mood = 'happy';
+else mood = 'happy';
+}
+
+this.setState({ chats, isBusy: false, petState: 'happy', lastThinking: thinking || this.state.lastThinking, kelMood: mood });
 this.persist();
 this.scrollToBottom();
 if (this.state.soundEnabled) { try { new Audio('./notification.mp3').play(); } catch(e) {} }
@@ -1691,12 +1992,12 @@ this.persist();
 this.show('已删除');
 }
 
-// ====== Export / Import ======
+// ====== Export / Import (FIXED: now includes API, persona, style) ======
 exportData() {
 const s = this.state;
 const exportObj = {
 exportDate: new Date().toISOString(),
-version: '2.0',
+version: '3.0',
 chats: s.chats,
 personas: s.personas,
 activePersonaId: s.activePersonaId,
@@ -1705,14 +2006,19 @@ memories: s.memories,
 styles: s.styles,
 activeStyleId: s.activeStyleId,
 prompts: s.prompts,
-apiPresets: s.apiPresets.map(p => ({ ...p, key: '***' })),
+apiPresets: s.apiPresets,
+activePresetId: s.activePresetId,
 userAvatar: s.userAvatar,
 aiAvatar: s.aiAvatar,
 customCss: s.customCss,
 customFont: s.customFont,
 avatarSize: s.avatarSize,
-annivDate: s.annivDate,
-diaries: s.diaries
+anniversaries: s.anniversaries,
+activeAnnivIdx: s.activeAnnivIdx,
+pledges: s.pledges,
+diaries: s.diaries,
+lastThinking: s.lastThinking,
+kelMood: s.kelMood
 };
 const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
 const url = URL.createObjectURL(blob);
@@ -1738,615 +2044,861 @@ const reader = new FileReader();
 reader.onload = () => {
 try {
 const data = JSON.parse(reader.result);
-if (data.chats) this.setState({ chats: { ...this.state.chats, ...data.chats } });
-if (data.worldbooks) this.setState({ worldbooks: [...this.state.worldbooks, ...data.worldbooks.filter(w => !this.state.worldbooks.find(x => x.id === w.id))] });
-if (data.memories) this.setState({ memories: [...this.state.memories, ...data.memories.filter(m => !this.state.memories.find(x => x.id === m.id))] });
-if (data.personas) this.setState({ personas: [...this.state.personas, ...data.personas.filter(p => !this.state.personas.find(x => x.id === p.id))] });
-if (data.styles) this.setState({ styles: [...this.state.styles, ...data.styles.filter(s => !this.state.styles.find(x => x.id === s.id))] });
-if (data.prompts) this.setState({ prompts: [...this.state.prompts, ...data.prompts.filter(p => !this.state.prompts.find(x => x.id === p.id))] });
-if (data.userAvatar) this.setState({ userAvatar: data.userAvatar });
-      if (data.aiAvatar) this.setState({ aiAvatar: data.aiAvatar });
-      if (data.customCss) this.setState({ customCss: data.customCss });
-      if (data.customFont) this.setState({ customFont: data.customFont });
-      if (data.avatarSize) this.setState({ avatarSize: data.avatarSize });
-      if (data.annivDate) this.setState({ annivDate: data.annivDate });
-      if (data.diaries) this.setState({ diaries: { ...this.state.diaries, ...data.diaries } });
-      this.persist();
-      this.applyCustomCss();
-      this.applyCustomFont();
-      this.show('导入成功！');
-    } catch(err) {
-      this.show('导入失败: ' + err.message);
-    }
-  };
-  reader.readAsText(file);
-  e.target.value = '';
+const updates = {};
+if (data.chats) updates.chats = { ...this.state.chats, ...data.chats };
+if (data.worldbooks) updates.worldbooks = [...this.state.worldbooks, ...data.worldbooks.filter(w => !this.state.worldbooks.find(x => x.id === w.id))];
+if (data.memories) updates.memories = [...this.state.memories, ...data.memories.filter(m => !this.state.memories.find(x => x.id === m.id))];
+if (data.personas) updates.personas = [...this.state.personas, ...data.personas.filter(p => !this.state.personas.find(x => x.id === p.id))];
+if (data.styles) updates.styles = [...this.state.styles, ...data.styles.filter(s => !this.state.styles.find(x => x.id === s.id))];
+if (data.prompts) updates.prompts = [...this.state.prompts, ...data.prompts.filter(p => !this.state.prompts.find(x => x.id === p.id))];
+if (data.apiPresets) updates.apiPresets = [...this.state.apiPresets, ...data.apiPresets.filter(p => !this.state.apiPresets.find(x => x.id === p.id))];
+if (data.activePresetId) updates.activePresetId = data.activePresetId;
+if (data.activePersonaId) updates.activePersonaId = data.activePersonaId;
+if (data.activeStyleId) updates.activeStyleId = data.activeStyleId;
+if (data.userAvatar) updates.userAvatar = data.userAvatar;
+if (data.aiAvatar) updates.aiAvatar = data.aiAvatar;
+if (data.customCss) updates.customCss = data.customCss;
+if (data.customFont) updates.customFont = data.customFont;
+if (data.avatarSize) updates.avatarSize = data.avatarSize;
+if (data.anniversaries) updates.anniversaries = data.anniversaries;
+if (data.pledges) updates.pledges = data.pledges;
+if (data.diaries) updates.diaries = { ...this.state.diaries, ...data.diaries };
+this.setState(updates, () => {
+this.persist();
+this.applyCustomCss();
+this.applyCustomFont();
+});
+this.show('导入成功！');
+} catch(err) {
+this.show('导入失败: ' + err.message);
+}
+};
+reader.readAsText(file);
+e.target.value = '';
 }
 
 // ====== File Handling ======
 pickImageFile() {
-  const input = document.getElementById('kelFileInput');
-  if (input) input.click();
+const input = document.getElementById('kelFileInput');
+if (input) input.click();
 }
 
 handleFile(e) {
-  const file = e.target.files && e.target.files[0];
-  if (!file) return;
-  const maxSize = 20 * 1024 * 1024;
-  if (file.size > maxSize) { this.show('文件超过 20MB'); return; }
-  const isImage = file.type.startsWith('image/');
-  const textExts = ['.txt', '.html', '.htm', '.md', '.json', '.csv', '.xml'];
-  const isText = textExts.some(ext => file.name.toLowerCase().endsWith(ext));
-  const reader = new FileReader();
-  if (isImage || isText) {
-    reader.onload = () => {
-      const result = reader.result;
-      const base64 = isImage ? result.split(',')[1] : btoa(unescape(encodeURIComponent(result)));
-      this.setState({
-        attachment: { base64, mimeType: file.type || 'application/octet-stream', preview: isImage ? result : null, fileName: file.name, fileSize: file.size, isImage, isText, textContent: isText ? result : null },
-        plus: false
-      });
-    };
-    if (isImage) reader.readAsDataURL(file);
-    else reader.readAsText(file);
-  } else {
-    reader.onload = () => {
-      const base64 = reader.result.split(',')[1];
-      this.setState({
-        attachment: { base64, mimeType: file.type || 'application/octet-stream', preview: null, fileName: file.name, fileSize: file.size, isImage: false, isText: false, textContent: null },
-        plus: false
-      });
-    };
-    reader.readAsDataURL(file);
-  }
-  e.target.value = '';
+const file = e.target.files && e.target.files[0];
+if (!file) return;
+const maxSize = 20 * 1024 * 1024;
+if (file.size > maxSize) { this.show('文件超过 20MB'); return; }
+const isImage = file.type.startsWith('image/');
+const textExts = ['.txt', '.html', '.htm', '.md', '.json', '.csv', '.xml'];
+const isText = textExts.some(ext => file.name.toLowerCase().endsWith(ext));
+const reader = new FileReader();
+if (isImage || isText) {
+reader.onload = () => {
+const result = reader.result;
+const base64 = isImage ? result.split(',')[1] : btoa(unescape(encodeURIComponent(result)));
+this.setState({
+attachment: { base64, mimeType: file.type || 'application/octet-stream', preview: isImage ? result : null, fileName: file.name, fileSize: file.size, isImage, isText, textContent: isText ? result : null },
+plus: false
+});
+};
+if (isImage) reader.readAsDataURL(file);
+else reader.readAsText(file);
+} else {
+reader.onload = () => {
+const base64 = reader.result.split(',')[1];
+this.setState({
+attachment: { base64, mimeType: file.type || 'application/octet-stream', preview: null, fileName: file.name, fileSize: file.size, isImage: false, isText: false, textContent: null },
+plus: false
+});
+};
+reader.readAsDataURL(file);
+}
+e.target.value = '';
 }
 
 // ====== Avatars ======
 pickUserAvatar() {
-  const input = document.createElement('input');
-  input.type = 'file'; input.accept = 'image/*';
-  input.onchange = (e) => {
-    const file = e.target.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => { this.setState({ userAvatar: reader.result }); this.persist(); this.show('头像已更新'); };
-    reader.readAsDataURL(file);
-  };
-  input.click();
+const input = document.createElement('input');
+input.type = 'file'; input.accept = 'image/*';
+input.onchange = (e) => {
+const file = e.target.files[0]; if (!file) return;
+const reader = new FileReader();
+reader.onload = () => { this.setState({ userAvatar: reader.result }); this.persist(); this.show('头像已更新'); };
+reader.readAsDataURL(file);
+};
+input.click();
 }
 
 pickAiAvatar() {
-  const input = document.createElement('input');
-  input.type = 'file'; input.accept = 'image/*';
-  input.onchange = (e) => {
-    const file = e.target.files[0]; if (!file) return;
-    const reader = new FileReader();
-    reader.onload = () => { this.setState({ aiAvatar: reader.result }); this.persist(); this.show('AI 头像已更新'); };
-    reader.readAsDataURL(file);
-  };
-  input.click();
+const input = document.createElement('input');
+input.type = 'file'; input.accept = 'image/*';
+input.onchange = (e) => {
+const file = e.target.files[0]; if (!file) return;
+const reader = new FileReader();
+reader.onload = () => { this.setState({ aiAvatar: reader.result }); this.persist(); this.show('AI 头像已更新'); };
+reader.readAsDataURL(file);
+};
+input.click();
 }
 
 // ====== CSS ======
 applyCustomCss() {
-  let el = document.getElementById('kel-custom-css');
-  if (!el) { el = document.createElement('style'); el.id = 'kel-custom-css'; document.head.appendChild(el); }
-  el.textContent = this.state.customCss || '';
+let el = document.getElementById('kel-custom-css');
+if (!el) { el = document.createElement('style'); el.id = 'kel-custom-css'; document.head.appendChild(el); }
+el.textContent = this.state.customCss || '';
 }
 
 applyCustomFont() {
-  const font = this.state.customFont;
-  if (font) { document.body.style.fontFamily = font + ", -apple-system, 'Noto Sans SC', sans-serif"; }
-  else { document.body.style.fontFamily = ''; }
+const font = this.state.customFont;
+if (font) { document.body.style.fontFamily = font + ", -apple-system, 'Noto Sans SC', sans-serif"; }
+else { document.body.style.fontFamily = ''; }
 }
 
 // ====== Search ======
 searchChats(query) {
-  if (!query.trim()) { this.setState({ searchResults: [] }); return; }
-  const q = query.toLowerCase();
-  const results = [];
-  const chats = Object.values(this.state.chats);
-  for (const chat of chats) {
-    if (!chat.messages) continue;
-    for (let i = 0; i < chat.messages.length; i++) {
-      const m = chat.messages[i];
-      const text = (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text || '';
-      if (text.toLowerCase().includes(q)) {
-        results.push({ chatId: chat.id, chatTitle: chat.title || '新对话', msgIdx: i, snippet: text.slice(0, 120) });
-        if (results.length >= 30) break;
-      }
-    }
-    if (results.length >= 30) break;
-  }
-  this.setState({ searchResults: results });
+if (!query.trim()) { this.setState({ searchResults: [] }); return; }
+const q = query.toLowerCase();
+const results = [];
+const chats = Object.values(this.state.chats);
+for (const chat of chats) {
+if (!chat.messages) continue;
+for (let i = 0; i < chat.messages.length; i++) {
+const m = chat.messages[i];
+const text = (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text || '';
+if (text.toLowerCase().includes(q)) {
+results.push({ chatId: chat.id, chatTitle: chat.title || '新对话', msgIdx: i, snippet: text.slice(0, 120) });
+if (results.length >= 30) break;
+}
+}
+if (results.length >= 30) break;
+}
+this.setState({ searchResults: results });
 }
 
 openSearchResult(chatId) {
-  this.setState({ currentChatId: chatId, tab: 'chat', drawer: false, searchQuery: '', searchResults: [] });
-  this.persist();
-  this.scrollToBottom();
+this.setState({ currentChatId: chatId, tab: 'chat', drawer: false, searchQuery: '', searchResults: [] });
+this.persist();
+this.scrollToBottom();
 }
 
 // ====== Models Fetch ======
 async fetchModels() {
-  const draft = this.state.apiDraft || this.activePreset;
-  if (!draft.key || !draft.url) { this.show('Need URL and Key first'); return; }
-  try {
-    const headers = {};
-    let url = draft.url + '/models';
-    if (draft.apiType === 'anthropic') {
-      headers['x-api-key'] = draft.key;
-      headers['anthropic-version'] = '2025-04-15';
-    } else {
-      headers['Authorization'] = 'Bearer ' + draft.key;
-    }
-    const res = await fetch(url, { headers });
-    if (!res.ok) throw new Error('Failed ' + res.status);
-    const data = await res.json();
-    const models = (data.data || data.models || []).map(m => m.id || m.name || m).filter(Boolean);
-    if (models.length === 0) { this.show('No models found'); return; }
-    this.setState({ apiDraft: { ...(this.state.apiDraft || draft), models } });
-    this.show(models.length + ' models loaded');
-  } catch(e) {
-    this.show('Error: ' + e.message);
-  }
+const draft = this.state.apiDraft || this.activePreset;
+if (!draft.key || !draft.url) { this.show('Need URL and Key first'); return; }
+try {
+const headers = {};
+let url = draft.url + '/models';
+if (draft.apiType === 'anthropic') {
+headers['x-api-key'] = draft.key;
+headers['anthropic-version'] = '2025-04-15';
+} else {
+headers['Authorization'] = 'Bearer ' + draft.key;
 }
-
-// ====== Diary ======
-getDiaryKey(dateStr) {
-  return dateStr; // format: 'YYYY-MM-DD'
+const res = await fetch(url, { headers });
+if (!res.ok) throw new Error('Failed ' + res.status);
+const data = await res.json();
+const models = (data.data || data.models || []).map(m => m.id || m.name || m).filter(Boolean);
+if (models.length === 0) { this.show('No models found'); return; }
+this.setState({ apiDraft: { ...(this.state.apiDraft || draft), models } });
+this.show(models.length + ' models loaded');
+} catch(e) {
+this.show('Error: ' + e.message);
 }
-
-getDiaryEntry(dateStr) {
-  return this.state.diaries[dateStr] || { mine: '', kel: '', sticker: '' };
-}
-
-saveDiaryEntry(dateStr, field, value) {
-  const diaries = { ...this.state.diaries };
-  if (!diaries[dateStr]) diaries[dateStr] = { mine: '', kel: '', sticker: '' };
-  diaries[dateStr] = { ...diaries[dateStr], [field]: value };
-  this.setState({ diaries }, () => this.persist());
-}
-
-diarySelectDate(dateStr) {
-  const entry = this.getDiaryEntry(dateStr);
-  this.setState({
-    diarySelectedDate: dateStr,
-    diaryMineEdit: false,
-    diaryMineText: entry.mine || '',
-    diaryKelEdit: false,
-    diaryKelText: entry.kel || ''
-  });
-}
-
-buildCalendarCells() {
-  const year = this.state.diaryViewYear;
-  const month = this.state.diaryViewMonth;
-  const firstDay = new Date(year, month, 1).getDay();
-  const daysInMonth = new Date(year, month + 1, 0).getDate();
-  const today = new Date();
-  const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
-  const selectedStr = this.state.diarySelectedDate;
-  const cells = [];
-  const self = this;
-
-  // Empty cells before first day
-  for (let i = 0; i < firstDay; i++) {
-    cells.push({ day: '', cursor: 'default', bg: 'transparent', border: 'none', color: 'transparent', fw: '400', hasSticker: false, sticker: '', hasDot: false, tap: () => {} });
-  }
-
-  for (let d = 1; d <= daysInMonth; d++) {
-    const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
-    const entry = this.state.diaries[dateStr];
-    const isToday = dateStr === todayStr;
-    const isSelected = dateStr === selectedStr;
-    const hasDiary = entry && (entry.mine || entry.kel);
-    const hasSticker = entry && entry.sticker;
-
-    cells.push({
-      day: String(d),
-      cursor: 'pointer',
-      bg: isSelected ? '#1A1815' : (isToday ? '#F2EFE8' : 'transparent'),
-      border: isToday && !isSelected ? '1px solid #D1CCC2' : (isSelected ? '1px solid #1A1815' : '1px solid transparent'),
-      color: isSelected ? '#F5F3EE' : (isToday ? '#1A1815' : '#3A362F'),
-      fw: isToday ? '700' : '400',
-      hasSticker: !!hasSticker,
-      sticker: hasSticker ? entry.sticker : '',
-      hasDot: !!hasDiary && !hasSticker,
-      tap: () => self.diarySelectDate(dateStr)
-    });
-  }
-
-  return cells;
 }
 
 // ====== Anniversary ======
-getAnnivDays() {
-  if (!this.state.annivDate) return '—';
-  try {
-    const target = new Date(this.state.annivDate);
-    const now = new Date();
-    const diff = Math.ceil((target - now) / (1000 * 60 * 60 * 24));
-    return diff >= 0 ? String(diff) : '0';
-  } catch(e) { return '—'; }
+getAnnivDays(dateStr) {
+if (!dateStr) return '—';
+try {
+const target = new Date(dateStr);
+const now = new Date();
+now.setHours(0,0,0,0);
+target.setHours(0,0,0,0);
+const diff = Math.floor((now - target) / (1000 * 60 * 60 * 24));
+return diff >= 0 ? String(diff) : String(Math.abs(diff));
+} catch(e) { return '—'; }
+}
+
+// ====== Diary ======
+getDiaryEntry(dateStr) {
+return this.state.diaries[dateStr] || { mine: '', kel: '', stickerMine: '', stickerKel: '', comments: [] };
+}
+
+saveDiaryEntry(dateStr, field, value) {
+const diaries = { ...this.state.diaries };
+if (!diaries[dateStr]) diaries[dateStr] = { mine: '', kel: '', stickerMine: '', stickerKel: '', comments: [] };
+diaries[dateStr] = { ...diaries[dateStr], [field]: value };
+this.setState({ diaries }, () => this.persist());
+}
+
+diarySelectDate(dateStr) {
+const entry = this.getDiaryEntry(dateStr);
+this.setState({
+diarySelectedDate: dateStr,
+diaryMineEdit: false,
+diaryMineText: entry.mine || '',
+diaryKelEdit: false,
+diaryKelText: entry.kel || '',
+diaryStickerPickerOpen: false,
+diaryCommentText: ''
+});
+}
+
+addDiaryComment(who, text) {
+if (!text.trim() || !this.state.diarySelectedDate) return;
+const dateStr = this.state.diarySelectedDate;
+const diaries = { ...this.state.diaries };
+if (!diaries[dateStr]) diaries[dateStr] = { mine: '', kel: '', stickerMine: '', stickerKel: '', comments: [] };
+const comments = [...(diaries[dateStr].comments || [])];
+comments.push({
+id: genId(),
+who: who,
+text: text.trim(),
+time: new Date().toLocaleTimeString()
+});
+diaries[dateStr] = { ...diaries[dateStr], comments };
+this.setState({ diaries, diaryCommentText: '' }, () => this.persist());
+}
+
+async askKelComment() {
+if (!this.state.diarySelectedDate) return;
+const entry = this.getDiaryEntry(this.state.diarySelectedDate);
+const preset = this.activePreset;
+if (!preset.key) { this.show('请先设置 API Key'); return; }
+
+const prompt = '请用简短温柔的一两句话评论这篇日记（用中文）：\n\n我的日记：' + (entry.mine || '（空）') + '\nKel的日记：' + (entry.kel || '（空）');
+
+try {
+const headers = { 'Content-Type': 'application/json' };
+let url = preset.url, body;
+if (preset.apiType === 'anthropic') {
+headers['x-api-key'] = preset.key;
+headers['anthropic-version'] = '2025-04-15';
+url += '/messages';
+body = { model: preset.model, max_tokens: 200, messages: [{ role: 'user', content: prompt }] };
+} else {
+headers['Authorization'] = 'Bearer ' + preset.key;
+url += '/chat/completions';
+body = { model: preset.model, max_tokens: 200, messages: [{ role: 'user', content: prompt }] };
+}
+const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
+const data = await res.json();
+let reply = '';
+if (preset.apiType === 'anthropic') {
+for (const block of (data.content || [])) { if (block.type === 'text') reply += block.text; }
+} else {
+reply = data.choices?.[0]?.message?.content || '';
+}
+if (reply) this.addDiaryComment('kel', reply);
+} catch(e) {
+this.show('Error: ' + e.message);
+}
+}
+
+buildCalendarCells() {
+const year = this.state.diaryViewYear;
+const month = this.state.diaryViewMonth;
+const firstDay = new Date(year, month, 1).getDay();
+const daysInMonth = new Date(year, month + 1, 0).getDate();
+const today = new Date();
+const todayStr = today.getFullYear() + '-' + String(today.getMonth() + 1).padStart(2, '0') + '-' + String(today.getDate()).padStart(2, '0');
+const selectedStr = this.state.diarySelectedDate;
+const cells = [];
+const self = this;
+
+for (let i = 0; i < firstDay; i++) {
+cells.push({ day: '', cursor: 'default', bg: 'transparent', border: 'none', color: 'transparent', fw: '400', hasStickers: false, stickerMine: '', stickerKel: '', hasDot: false, tap: () => {} });
+}
+
+for (let d = 1; d <= daysInMonth; d++) {
+const dateStr = year + '-' + String(month + 1).padStart(2, '0') + '-' + String(d).padStart(2, '0');
+const entry = this.state.diaries[dateStr];
+const isToday = dateStr === todayStr;
+const isSelected = dateStr === selectedStr;
+const hasDiary = entry && (entry.mine || entry.kel);
+const hasStickerMine = entry && entry.stickerMine;
+const hasStickerKel = entry && entry.stickerKel;
+const hasStickers = hasStickerMine || hasStickerKel;
+
+cells.push({
+day: String(d),
+cursor: 'pointer',
+bg: isSelected ? '#1A1815' : (isToday ? '#F2EFE8' : 'transparent'),
+border: isToday && !isSelected ? '1px solid #D1CCC2' : (isSelected ? '1px solid #1A1815' : '1px solid transparent'),
+color: isSelected ? '#F5F3EE' : (isToday ? '#1A1815' : '#3A362F'),
+fw: isToday ? '700' : '400',
+hasStickers: !!hasStickers,
+stickerMine: hasStickerMine ? entry.stickerMine : '',
+stickerKel: hasStickerKel ? entry.stickerKel : '',
+hasDot: !!hasDiary && !hasStickers,
+tap: () => self.diarySelectDate(dateStr)
+});
+}
+
+return cells;
 }
 
 // ====== RENDER ======
 renderVals() {
-  const s = this.state;
-  const chat = this.currentChat;
-  const msgs = chat.messages || [];
-  const preset = this.activePreset;
-  const persona = this.activePersona;
-  const styleObj = this.activeStyleObj;
-  const self = this;
+const s = this.state;
+const chat = this.currentChat;
+const msgs = chat.messages || [];
+const preset = this.activePreset;
+const persona = this.activePersona;
+const styleObj = this.activeStyleObj;
+const self = this;
 
-  const messages = msgs.map((m, i) => {
-    const isUser = m.role === 'user';
-    const isLast = i === msgs.length - 1;
-    const variants = m.variants || [m.text];
-    const vIdx = m.variantIdx || 0;
-    const displayText = variants[vIdx] || m.text;
-    return {
-      isUser,
-      align: isUser ? 'flex-end' : 'flex-start',
-      maxW: isUser ? '82%' : '100%',
-      fullW: 'auto',
-      bg: isUser ? '#ECEAE4' : 'transparent',
-      color: '#2B2620',
-      radius: isUser ? '22px' : '0',
-      pad: isUser ? '12px 18px' : '0 2px',
-      gap: '24px',
-      text: displayText,
-      hasThink: !isUser && !!m.thinking,
-      thinkSummary: m.thinking ? '思考过程 (' + m.thinking.length + '字)' : '',
-      thinkContent: m.thinking || '',
-      thinkOpen: s.thinkOpenMap && s.thinkOpenMap[i] || false,
-      thinkRot: (s.thinkOpenMap && s.thinkOpenMap[i]) ? 'rotate(90deg)' : 'rotate(0deg)',
-      toggleThink: () => {
-        const map = { ...(s.thinkOpenMap || {}) };
-        map[i] = !map[i];
-        self.setState({ thinkOpenMap: map });
-      },
-      showAiAvatar: !isUser && !!s.aiAvatar,
-      showUserAvatar: isUser && !!s.userAvatar,
-      hasImage: !!m.imageUrl,
-      imageUrl: m.imageUrl || '',
-      showNormal: s.editIdx !== i,
-      showEdit: s.editIdx === i,
-      showActions: !isUser && isLast && !s.isBusy,
-      showUserActions: isUser && !s.isBusy,
-      variantText: variants.length > 1 ? (vIdx + 1) + ' / ' + variants.length : '1 / 1',
-      copy: () => { navigator.clipboard.writeText(displayText).then(() => self.show('已复制')); },
-      refresh: () => self.regenerate(i),
-      prev: () => {
-        if (vIdx > 0) {
-          const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
-          const newMsgs = [...c.messages]; newMsgs[i] = { ...newMsgs[i], variantIdx: vIdx - 1 };
-          c.messages = newMsgs; chats[s.currentChatId] = c;
-          self.setState({ chats }); self.persist();
-        }
-      },
-      next: () => {
-        if (vIdx < variants.length - 1) {
-          const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
-          const newMsgs = [...c.messages]; newMsgs[i] = { ...newMsgs[i], variantIdx: vIdx + 1 };
-          c.messages = newMsgs; chats[s.currentChatId] = c;
-          self.setState({ chats }); self.persist();
-        }
-      },
-      edit: () => self.setState({ editIdx: i, editText: displayText })
-    };
-  });
+const messages = msgs.map((m, i) => {
+const isUser = m.role === 'user';
+const isLast = i === msgs.length - 1;
+const variants = m.variants || [m.text];
+const vIdx = m.variantIdx || 0;
+const displayText = variants[vIdx] || m.text;
+const rendered = renderContent(displayText, isUser);
+const hasThinking = !isUser && !!m.thinking && m.thinking.length > 0;
+return {
+isUser,
+align: isUser ? 'flex-end' : 'flex-start',
+maxW: isUser ? '82%' : '92%',
+fullW: 'auto',
+bg: isUser ? '#ECEAE4' : '#FFF',
+color: '#2B2620',
+radius: isUser ? '22px 22px 6px 22px' : '22px 22px 22px 6px',
+pad: '12px 18px',
+gap: '16px',
+text: displayText,
+rendered: rendered,
+timestamp: m.timestamp || '',
+hasThink: hasThinking,
+thinkSummary: hasThinking ? '思考过程 (' + m.thinking.length + '字)' : '',
+thinkContent: m.thinking || '',
+thinkOpen: s.thinkOpenMap && s.thinkOpenMap[i] || false,
+thinkRot: (s.thinkOpenMap && s.thinkOpenMap[i]) ? 'rotate(90deg)' : 'rotate(0deg)',
+toggleThink: () => {
+const map = { ...(s.thinkOpenMap || {}) };
+map[i] = !map[i];
+self.setState({ thinkOpenMap: map });
+},
+showAiAvatar: !isUser && !!s.aiAvatar,
+showUserAvatar: isUser && !!s.userAvatar,
+showTimestampOnly: (!isUser && !s.aiAvatar) || (isUser && !s.userAvatar),
+tsAlign: isUser ? 'flex-end' : 'flex-start',
+hasImage: !!m.imageUrl,
+imageUrl: m.imageUrl || '',
+imgJustify: isUser ? 'flex-end' : 'flex-start',
+previewImage: () => self.setState({ imagePreviewOpen: true, imagePreviewUrl: m.imageUrl }),
+showNormal: s.editIdx !== i,
+showEdit: s.editIdx === i,
+showActions: !isUser && isLast && !s.isBusy,
+showUserActions: isUser && !s.isBusy,
+variantText: variants.length > 1 ? (vIdx + 1) + ' / ' + variants.length : '1 / 1',
+copy: () => { navigator.clipboard.writeText(displayText).then(() => self.show('已复制')); },
+refresh: () => self.regenerate(i),
+prev: () => {
+if (vIdx > 0) {
+const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
+const newMsgs = [...c.messages]; newMsgs[i] = { ...newMsgs[i], variantIdx: vIdx - 1 };
+c.messages = newMsgs; chats[s.currentChatId] = c;
+self.setState({ chats }); self.persist();
+}
+},
+next: () => {
+if (vIdx < variants.length - 1) {
+const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
+const newMsgs = [...c.messages]; newMsgs[i] = { ...newMsgs[i], variantIdx: vIdx + 1 };
+c.messages = newMsgs; chats[s.currentChatId] = c;
+self.setState({ chats }); self.persist();
+}
+},
+edit: () => self.setState({ editIdx: i, editText: displayText })
+};
+});
 
-  // Recent chats for drawer
-  const chatList = Object.values(s.chats)
-    .filter(c => c.messages && c.messages.length > 0)
-    .sort((a, b) => (b.lastTime || 0) - (a.lastTime || 0))
-    .slice(0, 30);
-  const recentChats = chatList.map(c => ({
-    title: c.title || '新对话',
-    open: () => self.openChat(c.id),
-    del: (e) => { e.stopPropagation(); self.deleteChat(c.id); },
-    rename: (e) => {
-      e.stopPropagation();
-      const newName = prompt('修改标题', c.title || '');
-      if (newName !== null && newName.trim()) {
-        const chats = { ...s.chats }; chats[c.id] = { ...chats[c.id], title: newName.trim() };
-        self.setState({ chats }); self.persist();
-      }
-    }
-  }));
+// Recent chats for drawer
+const chatList = Object.values(s.chats)
+.filter(c => c.messages && c.messages.length > 0)
+.sort((a, b) => (b.lastTime || 0) - (a.lastTime || 0))
+.slice(0, 30);
+const recentChats = chatList.map(c => ({
+title: c.title || '新对话',
+open: () => self.openChat(c.id),
+del: (e) => { e.stopPropagation(); self.deleteChat(c.id); },
+rename: (e) => {
+e.stopPropagation();
+const newName = prompt('修改标题', c.title || '');
+if (newName !== null && newName.trim()) {
+const chats = { ...s.chats }; chats[c.id] = { ...chats[c.id], title: newName.trim() };
+self.setState({ chats }); self.persist();
+}
+}
+}));
 
-  // Home recent chats (top 3)
-  const homeRecentChats = chatList.slice(0, 3).map(c => ({
-    title: c.title || '新对话',
-    time: c.lastTime ? new Date(c.lastTime).toLocaleString() : '',
-    open: () => self.openChat(c.id)
-  }));
+// Home recent chats (top 3)
+const homeRecentChats = chatList.slice(0, 3).map(c => ({
+title: c.title || '新对话',
+time: c.lastTime ? new Date(c.lastTime).toLocaleString() : '',
+open: () => self.openChat(c.id)
+}));
 
-  // API options
-  const apiDraft = s.apiDraft || preset;
-  const apiOptions = s.apiPresets.map(p => ({
-    title: p.name || 'Untitled', model: p.model || '',
-    bg: p.id === s.activePresetId ? '#1A1815' : '#FFF',
-    bd: p.id === s.activePresetId ? '#1A1815' : '#E7E3DA',
-    fg: p.id === s.activePresetId ? '#F5F3EE' : '#2B2620',
-    subFg: p.id === s.activePresetId ? '#D8D3CA' : '#9A958B',
-    badgeDisplay: p.isDefault ? 'inline-flex' : 'none',
-    badgeBg: '#F2EFE8', badgeFg: '#6B665E',
-    pick: () => { self.setState({ activePresetId: p.id, apiDraft: { ...p, models: [] } }); self.persist(); }
-  }));
+// API options
+const apiDraft = s.apiDraft || preset;
+const apiOptions = s.apiPresets.map(p => ({
+title: p.name || 'Untitled', model: p.model || '',
+bg: p.id === s.activePresetId ? '#1A1815' : '#FFF',
+bd: p.id === s.activePresetId ? '#1A1815' : '#E7E3DA',
+fg: p.id === s.activePresetId ? '#F5F3EE' : '#2B2620',
+subFg: p.id === s.activePresetId ? '#D8D3CA' : '#9A958B',
+badgeDisplay: p.isDefault ? 'inline-flex' : 'none',
+badgeBg: '#F2EFE8', badgeFg: '#6B665E',
+pick: () => { self.setState({ activePresetId: p.id, apiDraft: { ...p, models: [] } }); self.persist(); }
+}));
 
-  // Persona options
-  const personaDraft = s.personaDraft || persona;
-  const personaOptions = s.personas.map(p => ({
-    name: p.name || 'Untitled',
-    bg: p.id === s.activePersonaId ? '#1A1815' : '#FFF',
-    bd: p.id === s.activePersonaId ? '#1A1815' : '#E7E3DA',
-    fg: p.id === s.activePersonaId ? '#F5F3EE' : '#2B2620',
-    pick: () => { self.setState({ activePersonaId: p.id, personaDraft: { ...p } }); self.persist(); }
-  }));
+// Persona options
+const personaDraft = s.personaDraft || persona;
+const personaOptions = s.personas.map(p => ({
+name: p.name || 'Untitled',
+bg: p.id === s.activePersonaId ? '#1A1815' : '#FFF',
+bd: p.id === s.activePersonaId ? '#1A1815' : '#E7E3DA',
+fg: p.id === s.activePersonaId ? '#F5F3EE' : '#2B2620',
+pick: () => { self.setState({ activePersonaId: p.id, personaDraft: { ...p } }); self.persist(); }
+}));
 
-  // Prompt options
-  const promptOptions = (s.prompts || []).map(p => ({
-    name: p.name || 'Untitled',
-    preview: (p.content || '').slice(0, 60),
-    use: () => { self.setState({ input: p.content || '', sheet: null }); },
-    edit: () => { self.setState({ promptEditId: p.id, promptEditName: p.name || '', promptEditContent: p.content || '' }); },
-    del: (e) => { e.stopPropagation(); self.setState({ prompts: s.prompts.filter(x => x.id !== p.id) }); self.persist(); self.show('已删除'); }
-  }));
+// Prompt options
+const promptOptions = (s.prompts || []).map(p => ({
+name: p.name || 'Untitled',
+preview: (p.content || '').slice(0, 60),
+use: () => { self.setState({ input: p.content || '', sheet: null }); },
+edit: () => { self.setState({ promptEditId: p.id, promptEditName: p.name || '', promptEditContent: p.content || '' }); },
+del: (e) => { e.stopPropagation(); self.setState({ prompts: s.prompts.filter(x => x.id !== p.id) }); self.persist(); self.show('已删除'); }
+}));
 
-  // Style options
-  const styleDraft = s.styleDraft || styleObj;
-  const styleOptions = s.styles.map(st => ({
-    name: st.title || 'Untitled',
-    bg: st.id === s.activeStyleId ? '#1A1815' : '#FFF',
-    bd: st.id === s.activeStyleId ? '#1A1815' : '#E7E3DA',
-    fg: st.id === s.activeStyleId ? '#F5F3EE' : '#2B2620',
-    pick: () => { self.setState({ activeStyleId: st.id, styleDraft: { ...st } }); self.persist(); }
-  }));
+// Style options
+const styleDraft = s.styleDraft || styleObj;
+const styleOptions = s.styles.map(st => ({
+name: st.title || 'Untitled',
+bg: st.id === s.activeStyleId ? '#1A1815' : '#FFF',
+bd: st.id === s.activeStyleId ? '#1A1815' : '#E7E3DA',
+fg: st.id === s.activeStyleId ? '#F5F3EE' : '#2B2620',
+pick: () => { self.setState({ activeStyleId: st.id, styleDraft: { ...st } }); self.persist(); }
+}));
 
-  // API model options
-  const apiModelOptions = (apiDraft.models || []).map(m => ({
-    name: m,
-    bg: m === apiDraft.model ? '#1A1815' : '#FFF',
-    bd: m === apiDraft.model ? '#1A1815' : '#E7E3DA',
-    fg: m === apiDraft.model ? '#F5F3EE' : '#2B2620',
-    pick: () => self.setState({ apiDraft: { ...self.state.apiDraft, model: m } })
-  }));
+// API model options
+const apiModelOptions = (apiDraft.models || []).map(m => ({
+name: m,
+bg: m === apiDraft.model ? '#1A1815' : '#FFF',
+bd: m === apiDraft.model ? '#1A1815' : '#E7E3DA',
+fg: m === apiDraft.model ? '#F5F3EE' : '#2B2620',
+pick: () => self.setState({ apiDraft: { ...self.state.apiDraft, model: m } })
+}));
 
-  // Worldbook list
-  const wbList = s.worldbooks.map(wb => ({
-    ...wb,
-    triggerCount: (wb.triggers || []).length,
-    activeLabel: wb.alwaysOn ? '常驻' : '触发',
-    activeBg: wb.alwaysOn ? '#E8F5E8' : '#F2EFE8',
-    preview: (wb.content || '').slice(0, 80),
-    open: () => self.openWorldbookEditor(wb.id),
-    del: (e) => { e.stopPropagation(); self.deleteWorldbook(wb.id); }
-  }));
+// Worldbook list
+const wbList = s.worldbooks.map(wb => ({
+...wb,
+triggerCount: (wb.triggers || []).length,
+activeLabel: wb.alwaysOn ? '常驻' : '触发',
+activeBg: wb.alwaysOn ? '#E8F5E8' : '#F2EFE8',
+preview: (wb.content || '').slice(0, 80),
+open: () => self.openWorldbookEditor(wb.id),
+del: (e) => { e.stopPropagation(); self.deleteWorldbook(wb.id); }
+}));
 
-  // Memory list
-  const memoryList = s.memories.map(mem => ({
-    ...mem,
-    activeLabel: mem.alwaysOn ? '常驻' : '触发',
-    activeBg: mem.alwaysOn ? '#E8F5E8' : '#F2EFE8',
-    preview: (mem.content || '').slice(0, 120),
-    open: () => self.openMemoryEditor(mem.id),
-    del: (e) => { e.stopPropagation(); self.deleteMemory(mem.id); }
-  }));
+// Memory list with filter
+const memTagList = ['all', 'core', 'daily', 'monthly', 'general'];
+const memCategoryOptions = memTagList.map(tag => ({
+label: tag === 'all' ? '全部' : tag === 'core' ? '核心' : tag === 'daily' ? '日常' : tag === 'monthly' ? '月度' : '通用',
+bg: s.memFilterTag === tag ? '#1A1815' : '#FFF',
+bd: s.memFilterTag === tag ? '#1A1815' : '#E7E3DA',
+fg: s.memFilterTag === tag ? '#F5F3EE' : '#2B2620',
+pick: () => self.setState({ memFilterTag: tag })
+}));
 
-  // Pet
-  const petGif = s.isBusy ? './sprites/clawd-thinking.gif' : (s.petState === 'happy' ? './sprites/clawd-happy.gif' : './sprites/clawd-idle.gif');
+const filteredMemories = s.memories
+.filter(mem => s.memFilterTag === 'all' || (mem.tag || 'general') === s.memFilterTag)
+.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
 
-  return {
-    true: true, false: false,
-    // Pages
-    isChat: s.tab === 'chat',
-    isHome: s.tab === 'home',
-    isMore: s.tab === 'more',
-    isWorldbookPage: s.tab === 'worldbook',
-    isMemoryPage: s.tab === 'memory',
-    isDiaryPage: s.tab === 'diary',
-    // Messages
-    messages,
-    recentChats,
-    homeRecentChats,
-    homeGreeting: getGreeting(),
-    currentTime: s.currentTime,
-    isBusy: s.isBusy,
-    input: s.input,
-    editText: s.editText,
-    // Attachment
-    hasAttachment: !!s.attachment,
-    attachmentPreview: s.attachment ? s.attachment.preview : '',
-    attachmentIsImage: !!(s.attachment && s.attachment.isImage),
-    attachmentFileName: s.attachment ? s.attachment.fileName : '',
-    // Active labels
-    activeModel: preset.model || 'Not set',
-    activeStyle: styleObj.title || 'Default',
-    activeCompanion: persona.name || 'Kel',
-    personaPreview: (persona.content || '未设置 system prompt').slice(0, 120),
-    promptCount: (s.prompts || []).length + ' items',
-    // Counts for Home
-    totalChats: Object.values(s.chats).filter(c => c.messages && c.messages.length > 0).length,
-    totalWorldbooks: s.worldbooks.length,
-    totalDiaries: Object.keys(s.diaries || {}).filter(k => { const e = s.diaries[k]; return e && (e.mine || e.kel); }).length,
-    // Anniversary
-    annivDate: s.annivDate || '点击设置',
-    annivDays: self.getAnnivDays(),
-    // Worldbook & Memory
-    wbList,
-    wbListHasItems: s.worldbooks.length > 0,
-    memoryList,
-    memListHasItems: s.memories.length > 0,
-    // Worldbook editor
-    isWorldbookEditorSheet: s.sheet === 'wbEditor',
-    wbEditName: s.wbEditName || '',
-    wbEditContent: s.wbEditContent || '',
-    wbEditTriggers: s.wbEditTriggers || '',
-    wbEditAlwaysOn: s.wbEditAlwaysOn || false,
-    wbEditWeight: s.wbEditWeight || 1,
-    wbEditPosBefore: s.wbEditPosition === 'before',
-    wbEditPosAfter: s.wbEditPosition === 'after',
-    // Memory editor
-    isMemoryEditorSheet: s.sheet === 'memEditor',
-    memEditName: s.memEditName || '',
-    memEditContent: s.memEditContent || '',
-    memEditTriggers: s.memEditTriggers || '',
-    memEditAlwaysOn: s.memEditAlwaysOn || false,
-    memEditWeight: s.memEditWeight || 1,
-    memEditTag: s.memEditTag || '',
-    memEditPosBefore: s.memEditPosition === 'before',
-    memEditPosAfter: s.memEditPosition === 'after',
-    // Avatar
-    avatarSize: s.avatarSize || 36,
-    userAvatar: s.userAvatar || '',
-    aiAvatar: s.aiAvatar || '',
-    hasUserAvatar: !!s.userAvatar,
-    hasAiAvatar: !!s.aiAvatar,
-    // Pet
-    petGif,
-    petSize: this.currentPetSize,
-    petEnabled: s.petEnabled,
-    petStatus: s.petEnabled ? 'On' : 'Off',
-    petSizeLabel: this.currentPetSize + 'px',
-    soundStatus: s.soundEnabled ? 'On' : 'Off',
-    memoryCountLabel: s.memoryCount + ' 条',
-    // Overlays
-    drawerOpen: s.drawer,
-    plusOpen: s.plus,
-    profileOpen: s.profile,
-    styleOpen: s.style,
-    sheetOpen: !!s.sheet && s.sheet !== 'wbEditor' && s.sheet !== 'memEditor',
-    isApiSheet: s.sheet === 'api',
-    isAiSheet: s.sheet === 'ai',
-    isPromptSheet: s.sheet === 'prompt',
-    isCssSheet: s.sheet === 'css',
-    toastShow: s.toastShow,
-    toastText: s.toastText,
-    // Nav backgrounds
-    navChatBg: s.tab === 'chat' ? '#ECEAE4' : 'transparent',
-    navHomeBg: s.tab === 'home' ? '#ECEAE4' : 'transparent',
-    navWbBg: s.tab === 'worldbook' ? '#ECEAE4' : 'transparent',
-    navMemBg: s.tab === 'memory' ? '#ECEAE4' : 'transparent',
-    navMoreBg: s.tab === 'more' ? '#ECEAE4' : 'transparent',
-    navDiaryBg: s.tab === 'diary' ? '#ECEAE4' : 'transparent',
-    // Search
-    searchOpen: !!(s.searchQuery && s.searchQuery.trim()),
-    searchQuery: s.searchQuery || '',
-    searchResults: (s.searchResults || []).map(r => ({
-      ...r,
-      open: () => self.openSearchResult(r.chatId)
-    })),
-    // API sheet
-    apiOptions,
-    apiName: apiDraft.name || '',
-    apiModel: apiDraft.model || '',
-    connectorUrl: apiDraft.url || '',
-    accessValue: apiDraft.key || '',
-    apiDetailHint: apiDraft.apiType === 'anthropic' ? 'Anthropic' : 'OpenAI',
-    apiModelListHint: (apiDraft.models || []).length > 0 ? (apiDraft.models.length + ' models') : '点击拉取',
-    apiModelOptions,
-    apiModelOptionsDisplay: (apiDraft.models || []).length > 0 ? 'flex' : 'none',
-    isApiAdvanced: s.apiAdvanced,
-    apiAdvancedRot: s.apiAdvanced ? 'rotate(180deg)' : 'rotate(0deg)',
-    apiOpenAiBg: apiDraft.apiType === 'openai' ? '#1A1815' : '#FFF',
-    apiOpenAiBd: apiDraft.apiType === 'openai' ? '#1A1815' : '#E7E3DA',
-    apiAnthropicBg: apiDraft.apiType !== 'openai' ? '#1A1815' : '#FFF',
-    apiAnthropicBd: apiDraft.apiType !== 'openai' ? '#1A1815' : '#E7E3DA',
-    // Persona sheet
-    personaOptions,
-    personaName: personaDraft.name || '',
-    personaContent: personaDraft.content || '',
-    // Prompt sheet
-    promptOptions,
-    showPromptList: !s.promptEditId,
-    showPromptEdit: !!s.promptEditId,
-    noPrompts: (s.prompts || []).length === 0,
-    promptEditName: s.promptEditName || '',
-    promptEditContent: s.promptEditContent || '',
-    // Style sheet
-    styleOptions,
-    styleTitle: styleDraft.title || '',
-    styleContent: styleDraft.content || '',
-    // CSS
-    customCss: s.customCss || '',
-    customFont: s.customFont || '',
+const memoryList = filteredMemories.map(mem => ({
+...mem,
+tag: mem.tag || 'general',
+activeLabel: mem.alwaysOn ? '常驻' : '触发',
+activeBg: mem.alwaysOn ? '#E8F5E8' : '#F2EFE8',
+preview: (mem.content || '').slice(0, 120),
+open: () => self.openMemoryEditor(mem.id),
+del: (e) => { e.stopPropagation(); self.deleteMemory(mem.id); }
+}));
 
-    // ======== ACTIONS ========
-    toggleDrawer: () => self.setState(v => ({ drawer: !v.drawer })),
-    togglePlus: () => self.setState(v => ({ plus: !v.plus })),
-    toggleProfile: () => self.setState(v => ({ profile: !v.profile, drawer: false })),
-    navChat: () => { self.setState({ tab: 'chat', drawer: false }); self.scrollToBottom(); },
-    navHome: () => self.setState({ tab: 'home', drawer: false }),
-    navMore: () => self.setState({ tab: 'more', drawer: false }),
-    navWorldbook: () => self.setState({ tab: 'worldbook', drawer: false }),
-    navMemory: () => self.setState({ tab: 'memory', drawer: false }),
-    navDiary: () => self.setState({ tab: 'diary', drawer: false }),
-    newChat: () => self.newChat(),
-    // Input
-    inputChange: (e) => self.setState({ input: e.target.value }),
-    inputKey: (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); self.sendMessage(); } },
-    send: () => self.sendMessage(),
-    textareaRef: (el) => self.textareaRef(el),
-    // File
-    pickImage: () => self.pickImageFile(),
-    handleFileSelect: (e) => self.handleFile(e),
-    handleImportFile: (e) => self.handleImportFile(e),
-    removeAttachment: () => self.setState({ attachment: null }),
-    // Edit
-    editTextChange: (e) => self.setState({ editText: e.target.value }),
-    cancelEdit: () => self.setState({ editIdx: -1 }),
-    saveEdit: () => {
-      const idx = s.editIdx; if (idx < 0) return;
-      const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
-      const newMsgs = [...c.messages]; const oldMsg = newMsgs[idx];
-      newMsgs[idx] = { ...oldMsg, text: s.editText, variants: [s.editText], variantIdx: 0 };
-      c.messages = newMsgs.slice(0, idx + 1); chats[s.currentChatId] = c;
-      self.setState({ chats, editIdx: -1, input: '' }); self.persist();
-      if (oldMsg.role === 'user') { self.setState({ isBusy: true }); self._regenerateFrom(s.currentChatId, c.messages, null); }
-    },
-    // Sheets
-    closeSheet: () => self.setState({ sheet: null, promptEditId: null }),
-    openApiSheet: () => self.setState({ sheet: 'api', plus: false, profile: false, apiDraft: { ...preset, models: [] } }),
-    openAiSheet: () => self.setState({ sheet: 'ai', plus: false, profile: false, personaDraft: { ...persona } }),
-    openPromptSheet: () => self.setState({ sheet: 'prompt', plus: false, profile: false, promptEditId: null }),
-    openCssSheet: () => self.setState({ sheet: 'css', plus: false, profile: false }),
-    openStyle: () => self.setState({ style: true, styleDraft: { ...styleObj } }),
-    closeStyle: () => self.setState({ style: false }),
-    // Anniversary
-    openAnniv: () => {
-      const newDate = prompt('设置纪念日 (YYYY-MM-DD)', s.annivDate || '');
-      if (newDate !== null) { self.setState({ annivDate: newDate.trim() }); self.persist(); }
-    },
-    // Worldbook page
-    newWorldbook: () => self.openWorldbookEditor(null),
-    wbEditNameChange: (e) => self.setState({ wbEditName: e.target.value }),
-    wbEditContentChange: (e) => self.setState({ wbEditContent: e.target.value }),
-    wbEditTriggersChange: (e) => self.setState({ wbEditTriggers: e.target.value }),
-    wbEditAlwaysOnChange: (e) => self.setState({ wbEditAlwaysOn: e.target.checked }),
-    wbEditWeightChange: (e) => self.setState({ wbEditWeight: e.target.value }),
-    wbEditSetPosBefore: () => self.setState({ wbEditPosition: 'before' }),
-    wbEditSetPosAfter: () => self.setState({ wbEditPosition: 'after' }),
-    saveWorldbookEditor: () => self.saveWorldbookEditor(),
-    // Memory page
-    newMemory: () => self.openMemoryEditor(null),
-    memEditNameChange: (e) => self.setState({ memEditName: e.target.value }),
-    memEditContentChange: (e) => self.setState({ memEditContent: e.target.value }),
-    memEditTriggersChange: (e) => self.setState({ memEditTriggers: e.target.value }),
-    memEditAlwaysOnChange: (e) => self.setState({ memEditAlwaysOn: e.target.checked }),
-    memEditWeightChange: (e) => self.setState({ memEditWeight: e.target.value }),
-    memEditTagChange: (e) => self.setState({ memEditTag: e.target.value }),
-    memEditSetPosBefore: () => self.setState({ memEditPosition: 'before' }),
-    memEditSetPosAfter: () => self.setState({ memEditPosition: 'after' }),
-    saveMemoryEditor: () => self.saveMemoryEditor(),
-    // API actions
-    newApiDraft: () => {
-      const id = genId();
-      const newPreset = { id, name: 'New Preset', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: false };
-      self.setState({ apiPresets: [...s.apiPresets, newPreset], activePresetId: id, apiDraft: { ...newPreset, models: [] } });
+// Memory tag options for editor
+const memTagOptions = ['core', 'daily', 'monthly', 'general'].map(tag => ({
+label: tag === 'core' ? '核心' : tag === 'daily' ? '日常' : tag === 'monthly' ? '月度' : '通用',
+bg: s.memEditTag === tag ? '#1A1815' : '#FFF',
+bd: s.memEditTag === tag ? '#1A1815' : '#E7E3DA',
+fg: s.memEditTag === tag ? '#F5F3EE' : '#2B2620',
+pick: () => self.setState({ memEditTag: tag })
+}));
+
+// Pet
+const petGif = s.isBusy ? './sprites/clawd-thinking.gif' : (s.petState === 'happy' ? './sprites/clawd-happy.gif' : './sprites/clawd-idle.gif');
+
+// Anniversary list
+const annivList = (s.anniversaries || []).map((av, idx) => ({
+name: av.name || '纪念日',
+date: av.date || '未设置',
+days: self.getAnnivDays(av.date),
+bd: idx === s.activeAnnivIdx ? '#1A1815' : '#EDE9E0',
+pick: () => { self.setState({ activeAnnivIdx: idx }); self.persist(); },
+editBtn: (e) => {
+e.stopPropagation();
+self.setState({ annivEditing: true, annivEditId: av.id, annivEditName: av.name || '', annivEditDate: av.date || '' });
+},
+del: (e) => {
+e.stopPropagation();
+const annivs = s.anniversaries.filter(a => a.id !== av.id);
+self.setState({ anniversaries: annivs, activeAnnivIdx: 0 }, () => self.persist());
+self.show('已删除');
+}
+}));
+
+const activeAnnivObj = self.activeAnniv;
+
+// Pledges list
+const pledgeList = (s.pledges || []).map(pl => ({
+name: pl.name || '',
+date: pl.date || '',
+hasDate: !!pl.date,
+done: !!pl.done,
+checkBd: pl.done ? '#1A1815' : '#D1CCC2',
+checkBg: pl.done ? '#1A1815' : 'transparent',
+textColor: pl.done ? '#B8B3A8' : '#1A1815',
+textDeco: pl.done ? 'line-through' : 'none',
+toggleDone: () => {
+const pledges = s.pledges.map(p => p.id === pl.id ? { ...p, done: !p.done } : p);
+self.setState({ pledges }, () => self.persist());
+},
+del: () => {
+const pledges = s.pledges.filter(p => p.id !== pl.id);
+self.setState({ pledges }, () => self.persist());
+self.show('已删除');
+}
+}));
+
+// Diary comments
+const diaryEntry = s.diarySelectedDate ? self.getDiaryEntry(s.diarySelectedDate) : { comments: [] };
+const diaryComments = (diaryEntry.comments || []).map(dc => ({
+...dc,
+name: dc.who === 'kel' ? 'Kel' : '我',
+avatar: dc.who === 'kel' ? (s.aiAvatar || '') : (s.userAvatar || ''),
+del: () => {
+const diaries = { ...s.diaries };
+const entry = { ...diaries[s.diarySelectedDate] };
+entry.comments = (entry.comments || []).filter(c => c.id !== dc.id);
+diaries[s.diarySelectedDate] = entry;
+self.setState({ diaries }, () => self.persist());
+}
+}));
+
+// Emoji options for diary sticker picker
+const emojiOptions = EMOJI_LIST.map(emoji => {
+const entry = s.diarySelectedDate ? self.getDiaryEntry(s.diarySelectedDate) : {};
+return {
+emoji,
+mineBg: entry.stickerMine === emoji ? '#ECEAE4' : '#FFF',
+mineBd: entry.stickerMine === emoji ? '2px solid #1A1815' : '1px solid #E7E3DA',
+kelBg: entry.stickerKel === emoji ? '#ECEAE4' : '#FFF',
+kelBd: entry.stickerKel === emoji ? '2px solid #1A1815' : '1px solid #E7E3DA',
+pickMine: () => { self.saveDiaryEntry(s.diarySelectedDate, 'stickerMine', emoji); },
+pickKel: () => { self.saveDiaryEntry(s.diarySelectedDate, 'stickerKel', emoji); }
+};
+});
+
+// Dynamic Island
+const islandDotColor = s.isBusy ? '#FFB347' : (s.kelMood === 'happy' ? '#7ED87E' : '#9A958B');
+const islandLabel = s.isBusy ? '思考中...' : (s.kelMood === 'happy' ? '开心' : '在线');
+const lastThinkingPreview = (s.lastThinking || '').slice(0, 300) + (s.lastThinking && s.lastThinking.length > 300 ? '...' : '');
+
+// Kel mood emoji for home
+const kelMoodEmoji = s.kelMood === 'happy' ? '🥰' : (s.kelMood === 'thinking' ? '🤔' : '😊');
+
+return {
+true: true, false: false,
+// Pages
+isChat: s.tab === 'chat',
+isHome: s.tab === 'home',
+isMore: s.tab === 'more',
+isWorldbookPage: s.tab === 'worldbook',
+isMemoryPage: s.tab === 'memory',
+isDiaryPage: s.tab === 'diary',
+// Messages
+messages,
+recentChats,
+homeRecentChats,
+homeGreeting: getGreeting(),
+currentTime: s.currentTime,
+isBusy: s.isBusy,
+input: s.input,
+editText: s.editText,
+// Attachment
+hasAttachment: !!s.attachment,
+attachmentPreview: s.attachment ? s.attachment.preview : '',
+attachmentIsImage: !!(s.attachment && s.attachment.isImage),
+attachmentFileName: s.attachment ? s.attachment.fileName : '',
+// Active labels
+activeModel: preset.model || 'Not set',
+activeStyle: styleObj.title || 'Default',
+activeCompanion: persona.name || 'Kel',
+personaPreview: (persona.content || '未设置 system prompt').slice(0, 120),
+promptCount: (s.prompts || []).length + ' items',
+// Counts for Home
+totalChats: Object.values(s.chats).filter(c => c.messages && c.messages.length > 0).length,
+totalMemories: s.memories.length,
+kelMoodEmoji: kelMoodEmoji,
+// Anniversary
+annivDisplayName: activeAnnivObj ? (activeAnnivObj.name || '纪念日') : '点击设置',
+annivDisplayDate: activeAnnivObj ? (activeAnnivObj.date || '未设置') : '',
+annivDays: activeAnnivObj ? self.getAnnivDays(activeAnnivObj.date) : '—',
+annivList,
+annivEditing: s.annivEditing,
+annivEditName: s.annivEditName,
+annivEditDate: s.annivEditDate,
+isAnnivSheet: s.sheet === 'anniv',
+// Pledges
+pledgeList,
+pledgeSummary: (s.pledges || []).filter(p => !p.done).length + ' 个未完成',
+pledgeEditing: s.pledgeEditing,
+pledgeEditName: s.pledgeEditName || '',
+pledgeEditDate: s.pledgeEditDate || '',
+isPledgesSheet: s.sheet === 'pledges',
+// Worldbook & Memory
+wbList,
+wbListHasItems: s.worldbooks.length > 0,
+memoryList,
+memListHasItems: filteredMemories.length > 0,
+memCategoryOptions,
+memTagOptions,
+// Worldbook editor
+isWorldbookEditorSheet: s.sheet === 'wbEditor',
+wbEditName: s.wbEditName || '',
+wbEditContent: s.wbEditContent || '',
+wbEditTriggers: s.wbEditTriggers || '',
+wbEditAlwaysOn: s.wbEditAlwaysOn || false,
+wbEditWeight: s.wbEditWeight || 1,
+wbEditPosBefore: s.wbEditPosition === 'before',
+wbEditPosAfter: s.wbEditPosition === 'after',
+// Memory editor
+isMemoryEditorSheet: s.sheet === 'memEditor',
+memEditName: s.memEditName || '',
+memEditContent: s.memEditContent || '',
+memEditTriggers: s.memEditTriggers || '',
+memEditAlwaysOn: s.memEditAlwaysOn || false,
+memEditWeight: s.memEditWeight || 1,
+memEditTag: s.memEditTag || '',
+memEditPosBefore: s.memEditPosition === 'before',
+memEditPosAfter: s.memEditPosition === 'after',
+// Avatar
+avatarSize: s.avatarSize || 36,
+userAvatar: s.userAvatar || '',
+aiAvatar: s.aiAvatar || '',
+hasUserAvatar: !!s.userAvatar,
+hasAiAvatar: !!s.aiAvatar,
+// Pet
+petGif,
+petSize: this.currentPetSize,
+petEnabled: s.petEnabled,
+petStatus: s.petEnabled ? 'On' : 'Off',
+petSizeLabel: this.currentPetSize + 'px',
+soundStatus: s.soundEnabled ? 'On' : 'Off',
+memoryCountLabel: s.memoryCount + ' 条',
+// Overlays
+drawerOpen: s.drawer,
+plusOpen: s.plus,
+profileOpen: s.profile,
+styleOpen: s.style,
+sheetOpen: !!s.sheet && s.sheet !== 'wbEditor' && s.sheet !== 'memEditor' && s.sheet !== 'anniv' && s.sheet !== 'pledges',
+isApiSheet: s.sheet === 'api',
+isAiSheet: s.sheet === 'ai',
+isPromptSheet: s.sheet === 'prompt',
+isCssSheet: s.sheet === 'css',
+toastShow: s.toastShow,
+toastText: s.toastText,
+// Dynamic Island
+islandOpen: s.islandOpen,
+islandDotColor,
+islandLabel,
+hasLastThinking: !!(s.lastThinking),
+lastThinkingPreview,
+// Image preview
+imagePreviewOpen: s.imagePreviewOpen,
+imagePreviewUrl: s.imagePreviewUrl || '',
+// Nav backgrounds
+navChatBg: s.tab === 'chat' ? '#ECEAE4' : 'transparent',
+navHomeBg: s.tab === 'home' ? '#ECEAE4' : 'transparent',
+navWbBg: s.tab === 'worldbook' ? '#ECEAE4' : 'transparent',
+navMemBg: s.tab === 'memory' ? '#ECEAE4' : 'transparent',
+navMoreBg: s.tab === 'more' ? '#ECEAE4' : 'transparent',
+navDiaryBg: s.tab === 'diary' ? '#ECEAE4' : 'transparent',
+// Search
+searchOpen: !!(s.searchQuery && s.searchQuery.trim()),
+searchQuery: s.searchQuery || '',
+searchResults: (s.searchResults || []).map(r => ({
+...r,
+open: () => self.openSearchResult(r.chatId)
+})),
+// API sheet
+apiOptions,
+apiName: apiDraft.name || '',
+apiModel: apiDraft.model || '',
+connectorUrl: apiDraft.url || '',
+accessValue: apiDraft.key || '',
+apiDetailHint: apiDraft.apiType === 'anthropic' ? 'Anthropic' : 'OpenAI',
+apiModelListHint: (apiDraft.models || []).length > 0 ? (apiDraft.models.length + ' models') : '点击拉取',
+apiModelOptions,
+apiModelOptionsDisplay: (apiDraft.models || []).length > 0 ? 'flex' : 'none',
+isApiAdvanced: s.apiAdvanced,
+apiAdvancedRot: s.apiAdvanced ? 'rotate(180deg)' : 'rotate(0deg)',
+apiOpenAiBg: apiDraft.apiType === 'openai' ? '#1A1815' : '#FFF',
+apiOpenAiBd: apiDraft.apiType === 'openai' ? '#1A1815' : '#E7E3DA',
+apiAnthropicBg: apiDraft.apiType !== 'openai' ? '#1A1815' : '#FFF',
+apiAnthropicBd: apiDraft.apiType !== 'openai' ? '#1A1815' : '#E7E3DA',
+// Persona sheet
+personaOptions,
+personaName: personaDraft.name || '',
+personaContent: personaDraft.content || '',
+// Prompt sheet
+promptOptions,
+showPromptList: !s.promptEditId,
+showPromptEdit: !!s.promptEditId,
+noPrompts: (s.prompts || []).length === 0,
+promptEditName: s.promptEditName || '',
+promptEditContent: s.promptEditContent || '',
+// Style sheet
+styleOptions,
+styleTitle: styleDraft.title || '',
+styleContent: styleDraft.content || '',
+// CSS
+customCss: s.customCss || '',
+customFont: s.customFont || '',
+// Diary
+diaryMonthLabel: (() => { const m = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']; return m[s.diaryViewMonth] || ''; })(),
+diaryYearMonth: s.diaryViewYear + '年' + (s.diaryViewMonth + 1) + '月',
+diaryCalendarCells: self.buildCalendarCells(),
+diaryHasSelected: !!s.diarySelectedDate,
+diarySelectedLabel: s.diarySelectedDate ? s.diarySelectedDate.replace(/-/g, '.') : '',
+diaryStickerBtnLabel: (() => {
+if (!s.diarySelectedDate) return '贴纸';
+const e = s.diaries[s.diarySelectedDate];
+const has = e && (e.stickerMine || e.stickerKel);
+return has ? (e.stickerMine || '') + (e.stickerKel || '') + ' 更换' : '+ 心情';
+})(),
+diaryStickerPickerOpen: s.diaryStickerPickerOpen,
+emojiOptions,
+diaryMineIsEdit: s.diaryMineEdit,
+diaryMineText: s.diaryMineText,
+diaryMineDisplay: (() => { if (!s.diarySelectedDate) return ''; const e = s.diaries[s.diarySelectedDate]; return (e && e.mine) ? e.mine : '还没有写...'; })(),
+diaryMineBtn: s.diaryMineEdit ? '取消' : '编辑',
+diaryKelIsEdit: s.diaryKelEdit,
+diaryKelText: s.diaryKelText,
+diaryKelDisplay: (() => { if (!s.diarySelectedDate) return ''; const e = s.diaries[s.diarySelectedDate]; return (e && e.kel) ? e.kel : '还没有写...'; })(),
+diaryKelBtn: s.diaryKelEdit ? '取消' : '编辑',
+diaryComments,
+diaryCommentText: s.diaryCommentText || '',
+
+// ======== ACTIONS ========
+toggleDrawer: () => self.setState(v => ({ drawer: !v.drawer })),
+togglePlus: () => self.setState(v => ({ plus: !v.plus })),
+toggleProfile: () => self.setState(v => ({ profile: !v.profile, drawer: false })),
+toggleIsland: () => self.setState(v => ({ islandOpen: !v.islandOpen })),
+closeImagePreview: () => self.setState({ imagePreviewOpen: false, imagePreviewUrl: '' }),
+navChat: () => { self.setState({ tab: 'chat', drawer: false }); self.scrollToBottom(); },
+navHome: () => self.setState({ tab: 'home', drawer: false }),
+navMore: () => self.setState({ tab: 'more', drawer: false }),
+navWorldbook: () => self.setState({ tab: 'worldbook', drawer: false }),
+navMemory: () => self.setState({ tab: 'memory', drawer: false }),
+navDiary: () => self.setState({ tab: 'diary', drawer: false }),
+newChat: () => self.newChat(),
+// Input - Enter now only creates newline, no auto-send
+inputChange: (e) => self.setState({ input: e.target.value }),
+inputKey: (e) => {},
+send: () => self.sendMessage(),
+textareaRef: (el) => self.textareaRef(el),
+// File
+pickImage: () => self.pickImageFile(),
+handleFileSelect: (e) => self.handleFile(e),
+handleImportFile: (e) => self.handleImportFile(e),
+removeAttachment: () => self.setState({ attachment: null }),
+// Edit
+editTextChange: (e) => self.setState({ editText: e.target.value }),
+cancelEdit: () => self.setState({ editIdx: -1 }),
+saveEdit: () => {
+const idx = s.editIdx; if (idx < 0) return;
+const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
+const newMsgs = [...c.messages]; const oldMsg = newMsgs[idx];
+newMsgs[idx] = { ...oldMsg, text: s.editText, variants: [s.editText], variantIdx: 0 };
+c.messages = newMsgs.slice(0, idx + 1); chats[s.currentChatId] = c;
+self.setState({ chats, editIdx: -1, input: '' }); self.persist();
+if (oldMsg.role === 'user') { self.setState({ isBusy: true }); self._regenerateFrom(s.currentChatId, c.messages, null); }
+},
+// Sheets
+closeSheet: () => self.setState({ sheet: null, promptEditId: null, annivEditing: false, pledgeEditing: false }),
+openApiSheet: () => self.setState({ sheet: 'api', plus: false, profile: false, apiDraft: { ...preset, models: [] } }),
+openAiSheet: () => self.setState({ sheet: 'ai', plus: false, profile: false, personaDraft: { ...persona } }),
+openPromptSheet: () => self.setState({ sheet: 'prompt', plus: false, profile: false, promptEditId: null }),
+openCssSheet: () => self.setState({ sheet: 'css', plus: false, profile: false }),
+openStyle: () => self.setState({ style: true, styleDraft: { ...styleObj } }),
+closeStyle: () => self.setState({ style: false }),
+// Anniversary sheet
+openAnnivSheet: () => self.setState({ sheet: 'anniv', annivEditing: false }),
+addAnniv: () => self.setState({ annivEditing: true, annivEditId: null, annivEditName: '', annivEditDate: '' }),
+annivEditNameChange: (e) => self.setState({ annivEditName: e.target.value }),
+annivEditDateChange: (e) => self.setState({ annivEditDate: e.target.value }),
+annivCancelEdit: () => self.setState({ annivEditing: false }),
+annivSaveEdit: () => {
+const id = s.annivEditId || genId();
+let annivs;
+if (s.annivEditId) {
+annivs = s.anniversaries.map(a => a.id === id ? { ...a, name: s.annivEditName, date: s.annivEditDate } : a);
+} else {
+annivs = [...s.anniversaries, { id, name: s.annivEditName || '纪念日', date: s.annivEditDate }];
+}
+self.setState({ anniversaries: annivs, annivEditing: false }, () => self.persist());
+self.show('已保存');
+},
+// Pledges sheet
+openPledgesSheet: () => self.setState({ sheet: 'pledges', pledgeEditing: false }),
+addPledge: () => self.setState({ pledgeEditing: true, pledgeEditName: '', pledgeEditDate: '' }),
+pledgeEditNameChange: (e) => self.setState({ pledgeEditName: e.target.value }),
+pledgeEditDateChange: (e) => self.setState({ pledgeEditDate: e.target.value }),
+pledgeCancelEdit: () => self.setState({ pledgeEditing: false }),
+pledgeSaveEdit: () => {
+const pledges = [...s.pledges, { id: genId(), name: s.pledgeEditName || '新约定', date: s.pledgeEditDate, done: false }];
+self.setState({ pledges, pledgeEditing: false }, () => self.persist());
+self.show('已保存');
+},
+// Worldbook page
+newWorldbook: () => self.openWorldbookEditor(null),
+wbEditNameChange: (e) => self.setState({ wbEditName: e.target.value }),
+wbEditContentChange: (e) => self.setState({ wbEditContent: e.target.value }),
+wbEditTriggersChange: (e) => self.setState({ wbEditTriggers: e.target.value }),
+wbEditAlwaysOnChange: (e) => self.setState({ wbEditAlwaysOn: e.target.checked }),
+wbEditWeightChange: (e) => self.setState({ wbEditWeight: e.target.value }),
+wbEditSetPosBefore: () => self.setState({ wbEditPosition: 'before' }),
+wbEditSetPosAfter: () => self.setState({ wbEditPosition: 'after' }),
+saveWorldbookEditor: () => self.saveWorldbookEditor(),
+// Memory page
+newMemory: () => self.openMemoryEditor(null),
+memEditNameChange: (e) => self.setState({ memEditName: e.target.value }),
+memEditContentChange: (e) => self.setState({ memEditContent: e.target.value }),
+memEditTriggersChange: (e) => self.setState({ memEditTriggers: e.target.value }),
+memEditAlwaysOnChange: (e) => self.setState({ memEditAlwaysOn: e.target.checked }),
+memEditWeightChange: (e) => self.setState({ memEditWeight: e.target.value }),
+memEditSetPosBefore: () => self.setState({ memEditPosition: 'before' }),
+memEditSetPosAfter: () => self.setState({ memEditPosition: 'after' }),
+saveMemoryEditor: () => self.saveMemoryEditor(),
+deleteMemoryFromEditor: () => {
+if (s.memEditId) { self.deleteMemory(s.memEditId); self.setState({ sheet: null }); }
+},
+// API actions
+newApiDraft: () => {
+const id = genId();
+const newPreset = { id, name: 'New Preset', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: false };
+self.setState({ apiPresets: [...s.apiPresets, newPreset], activePresetId: id, apiDraft: { ...newPreset, models: [] } });
 self.persist();
 },
 fetchApiModels: () => self.fetchModels(),
@@ -2429,40 +2981,25 @@ saveCssSettings: () => { self.persist(); self.applyCustomCss(); self.applyCustom
 // Search
 searchChange: (e) => { self.setState({ searchQuery: e.target.value }); self.searchChats(e.target.value); },
 // Diary
-
-diaryMonthLabel: (() => { const m = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']; return m[s.diaryViewMonth] || ''; })(),
-diaryYearMonth: s.diaryViewYear + '年' + (s.diaryViewMonth + 1) + '月',
-diaryCalendarCells: self.buildCalendarCells(),
-diaryHasSelected: !!s.diarySelectedDate,
-diarySelectedLabel: s.diarySelectedDate ? s.diarySelectedDate.replace(/-/g, '.') : '',
-diaryStickerBtnLabel: (() => { if (!s.diarySelectedDate) return '贴纸'; const e = s.diaries[s.diarySelectedDate]; return (e && e.sticker) ? e.sticker + ' 更换' : '+ 心情'; })(),
-diaryMineIsEdit: s.diaryMineEdit,
-diaryMineText: s.diaryMineText,
-diaryMineDisplay: (() => { if (!s.diarySelectedDate) return ''; const e = s.diaries[s.diarySelectedDate]; return (e && e.mine) ? e.mine : '还没有写...'; })(),
-diaryMineBtn: s.diaryMineEdit ? '取消' : '编辑',
-diaryKelIsEdit: s.diaryKelEdit,
-diaryKelText: s.diaryKelText,
-diaryKelDisplay: (() => { if (!s.diarySelectedDate) return ''; const e = s.diaries[s.diarySelectedDate]; return (e && e.kel) ? e.kel : '还没有写...'; })(),
-diaryKelBtn: s.diaryKelEdit ? '取消' : '编辑',
 diaryPrevMonth: () => {
-  let y = s.diaryViewYear, m = s.diaryViewMonth - 1;
-  if (m < 0) { m = 11; y--; }
-  self.setState({ diaryViewYear: y, diaryViewMonth: m, diarySelectedDate: null });
+let y = s.diaryViewYear, m = s.diaryViewMonth - 1;
+if (m < 0) { m = 11; y--; }
+self.setState({ diaryViewYear: y, diaryViewMonth: m, diarySelectedDate: null });
 },
 diaryNextMonth: () => {
-  let y = s.diaryViewYear, m = s.diaryViewMonth + 1;
-  if (m > 11) { m = 0; y++; }
-  self.setState({ diaryViewYear: y, diaryViewMonth: m, diarySelectedDate: null });
+let y = s.diaryViewYear, m = s.diaryViewMonth + 1;
+if (m > 11) { m = 0; y++; }
+self.setState({ diaryViewYear: y, diaryViewMonth: m, diarySelectedDate: null });
 },
 diaryEditMine: () => {
-  if (s.diaryMineEdit) { self.setState({ diaryMineEdit: false }); return; }
-  const entry = self.getDiaryEntry(s.diarySelectedDate);
-  self.setState({ diaryMineEdit: true, diaryMineText: entry.mine || '' });
+if (s.diaryMineEdit) { self.setState({ diaryMineEdit: false }); return; }
+const entry = self.getDiaryEntry(s.diarySelectedDate);
+self.setState({ diaryMineEdit: true, diaryMineText: entry.mine || '' });
 },
 diaryEditKel: () => {
-  if (s.diaryKelEdit) { self.setState({ diaryKelEdit: false }); return; }
-  const entry = self.getDiaryEntry(s.diarySelectedDate);
-  self.setState({ diaryKelEdit: true, diaryKelText: entry.kel || '' });
+if (s.diaryKelEdit) { self.setState({ diaryKelEdit: false }); return; }
+const entry = self.getDiaryEntry(s.diarySelectedDate);
+self.setState({ diaryKelEdit: true, diaryKelText: entry.kel || '' });
 },
 diaryMineInput: (e) => self.setState({ diaryMineText: e.target.value }),
 diaryKelInput: (e) => self.setState({ diaryKelText: e.target.value }),
@@ -2470,16 +3007,11 @@ diarySaveMine: () => { self.saveDiaryEntry(s.diarySelectedDate, 'mine', s.diaryM
 diarySaveKel: () => { self.saveDiaryEntry(s.diarySelectedDate, 'kel', s.diaryKelText); self.setState({ diaryKelEdit: false }); self.show('日记已保存'); },
 diaryCancelMine: () => self.setState({ diaryMineEdit: false }),
 diaryCancelKel: () => self.setState({ diaryKelEdit: false }),
-diarySetSticker: () => {
-  if (!s.diarySelectedDate) return;
-  const emojis = ['😊','😢','😡','🥰','😴','🤔','✨','🌧️','☀️','🌈','💪','😭','🎉','💕','😤','🫠'];
-  const entry = self.getDiaryEntry(s.diarySelectedDate);
-  const current = entry.sticker || '';
-  const idx = emojis.indexOf(current);
-  const next = emojis[(idx + 1) % emojis.length];
-  self.saveDiaryEntry(s.diarySelectedDate, 'sticker', next);
-  self.show('心情: ' + next);
-}
+diaryOpenStickerPicker: () => self.setState(v => ({ diaryStickerPickerOpen: !v.diaryStickerPickerOpen })),
+diaryCloseStickerPicker: () => self.setState({ diaryStickerPickerOpen: false }),
+diaryCommentInput: (e) => self.setState({ diaryCommentText: e.target.value }),
+diaryAddComment: () => self.addDiaryComment('user', s.diaryCommentText),
+diaryAskKelComment: () => self.askKelComment()
 };
 }
 }
