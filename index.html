@@ -1667,7 +1667,6 @@ this._t = setTimeout(() => this.setState({ toastShow: false }), 1800);
 
 // ====== Theme ======
 applyTheme(themeId) {
-applyTheme(themeId) {
 if (themeId === 'custom') {
 const ct = this.state.customTheme || {};
 const root = document.documentElement;
@@ -2794,6 +2793,11 @@ self.setState({ activeThemeId: theme.id });
 self.applyTheme(theme.id);
 self.persist();
 self.show(theme.name);
+}
+}));
+
+// Custom theme values - these go in the return object below, NOT inside themeOptions
+const customThemeVals = {
 customThemeBgBase: (s.customTheme || {}).bgBase || '',
 customThemeBgMain: (s.customTheme || {}).bgMain || '',
 customThemeBgCard: (s.customTheme || {}).bgCard || '',
@@ -2824,9 +2828,8 @@ if (ct.textSecondary) root.style.setProperty('--text-secondary', ct.textSecondar
 self.setState({ activeThemeId: 'custom' });
 self.persist();
 self.show('自定义配色已应用');
-},
 }
-}));
+};
 
 return {
 true: true, false: false,
@@ -2965,6 +2968,7 @@ styleContent: styleDraft.content || '',
 customCss: s.customCss || '',
 customFont: s.customFont || '',
 themeOptions,
+...customThemeVals,
 diaryMonthLabel: (() => { const m = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']; return m[s.diaryViewMonth] || ''; })(),
 diaryYearMonth: s.diaryViewYear + '年' + (s.diaryViewMonth + 1) + '月',
 diaryCalendarCells: self.buildCalendarCells(),
