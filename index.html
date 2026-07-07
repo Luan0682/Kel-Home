@@ -920,38 +920,6 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </sc-for>
 </div>
 </div>
-<div style="margin-bottom:14px;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">分类</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;">
-<sc-for list="{{ wbTagOptions }}" as="wt" hint-placeholder-count="4">
-<button onClick="{{ wt.pick }}" style="border:1px solid {{ wt.bd }};background:{{ wt.bg }};color:{{ wt.fg }};border-radius:14px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;">{{ wt.label }}</button>
-</sc-for>
-</div>
-</div>
-<div style="margin-bottom:14px;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">分类</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;">
-<sc-for list="{{ wbTagOptions }}" as="wt" hint-placeholder-count="4">
-<button onClick="{{ wt.pick }}" style="border:1px solid {{ wt.bd }};background:{{ wt.bg }};color:{{ wt.fg }};border-radius:14px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;">{{ wt.label }}</button>
-</sc-for>
-</div>
-</div>
-<div style="margin-bottom:14px;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">分类</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;">
-<sc-for list="{{ wbTagOptions }}" as="wt" hint-placeholder-count="4">
-<button onClick="{{ wt.pick }}" style="border:1px solid {{ wt.bd }};background:{{ wt.bg }};color:{{ wt.fg }};border-radius:14px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;">{{ wt.label }}</button>
-</sc-for>
-</div>
-</div>
-<div style="margin-bottom:14px;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">分类</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;">
-<sc-for list="{{ wbTagOptions }}" as="wt" hint-placeholder-count="4">
-<button onClick="{{ wt.pick }}" style="border:1px solid {{ wt.bd }};background:{{ wt.bg }};color:{{ wt.fg }};border-radius:14px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;">{{ wt.label }}</button>
-</sc-for>
-</div>
-</div>
 <div style="display:flex;gap:12px;margin-bottom:14px;">
 <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
 <input type="radio" name="wbPos" value="before" checked="{{ wbEditPosBefore }}" onChange="{{ wbEditSetPosBefore }}" style="accent-color:#1A1815;">
@@ -1619,8 +1587,8 @@ return '<div style="position:relative;background:#1A1815;border-radius:12px;marg
 '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.06);">' +
 '<span style="font-size:11px;color:#9A958B;">' + langLabel + '</span>' +
 '<div style="display:flex;gap:6px;">' +
-'<button onclick="navigator.clipboard.writeText(this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="border:none;background:rgba(255,255,255,.1);color:#D8D3CA;border-radius:8px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;">Copy</button>' +
-'<button onclick="var t=this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText;var b=new Blob([t],{type:\'text/plain\'});var u=URL.createObjectURL(b);var a=document.createElement(\'a\');a.href=u;a.download=\'' + langLabel + '.' + (lang||'txt') + '\';a.click();URL.revokeObjectURL(u);" style="border:none;background:rgba(255,255,255,.1);color:#D8D3CA;border-radius:8px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;">Download</button>' +
+'<button ontouchend="event.preventDefault();navigator.clipboard.writeText(this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" onclick="navigator.clipboard.writeText(this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="border:none;background:rgba(255,255,255,.1);color:#D8D3CA;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;-webkit-user-select:none;">Copy</button>' +
+'<button ontouchend="event.preventDefault();var t=this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText;var b=new Blob([t],{type:\'text/plain\'});var u=URL.createObjectURL(b);var a=document.createElement(\'a\');a.href=u;a.download=\'' + langLabel + '.' + (lang||'txt') + '\';a.click();URL.revokeObjectURL(u);" onclick="var t=this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText;var b=new Blob([t],{type:\'text/plain\'});var u=URL.createObjectURL(b);var a=document.createElement(\'a\');a.href=u;a.download=\'' + langLabel + '.' + (lang||'txt') + '\';a.click();URL.revokeObjectURL(u);" style="border:none;background:rgba(255,255,255,.1);color:#D8D3CA;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;-webkit-user-select:none;">Download</button>' +
 '</div></div>' +
 '<pre style="margin:0;padding:12px 14px;overflow-x:auto;font-family:\'SF Mono\',\'Fira Code\',monospace;font-size:13px;line-height:1.6;color:#E8E4DC;white-space:pre;">' + code + '</pre></div>';
 });
@@ -2202,7 +2170,7 @@ url += '/messages';
 body = { model: preset.model, max_tokens: 16384, messages: apiMessages };
 if (sysPrompt) body.system = sysPrompt;
 const model = preset.model || '';
-const supportsThinking = model.includes('claude-3-5-sonnet') || model.includes('claude-sonnet-4') || model.includes('claude-opus') || model.includes('claude-3-7') || model.includes('claude-3.5') || model.includes('claude-4');
+const supportsThinking = model.includes('claude') || model.includes('sonnet') || model.includes('opus') || model.includes('haiku');
 if (supportsThinking) {
 body.thinking = { type: 'enabled', budget_tokens: 10000 };
 body.max_tokens = 16384;
@@ -2230,6 +2198,9 @@ else if (block.type === 'text') reply += (block.text || '');
 } else {
 reply = data.choices?.[0]?.message?.content || '';
 }
+
+console.log('[Kel Debug] thinking length:', thinking.length, 'reply length:', reply.length);
+if (thinking) console.log('[Kel Debug] thinking preview:', thinking.slice(0, 100));
 
 // Apply regex rules to output
 reply = this.applyRegexRules(reply, 'output');
@@ -2526,8 +2497,8 @@ if (!data || !name) return;
 let el = document.getElementById('kel-local-font');
 if (!el) { el = document.createElement('style'); el.id = 'kel-local-font'; document.head.appendChild(el); }
 const fontName = 'KelLocal';
-el.textContent = '@font-face { font-family: "' + fontName + '"; src: url(' + data + '); }';
-document.body.style.fontFamily = '"' + fontName + '", ' + (this.state.customFont || "-apple-system, 'Noto Sans SC', sans-serif");
+const fallback = this.state.customFont || "-apple-system, 'Noto Sans SC', sans-serif";
+el.textContent = '@font-face { font-family: "' + fontName + '"; src: url(' + data + '); font-display: swap; }\n* { font-family: "' + fontName + '", ' + fallback + ' !important; }';
 }
 
 applyMsgFontSize() {
@@ -2610,7 +2581,9 @@ regex = new RegExp(expr, flags);
 regex = new RegExp(pat, 'gi');
 }
 } catch(e) { continue; }
+regex.lastIndex = 0;
 if (regex.test(result)) {
+regex.lastIndex = 0;
 const actions = (rule.action || '').split('\n').map(a => a.trim()).filter(Boolean);
 for (const action of actions) {
 if (action.startsWith('pet:')) {
@@ -3089,8 +3062,20 @@ const petGifMap = {
 idle: './sprites/clawd-idle.gif',
 happy: './sprites/clawd-happy.gif',
 thinking: './sprites/clawd-thinking.gif',
-love: './sprites/clawd-love.gif',
-sad: './sprites/clawd-sad.gif'
+love: './sprites/clawd-notification.gif',
+sad: './sprites/clawd-sleeping.gif',
+error: './sprites/clawd-error.gif',
+annoyed: './sprites/clawd-react-annoyed.gif',
+reading: './sprites/clawd-idle-reading.gif',
+building: './sprites/clawd-building.gif',
+conducting: './sprites/clawd-conducting.gif',
+juggling: './sprites/clawd-juggling.gif',
+sweeping: './sprites/clawd-sweeping.gif',
+typing: './sprites/clawd-bubble.gif',
+jump: './sprites/clawd-react-double-jump.gif',
+headphones: './sprites/clawd-headphones-groove.gif',
+carrying: './sprites/clawd-carrying.gif',
+debugger: './sprites/clawd-debugger.gif'
 };
 const petGif = s.isBusy ? petGifMap.thinking : (petGifMap[s.petState] || petGifMap.idle);
 
