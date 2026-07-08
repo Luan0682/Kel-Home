@@ -57,12 +57,6 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </button>
 </div>
 
-<!-- Dynamic Island Capsule -->
-<button onClick="{{ toggleIsland }}" style="height:36px;min-width:80px;max-width:160px;border-radius:20px;background:#1A1815;border:none;display:flex;align-items:center;justify-content:center;gap:6px;padding:0 14px;cursor:pointer;animation:breathe 3s ease-in-out infinite;">
-<div style="width:7px;height:7px;border-radius:50%;background:{{ islandDotColor }};animation:pulseGlow 2s ease-in-out infinite;"></div>
-<span style="font-size:12px;color:#D8D3CA;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:100px;">{{ islandLabel }}</span>
-</button>
-
 <div style="display:flex;align-items:center;gap:9px;">
 <button onClick="{{ newChat }}" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="var(--text-secondary, #48453E)" stroke-width="1.7" stroke-linecap="round"/></svg>
@@ -89,8 +83,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <!-- messages -->
 <sc-for list="{{ messages }}" as="m" hint-placeholder-count="4">
 <div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;" onContextMenu="{{ m.longPress }}">
-<div style="max-width:{{ m.maxW }};width:{{ m.fullW }};">
-
+<div class="message-bubble" style="max-width:{{ m.maxW }};width:{{ m.fullW }};">
 <!-- thinking block -->
 <sc-if value="{{ m.hasThink }}" hint-placeholder-val="{{ false }}">
 <div style="margin-bottom:14px;">
@@ -106,7 +99,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </sc-if>
 
 <!-- User avatar + fixed timestamp -->
-<sc-if value="{{ m.showUserAvatar }}" hint-placeholder-val="{{ false }}">
+<div class="message-header" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:6px;">
 <div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:6px;">
 <span style="font-size:11px;color:#B8B3A8;">{{ m.timestamp }}</span>
 <img src="{{ userAvatar }}" style="width:{{ avatarSize }}px;height:{{ avatarSize }}px;border-radius:50%;object-fit:cover;" alt="">
@@ -114,7 +107,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </sc-if>
 
 <!-- AI avatar + fixed timestamp -->
-<sc-if value="{{ m.showAiAvatar }}" hint-placeholder-val="{{ false }}">
+<div class="message-header" style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
 <img src="{{ aiAvatar }}" style="width:{{ avatarSize }}px;height:{{ avatarSize }}px;border-radius:50%;object-fit:cover;" alt="">
 <span style="font-size:11px;color:#B8B3A8;">{{ m.timestamp }}</span>
@@ -140,10 +133,6 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <!-- message body: normal -->
 <sc-if value="{{ m.showNormal }}" hint-placeholder-val="{{ true }}">
 <div ref="{{ m.contentRef }}" style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:var(--msg-padding, 8px 14px);font-size:var(--msg-font-size, 16px);line-height:var(--msg-line-height, 1.5);letter-spacing:-0.008em;word-break:break-word;"></div>
-</sc-if>
-
-<sc-if value="{{ m.timestamp }}" hint-placeholder-val="{{ false }}">
-<div style="text-align:{{ m.align === 'flex-end' ? 'right' : 'left' }};font-size:10px;color:#B8B3A8;margin-top:4px;opacity:.7;">{{ m.timestamp }}</div>
 </sc-if>
 
 <!-- message body: edit mode -->
@@ -212,7 +201,14 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- input bar -->
 <div style="flex:none;padding:6px 14px calc(env(safe-area-inset-bottom, 0px) + 4px);">
-<!-- image preview -->
+<!-- quoted message preview -->
+<sc-if value="{{ quotedMsg }}" hint-placeholder-val="{{ false }}">
+<div style="background:var(--bg-card, #FFF); border-left:3px solid #1A1815; border-radius:6px; padding:8px 12px; margin-bottom:6px; font-size:13px; color:#6B665E; display:flex; justify-content:space-between; align-items:center;">
+  <span><strong>{{ quotedMsg.sender }}</strong>：{{ quotedMsg.text.slice(0, 60) }}{{ quotedMsg.text.length > 60 ? '…' : '' }}</span>
+  <button onClick="{{ clearQuote }}" style="border:none; background:transparent; cursor:pointer; opacity:.5; font-size:16px;">✕</button>
+</div>
+</sc-if>
+<!-- view -->
 <sc-if value="{{ hasAttachment }}" hint-placeholder-val="{{ false }}">
 <div style="padding:0 4px 8px;display:flex;align-items:center;gap:10px;">
   <div style="position:relative;width:56px;height:56px;border-radius:12px;overflow:hidden;border:1px solid #E7E3DA;display:flex;align-items:center;justify-content:center;background:#F2EFE8;">
@@ -229,7 +225,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
   <span style="font-size:12px;color:#9A958B;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ attachmentFileName }}</span>
 </div>
 </sc-if>
-<div style="background:var(--bg-input, #FBFAF7);border:1px solid var(--border-input, #E7E3DA);border-radius:26px;padding:14px 17px 8px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
+<div style="put, #FBFAF7);border:1px solid var(--border-input, #E7E3DA);border-radius:26px;padding:14px 17px 8px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
 <textarea value="{{ input }}" onInput="{{ inputChange }}" onKeyDown="{{ inputKey }}" placeholder="发送消息..." rows="1" style="display:block;width:100%;min-height:32px;max-height:calc(80vh - 180px);border:none;background:transparent;resize:none;outline:none;font-family:inherit;font-size:16px;line-height:1.6;color:#2B2620;padding:4px 4px 6px;font-weight:300;overflow-y:auto;" ref="{{ textareaRef }}"></textarea>
 <div style="display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:9px;">
@@ -821,20 +817,6 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 </div>
-</div>
-</div>
-</sc-if>
-
-<!-- Dynamic Island popup -->
-<sc-if value="{{ islandOpen }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;inset:0;z-index:180;">
-<div onClick="{{ toggleIsland }}" style="position:absolute;inset:0;background:rgba(0,0,0,.12);animation:fadeIn .15s ease both;"></div>
-<div style="position:absolute;top:70px;left:20px;right:20px;background:#1A1815;border-radius:20px;padding:18px 20px;box-shadow:0 8px 30px rgba(0,0,0,.25);animation:fadeUp .2s ease both;">
-<div style="display:flex;align-items:center;gap:10px;margin-bottom:12px;">
-<div style="width:8px;height:8px;border-radius:50%;background:{{ islandDotColor }};"></div>
-<span style="font-size:14px;font-weight:600;color:#F5F3EE;">Kel 的内心</span>
-</div>
-<div class="sa" style="font-size:13px;line-height:1.7;color:#B8B3A8;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;">{{ heartfelt }}</div>
 </div>
 </div>
 </sc-if>
@@ -1457,6 +1439,18 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">消息字体大小 (px)</div>
 <input value="{{ msgFontSize }}" onInput="{{ msgFontSizeChange }}" type="number" min="12" max="24" style="width:80px;border:1px solid #E7E3DA;border-radius:12px;padding:8px 12px;font-family:inherit;font-size:14px;color:#1A1815;text-align:center;">
 </div>
+<!-- 字体预设管理 -->
+<div style="padding:14px 16px;border-bottom:1px solid #ECE8DF;">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+    <span style="font-size:12px;color:#B8B3A8;">字体预设</span>
+    <button onClick="{{ saveFontPreset }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:12px;padding:5px 12px;font-size:11px;font-family:inherit;cursor:pointer;">保存当前字体</button>
+  </div>
+  <div style="display:flex;flex-wrap:wrap;gap:6px;">
+    <sc-for list="{{ fontPresets }}" as="fp" hint-placeholder-count="3">
+      <button onClick="{{ fp.apply }}" style="border:1px solid {{ fp.border }};background:var(--bg-card, #FFF);border-radius:12px;padding:4px 10px;font-size:12px;font-family:inherit;cursor:pointer;max-width:140px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ fp.name }}</button>
+    </sc-for>
+  </div>
+</div>
 <!-- CSS -->
 <div style="padding:14px 16px;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">自定义 CSS</div>
@@ -1482,6 +1476,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="position:absolute;inset:0;z-index:500;" onClick="{{ closeContextMenu }}">
 <div style="position:absolute;top:{{ contextMenuTop }};left:50%;transform:translateX(-50%);background:#1A1815;border-radius:14px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.3);display:flex;gap:2px;animation:fadeUp .15s ease both;" onClick="{{ stopProp }}">
 <button onClick="{{ ctxCopy }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">复制</button>
+<button onClick="{{ ctxQuote }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">引用</button>
 <button onClick="{{ ctxEdit }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">编辑</button>
 <button onClick="{{ ctxResend }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">重发</button>
 <button onClick="{{ ctxDelete }}" style="border:none;background:transparent;color:#FF6B6B;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">删除</button>
@@ -1652,6 +1647,8 @@ return '<div style="position:relative;background:#1A1815;border-radius:12px;marg
 });
 // Inline code
 html = html.replace(/`([^`]+)`/g, '<code style="background:#ECEAE4;padding:2px 6px;border-radius:5px;font-family:\'SF Mono\',monospace;font-size:14px;">$1</code>');
+// Quote blocks (lines starting with > )
+html = html.replace(/^&gt; (.*)$/gm, '<div class="quote-block">$1</div>');
 // Bold
 html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 // Italic
@@ -1776,9 +1773,6 @@ diaryKelEdit: false,
 diaryKelText: '',
 diaryStickerPickerOpen: false,
 diaryCommentText: '',
-islandOpen: false,
-lastThinking: saved.lastThinking || '',
-heartfelt: saved.heartfelt || '藏在心里的真心话……',
 kelMood: saved.kelMood || 'idle',
 imagePreviewOpen: false,
 imagePreviewUrl: '',
@@ -1794,7 +1788,9 @@ deleteConfirmText: '',
 wbFullscreen: false,
 memFullscreen: false,
 regexRules: saved.regexRules || [],
+fontPresets: saved.fontPresets || [],
 regexEditId: null,
+quotedMsg: null,
 regexEditName: '',
 regexEditPattern: '',
 regexEditAction: '',
@@ -1807,6 +1803,7 @@ if (!this.state.chats[this.state.currentChatId]) {
 this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
 }
 setTimeout(() => { this.applyTheme(this.state.activeThemeId); this.applyCustomCss(); this.applyCustomFont(); this.applyMsgFontSize(); }, 100);
+window.addEventListener('beforeunload', () => { this.persist(); });
 this._clockTimer = setInterval(() => {
 this.setState({ currentTime: getCurrentTime() });
 }, 1000);
@@ -1901,10 +1898,9 @@ anniversaries: s.anniversaries,
 activeAnnivIdx: s.activeAnnivIdx,
 pledges: s.pledges,
 diaries: s.diaries,
-lastThinking: s.lastThinking,
-heartfelt: s.heartfelt,
 kelMood: s.kelMood,
-regexRules: s.regexRules
+regexRules: s.regexRules,
+fontPresets: s.fontPresets,
 });
 }
 
@@ -2085,11 +2081,17 @@ const chatId = this.state.currentChatId;
 const chats = { ...this.state.chats };
 const chat = { ...chats[chatId] };
 const timestamp = getFixedTimestamp();
+let fullText = text || '[File: ' + (this.state.attachment?.fileName || 'attachment') + ']';
+if (this.state.quotedMsg) {
+  const quoteLines = this.state.quotedMsg.text.split('\n').map(line => '> ' + line).join('\n');
+  fullText = quoteLines + '\n\n' + fullText;
+  this.setState({ quotedMsg: null }); // 发送后清空
+}
 const newMsg = {
 id: genId(),
 role: 'user',
-text: text || '[File: ' + (this.state.attachment?.fileName || 'attachment') + ']',
-variants: [text || '[File: ' + (this.state.attachment?.fileName || 'attachment') + ']'],
+text: fullText,   // 使用 fullText
+variants: [fullText], // 使用 fullText
 variantIdx: 0,
 timestamp: timestamp
 };
@@ -2122,7 +2124,6 @@ this.persist();
 this.scrollToBottom();
 }
 }
-
 async sendMessage() {
 // Black button: send all pending lines to API
 if (this.state.isBusy) return;
@@ -2327,7 +2328,7 @@ if (thinking) {
 }
 
 // ---- 从回复内容中检测情感（但正则触发优先级更高） ----
-const thinkingContent = thinking || this.state.lastThinking || '';
+const thinkingContent = thinking || '';
 
 // 逐条推送段落（模拟流式），每条间隔 4 秒（因为音效时长 4 秒）
 for (let i = 0; i < finalParagraphs.length; i++) {
@@ -2426,7 +2427,6 @@ if (msgThinking) {
   this.setState({
     chats: updatedChats,
     petState: finalPetState,
-    lastThinking: thinkingContent,
     kelMood: mood,
     isBusy: (i < finalParagraphs.length - 1)
   });
@@ -2441,7 +2441,6 @@ if (msgThinking) {
 
 // 全部推送完毕，确保 isBusy 为 false，并让小人恢复 idle
 this.setState({ isBusy: false });
-setTimeout(() => this.setState({ petState: 'idle' }), 5000);
 }
 
 _splitReplyIntoMessages(reply, thinking) {
@@ -2543,9 +2542,8 @@ anniversaries: s.anniversaries,
 activeAnnivIdx: s.activeAnnivIdx,
 pledges: s.pledges,
 diaries: s.diaries,
-lastThinking: s.lastThinking,
+fontPresets: s.fontPresets,
 kelMood: s.kelMood,
-heartfelt: s.heartfelt
 };
 const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
 const url = URL.createObjectURL(blob);
@@ -2593,6 +2591,8 @@ if (data.pledges) updates.pledges = data.pledges;
 if (data.diaries) updates.diaries = { ...this.state.diaries, ...data.diaries };
 if (data.kelMood) updates.kelMood = data.kelMood;
 if (data.heartfelt) updates.heartfelt = data.heartfelt;
+if (data.fontPresets) updates.fontPresets = data.fontPresets;
+if (data.regexRules) updates.regexRules = data.regexRules;
 this.setState(updates, () => {
 this.persist();
 if (updates.activeThemeId) this.applyTheme(updates.activeThemeId);
@@ -2721,6 +2721,44 @@ reader.readAsDataURL(file);
 input.click();
 }
 
+saveCurrentFontAsPreset(name) {
+  const s = this.state;
+  const preset = {
+    id: genId(),
+    name: name || (s.localFontName || s.customFont || '未命名字体'),
+    type: s.localFontData ? 'local' : 'web',
+    fontData: s.localFontData || '',
+    fontName: s.localFontName || s.customFont || '',
+  };
+  this.setState({
+    fontPresets: [...s.fontPresets, preset]
+  }, () => { this.persist(); this.show('字体预设已保存'); });
+}
+
+applyFontPreset(id) {
+  const preset = this.state.fontPresets.find(p => p.id === id);
+  if (!preset) return;
+  if (preset.type === 'local') {
+    this.setState({
+      localFontData: preset.fontData,
+      localFontName: preset.fontName,
+      customFont: ''
+    }, () => {
+      this.applyLocalFont();
+      this.persist();
+    });
+  } else {
+    this.setState({
+      customFont: preset.fontName,
+      localFontData: '',
+      localFontName: ''
+    }, () => {
+      this.applyCustomFont();
+      this.persist();
+    });
+  }
+}
+
 // ====== Regex ======
 openRegexEditor(id) {
 const rule = id ? this.state.regexRules.find(r => r.id === id) : null;
@@ -2787,8 +2825,7 @@ for (const action of actions) {
 if (action.startsWith('pet:')) {
   const petState = action.slice(4).trim();
   this.setState({ petState });
-  this._lastRegexPet = petState; // 新增
-  setTimeout(() => this.setState({ petState: 'idle' }), 5000);
+  this._lastRegexPet = petState;
 } else if (action.startsWith('mood:')) {
 const mood = action.slice(5).trim();
 this.setState({ kelMood: mood });
@@ -3025,7 +3062,6 @@ const variants = m.variants || [m.text];
 const vIdx = m.variantIdx || 0;
 const displayText = (variants[vIdx] || m.text || '').trim();
 const rendered = renderContent(displayText, isUser);
-
 // Find if this is the last AI message (for showing actions)
 let isLastAi = false;
 if (!isUser) {
@@ -3372,11 +3408,6 @@ pickKel: () => { self.saveDiaryEntry(s.diarySelectedDate, 'stickerKel', emoji); 
 };
 });
 
-// Dynamic Island
-const islandDotColor = s.isBusy ? '#FFB347' : (s.kelMood === 'happy' ? '#7ED87E' : '#9A958B');
-const islandLabel = s.isBusy ? '思考中...' : (s.kelMood === 'happy' ? '开心' : '在线');
-const lastThinkingPreview = (s.lastThinking || '').slice(0, 500) + (s.lastThinking && s.lastThinking.length > 500 ? '...' : '');
-
 const kelMoodEmoji = s.kelMood === 'happy' ? '🥰' : (s.kelMood === 'thinking' ? '🤔' : '😊');
 
 // Theme options
@@ -3540,14 +3571,19 @@ isPromptSheet: s.sheet === 'prompt',
 isCssSheet: s.sheet === 'css',
 toastShow: s.toastShow,
 toastText: s.toastText,
-islandOpen: s.islandOpen,
-islandDotColor,
-islandLabel,
-hasLastThinking: !!(s.lastThinking && s.lastThinking.length > 0),
-lastThinkingPreview,
-heartfelt: s.heartfelt,
 imagePreviewOpen: s.imagePreviewOpen,
 imagePreviewUrl: s.imagePreviewUrl || '',
+quotedMsg: s.quotedMsg,
+clearQuote: () => self.setState({ quotedMsg: null }),
+fontPresets: (s.fontPresets || []).map(fp => ({
+  name: fp.name || '未命名',
+  border: '#E7E3DA',
+  apply: () => self.applyFontPreset(fp.id)
+})),
+saveFontPreset: () => {
+  const name = prompt('请输入字体预设名称', self.state.localFontName || self.state.customFont || '');
+  if (name !== null) self.saveCurrentFontAsPreset(name);
+},
 navChatBg: s.tab === 'chat' ? '#ECEAE4' : 'transparent',
 navHomeBg: s.tab === 'home' ? '#ECEAE4' : 'transparent',
 navWbBg: s.tab === 'worldbook' ? '#ECEAE4' : 'transparent',
@@ -3663,6 +3699,14 @@ const text = m ? (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text
 navigator.clipboard.writeText(text).then(() => self.show('已复制'));
 self.setState({ contextMenuIdx: -1 });
 },
+ctxQuote: () => {
+  const idx = s.contextMenuIdx;
+  const m = msgs[idx];
+  if (!m) return;
+  const text = m.variants ? m.variants[m.variantIdx || 0] : m.text;
+  const sender = m.role === 'user' ? '我' : 'Kel';
+  self.setState({ quotedMsg: { role: m.role, text: text, sender: sender }, contextMenuIdx: -1 });
+},
 ctxEdit: () => {
 const idx = s.contextMenuIdx;
 const m = msgs[idx];
@@ -3722,8 +3766,8 @@ self.setState({ deleteConfirmType: '', deleteConfirmId: null });
 // ======== ACTIONS ========
 toggleDrawer: () => self.setState(v => ({ drawer: !v.drawer })),
 togglePlus: () => self.setState(v => ({ plus: !v.plus })),
+clearQuote: () => self.setState({ quotedMsg: null }),
 toggleProfile: () => self.setState(v => ({ profile: !v.profile, drawer: false })),
-toggleIsland: () => self.setState(v => ({ islandOpen: !v.islandOpen })),
 closeImagePreview: () => self.setState({ imagePreviewOpen: false, imagePreviewUrl: '' }),
 navChat: () => { self.setState({ tab: 'chat', drawer: false }); self.scrollToBottom(); },
 navHome: () => self.setState({ tab: 'home', drawer: false }),
