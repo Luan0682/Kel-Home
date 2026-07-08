@@ -200,7 +200,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </div>
 
 <!-- input bar -->
-<div style="flex:none;padding:6px 14px calc(env(safe-area-inset-bottom, 0px) + 4px);">
+<div style="flex:none;padding:6px 14px calc(env(safe-area-inset-bottom, 0px) + 10px);">
 <!-- quoted message preview -->
 <sc-if value="{{ quotedMsg }}" hint-placeholder-val="{{ false }}">
 <div style="background:var(--bg-card, #FFF); border-left:3px solid #1A1815; border-radius:6px; padding:8px 12px; margin-bottom:6px; font-size:13px; color:#6B665E; display:flex; justify-content:space-between; align-items:center;">
@@ -225,7 +225,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
   <span style="font-size:12px;color:#9A958B;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ attachmentFileName }}</span>
 </div>
 </sc-if>
-<div style="put, #FBFAF7);border:1px solid var(--border-input, #E7E3DA);border-radius:26px;padding:14px 17px 8px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
+<div style="background:var(--bg-input, #FBFAF7);border:1px solid var(--border-input, #E7E3DA);border-radius:26px;padding:14px 17px 8px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
 <textarea value="{{ input }}" onInput="{{ inputChange }}" onKeyDown="{{ inputKey }}" placeholder="发送消息..." rows="1" style="display:block;width:100%;min-height:32px;max-height:calc(80vh - 180px);border:none;background:transparent;resize:none;outline:none;font-family:inherit;font-size:16px;line-height:1.6;color:#2B2620;padding:4px 4px 6px;font-weight:300;overflow-y:auto;" ref="{{ textareaRef }}"></textarea>
 <div style="display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:9px;">
@@ -911,7 +911,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <input type="radio" name="wbPos" value="after" checked="{{ wbEditPosAfter }}" onChange="{{ wbEditSetPosAfter }}" style="accent-color:#1A1815;">
 字符后
 </label>
-</div<>
+</div>
 <div style="margin-bottom:14px;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个）</div>
 <textarea value="{{ wbEditTriggers }}" onInput="{{ wbEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="3" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
@@ -1466,7 +1466,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- 小可宝宝 -->
 <sc-if value="{{ petEnabled }}" hint-placeholder-val="{{ true }}">
-<div style="position:fixed;bottom:90px;right:16px;z-index:50;pointer-events:none;">
+<div style="{{ petPosStyle }}">
 <img src="{{ petGif }}" width="{{ petSize }}" height="{{ petSize }}" style="image-rendering:pixelated;" alt="Kel">
 </div>
 </sc-if>
@@ -3558,6 +3558,9 @@ petSize: this.currentPetSize,
 petEnabled: s.petEnabled,
 petStatus: s.petEnabled ? 'On' : 'Off',
 petSizeLabel: this.currentPetSize + 'px',
+petPosStyle: s.tab === 'chat'
+  ? 'position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom, 0px) + 100px);transform:translateX(-50%);z-index:50;pointer-events:none;transition:bottom .25s ease, left .25s ease;'
+  : 'position:fixed;bottom:90px;right:16px;z-index:50;pointer-events:none;transition:bottom .25s ease, right .25s ease;',
 soundStatus: s.soundEnabled ? 'On' : 'Off',
 memoryCountLabel: s.memoryCount + ' 条',
 drawerOpen: s.drawer,
