@@ -2020,6 +2020,8 @@ this.show('已删除');
 // ====== System Prompt Builder ======
 buildSystemPrompt() {
 let sys = '';
+// ---- 新增：强制思维链使用中文 ----
+sys += '所有内部思考过程（reasoning/thinking）必须使用中文输出。\n\n';
 const persona = this.activePersona;
 if (persona.content) sys += persona.content + '\n\n';
 const alwaysOnWb = this.state.worldbooks.filter(w => w.alwaysOn && w.content);
