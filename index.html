@@ -1523,6 +1523,38 @@ function loadData() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const data = JSON.parse(raw);
+      // ---- 迁移旧数据结构（在这里执行，保证每次加载都检查） ----
+      let migrated = false;
+      if (data.chats) {
+        for (const chatId of Object.keys(data.chats)) {
+          const chat = data.chats[chatId];
+          if (chat.messages && !chat.thinkingEntries) {
+            chat.thinkingEntries = [];
+            for (const msg of chat.messages) {
+              if (!msg.id) {
+                msg.id = genId();
+                migrated = true;
+              }
+              if (msg.thinking) {
+                chat.thinkingEntries.push({
+                  msgId: msg.id,
+                  content: msg.thinking
+                });
+                delete msg.thinking;
+                migrated = true;
+              }
+              if (!msg.variants) {
+                msg.variants = [msg.text];
+                msg.variantIdx = 0;
+                migrated = true;
+              }
+            }
+          }
+        }
+      }
+      if (migrated) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
       // 如果主数据存在且包含 chats，直接返回
       if (data.chats && Object.keys(data.chats).length > 0) {
         return data;
@@ -1551,7 +1583,6 @@ function loadData() {
     return {};
   }
 }
-
 function saveData(data) {
 try {
 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -2021,6 +2052,20 @@ sys += '[Triggered Memory: ' + mem.name + ']\n' + mem.content + '\n\n'; break;
 }
 const style = this.activeStyleObj;
 if (style.content) sys += '## Style: ' + style.title + '\n' + style.content + '\n\n';
+
+// ---- 新增：用户消息时间线 ----
+const userTimeline = msgs
+  .filter(m => m.role === 'user')
+  .map(m => {
+    const time = m.timestamp || '未知时间';
+    const text = (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text || '';
+    return `[${time}] 用户: ${text.slice(0, 100)}${text.length > 100 ? '...' : ''}`;
+  })
+  .join('\n');
+if (userTimeline) {
+  sys += '## 用户消息时间线\n' + userTimeline + '\n\n';
+}
+
 const memorySummary = buildMemorySummary(this.state.chats, this.state.currentChatId, this.state.memoryCount);
 if (memorySummary) sys += '## Context Memory\n' + memorySummary + '\n\n';
 return sys.trim();
@@ -2039,6 +2084,7 @@ const chats = { ...this.state.chats };
 const chat = { ...chats[chatId] };
 const timestamp = getFixedTimestamp();
 const newMsg = {
+id: genId(),
 role: 'user',
 text: text || '[File: ' + (this.state.attachment?.fileName || 'attachment') + ']',
 variants: [text || '[File: ' + (this.state.attachment?.fileName || 'attachment') + ']'],
@@ -2348,14 +2394,28 @@ for (let i = 0; i < finalParagraphs.length; i++) {
   const currentChat = this.state.chats[chatId];
   const currentMsgs = [...currentChat.messages];
 
-  currentMsgs.push({
-    role: 'assistant',
-    text: text,    // 此时 text 已经移除了 pet:xxx 命令
-    thinking: msgThinking,
-    variants: [text],
-    variantIdx: 0,
-    timestamp: timestamp
+  const msgId = genId();
+currentMsgs.push({
+  id: msgId,
+  role: 'assistant',
+  text: text,
+  variants: [text],
+  variantIdx: 0,
+  timestamp: timestamp
+  // 注意：不再包含 thinking 字段
+});
+
+// 如果有思维链，单独存入 thinkingEntries
+if (msgThinking) {
+  // 确保聊天对象有 thinkingEntries
+  if (!this.state.chats[chatId].thinkingEntries) {
+    this.state.chats[chatId].thinkingEntries = [];
+  }
+  this.state.chats[chatId].thinkingEntries.push({
+    msgId: msgId,
+    content: msgThinking
   });
+}
 
   const updatedChat = { ...currentChat, messages: currentMsgs, lastTime: Date.now() };
   const updatedChats = { ...this.state.chats, [chatId]: updatedChat };
@@ -2379,7 +2439,7 @@ for (let i = 0; i < finalParagraphs.length; i++) {
 
 // 全部推送完毕，确保 isBusy 为 false，并让小人恢复 idle
 this.setState({ isBusy: false });
-setTimeout(() => this.setState({ petState: 'idle' }), 800);
+setTimeout(() => this.setState({ petState: 'idle' }), 5000);
 }
 
 _splitReplyIntoMessages(reply, thinking) {
@@ -2963,7 +3023,6 @@ const variants = m.variants || [m.text];
 const vIdx = m.variantIdx || 0;
 const displayText = (variants[vIdx] || m.text || '').trim();
 const rendered = renderContent(displayText, isUser);
-const hasThinking = !isUser && !!m.thinking && m.thinking.length > 0;
 
 // Find if this is the last AI message (for showing actions)
 let isLastAi = false;
@@ -2973,6 +3032,16 @@ for (let j = i + 1; j < msgs.length; j++) {
 if (msgs[j].role === 'assistant') { isLastAi = false; break; }
 }
 }
+
+// 查找思维链
+let thinkingContent = '';
+if (!isUser) {
+  const chat = this.state.chats[this.state.currentChatId];
+  const entries = chat?.thinkingEntries || [];
+  const entry = entries.find(e => e.msgId === m.id);
+  thinkingContent = entry ? entry.content : '';
+}
+const hasThink = !isUser && !!thinkingContent && thinkingContent.length > 0;
 
 return {
 isUser,
@@ -2999,10 +3068,10 @@ return '6px 6px 6px 6px';
 gap: isLastInGroup(i) ? '24px' : '4px',
 text: displayText,
 rendered: rendered,
+hasThink: hasThink,
+thinkSummary: hasThink ? thinkingContent.replace(/\n/g, ' ').slice(0, 50) + (thinkingContent.length > 50 ? '…' : '') : '',
+thinkContent: thinkingContent,
 timestamp: m.timestamp || '',
-hasThink: !isUser && !!m.thinking && m.thinking.length > 0,
-thinkSummary: hasThinking ? m.thinking.replace(/\n/g, ' ').slice(0, 50) + (m.thinking.length > 50 ? '…' : '') : '',
-thinkContent: m.thinking || '',
 thinkOpen: s.thinkOpenMap && s.thinkOpenMap[i] || false,
 thinkRot: (s.thinkOpenMap && s.thinkOpenMap[i]) ? 'rotate(90deg)' : 'rotate(0deg)',
 toggleThink: () => {
@@ -3050,8 +3119,13 @@ self.setState({ chats }); self.persist();
 del: () => {
   const chats = { ...s.chats };
   const c = { ...chats[s.currentChatId] };
+  const msgId = c.messages[i].id;
   c.messages = [...c.messages];
   c.messages.splice(i, 1);
+  // 可选：如果想删除消息时同时删除关联的思维链，可以取消下面注释
+  // if (c.thinkingEntries) {
+  //   c.thinkingEntries = c.thinkingEntries.filter(e => e.msgId !== msgId);
+  // }
   chats[s.currentChatId] = c;
   self.setState({ chats });
   self.persist();
