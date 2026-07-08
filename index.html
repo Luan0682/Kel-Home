@@ -99,16 +99,16 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </sc-if>
 
 <!-- User avatar + fixed timestamp -->
+<sc-if value="{{ m.showUserAvatar }}" hint-placeholder-val="{{ false }}">
 <div class="message-header" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:6px;">
-<div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:6px;">
 <span style="font-size:11px;color:#B8B3A8;">{{ m.timestamp }}</span>
 <img src="{{ userAvatar }}" style="width:{{ avatarSize }}px;height:{{ avatarSize }}px;border-radius:50%;object-fit:cover;" alt="">
 </div>
 </sc-if>
 
 <!-- AI avatar + fixed timestamp -->
+<sc-if value="{{ m.showAiAvatar }}" hint-placeholder-val="{{ false }}">
 <div class="message-header" style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-<div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
 <img src="{{ aiAvatar }}" style="width:{{ avatarSize }}px;height:{{ avatarSize }}px;border-radius:50%;object-fit:cover;" alt="">
 <span style="font-size:11px;color:#B8B3A8;">{{ m.timestamp }}</span>
 </div>
