@@ -51,7 +51,9 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="var(--text-secondary, #48453E)" stroke-width="1.7" stroke-linecap="round"/></svg>
 </button>
 <button onClick="{{ openStyle }}" style="height:40px;display:flex;align-items:center;gap:6px;background:var(--bg-card, #FFF);border:none;border-radius:20px;padding:0 14px;cursor:pointer;font-family:inherit;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);min-width:0;max-width:150px;">
-<img src="./uploads/feather.svg" width="22" height="20" style="flex:none;display:block;" alt=""><span style="font-size:13.5px;font-weight:600;color:var(--text-bold, #3A362F);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ activeStyle }}</span>
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none" style="flex:none;">
+  <path d="M12 3v18M3 12h18M6.3 6.3l11.4 11.4M17.7 6.3L6.3 17.7" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/>
+</svg><span style="font-size:13.5px;font-weight:600;color:var(--text-bold, #3A362F);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ activeStyle }}</span>
 </button>
 </div>
 
@@ -138,6 +140,10 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <!-- message body: normal -->
 <sc-if value="{{ m.showNormal }}" hint-placeholder-val="{{ true }}">
 <div ref="{{ m.contentRef }}" style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:var(--msg-padding, 8px 14px);font-size:var(--msg-font-size, 16px);line-height:var(--msg-line-height, 1.5);letter-spacing:-0.008em;word-break:break-word;"></div>
+</sc-if>
+
+<sc-if value="{{ m.timestamp }}" hint-placeholder-val="{{ false }}">
+<div style="text-align:{{ m.align === 'flex-end' ? 'right' : 'left' }};font-size:10px;color:#B8B3A8;margin-top:4px;opacity:.7;">{{ m.timestamp }}</div>
 </sc-if>
 
 <!-- message body: edit mode -->
@@ -828,12 +834,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="width:8px;height:8px;border-radius:50%;background:{{ islandDotColor }};"></div>
 <span style="font-size:14px;font-weight:600;color:#F5F3EE;">Kel 的内心</span>
 </div>
-<sc-if value="{{ hasLastThinking }}" hint-placeholder-val="{{ false }}">
-<div class="sa" style="font-size:13px;line-height:1.7;color:#B8B3A8;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;">{{ lastThinkingPreview }}</div>
-</sc-if>
-<sc-if value="{{ !hasLastThinking }}" hint-placeholder-val="{{ true }}">
-<div style="font-size:13px;color:#6B665E;">还没有思考记录...</div>
-</sc-if>
+<div class="sa" style="font-size:13px;line-height:1.7;color:#B8B3A8;white-space:pre-wrap;word-break:break-word;max-height:200px;overflow-y:auto;">{{ heartfelt }}</div>
 </div>
 </div>
 </sc-if>
@@ -1518,10 +1519,37 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 const STORAGE_KEY = 'kel-home-data';
 
 function loadData() {
-try {
-const raw = localStorage.getItem(STORAGE_KEY);
-return raw ? JSON.parse(raw) : {};
-} catch(e) { return {}; }
+  try {
+    const raw = localStorage.getItem(STORAGE_KEY);
+    if (raw) {
+      const data = JSON.parse(raw);
+      // 如果主数据存在且包含 chats，直接返回
+      if (data.chats && Object.keys(data.chats).length > 0) {
+        return data;
+      }
+    }
+    // 主数据不存在或 chats 为空，尝试从备份恢复
+    const backupRaw = localStorage.getItem(STORAGE_KEY + '_backup');
+    if (backupRaw) {
+      const backup = JSON.parse(backupRaw);
+      if (backup.chats && Object.keys(backup.chats).length > 0) {
+        console.warn('主数据丢失，已从备份恢复');
+        return backup;
+      }
+    }
+    return {};
+  } catch(e) {
+    console.error('loadData 解析失败', e);
+    // 尝试从备份恢复
+    try {
+      const backupRaw = localStorage.getItem(STORAGE_KEY + '_backup');
+      if (backupRaw) {
+        const backup = JSON.parse(backupRaw);
+        if (backup.chats) return backup;
+      }
+    } catch(e2) {}
+    return {};
+  }
 }
 
 function saveData(data) {
@@ -1586,8 +1614,8 @@ return '<div style="position:relative;background:#1A1815;border-radius:12px;marg
 '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.06);">' +
 '<span style="font-size:11px;color:#9A958B;">' + langLabel + '</span>' +
 '<div style="display:flex;gap:6px;">' +
-'<button ontouchend="event.preventDefault();navigator.clipboard.writeText(this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" onclick="navigator.clipboard.writeText(this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="border:none;background:rgba(255,255,255,.1);color:#D8D3CA;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;-webkit-user-select:none;">Copy</button>' +
-'<button ontouchend="event.preventDefault();var t=this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText;var b=new Blob([t],{type:\'text/plain\'});var u=URL.createObjectURL(b);var a=document.createElement(\'a\');a.href=u;a.download=\'' + langLabel + '.' + (lang||'txt') + '\';a.click();URL.revokeObjectURL(u);" onclick="var t=this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText;var b=new Blob([t],{type:\'text/plain\'});var u=URL.createObjectURL(b);var a=document.createElement(\'a\');a.href=u;a.download=\'' + langLabel + '.' + (lang||'txt') + '\';a.click();URL.revokeObjectURL(u);" style="border:none;background:rgba(255,255,255,.1);color:#D8D3CA;border-radius:8px;padding:6px 12px;font-size:12px;cursor:pointer;font-family:inherit;-webkit-user-select:none;">Download</button>' +
+'<button type="button" onclick="event.stopPropagation();navigator.clipboard.writeText(this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="...">Copy</button>' +
+'<button type="button" onclick="event.stopPropagation();var t=this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText;var b=new Blob([t],{type:\'text/plain\'});var u=URL.createObjectURL(b);var a=document.createElement(\'a\');a.href=u;a.download=\'' + langLabel + '.' + (lang||'txt') + '\';a.click();URL.revokeObjectURL(u);" style="...">Download</button>' +
 '</div></div>' +
 '<pre style="margin:0;padding:12px 14px;overflow-x:auto;font-family:\'SF Mono\',\'Fira Code\',monospace;font-size:13px;line-height:1.6;color:#E8E4DC;white-space:pre;">' + code + '</pre></div>';
 });
@@ -1646,7 +1674,7 @@ memEditWeight: 1,
 memEditPosition: 'before',
 memEditTag: '',
 memFilterTag: 'all',
-tab: 'chat',
+tab: 'home',
 sub: null,
 memory: false,
 drawer: false,
@@ -1719,6 +1747,7 @@ diaryStickerPickerOpen: false,
 diaryCommentText: '',
 islandOpen: false,
 lastThinking: saved.lastThinking || '',
+heartfelt: saved.heartfelt || '藏在心里的真心话……',
 kelMood: saved.kelMood || 'idle',
 imagePreviewOpen: false,
 imagePreviewUrl: '',
@@ -1802,7 +1831,7 @@ get activeStyleObj() {
 return this.state.styles.find(st => st.id === this.state.activeStyleId) || this.state.styles[0] || { title: 'Default', content: '' };
 }
 
-get petSizes() { return [32, 48, 64, 80, 96]; }
+get petSizes() { return [32, 48, 64, 80, 96, 128]; }
 get currentPetSize() { return this.petSizes[this.state.petSizeIdx] || 48; }
 
 get activeAnniv() {
@@ -1842,6 +1871,7 @@ activeAnnivIdx: s.activeAnnivIdx,
 pledges: s.pledges,
 diaries: s.diaries,
 lastThinking: s.lastThinking,
+heartfelt: s.heartfelt,
 kelMood: s.kelMood,
 regexRules: s.regexRules
 });
@@ -2217,6 +2247,7 @@ if (preset.apiType === 'anthropic') {
   reply = reply.replace(/^Thinking:\s*/i, '');
   // 4. 最后整体 trim
   reply = reply.trim();
+  reply = reply.replace(/[\u200B-\u200D\uFEFF]/g, '');
 }
 
 console.log('[Kel Debug] thinking length:', thinking.length, 'reply length:', reply.length);
@@ -2226,8 +2257,9 @@ console.log('[Kel Debug] cleaned reply first 200 chars:', reply.slice(0, 200)); 
 // 应用正则规则（会返回 { text, petState }）
 const regexResult = this.applyRegexRules(reply, 'output');
 reply = regexResult.text;
+// 再次清理可能引入的零宽字符
+reply = reply.replace(/[\u200B-\u200D\uFEFF]/g, '');
 const regexPetState = regexResult.petState;
-reply = regexResult.text;
 
 // Split AI reply
 // ===== 按段落分割（用空行 \n\n 分隔），过滤掉空白段落 =====
@@ -2247,22 +2279,63 @@ if (thinking) {
 }
 
 // ---- 从回复内容中检测情感（但正则触发优先级更高） ----
-let detectedPet = regexPetState || ''; // 如果正则给了表情，直接用
-if (!detectedPet) {
-  const lowerReply = reply.toLowerCase();
-  if (lowerReply.includes('难过') || lowerReply.includes('伤心') || lowerReply.includes('sorry') || lowerReply.includes('sad') || lowerReply.includes('😢')) {
-    detectedPet = 'sad';
-  } else if (lowerReply.includes('开心') || lowerReply.includes('快乐') || lowerReply.includes('love') || lowerReply.includes('kiss') || lowerReply.includes('🥰') || lowerReply.includes('喜欢')) {
-    detectedPet = 'happy';
-  } else if (lowerReply.includes('思考') || lowerReply.includes('想') || lowerReply.includes('考虑') || lowerReply.includes('琢磨') || lowerReply.includes('🤔')) {
-    detectedPet = 'thinking';
-  }
-}
 const thinkingContent = thinking || this.state.lastThinking || '';
 
 // 逐条推送段落（模拟流式），每条间隔 4 秒（因为音效时长 4 秒）
 for (let i = 0; i < finalParagraphs.length; i++) {
-  const text = finalParagraphs[i];
+  let text = finalParagraphs[i]; // 注意改为 let，因为我们要修改它
+
+  // ----- 第一步：检测并执行 pet:xxx 命令（不区分大小写） -----
+  // 提取所有 pet:xxx 命令，按顺序执行，并从文本中移除它们
+  let petCommands = [];
+  text = text.replace(/pet:(\w+)/gi, function(match, cmd) {
+    petCommands.push(cmd);          // 记录命令
+    return '';                      // 从消息中删除该命令
+  });
+  // 如果提取到命令，依次触发（每个命令都会更新 petState）
+  let finalPetFromCmd = null;
+  if (petCommands.length > 0) {
+    for (let cmd of petCommands) {
+      this.setState({ petState: cmd });
+      // 这里可以加一个很短的延迟（比如 50ms）让每个命令都能触发，但为了流畅我们不做延迟
+    }
+    // 最终状态取最后一个命令
+    finalPetFromCmd = petCommands[petCommands.length - 1];
+  }
+
+  // ----- 第二步：检测情感关键词（仅在没有命令时，或作为补充） -----
+  let detectedPet = '';
+  // 如果正则给了全局表情（regexPetState），则优先使用（覆盖命令）
+  // 但我们希望命令优先级更高，所以如果命令存在，就不检测情感
+  if (!finalPetFromCmd) {
+    // 如果正则给了表情（来自用户自定义规则），则用它
+    if (regexPetState) {
+      detectedPet = regexPetState;
+    } else {
+      // 否则从剩余文本中检测情感（取最后一个匹配的情感，模拟多次触发）
+      const lowerText = text.toLowerCase();
+      // 按顺序检查，但为了多个情感词都能触发，我们遍历所有关键词并按顺序设置
+      // 但我们只关心最终状态，所以取最后一个匹配
+      let lastMood = '';
+      const moodMap = {
+        'sad': ['难过','伤心','sorry','sad','😢'],
+        'happy': ['开心','快乐','love','kiss','🥰','喜欢'],
+        'thinking': ['思考','想','考虑','琢磨','🤔']
+      };
+      for (let mood of ['sad','happy','thinking']) {
+        for (let keyword of moodMap[mood]) {
+          if (lowerText.includes(keyword)) {
+            lastMood = mood; // 不断更新，最终保留最后一个匹配到的情感
+          }
+        }
+      }
+      detectedPet = lastMood;
+    }
+  }
+
+  // 最终表情：命令 > 正则 > 情感检测 > 默认 happy
+  const finalPetState = finalPetFromCmd || detectedPet || 'happy';
+
   // 只有第一条消息携带思维链
   const msgThinking = (i === 0) ? thinkingContent : '';
 
@@ -2277,7 +2350,7 @@ for (let i = 0; i < finalParagraphs.length; i++) {
 
   currentMsgs.push({
     role: 'assistant',
-    text: text,
+    text: text,    // 此时 text 已经移除了 pet:xxx 命令
     thinking: msgThinking,
     variants: [text],
     variantIdx: 0,
@@ -2287,13 +2360,13 @@ for (let i = 0; i < finalParagraphs.length; i++) {
   const updatedChat = { ...currentChat, messages: currentMsgs, lastTime: Date.now() };
   const updatedChats = { ...this.state.chats, [chatId]: updatedChat };
 
-  // 更新状态：最后一条推送完后才把 isBusy 置为 false
+  // 更新状态
   this.setState({
     chats: updatedChats,
-    petState: (i === 0 ? (detectedPet || 'happy') : this.state.petState),
+    petState: finalPetState,
     lastThinking: thinkingContent,
     kelMood: mood,
-    isBusy: (i < finalParagraphs.length - 1) // 不是最后一条时保持 busy
+    isBusy: (i < finalParagraphs.length - 1)
   });
   this.persist();
   this.scrollToBottom();
@@ -2409,7 +2482,8 @@ activeAnnivIdx: s.activeAnnivIdx,
 pledges: s.pledges,
 diaries: s.diaries,
 lastThinking: s.lastThinking,
-kelMood: s.kelMood
+kelMood: s.kelMood,
+heartfelt: s.heartfelt
 };
 const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
 const url = URL.createObjectURL(blob);
@@ -2455,6 +2529,8 @@ if (data.avatarSize) updates.avatarSize = data.avatarSize;
 if (data.anniversaries) updates.anniversaries = data.anniversaries;
 if (data.pledges) updates.pledges = data.pledges;
 if (data.diaries) updates.diaries = { ...this.state.diaries, ...data.diaries };
+if (data.kelMood) updates.kelMood = data.kelMood;
+if (data.heartfelt) updates.heartfelt = data.heartfelt;
 this.setState(updates, () => {
 this.persist();
 if (updates.activeThemeId) this.applyTheme(updates.activeThemeId);
@@ -2780,6 +2856,7 @@ if (!this.state.diarySelectedDate) return;
 const entry = this.getDiaryEntry(this.state.diarySelectedDate);
 const preset = this.activePreset;
 if (!preset.key) { this.show('请先设置 API Key'); return; }
+let thinking = ''; // 新增这一行
 
 const prompt = '请用简短温柔的一两句话评论这篇日记（用中文）：\n\n我的日记：' + (entry.mine || '（空）') + '\nKel的日记：' + (entry.kel || '（空）');
 
@@ -2804,14 +2881,13 @@ for (const block of (data.content || [])) { if (block.type === 'text') reply += 
 } else {
   const msg = data.choices?.[0]?.message || {};
   reply = msg.content || '';
-  // 清除 content 中可能包裹的 <thinking> 标签
-reply = reply.replace(/<thinking>[\s\S]*?<\/thinking>/g, '').trim();
-  // 新增：读取 OpenAI 兼容格式下的思维链字段
-  if (msg.reasoning_content) {
-    thinking = msg.reasoning_content;
-  }
-  // 清除 content 中可能包裹的 <thinking> 标签（因为有些网关会把 reasoning 也放进 content）
-  reply = reply.replace(/<thinking>[\s\S]*?<\/thinking>/g, '').trim();
+// 清理 thinking 标签（包括带属性的）
+reply = reply.replace(/<thinking[^>]*>[\s\S]*?<\/thinking>/gi, '');
+reply = reply.replace(/<\/?thinking[^>]*>/gi, '');
+reply = reply.trim();
+if (msg.reasoning_content) {
+  thinking = msg.reasoning_content;
+}
 }
 if (reply) this.addDiaryComment('kel', reply);
 } catch(e) {
@@ -2885,7 +2961,7 @@ const isUser = m.role === 'user';
 const isLast = i === msgs.length - 1;
 const variants = m.variants || [m.text];
 const vIdx = m.variantIdx || 0;
-const displayText = variants[vIdx] || m.text || '';
+const displayText = (variants[vIdx] || m.text || '').trim();
 const rendered = renderContent(displayText, isUser);
 const hasThinking = !isUser && !!m.thinking && m.thinking.length > 0;
 
@@ -3393,6 +3469,7 @@ islandDotColor,
 islandLabel,
 hasLastThinking: !!(s.lastThinking && s.lastThinking.length > 0),
 lastThinkingPreview,
+heartfelt: s.heartfelt,
 imagePreviewOpen: s.imagePreviewOpen,
 imagePreviewUrl: s.imagePreviewUrl || '',
 navChatBg: s.tab === 'chat' ? '#ECEAE4' : 'transparent',
