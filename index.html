@@ -937,45 +937,6 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </div>
 </sc-if>
 
-<!-- 层级选择 -->
-<div style="margin-bottom:14px;">
-  <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">层级</div>
-  <div style="display:flex;gap:8px;">
-    <button onClick="{{ memSetLevel('core') }}" style="border:1px solid {{ memLevelCoreBd }};background:{{ memLevelCoreBg }};color:{{ memLevelCoreFg }};border-radius:14px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;">核心</button>
-    <button onClick="{{ memSetLevel('long') }}" style="border:1px solid {{ memLevelLongBd }};background:{{ memLevelLongBg }};color:{{ memLevelLongFg }};border-radius:14px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;">长期</button>
-    <button onClick="{{ memSetLevel('short') }}" style="border:1px solid {{ memLevelShortBd }};background:{{ memLevelShortBg }};color:{{ memLevelShortFg }};border-radius:14px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;">短期</button>
-    <button onClick="{{ memSetLevel('consciousness') }}" style="border:1px solid {{ memLevelConsciousnessBd }};background:{{ memLevelConsciousnessBg }};color:{{ memLevelConsciousnessFg }};border-radius:14px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;">意识</button>
-  </div>
-</div>
-<!-- 事件日期 -->
-<div style="margin-bottom:14px;">
-  <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">事件日期</div>
-  <input value="{{ memEditEventDate }}" onInput="{{ memEditEventDateChange }}" type="date" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
-</div>
-<!-- 标签（逗号分隔） -->
-<div style="margin-bottom:14px;">
-  <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">标签（逗号分隔）</div>
-  <input value="{{ memEditTags }}" onInput="{{ memEditTagsChange }}" placeholder="工作, 情感, 日常" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
-</div>
-<!-- 钉住 -->
-<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-  <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-    <input type="checkbox" checked="{{ memEditPinned }}" onChange="{{ memEditPinnedChange }}" style="width:16px;height:16px;accent-color:#1A1815;"> 钉住（永不衰减）
-  </label>
-</div>
-<!-- 关联记忆（搜索） -->
-<div style="margin-bottom:14px;">
-  <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">关联记忆（输入ID或标题搜索）</div>
-  <input value="{{ memEditLinkSearch }}" onInput="{{ memEditLinkSearchChange }}" placeholder="搜索并添加关联..." style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">
-    <sc-for list="{{ memEditLinkChips }}" as="chip" hint-placeholder-count="0">
-      <span style="background:#F2EFE8;border-radius:12px;padding:4px 8px;font-size:12px;color:#3A362F;display:flex;align-items:center;gap:4px;">
-        {{ chip.name }}
-        <button onClick="{{ chip.remove }}" style="border:none;background:transparent;cursor:pointer;opacity:.5;">✕</button>
-      </span>
-    </sc-for>
-  </div>
-</div>
 <!-- Memory Editor Sheet -->
 <sc-if value="{{ isMemoryEditorSheet }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:270;">
@@ -1025,6 +986,45 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="margin-bottom:14px;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个，留空则常驻）</div>
 <textarea value="{{ memEditTriggers }}" onInput="{{ memEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="2" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+</div>
+<!-- 层级选择 -->
+<div style="margin-bottom:14px;">
+  <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">层级</div>
+  <div style="display:flex;gap:8px;">
+    <button onClick="{{ memSetLevel('core') }}" style="border:1px solid {{ memLevelCoreBd }};background:{{ memLevelCoreBg }};color:{{ memLevelCoreFg }};border-radius:14px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;">核心</button>
+    <button onClick="{{ memSetLevel('long') }}" style="border:1px solid {{ memLevelLongBd }};background:{{ memLevelLongBg }};color:{{ memLevelLongFg }};border-radius:14px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;">长期</button>
+    <button onClick="{{ memSetLevel('short') }}" style="border:1px solid {{ memLevelShortBd }};background:{{ memLevelShortBg }};color:{{ memLevelShortFg }};border-radius:14px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;">短期</button>
+    <button onClick="{{ memSetLevel('consciousness') }}" style="border:1px solid {{ memLevelConsciousnessBd }};background:{{ memLevelConsciousnessBg }};color:{{ memLevelConsciousnessFg }};border-radius:14px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;">意识</button>
+  </div>
+</div>
+<!-- 事件日期 -->
+<div style="margin-bottom:14px;">
+  <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">事件日期</div>
+  <input value="{{ memEditEventDate }}" onInput="{{ memEditEventDateChange }}" type="date" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
+</div>
+<!-- 标签（逗号分隔） -->
+<div style="margin-bottom:14px;">
+  <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">标签（逗号分隔）</div>
+  <input value="{{ memEditTags }}" onInput="{{ memEditTagsChange }}" placeholder="工作, 情感, 日常" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
+</div>
+<!-- 钉住 -->
+<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+  <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
+    <input type="checkbox" checked="{{ memEditPinned }}" onChange="{{ memEditPinnedChange }}" style="width:16px;height:16px;accent-color:#1A1815;"> 钉住（永不衰减）
+  </label>
+</div>
+<!-- 关联记忆（搜索） -->
+<div style="margin-bottom:14px;">
+  <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">关联记忆（输入ID或标题搜索）</div>
+  <input value="{{ memEditLinkSearch }}" onInput="{{ memEditLinkSearchChange }}" placeholder="搜索并添加关联..." style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
+  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">
+    <sc-for list="{{ memEditLinkChips }}" as="chip" hint-placeholder-count="0">
+      <span style="background:#F2EFE8;border-radius:12px;padding:4px 8px;font-size:12px;color:#3A362F;display:flex;align-items:center;gap:4px;">
+        {{ chip.name }}
+        <button onClick="{{ chip.remove }}" style="border:none;background:transparent;cursor:pointer;opacity:.5;">✕</button>
+      </span>
+    </sc-for>
+  </div>
 </div>
 <div>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
