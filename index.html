@@ -1605,66 +1605,6 @@ function loadData() {
     return {};
   }
 }
-      // ---- 迁移旧数据结构（在这里执行，保证每次加载都检查） ----
-      let migrated = false;
-      if (data.chats) {
-        for (const chatId of Object.keys(data.chats)) {
-          const chat = data.chats[chatId];
-          if (chat.messages && !chat.thinkingEntries) {
-            chat.thinkingEntries = [];
-            for (const msg of chat.messages) {
-              if (!msg.id) {
-                msg.id = genId();
-                migrated = true;
-              }
-              if (msg.thinking) {
-                chat.thinkingEntries.push({
-                  msgId: msg.id,
-                  content: msg.thinking
-                });
-                delete msg.thinking;
-                migrated = true;
-              }
-              if (!msg.variants) {
-                msg.variants = [msg.text];
-                msg.variantIdx = 0;
-                migrated = true;
-              }
-            }
-          }
-        }
-      }
-      if (migrated) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      }
-      // 如果主数据存在且包含 chats，直接返回
-      if (data.chats && Object.keys(data.chats).length > 0) {
-        return data;
-      }
-    }
-    // 主数据不存在或 chats 为空，尝试从备份恢复
-    const backupRaw = localStorage.getItem(STORAGE_KEY + '_backup');
-    if (backupRaw) {
-      const backup = JSON.parse(backupRaw);
-      if (backup.chats && Object.keys(backup.chats).length > 0) {
-        console.warn('主数据丢失，已从备份恢复');
-        return backup;
-      }
-    }
-    return {};
-  } catch(e) {
-    console.error('loadData 解析失败', e);
-    // 尝试从备份恢复
-    try {
-      const backupRaw = localStorage.getItem(STORAGE_KEY + '_backup');
-      if (backupRaw) {
-        const backup = JSON.parse(backupRaw);
-        if (backup.chats) return backup;
-      }
-    } catch(e2) {}
-    return {};
-  }
-}
 function saveData(data) {
 try {
 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -2256,49 +2196,6 @@ console.log('[Kel] 数据已存入 IndexedDB');
 } catch(e) {
 console.error('[Kel] IndexedDB 也写入失败:', e);
 }
-}
-apiPresets: s.apiPresets,
-activePresetId: s.activePresetId,
-personas: s.personas,
-activePersonaId: s.activePersonaId,
-styles: s.styles,
-activeStyleId: s.activeStyleId,
-prompts: s.prompts,
-currentChatId: s.currentChatId,
-chats: s.chats,
-petEnabled: s.petEnabled,
-petSizeIdx: s.petSizeIdx,
-soundEnabled: s.soundEnabled,
-memoryCount: s.memoryCount,
-avatarSize: s.avatarSize,
-memories: s.memories,
-userAvatar: s.userAvatar,
-aiAvatar: s.aiAvatar,
-customCss: s.customCss,
-customFont: s.customFont,
-localFontName: s.localFontName,
-// localFontData 不再存 localStorage，改存 IndexedDB
-msgFontSize: s.msgFontSize,
-activeThemeId: s.activeThemeId,
-customTheme: s.customTheme,
-anniversaries: s.anniversaries,
-activeAnnivIdx: s.activeAnnivIdx,
-pledges: s.pledges,
-diaries: s.diaries,
-kelMood: s.kelMood,
-regexRules: s.regexRules,
-fontPresets: s.fontPresets,
-keepAliveEnabled: s.keepAliveEnabled,
-});
-// 双写备份（防止主数据损坏）
-try {
-  const backupData = JSON.stringify({
-    chats: s.chats,
-    currentChatId: s.currentChatId,
-    _backupTime: Date.now()
-  });
-  localStorage.setItem(STORAGE_KEY + '_backup', backupData);
-} catch(e) {}
 }
 
 show(text) {
