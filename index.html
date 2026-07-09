@@ -542,6 +542,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;">
 <button onClick="{{ diaryCancelMine }}" style="padding:6px 14px;border:1px solid #DDD8CE;background:#FFF;border-radius:14px;font-size:13px;font-family:inherit;color:#6B665E;cursor:pointer;">取消</button>
 <button onClick="{{ diarySaveMine }}" style="padding:6px 14px;border:none;background:#1A1815;border-radius:14px;font-size:13px;font-family:inherit;color:#F5F3EE;cursor:pointer;">保存</button>
+<button onClick="{{ diaryExtractToMemory }}" style="padding:6px 14px;border:none;background:#F2EFE8;border-radius:14px;font-size:13px;font-family:inherit;color:#3A362F;cursor:pointer;">→ 提取为记忆</button>
 </div>
 </sc-if>
 <sc-if value="{{ !diaryMineIsEdit }}" hint-placeholder-val="{{ true }}">
@@ -631,13 +632,6 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <sc-if value="{{ memListHasItems }}" hint-placeholder-val="{{ true }}">
 <sc-for list="{{ memoryList }}" as="mem" hint-placeholder-count="3">
 <div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ mem.open }}">
-</sc-if>
-<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;">
-  <span style="font-size:10px;background:{{ mem.levelColor }};color:#FFF;border-radius:8px;padding:2px 8px;">{{ mem.levelLabel }}</span>
-  <sc-if value="{{ mem.pinned }}" hint-placeholder-val="{{ false }}">
-    <span style="font-size:10px;color:#FFB347;">⭐ 钉住</span>
-  </sc-if>
-</div>
 <div style="display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex:none;"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -654,7 +648,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="text-align:center;padding:50px 0;color:#B8B3A8;font-size:14px;">还没有记忆，点击右上角新建</div>
 </sc-if>
 </div>
-
+</sc-if>
 <!-- ========== REGEX PAGE ========== -->
 <sc-if value="{{ isRegexPage }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
@@ -723,10 +717,6 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div onClick="{{ navHome }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navHomeBg }};">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 11l8-6.5L20 11M6 9.5V19a1 1 0 0 0 1 1h10a1 1 0 0 0 1-1V9.5" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 <span>Home</span>
-</div>
-<div onClick="{{ navWorldbook }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navWbBg }};">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2v11Z" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span>世界书</span>
 </div>
 <div onClick="{{ navMemory }}" style="padding:12px 12px;border-radius:10px;font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);cursor:pointer;display:flex;align-items:center;gap:14px;background:{{ navMemBg }};">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
@@ -966,12 +956,13 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </label>
 </div>
 <div style="margin-bottom:14px;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">分类</div>
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">记忆层级</div>
 <div style="display:flex;gap:8px;flex-wrap:wrap;">
-<sc-for list="{{ memTagOptions }}" as="mt" hint-placeholder-count="5">
-<button onClick="{{ mt.pick }}" style="border:1px solid {{ mt.bd }};background:{{ mt.bg }};color:{{ mt.fg }};border-radius:14px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;">{{ mt.label }}</button>
+<sc-for list="{{ memLayerOptions }}" as="ml" hint-placeholder-count="4">
+<button onClick="{{ ml.pick }}" style="border:1px solid {{ ml.bd }};background:{{ ml.bg }};color:{{ ml.fg }};border-radius:14px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;">{{ ml.label }}</button>
 </sc-for>
 </div>
+<div style="font-size:11px;color:#9A958B;margin-top:6px;line-height:1.5;">核心=永不遗忘 · 长期=重要事件 · 近期=7天活跃 · 意识=上次状态</div>
 </div>
 <div style="display:flex;gap:12px;margin-bottom:14px;">
 <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
@@ -984,45 +975,6 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="margin-bottom:14px;">
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个，留空则常驻）</div>
 <textarea value="{{ memEditTriggers }}" onInput="{{ memEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="2" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
-</div>
-<!-- 层级选择 -->
-<div style="margin-bottom:14px;">
-  <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">层级</div>
-  <div style="display:flex;gap:8px;">
-    <button onClick="{{ memSetLevel('core') }}" style="border:1px solid {{ memLevelCoreBd }};background:{{ memLevelCoreBg }};color:{{ memLevelCoreFg }};border-radius:14px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;">核心</button>
-    <button onClick="{{ memSetLevel('long') }}" style="border:1px solid {{ memLevelLongBd }};background:{{ memLevelLongBg }};color:{{ memLevelLongFg }};border-radius:14px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;">长期</button>
-    <button onClick="{{ memSetLevel('short') }}" style="border:1px solid {{ memLevelShortBd }};background:{{ memLevelShortBg }};color:{{ memLevelShortFg }};border-radius:14px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;">短期</button>
-    <button onClick="{{ memSetLevel('consciousness') }}" style="border:1px solid {{ memLevelConsciousnessBd }};background:{{ memLevelConsciousnessBg }};color:{{ memLevelConsciousnessFg }};border-radius:14px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;">意识</button>
-  </div>
-</div>
-<!-- 事件日期 -->
-<div style="margin-bottom:14px;">
-  <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">事件日期</div>
-  <input value="{{ memEditEventDate }}" onInput="{{ memEditEventDateChange }}" type="date" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
-</div>
-<!-- 标签（逗号分隔） -->
-<div style="margin-bottom:14px;">
-  <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">标签（逗号分隔）</div>
-  <input value="{{ memEditTags }}" onInput="{{ memEditTagsChange }}" placeholder="工作, 情感, 日常" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
-</div>
-<!-- 钉住 -->
-<div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
-  <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
-    <input type="checkbox" checked="{{ memEditPinned }}" onChange="{{ memEditPinnedChange }}" style="width:16px;height:16px;accent-color:#1A1815;"> 钉住（永不衰减）
-  </label>
-</div>
-<!-- 关联记忆（搜索） -->
-<div style="margin-bottom:14px;">
-  <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">关联记忆（输入ID或标题搜索）</div>
-  <input value="{{ memEditLinkSearch }}" onInput="{{ memEditLinkSearchChange }}" placeholder="搜索并添加关联..." style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
-  <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:6px;">
-    <sc-for list="{{ memEditLinkChips }}" as="chip" hint-placeholder-count="0">
-      <span style="background:#F2EFE8;border-radius:12px;padding:4px 8px;font-size:12px;color:#3A362F;display:flex;align-items:center;gap:4px;">
-        {{ chip.name }}
-        <button onClick="{{ chip.remove }}" style="border:none;background:transparent;cursor:pointer;opacity:.5;">✕</button>
-      </span>
-    </sc-for>
-  </div>
 </div>
 <div>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
@@ -1241,6 +1193,30 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <span style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">Memory count</span>
 </div>
 <span style="font-size:14px;color:#9A958B;">{{ memoryCountLabel }}</span>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ toggleKeepAlive }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:13px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 14.5v-9l6 4.5-6 4.5z" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">后台保活</span>
+</div>
+<span style="font-size:14px;color:#9A958B;">{{ keepAliveStatus }}</span>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ toggleMusicPlayer }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:13px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 18V5l12-2v13" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" stroke="#48453E" stroke-width="1.5"/><circle cx="18" cy="16" r="3" stroke="#48453E" stroke-width="1.5"/></svg>
+<span style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">Music</span>
+</div>
+<span style="font-size:14px;color:#9A958B;">{{ musicStatusLabel }}</span>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ addMusicFiles }}" style="padding:15px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:13px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+<span style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">添加音乐</span>
+</div>
+<span style="font-size:14px;color:#9A958B;">{{ musicCount }} 首</span>
 </div>
 </div>
 </div>
@@ -1564,18 +1540,23 @@ function loadData() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const data = JSON.parse(raw);
-      // ---- 迁移旧数据结构 ----
+      // ---- 迁移旧数据结构（在这里执行，保证每次加载都检查） ----
       let migrated = false;
-      // 迁移 chats
       if (data.chats) {
         for (const chatId of Object.keys(data.chats)) {
           const chat = data.chats[chatId];
           if (chat.messages && !chat.thinkingEntries) {
             chat.thinkingEntries = [];
             for (const msg of chat.messages) {
-              if (!msg.id) { msg.id = genId(); migrated = true; }
+              if (!msg.id) {
+                msg.id = genId();
+                migrated = true;
+              }
               if (msg.thinking) {
-                chat.thinkingEntries.push({ msgId: msg.id, content: msg.thinking });
+                chat.thinkingEntries.push({
+                  msgId: msg.id,
+                  content: msg.thinking
+                });
                 delete msg.thinking;
                 migrated = true;
               }
@@ -1588,32 +1569,34 @@ function loadData() {
           }
         }
       }
-      // 迁移 memories（新增）
-      if (data.memories) {
-        data.memories = data.memories.map(mem => {
-          const newMem = { ...mem };
-          if (!newMem.level) newMem.level = 'long';
-          if (!newMem.tags) newMem.tags = newMem.tag ? [newMem.tag] : [];
-          if (!newMem.eventDate) newMem.eventDate = new Date(newMem.created || Date.now()).toISOString().slice(0,10);
-          if (newMem.links === undefined) newMem.links = [];
-          if (newMem.referencedCount === undefined) newMem.referencedCount = 0;
-          if (newMem.lastReferenced === undefined) newMem.lastReferenced = newMem.created || Date.now();
-          if (newMem.pinned === undefined) newMem.pinned = false;
-          if (!newMem.tag) newMem.tag = 'general';
-          return newMem;
-        });
-        migrated = true;
-      }
       if (migrated) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       }
-      // 直接返回数据，不再从备份恢复
-      return data;
+      // 如果主数据存在且包含 chats，直接返回
+      if (data.chats && Object.keys(data.chats).length > 0) {
+        return data;
+      }
     }
-    // 没有主数据，返回空对象
+    // 主数据不存在或 chats 为空，尝试从备份恢复
+    const backupRaw = localStorage.getItem(STORAGE_KEY + '_backup');
+    if (backupRaw) {
+      const backup = JSON.parse(backupRaw);
+      if (backup.chats && Object.keys(backup.chats).length > 0) {
+        console.warn('主数据丢失，已从备份恢复');
+        return backup;
+      }
+    }
     return {};
   } catch(e) {
     console.error('loadData 解析失败', e);
+    // 尝试从备份恢复
+    try {
+      const backupRaw = localStorage.getItem(STORAGE_KEY + '_backup');
+      if (backupRaw) {
+        const backup = JSON.parse(backupRaw);
+        if (backup.chats) return backup;
+      }
+    } catch(e2) {}
     return {};
   }
 }
@@ -1668,61 +1651,38 @@ return summary.trim();
 
 // Render markdown-like content to HTML with code blocks
 function renderContent(text, isUser) {
-  if (!text) return '<span style="opacity:.4;">...</span>';
-  
-  // 1. 先提取代码块，用占位符保护
-  const codeBlocks = [];
-  let processed = text.replace(/```(\w*)\n([\s\S]*?)```/g, function(match, lang, code) {
-    const idx = codeBlocks.length;
-    const langLabel = lang || 'code';
-    // 代码内容单独转义
-    const escapedCode = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    codeBlocks.push(
-      '<div style="position:relative;background:#1A1815;border-radius:12px;margin:8px 0;overflow:hidden;">' +
-      '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.06);">' +
-      '<span style="font-size:11px;color:#9A958B;">' + langLabel + '</span>' +
-      '<div style="display:flex;gap:6px;">' +
-      '<button type="button" onclick="event.stopPropagation();navigator.clipboard.writeText(this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="border:none;background:rgba(255,255,255,.1);color:#D8D3CA;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;">Copy</button>' +
-      '<button type="button" onclick="event.stopPropagation();var t=this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText;var b=new Blob([t],{type:\'text/plain\'});var u=URL.createObjectURL(b);var a=document.createElement(\'a\');a.href=u;a.download=\'' + langLabel + '.' + (lang||'txt') + '\';a.click();URL.revokeObjectURL(u);" style="border:none;background:rgba(255,255,255,.1);color:#D8D3CA;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;">Download</button>' +
-      '</div></div>' +
-      '<pre style="margin:0;padding:12px 14px;overflow-x:auto;font-family:\'SF Mono\',\'Fira Code\',monospace;font-size:13px;line-height:1.6;color:#E8E4DC;white-space:pre;">' + escapedCode + '</pre></div>'
-    );
-    return '\x00CODEBLOCK_' + idx + '\x00';
-  });
-
-  // 2. 提取行内代码
-  const inlineCodes = [];
-  processed = processed.replace(/`([^`]+)`/g, function(match, code) {
-    const idx = inlineCodes.length;
-    const escaped = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-    inlineCodes.push('<code style="background:#ECEAE4;padding:2px 6px;border-radius:5px;font-family:\'SF Mono\',monospace;font-size:14px;">' + escaped + '</code>');
-    return '\x00INLINE_' + idx + '\x00';
-  });
-
-  // 3. 转义剩余 HTML
-  processed = processed.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-
-  // 4. Quote blocks
-  processed = processed.replace(/^&gt; (.*)$/gm, '<div style="border-left:3px solid #D1CCC2;padding-left:12px;margin:6px 0;color:#6B665E;">$1</div>');
-
-  // 5. Bold & Italic
-  processed = processed.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-  processed = processed.replace(/\*(.+?)\*/g, '<em>$1</em>');
-
-  // 6. 换行
-  processed = processed.replace(/\n/g, '<br>');
-
-  // 7. 还原代码块占位符
-  processed = processed.replace(/\x00CODEBLOCK_(\d+)\x00/g, function(m, idx) {
-    return codeBlocks[parseInt(idx)];
-  });
-
-  // 8. 还原行内代码占位符
-  processed = processed.replace(/\x00INLINE_(\d+)\x00/g, function(m, idx) {
-    return inlineCodes[parseInt(idx)];
-  });
-
-  return processed;
+if (!text) return '<span style="opacity:.4;">...</span>';
+// Escape HTML first
+let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// Code blocks - render as downloadable/copyable blocks
+html = html.replace(/```(\w*)\n([\s\S]*?)```/g, function(match, lang, code) {
+const langLabel = lang || 'code';
+const escapedCode = code.replace(/'/g, '&#39;').replace(/"/g, '&quot;');
+return '<div style="position:relative;background:#1A1815;border-radius:12px;margin:8px 0;overflow:hidden;">' +
+'<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.06);">' +
+'<span style="font-size:11px;color:#9A958B;">' + langLabel + '</span>' +
+'<div style="display:flex;gap:6px;">' +
+'<button type="button" onclick="event.stopPropagation();navigator.clipboard.writeText(this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="...">Copy</button>' +
+'<button type="button" onclick="event.stopPropagation();var t=this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText;var b=new Blob([t],{type:\'text/plain\'});var u=URL.createObjectURL(b);var a=document.createElement(\'a\');a.href=u;a.download=\'' + langLabel + '.' + (lang||'txt') + '\';a.click();URL.revokeObjectURL(u);" style="...">Download</button>' +
+'</div></div>' +
+'<pre style="margin:0;padding:12px 14px;overflow-x:auto;font-family:\'SF Mono\',\'Fira Code\',monospace;font-size:13px;line-height:1.6;color:#E8E4DC;white-space:pre;">' + code + '</pre></div>';
+});
+// Inline code
+html = html.replace(/`([^`]+)`/g, '<code style="background:#ECEAE4;padding:2px 6px;border-radius:5px;font-family:\'SF Mono\',monospace;font-size:14px;">$1</code>');
+// Quote blocks (lines starting with > )
+html = html.replace(/^&gt; (.*)$/gm, '<div class="quote-block">$1</div>');
+// Bold
+html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+// Italic
+html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
+// Newlines (but not inside code blocks)
+if (!html.includes('<pre')) {
+html = html.replace(/\n/g, '<br>');
+} else {
+const parts = html.split(/(<div style="position:relative[\s\S]*?<\/pre><\/div>)/);
+html = parts.map(p => p.startsWith('<div style="position:relative') ? p : p.replace(/\n/g, '<br>')).join('');
+}
+return html;
 }
 
 const EMOJI_LIST = ['😊','😢','😡','🥰','😴','🤔','✨','🌧️','☀️','🌈','💪','😭','🎉','💕','😤','🫠'];
@@ -1744,20 +1704,7 @@ super(props);
 const saved = loadData();
 this.state = {
 thinkOpenMap: {},
-worldbooks: saved.worldbooks || [],
-wbEditId: null,
-wbEditName: '',
-wbEditContent: '',
-wbEditTriggers: '',
-wbEditAlwaysOn: false,
-wbEditWeight: 1,
-wbEditPosition: 'before',
-wbEditTag: '',
-wbFilterTag: 'all',
 memories: saved.memories || [],
-memSortBy: saved.memSortBy || 'created',
-memFilterLevel: 'all',
-memFilterDate: '',
 memEditId: null,
 memEditName: '',
 memEditContent: '',
@@ -1765,13 +1712,9 @@ memEditTriggers: '',
 memEditAlwaysOn: false,
 memEditWeight: 1,
 memEditPosition: 'before',
+memEditLayer: 'short',
 memEditTag: '',
-memFilterTag: 'all',
-memEditLevel: 'long',
-memEditEventDate: '',
-memEditTags: '',
-memEditPinned: false,
-memEditLinks: [],
+memFilterLayer: 'all',
 tab: 'home',
 sub: null,
 memory: false,
@@ -1864,8 +1807,39 @@ quotedMsg: null,
 regexEditName: '',
 regexEditPattern: '',
 regexEditAction: '',
-regexEditTarget: 'output'
+regexEditTarget: 'output',
+// 音乐播放器状态
+keepAliveEnabled: saved.keepAliveEnabled !== false,
+musicPlaying: false,
+musicCurrentName: '',
+musicIdx: 0,
+musicCount: JSON.parse(localStorage.getItem('kel-music-list') || '[]').length,
+musicVolume: parseFloat(localStorage.getItem('kel-music-volume') || '0.5')
 };
+// 迁移：把旧的世界书合并进记忆库
+if (saved.worldbooks && saved.worldbooks.length > 0) {
+  const existingIds = new Set(this.state.memories.map(m => m.id));
+  for (const wb of saved.worldbooks) {
+    if (!existingIds.has(wb.id)) {
+      this.state.memories.push({
+        id: wb.id,
+        name: wb.name || '未命名',
+        content: wb.content || '',
+        triggers: wb.triggers || [],
+        alwaysOn: wb.alwaysOn || false,
+        weight: wb.weight || 1,
+        position: wb.position || 'before',
+        layer: wb.alwaysOn ? 'core' : 'long',
+        tag: wb.tag || 'general',
+        createdAt: Date.now(),
+        lastReferencedAt: Date.now(),
+        sourceType: 'migrated',
+        pinned: wb.alwaysOn || false
+      });
+    }
+  }
+}
+
 if (saved.annivDate && (!saved.anniversaries || saved.anniversaries.length === 0)) {
 this.state.anniversaries = [{ id: genId(), name: '纪念日', date: saved.annivDate }];
 }
@@ -1873,17 +1847,138 @@ if (!this.state.chats[this.state.currentChatId]) {
 this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
 }
 setTimeout(() => { this.applyTheme(this.state.activeThemeId); this.applyCustomCss(); this.applyCustomFont(); this.applyMsgFontSize(); }, 100);
+// 用户首次触摸时激活保活音频（浏览器要求用户交互后才能播放音频）
+const activateKeepAlive = () => {
+  if (this.state.keepAliveEnabled && !this._musicPlaying) {
+    this._initKeepAlive();
+  }
+  document.removeEventListener('touchstart', activateKeepAlive);
+  document.removeEventListener('click', activateKeepAlive);
+};
+document.addEventListener('touchstart', activateKeepAlive, { once: true });
+document.addEventListener('click', activateKeepAlive, { once: true });
 window.addEventListener('beforeunload', () => { this.persist(); });
+// ====== 后台保活 + 音乐播放器 ======
+// 监听页面可见性变化，切到后台时自动保存
+document.addEventListener('visibilitychange', () => {
+  if (document.visibilityState === 'hidden') {
+    this.persist();
+  }
+});
+
+// 后台保活：创建静音音频循环
+this._keepAliveAudio = null;
+this._musicAudio = null;
+this._musicPlaying = false;
+this._musicList = JSON.parse(localStorage.getItem('kel-music-list') || '[]');
+this._musicIdx = 0;
+this._musicVolume = parseFloat(localStorage.getItem('kel-music-volume') || '0.5');
+
+// 初始化保活（静音音频）
+this._initKeepAlive = () => {
+  if (this._keepAliveAudio) return;
+  // 创建一个极短的静音 WAV（base64编码，44字节 PCM 静音）
+  const silentWav = 'data:audio/wav;base64,UklGRiQAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQAAAAA=';
+  this._keepAliveAudio = new Audio(silentWav);
+  this._keepAliveAudio.loop = true;
+  this._keepAliveAudio.volume = 0.001; // 几乎无声
+  this._keepAliveAudio.play().catch(() => {});
+};
+
+// 音乐播放器方法
+this._playMusic = (idx) => {
+  if (this._musicList.length === 0) return;
+  if (idx >= this._musicList.length) idx = 0;
+  if (idx < 0) idx = this._musicList.length - 1;
+  this._musicIdx = idx;
+  const track = this._musicList[idx];
+  if (!this._musicAudio) {
+    this._musicAudio = new Audio();
+    this._musicAudio.addEventListener('ended', () => {
+      this._playMusic(this._musicIdx + 1);
+    });
+  }
+  this._musicAudio.src = track.data;
+  this._musicAudio.volume = this._musicVolume;
+  this._musicAudio.play().catch(() => {});
+  this._musicPlaying = true;
+  // 播放音乐时停止静音保活（音乐本身就能保活）
+  if (this._keepAliveAudio) {
+    this._keepAliveAudio.pause();
+  }
+  this.setState({ musicPlaying: true, musicCurrentName: track.name, musicIdx: idx });
+};
+
+this._pauseMusic = () => {
+  if (this._musicAudio) {
+    this._musicAudio.pause();
+  }
+  this._musicPlaying = false;
+  this.setState({ musicPlaying: false });
+  // 暂停音乐后恢复静音保活
+  if (this._keepAliveAudio && this.state.keepAliveEnabled) {
+    this._keepAliveAudio.play().catch(() => {});
+  }
+};
+
+this._toggleMusic = () => {
+  if (this._musicPlaying) {
+    this._pauseMusic();
+  } else {
+    if (this._musicList.length > 0) {
+      this._playMusic(this._musicIdx);
+    } else {
+      this.show('还没有添加音乐');
+    }
+  }
+};
+
+this._addMusicFile = () => {
+  const input = document.createElement('input');
+  input.type = 'file';
+  input.accept = 'audio/*';
+  input.multiple = true;
+  input.onchange = (e) => {
+    const files = Array.from(e.target.files || []);
+    let loaded = 0;
+    for (const file of files) {
+      if (file.size > 15 * 1024 * 1024) { this.show(file.name + ' 超过15MB，跳过'); continue; }
+      const reader = new FileReader();
+      reader.onload = () => {
+        this._musicList.push({ name: file.name.replace(/\.[^.]+$/, ''), data: reader.result });
+        loaded++;
+        if (loaded === files.length || loaded === files.filter(f => f.size <= 15*1024*1024).length) {
+          localStorage.setItem('kel-music-list', JSON.stringify(this._musicList));
+          this.setState({ musicCount: this._musicList.length });
+          this.show(loaded + ' 首音乐已添加');
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  input.click();
+};
+
+this._removeMusicTrack = (idx) => {
+  this._musicList.splice(idx, 1);
+  localStorage.setItem('kel-music-list', JSON.stringify(this._musicList));
+  if (this._musicIdx >= this._musicList.length) this._musicIdx = 0;
+  this.setState({ musicCount: this._musicList.length });
+  this.show('已移除');
+};
+
+this._setMusicVolume = (vol) => {
+  this._musicVolume = vol;
+  if (this._musicAudio) this._musicAudio.volume = vol;
+  localStorage.setItem('kel-music-volume', String(vol));
+  this.setState({ musicVolume: vol });
+};
+
 this._clockTimer = setInterval(() => {
 this.setState({ currentTime: getCurrentTime() });
 }, 1000);
 }
-// 在 constructor 末尾添加
-document.addEventListener('visibilitychange', () => {
-  if (document.hidden) {
-    this.persist();
-  }
-});
+
 textareaRef(el) {
 if (el && !el._listener) {
 el._listener = true;
@@ -1958,7 +2053,6 @@ petSizeIdx: s.petSizeIdx,
 soundEnabled: s.soundEnabled,
 memoryCount: s.memoryCount,
 avatarSize: s.avatarSize,
-worldbooks: s.worldbooks,
 memories: s.memories,
 userAvatar: s.userAvatar,
 aiAvatar: s.aiAvatar,
@@ -1976,7 +2070,17 @@ diaries: s.diaries,
 kelMood: s.kelMood,
 regexRules: s.regexRules,
 fontPresets: s.fontPresets,
+keepAliveEnabled: s.keepAliveEnabled,
 });
+// 双写备份（防止主数据损坏）
+try {
+  const backupData = JSON.stringify({
+    chats: s.chats,
+    currentChatId: s.currentChatId,
+    _backupTime: Date.now()
+  });
+  localStorage.setItem(STORAGE_KEY + '_backup', backupData);
+} catch(e) {}
 }
 
 show(text) {
@@ -2059,35 +2163,30 @@ memEditTriggers: mem ? (mem.triggers || []).join('\n') : '',
 memEditAlwaysOn: mem ? !!mem.alwaysOn : false,
 memEditWeight: mem ? mem.weight : 1,
 memEditPosition: mem ? mem.position : 'before',
-memEditTag: mem ? (mem.tag || 'general') : 'general',
-// ----- 新增字段（修复） -----
-memEditLevel: mem ? (mem.level || 'long') : 'long',
-memEditEventDate: mem ? (mem.eventDate || '') : '',
-memEditTags: mem ? (mem.tags || []).join(', ') : '',
-memEditPinned: mem ? !!mem.pinned : false,
-memEditLinks: mem ? (mem.links || []) : []
-// ---------------------------
+memEditLayer: mem ? (mem.layer || 'short') : 'short',
+memEditTag: mem ? (mem.tag || 'general') : 'general'
 });
 }
+
 saveMemoryEditor() {
 const s = this.state;
 const triggers = s.memEditTriggers.split('\n').map(t => t.trim()).filter(Boolean);
+const layer = s.memEditLayer || 'short';
 const newMem = {
 id: s.memEditId || genId(),
 name: s.memEditName || '未命名记忆',
 content: s.memEditContent || '',
 triggers,
-alwaysOn: s.memEditAlwaysOn,
+alwaysOn: layer === 'core' ? true : s.memEditAlwaysOn,
 weight: parseFloat(s.memEditWeight) || 1,
 position: s.memEditPosition || 'before',
+layer: layer,
 tag: s.memEditTag || 'general',
-updatedAt: Date.now(),
-// ----- 新增字段（修复） -----
-level: s.memEditLevel || 'long',
-eventDate: s.memEditEventDate || '',
-tags: s.memEditTags ? s.memEditTags.split(',').map(t => t.trim()).filter(Boolean) : [],
-pinned: s.memEditPinned || false,
-links: s.memEditLinks || []
+pinned: layer === 'core',
+createdAt: (s.memories.find(m => m.id === s.memEditId) || {}).createdAt || Date.now(),
+lastReferencedAt: Date.now(),
+sourceType: (s.memories.find(m => m.id === s.memEditId) || {}).sourceType || 'manual',
+updatedAt: Date.now()
 };
 let memories = [...s.memories.filter(m => m.id !== newMem.id), newMem];
 this.setState({ memories, sheet: null }, () => { this.persist(); });
@@ -2107,33 +2206,89 @@ let sys = '';
 sys += '所有内部思考过程（reasoning/thinking）必须使用中文输出。\n\n';
 const persona = this.activePersona;
 if (persona.content) sys += persona.content + '\n\n';
-const alwaysOnWb = this.state.worldbooks.filter(w => w.alwaysOn && w.content);
-if (alwaysOnWb.length > 0) {
-sys += '## Worldbook\n';
-for (const wb of alwaysOnWb) { sys += '[' + wb.name + ']\n' + wb.content + '\n\n'; }
-}
 const msgs = this.currentChat.messages;
 const lastMsgs = msgs.slice(-5).map(m => (m.text || '').toLowerCase()).join(' ');
-const triggeredWb = this.state.worldbooks.filter(w => !w.alwaysOn && w.triggers && w.triggers.length > 0);
-for (const wb of triggeredWb) {
-for (const trigger of wb.triggers) {
-if (trigger && lastMsgs.includes(trigger.toLowerCase())) {
-sys += '[Triggered WB: ' + wb.name + ']\n' + wb.content + '\n\n'; break;
+const now = Date.now();
+
+// 记忆衰减计算
+function getDecayScore(mem) {
+  if (mem.layer === 'core' || mem.pinned) return 1.0;
+  const daysSinceRef = (now - (mem.lastReferencedAt || mem.createdAt || now)) / (1000*60*60*24);
+  if (mem.layer === 'long') return Math.max(0, 1 - (daysSinceRef / 120));
+  if (mem.layer === 'short') return Math.max(0, 1 - (daysSinceRef / 14));
+  if (mem.layer === 'consciousness') return daysSinceRef < 3 ? 1.0 : 0;
+  return 1.0;
 }
+
+// 按层级注入记忆
+const coreMems = this.state.memories.filter(m => m.layer === 'core' && m.content);
+const longMems = this.state.memories.filter(m => m.layer === 'long' && m.content && getDecayScore(m) > 0.2);
+const shortMems = this.state.memories.filter(m => m.layer === 'short' && m.content && getDecayScore(m) > 0.3);
+const consciousnessMems = this.state.memories.filter(m => m.layer === 'consciousness' && m.content).sort((a,b) => (b.createdAt||0)-(a.createdAt||0)).slice(0, 1);
+
+if (coreMems.length > 0) {
+  sys += '## Core Memories（核心·永不遗忘）\n';
+  for (const mem of coreMems) { sys += '[' + mem.name + ']\n' + mem.content + '\n\n'; }
 }
+
+if (longMems.length > 0) {
+  sys += '## Long-term Memories（长期记忆）\n';
+  for (const mem of longMems.sort((a,b) => getDecayScore(b)-getDecayScore(a)).slice(0, 20)) {
+    sys += '[' + mem.name + ']\n' + mem.content + '\n\n';
+  }
 }
-const alwaysOnMem = this.state.memories.filter(m => m.alwaysOn && m.content);
-if (alwaysOnMem.length > 0) {
-sys += '## Memories\n';
-for (const mem of alwaysOnMem) { sys += '[' + mem.name + ']\n' + mem.content + '\n\n'; }
+
+if (shortMems.length > 0) {
+  sys += '## Short-term Memories（近期记忆）\n';
+  for (const mem of shortMems.sort((a,b) => (b.lastReferencedAt||0)-(a.lastReferencedAt||0)).slice(0, 10)) {
+    sys += '[' + mem.name + ']\n' + mem.content + '\n\n';
+  }
 }
-const triggeredMem = this.state.memories.filter(m => !m.alwaysOn && m.triggers && m.triggers.length > 0);
-for (const mem of triggeredMem) {
-for (const trigger of mem.triggers) {
-if (trigger && lastMsgs.includes(trigger.toLowerCase())) {
-sys += '[Triggered Memory: ' + mem.name + ']\n' + mem.content + '\n\n'; break;
+
+if (consciousnessMems.length > 0) {
+  sys += '## Consciousness（上次对话结束时的状态）\n';
+  sys += consciousnessMems[0].content + '\n\n';
 }
+
+// 触发式记忆（任何层级都可以有触发词）
+const triggeredMems = this.state.memories.filter(m => !m.alwaysOn && m.layer !== 'core' && m.triggers && m.triggers.length > 0 && getDecayScore(m) > 0.1);
+for (const mem of triggeredMems) {
+  for (const trigger of mem.triggers) {
+    if (trigger && lastMsgs.includes(trigger.toLowerCase())) {
+      sys += '[Triggered: ' + mem.name + ']\n' + mem.content + '\n\n';
+      // 更新引用时间
+      mem.lastReferencedAt = now;
+      break;
+    }
+  }
 }
+
+// 日记联动：如果最近消息提到了日期或"昨天""前天"等，拉取对应日记
+const dateKeywords = lastMsgs.match(/(\d{4}[-/]\d{1,2}[-/]\d{1,2}|昨天|前天|今天)/g);
+if (dateKeywords && Object.keys(this.state.diaries).length > 0) {
+  const today = new Date();
+  let datesToCheck = [];
+  for (const kw of dateKeywords) {
+    if (kw === '今天') {
+      datesToCheck.push(today.getFullYear() + '-' + String(today.getMonth()+1).padStart(2,'0') + '-' + String(today.getDate()).padStart(2,'0'));
+    } else if (kw === '昨天') {
+      const d = new Date(today); d.setDate(d.getDate()-1);
+      datesToCheck.push(d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'));
+    } else if (kw === '前天') {
+      const d = new Date(today); d.setDate(d.getDate()-2);
+      datesToCheck.push(d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'));
+    } else {
+      datesToCheck.push(kw.replace(/\//g, '-'));
+    }
+  }
+  for (const dateStr of datesToCheck) {
+    const entry = this.state.diaries[dateStr];
+    if (entry && (entry.mine || entry.kel)) {
+      sys += '## Diary Entry: ' + dateStr + '\n';
+      if (entry.mine) sys += '她的日记：' + entry.mine + '\n';
+      if (entry.kel) sys += '我的日记：' + entry.kel + '\n\n';
+    }
+  }
 }
 const style = this.activeStyleObj;
 if (style.content) sys += '## Style: ' + style.title + '\n' + style.content + '\n\n';
@@ -2153,13 +2308,6 @@ if (userTimeline) {
 
 const memorySummary = buildMemorySummary(this.state.chats, this.state.currentChatId, this.state.memoryCount);
 if (memorySummary) sys += '## Context Memory\n' + memorySummary + '\n\n';
-// 加载意识层（最新的一条 consciousness）
-const consciousnessMem = this.state.memories
-  .filter(m => m.level === 'consciousness')
-  .sort((a,b) => (b.created || 0) - (a.created || 0))[0];
-if (consciousnessMem) {
-  sys += '## 意识层（上次状态）\n' + consciousnessMem.content + '\n\n';
-}
 return sys.trim();
 }
 
@@ -3164,45 +3312,6 @@ for (let j = i + 1; j < msgs.length; j++) {
 if (msgs[j].role === 'assistant') { isLastAi = false; break; }
 }
 }
-// ----- 记忆编辑器新增变量 -----
-const memLevelColors = { core: '#E53E3E', long: '#3182CE', short: '#A0AEC0', consciousness: '#805AD5' };
-const memLevelLabels = { core: '核心', long: '长期', short: '短期', consciousness: '意识' };
-const memEditLevel = s.memEditLevel || 'long';
-const memEditEventDate = s.memEditEventDate || '';
-const memEditTags = s.memEditTags || '';
-const memEditPinned = s.memEditPinned || false;
-const memEditLinkSearch = s.memEditLinkSearch || '';
-const memEditLinks = s.memEditLinks || [];
-// 层级按钮样式
-const makeLevelBtn = (level) => ({
-  bg: memEditLevel === level ? '#1A1815' : 'var(--bg-card, #FFF)',
-  bd: memEditLevel === level ? '#1A1815' : '#E7E3DA',
-  fg: memEditLevel === level ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
-});
-// 关联芯片
-const memEditLinkChips = memEditLinks.map(id => {
-  const found = s.memories.find(m => m.id === id);
-  return { id, name: found ? found.name : '未找到', remove: () => {
-    const links = memEditLinks.filter(x => x !== id);
-    self.setState({ memEditLinks: links });
-  } };
-});
-// 筛选与排序
-const memSortBy = s.memSortBy || 'created';
-// 定义记忆编辑器动作函数（这些会放到 return 中）
-const memSetLevel = (level) => self.setState({ memEditLevel: level });
-const memEditEventDateChange = (e) => self.setState({ memEditEventDate: e.target.value });
-const memEditTagsChange = (e) => self.setState({ memEditTags: e.target.value });
-const memEditPinnedChange = (e) => self.setState({ memEditPinned: e.target.checked });
-const memEditLinkSearchChange = (e) => {
-  self.setState({ memEditLinkSearch: e.target.value });
-  // 简单搜索：输入时自动匹配已有的记忆标题，这里只做演示，可以留空
-};
-const memAddLink = (id) => {
-  if (!memEditLinks.includes(id)) {
-    self.setState({ memEditLinks: [...memEditLinks, id] });
-  }
-};
 
 // 查找思维链
 let thinkingContent = '';
@@ -3393,54 +3502,38 @@ fg: m === apiDraft.model ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
 pick: () => self.setState({ apiDraft: { ...self.state.apiDraft, model: m } })
 }));
 
-// Worldbook list
-// Worldbook category filter
-const wbTagList = ['all', 'core', 'character', 'scene', 'general'];
-const wbCategoryOptions = wbTagList.map(tag => ({
-label: tag === 'all' ? '全部' : tag === 'core' ? '核心' : tag === 'character' ? '角色' : tag === 'scene' ? '场景' : '通用',
-bg: s.wbFilterTag === tag ? '#1A1815' : 'var(--bg-card, #FFF)',
-bd: s.wbFilterTag === tag ? '#1A1815' : '#E7E3DA',
-fg: s.wbFilterTag === tag ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
-pick: () => self.setState({ wbFilterTag: tag })
-}));
-
-const filteredWorldbooks = s.worldbooks.filter(wb => s.wbFilterTag === 'all' || (wb.tag || 'general') === s.wbFilterTag);
-
-const wbList = filteredWorldbooks.map(wb => ({
-...wb,
-triggerCount: (wb.triggers || []).length,
-activeLabel: wb.alwaysOn ? '常驻' : '触发',
-activeBg: wb.alwaysOn ? '#E8F5E8' : '#F2EFE8',
-preview: (wb.content || '').slice(0, 80),
-open: () => self.openWorldbookEditor(wb.id),
-del: (e) => { e.stopPropagation(); self.setState({ deleteConfirmOpen: true, deleteConfirmType: 'worldbook', deleteConfirmId: wb.id, deleteConfirmText: '确定删除世界书「' + (wb.name || '未命名') + '」？' }); }
-}));
-
 // Memory list with filter
-const memTagList = ['all', 'core', 'daily', 'monthly', 'general'];
-const memCategoryOptions = memTagList.map(tag => ({
-label: tag === 'all' ? '全部' : tag === 'core' ? '核心' : tag === 'daily' ? '日常' : tag === 'monthly' ? '月度' : '通用',
-bg: s.memFilterTag === tag ? '#1A1815' : 'var(--bg-card, #FFF)',
-bd: s.memFilterTag === tag ? '#1A1815' : '#E7E3DA',
-fg: s.memFilterTag === tag ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
-pick: () => self.setState({ memFilterTag: tag })
+const memLayerList = ['all', 'core', 'long', 'short', 'consciousness'];
+const memCategoryOptions = memLayerList.map(layer => ({
+label: layer === 'all' ? '全部' : layer === 'core' ? '核心' : layer === 'long' ? '长期' : layer === 'short' ? '近期' : '意识',
+bg: s.memFilterLayer === layer ? '#1A1815' : 'var(--bg-card, #FFF)',
+bd: s.memFilterLayer === layer ? '#1A1815' : '#E7E3DA',
+fg: s.memFilterLayer === layer ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
+pick: () => self.setState({ memFilterLayer: layer })
 }));
 
 const filteredMemories = s.memories
-.filter(mem => s.memFilterTag === 'all' || (mem.tag || 'general') === s.memFilterTag)
-.sort((a, b) => (b.updatedAt || 0) - (a.updatedAt || 0));
+.filter(mem => s.memFilterLayer === 'all' || (mem.layer || 'short') === s.memFilterLayer)
+.sort((a, b) => {
+  // 核心记忆置顶，其他按更新时间
+  if (a.layer === 'core' && b.layer !== 'core') return -1;
+  if (b.layer === 'core' && a.layer !== 'core') return 1;
+  return (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0);
+});
+
+const layerLabels = { core: '核心', long: '长期', short: '近期', consciousness: '意识' };
+const layerColors = { core: '#FFE4E4', long: '#E4F0FF', short: '#F2EFE8', consciousness: '#E8F5E8' };
 
 const memoryList = filteredMemories.map(mem => ({
 ...mem,
-levelLabel: memLevelLabels[mem.level] || '长期',
-levelColor: memLevelColors[mem.level] || '#3182CE',
-tag: mem.tag || 'general',
-activeLabel: mem.alwaysOn ? '常驻' : '触发',
-activeBg: mem.alwaysOn ? '#E8F5E8' : '#F2EFE8',
+tag: layerLabels[mem.layer || 'short'] || '近期',
+activeLabel: mem.pinned ? '📌' : (mem.alwaysOn ? '常驻' : '触发'),
+activeBg: layerColors[mem.layer || 'short'] || '#F2EFE8',
 preview: (mem.content || '').slice(0, 120),
 open: () => self.openMemoryEditor(mem.id),
 del: (e) => { e.stopPropagation(); self.setState({ deleteConfirmOpen: true, deleteConfirmType: 'memory', deleteConfirmId: mem.id, deleteConfirmText: '确定删除记忆「' + (mem.name || '未命名') + '」？' }); }
 }));
+
 const memTagOptions = ['core', 'daily', 'monthly', 'general'].map(tag => ({
 label: tag === 'core' ? '核心' : tag === 'daily' ? '日常' : tag === 'monthly' ? '月度' : '通用',
 bg: s.memEditTag === tag ? '#1A1815' : 'var(--bg-card, #FFF)',
@@ -3601,30 +3694,6 @@ self.show('自定义配色已应用');
 
 return {
 true: true, false: false,
-// 记忆编辑器相关（加到 return 对象中）
-memSetLevel: memSetLevel,
-memEditLevel: memEditLevel,
-memLevelCoreBg: makeLevelBtn('core').bg,
-memLevelCoreBd: makeLevelBtn('core').bd,
-memLevelCoreFg: makeLevelBtn('core').fg,
-memLevelLongBg: makeLevelBtn('long').bg,
-memLevelLongBd: makeLevelBtn('long').bd,
-memLevelLongFg: makeLevelBtn('long').fg,
-memLevelShortBg: makeLevelBtn('short').bg,
-memLevelShortBd: makeLevelBtn('short').bd,
-memLevelShortFg: makeLevelBtn('short').fg,
-memLevelConsciousnessBg: makeLevelBtn('consciousness').bg,
-memLevelConsciousnessBd: makeLevelBtn('consciousness').bd,
-memLevelConsciousnessFg: makeLevelBtn('consciousness').fg,
-memEditEventDate: memEditEventDate,
-memEditEventDateChange: memEditEventDateChange,
-memEditTags: memEditTags,
-memEditTagsChange: memEditTagsChange,
-memEditPinned: memEditPinned,
-memEditPinnedChange: memEditPinnedChange,
-memEditLinkSearch: memEditLinkSearch,
-memEditLinkSearchChange: memEditLinkSearchChange,
-memEditLinkChips: memEditLinkChips,
 isChat: s.tab === 'chat',
 isHome: s.tab === 'home',
 isMore: s.tab === 'more',
@@ -3665,9 +3734,9 @@ pledgeEditing: s.pledgeEditing,
 pledgeEditName: s.pledgeEditName || '',
 pledgeEditDate: s.pledgeEditDate || '',
 isPledgesSheet: s.sheet === 'pledges',
-wbList,
-wbListHasItems: filteredWorldbooks.length > 0,
-wbCategoryOptions,
+wbList: [],
+wbListHasItems: false,
+wbCategoryOptions: [],
 memoryList,
 memListHasItems: filteredMemories.length > 0,
 memCategoryOptions,
@@ -3706,6 +3775,14 @@ memContentFontSize: s.memFullscreen ? '15px' : '14px',
 memContentMinH: s.memFullscreen ? '60vh' : '120px',
 memEditPosBefore: s.memEditPosition === 'before',
 memEditPosAfter: s.memEditPosition === 'after',
+memLayerOptions: ['core', 'long', 'short', 'consciousness'].map(layer => ({
+  label: layer === 'core' ? '核心' : layer === 'long' ? '长期' : layer === 'short' ? '近期' : '意识',
+  bg: s.memEditLayer === layer ? '#1A1815' : 'var(--bg-card, #FFF)',
+  bd: s.memEditLayer === layer ? '#1A1815' : '#E7E3DA',
+  fg: s.memEditLayer === layer ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
+  pick: () => self.setState({ memEditLayer: layer })
+})),
+
 avatarSize: s.avatarSize || 36,
 userAvatar: s.userAvatar || '',
 aiAvatar: s.aiAvatar || '',
@@ -3927,16 +4004,6 @@ self.setState({ deleteConfirmType: '', deleteConfirmId: null });
 // ======== ACTIONS ========
 toggleDrawer: () => self.setState(v => ({ drawer: !v.drawer })),
 togglePlus: () => self.setState(v => ({ plus: !v.plus })),
-// 记忆编辑器动作
-memSetLevel: (level) => self.setState({ memEditLevel: level }),
-memEditEventDateChange: (e) => self.setState({ memEditEventDate: e.target.value }),
-memEditTagsChange: (e) => self.setState({ memEditTags: e.target.value }),
-memEditPinnedChange: (e) => self.setState({ memEditPinned: e.target.checked }),
-memEditLinkSearchChange: (e) => self.setState({ memEditLinkSearch: e.target.value }),
-memAddLink: (id) => {
-  const links = self.state.memEditLinks || [];
-  if (!links.includes(id)) self.setState({ memEditLinks: [...links, id] });
-},
 clearQuote: () => self.setState({ quotedMsg: null }),
 toggleProfile: () => self.setState(v => ({ profile: !v.profile, drawer: false })),
 closeImagePreview: () => self.setState({ imagePreviewOpen: false, imagePreviewUrl: '' }),
@@ -4141,8 +4208,53 @@ diaryCancelKel: () => self.setState({ diaryKelEdit: false }),
 diaryOpenStickerPicker: () => self.setState(v => ({ diaryStickerPickerOpen: !v.diaryStickerPickerOpen })),
 diaryCloseStickerPicker: () => self.setState({ diaryStickerPickerOpen: false }),
 diaryCommentInput: (e) => self.setState({ diaryCommentText: e.target.value }),
-diaryAddComment: () => self.addDiaryComment('user', s.diaryCommentText),
-diaryAskKelComment: () => self.askKelComment()
+diaryExtractToMemory: () => {
+  if (!s.diarySelectedDate) return;
+  const entry = self.getDiaryEntry(s.diarySelectedDate);
+  const content = [];
+  if (entry.mine) content.push('她的日记：' + entry.mine);
+  if (entry.kel) content.push('我的日记：' + entry.kel);
+  if (content.length === 0) { self.show('当天没有日记内容'); return; }
+  const newMem = {
+    id: genId(),
+    name: s.diarySelectedDate + ' 日记',
+    content: content.join('\n\n'),
+    triggers: [],
+    alwaysOn: false,
+    weight: 1,
+    position: 'before',
+    layer: 'long',
+    tag: 'diary',
+    pinned: false,
+    createdAt: Date.now(),
+    lastReferencedAt: Date.now(),
+    sourceType: 'diary',
+    sourceId: s.diarySelectedDate,
+    updatedAt: Date.now()
+  };
+  const memories = [...s.memories, newMem];
+  self.setState({ memories }, () => { self.persist(); });
+  self.show('已提取为长期记忆');
+},
+diaryAskKelComment: () => self.askKelComment(),
+// 音乐播放器
+keepAliveStatus: s.keepAliveEnabled ? 'On' : 'Off',
+musicStatusLabel: s.musicPlaying ? '▶ ' + (s.musicCurrentName || 'Playing') : (self._musicList.length > 0 ? '暂停中' : '未添加'),
+musicCount: s.musicCount || self._musicList.length || 0,
+toggleKeepAlive: () => {
+  const next = !s.keepAliveEnabled;
+  self.setState({ keepAliveEnabled: next });
+  self.persist();
+  if (next) {
+    self._initKeepAlive();
+    self.show('后台保活已开启');
+  } else {
+    if (self._keepAliveAudio) { self._keepAliveAudio.pause(); self._keepAliveAudio = null; }
+    self.show('后台保活已关闭');
+  }
+},
+toggleMusicPlayer: () => self._toggleMusic(),
+addMusicFiles: () => self._addMusicFile()
 };
 }
 }
