@@ -2813,7 +2813,30 @@ try {
 const data = JSON.parse(reader.result);
 const updates = {};
 if (data.chats) updates.chats = { ...this.state.chats, ...data.chats };
-if (data.worldbooks) updates.worldbooks = [...this.state.worldbooks, ...data.worldbooks.filter(w => !this.state.worldbooks.find(x => x.id === w.id))];
+if (data.worldbooks) {
+  // 旧版世界书自动迁移为记忆（layer=long）
+  const existingMemIds = new Set((this.state.memories || []).map(m => m.id));
+  const migratedWbs = data.worldbooks
+    .filter(w => !existingMemIds.has(w.id))
+    .map(w => ({
+      id: w.id,
+      name: w.name || '未命名',
+      content: w.content || '',
+      triggers: w.triggers || [],
+      alwaysOn: w.alwaysOn || false,
+      weight: w.weight || 1,
+      position: w.position || 'before',
+      layer: w.alwaysOn ? 'core' : 'long',
+      tag: w.tag || 'general',
+      pinned: w.alwaysOn || false,
+      createdAt: Date.now(),
+      lastReferencedAt: Date.now(),
+      sourceType: 'migrated',
+      updatedAt: Date.now()
+    }));
+  if (!updates.memories) updates.memories = [...(this.state.memories || [])];
+  updates.memories = [...updates.memories, ...migratedWbs];
+}
 if (data.memories) updates.memories = [...this.state.memories, ...data.memories.filter(m => !this.state.memories.find(x => x.id === m.id))];
 if (data.personas) updates.personas = [...this.state.personas, ...data.personas.filter(p => !this.state.personas.find(x => x.id === p.id))];
 if (data.styles) updates.styles = [...this.state.styles, ...data.styles.filter(s => !this.state.styles.find(x => x.id === s.id))];
@@ -3741,26 +3764,20 @@ memoryList,
 memListHasItems: filteredMemories.length > 0,
 memCategoryOptions,
 memTagOptions,
-isWorldbookEditorSheet: s.sheet === 'wbEditor',
-wbEditName: s.wbEditName || '',
-wbEditContent: s.wbEditContent || '',
-wbEditTriggers: s.wbEditTriggers || '',
-wbEditAlwaysOn: s.wbEditAlwaysOn || false,
-wbEditWeight: s.wbEditWeight || 1,
-wbTagOptions: ['core', 'character', 'scene', 'general'].map(tag => ({
-label: tag === 'core' ? '核心' : tag === 'character' ? '角色' : tag === 'scene' ? '场景' : '通用',
-bg: s.wbEditTag === tag ? '#1A1815' : 'var(--bg-card, #FFF)',
-bd: s.wbEditTag === tag ? '#1A1815' : '#E7E3DA',
-fg: s.wbEditTag === tag ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
-pick: () => self.setState({ wbEditTag: tag })
-})),
-wbToggleFullscreen: () => self.setState(v => ({ wbFullscreen: !v.wbFullscreen })),
-wbFullscreenLabel: s.wbFullscreen ? '收起' : '全屏编辑',
-wbContentRows: s.wbFullscreen ? '20' : '6',
-wbContentFontSize: s.wbFullscreen ? '15px' : '14px',
-wbContentMinH: s.wbFullscreen ? '60vh' : '120px',
-wbEditPosBefore: s.wbEditPosition === 'before',
-wbEditPosAfter: s.wbEditPosition === 'after',
+isWorldbookEditorSheet: false,
+wbEditName: '',
+wbEditContent: '',
+wbEditTriggers: '',
+wbEditAlwaysOn: false,
+wbEditWeight: 1,
+wbTagOptions: [],
+wbToggleFullscreen: () => {},
+wbFullscreenLabel: '',
+wbContentRows: '6',
+wbContentFontSize: '14px',
+wbContentMinH: '120px',
+wbEditPosBefore: false,
+wbEditPosAfter: true,
 isMemoryEditorSheet: s.sheet === 'memEditor',
 memEditName: s.memEditName || '',
 memEditContent: s.memEditContent || '',
@@ -3824,7 +3841,6 @@ saveFontPreset: () => {
 },
 navChatBg: s.tab === 'chat' ? '#ECEAE4' : 'transparent',
 navHomeBg: s.tab === 'home' ? '#ECEAE4' : 'transparent',
-navWbBg: s.tab === 'worldbook' ? '#ECEAE4' : 'transparent',
 navMemBg: s.tab === 'memory' ? '#ECEAE4' : 'transparent',
 navMoreBg: s.tab === 'more' ? '#ECEAE4' : 'transparent',
 navDiaryBg: s.tab === 'diary' ? '#ECEAE4' : 'transparent',
@@ -3988,11 +4004,13 @@ self.setState({ chats, deleteConfirmOpen: false });
 self.persist();
 self.show('已删除');
 } else if (type === 'worldbook') {
-const worldbooks = s.worldbooks.filter(w => w.id !== id);
-self.setState({ worldbooks, deleteConfirmOpen: false });
+// 旧世界书已迁移为记忆，按记忆处理
+const memories = s.memories.filter(m => m.id !== id);
+self.setState({ memories, deleteConfirmOpen: false });
 self.persist();
-self.show('世界书已删除');
-} else if (type === 'memory') {
+self.show('已删除');
+}
+ else if (type === 'memory') {
 const memories = s.memories.filter(m => m.id !== id);
 self.setState({ memories, deleteConfirmOpen: false });
 self.persist();
@@ -4010,7 +4028,7 @@ closeImagePreview: () => self.setState({ imagePreviewOpen: false, imagePreviewUr
 navChat: () => { self.setState({ tab: 'chat', drawer: false }); self.scrollToBottom(); },
 navHome: () => self.setState({ tab: 'home', drawer: false }),
 navMore: () => self.setState({ tab: 'more', drawer: false }),
-navWorldbook: () => self.setState({ tab: 'worldbook', drawer: false }),
+navWorldbook: () => self.setState({ tab: 'memory', drawer: false }),
 navMemory: () => self.setState({ tab: 'memory', drawer: false }),
 navDiary: () => self.setState({ tab: 'diary', drawer: false }),
 navRegex: () => self.setState({ tab: 'regex', drawer: false }),
@@ -4071,20 +4089,16 @@ const pledges = [...s.pledges, { id: genId(), name: s.pledgeEditName || '新约�
 self.setState({ pledges, pledgeEditing: false }, () => self.persist());
 self.show('已保存');
 },
-newWorldbook: () => self.openWorldbookEditor(null),
-wbEditNameChange: (e) => self.setState({ wbEditName: e.target.value }),
-wbEditContentChange: (e) => self.setState({ wbEditContent: e.target.value }),
-wbEditTriggersChange: (e) => self.setState({ wbEditTriggers: e.target.value }),
-wbEditAlwaysOnChange: (e) => self.setState({ wbEditAlwaysOn: e.target.checked }),
-wbEditWeightChange: (e) => self.setState({ wbEditWeight: e.target.value }),
-wbEditSetPosBefore: () => self.setState({ wbEditPosition: 'before' }),
-wbEditSetPosAfter: () => self.setState({ wbEditPosition: 'after' }),
-saveWorldbookEditor: () => self.saveWorldbookEditor(),
-deleteWorldbookFromEditor: () => {
-if (s.wbEditId) {
-self.setState({ deleteConfirmOpen: true, deleteConfirmType: 'worldbook', deleteConfirmId: s.wbEditId, deleteConfirmText: '确定删除这个世界书？' });
-}
-},
+newWorldbook: () => {},
+wbEditNameChange: () => {},
+wbEditContentChange: () => {},
+wbEditTriggersChange: () => {},
+wbEditAlwaysOnChange: () => {},
+wbEditWeightChange: () => {},
+wbEditSetPosBefore: () => {},
+wbEditSetPosAfter: () => {},
+saveWorldbookEditor: () => {},
+deleteWorldbookFromEditor: () => {},
 newMemory: () => self.openMemoryEditor(null),
 memEditNameChange: (e) => self.setState({ memEditName: e.target.value }),
 memEditContentChange: (e) => self.setState({ memEditContent: e.target.value }),
