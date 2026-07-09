@@ -1668,38 +1668,61 @@ return summary.trim();
 
 // Render markdown-like content to HTML with code blocks
 function renderContent(text, isUser) {
-if (!text) return '<span style="opacity:.4;">...</span>';
-// Escape HTML first
-let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
-// Code blocks - render as downloadable/copyable blocks
-html = html.replace(/```(\w*)\n([\s\S]*?)```/g, function(match, lang, code) {
-const langLabel = lang || 'code';
-const escapedCode = code.replace(/'/g, '&#39;').replace(/"/g, '&quot;');
-return '<div style="position:relative;background:#1A1815;border-radius:12px;margin:8px 0;overflow:hidden;">' +
-'<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.06);">' +
-'<span style="font-size:11px;color:#9A958B;">' + langLabel + '</span>' +
-'<div style="display:flex;gap:6px;">' +
-'<button type="button" onclick="event.stopPropagation();navigator.clipboard.writeText(this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="...">Copy</button>' +
-'<button type="button" onclick="event.stopPropagation();var t=this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText;var b=new Blob([t],{type:\'text/plain\'});var u=URL.createObjectURL(b);var a=document.createElement(\'a\');a.href=u;a.download=\'' + langLabel + '.' + (lang||'txt') + '\';a.click();URL.revokeObjectURL(u);" style="...">Download</button>' +
-'</div></div>' +
-'<pre style="margin:0;padding:12px 14px;overflow-x:auto;font-family:\'SF Mono\',\'Fira Code\',monospace;font-size:13px;line-height:1.6;color:#E8E4DC;white-space:pre;">' + code + '</pre></div>';
-});
-// Inline code
-html = html.replace(/`([^`]+)`/g, '<code style="background:#ECEAE4;padding:2px 6px;border-radius:5px;font-family:\'SF Mono\',monospace;font-size:14px;">$1</code>');
-// Quote blocks (lines starting with > )
-html = html.replace(/^&gt; (.*)$/gm, '<div class="quote-block">$1</div>');
-// Bold
-html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
-// Italic
-html = html.replace(/\*(.+?)\*/g, '<em>$1</em>');
-// Newlines (but not inside code blocks)
-if (!html.includes('<pre')) {
-html = html.replace(/\n/g, '<br>');
-} else {
-const parts = html.split(/(<div style="position:relative[\s\S]*?<\/pre><\/div>)/);
-html = parts.map(p => p.startsWith('<div style="position:relative') ? p : p.replace(/\n/g, '<br>')).join('');
-}
-return html;
+  if (!text) return '<span style="opacity:.4;">...</span>';
+  
+  // 1. 先提取代码块，用占位符保护
+  const codeBlocks = [];
+  let processed = text.replace(/```(\w*)\n([\s\S]*?)```/g, function(match, lang, code) {
+    const idx = codeBlocks.length;
+    const langLabel = lang || 'code';
+    // 代码内容单独转义
+    const escapedCode = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    codeBlocks.push(
+      '<div style="position:relative;background:#1A1815;border-radius:12px;margin:8px 0;overflow:hidden;">' +
+      '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.06);">' +
+      '<span style="font-size:11px;color:#9A958B;">' + langLabel + '</span>' +
+      '<div style="display:flex;gap:6px;">' +
+      '<button type="button" onclick="event.stopPropagation();navigator.clipboard.writeText(this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="border:none;background:rgba(255,255,255,.1);color:#D8D3CA;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;">Copy</button>' +
+      '<button type="button" onclick="event.stopPropagation();var t=this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText;var b=new Blob([t],{type:\'text/plain\'});var u=URL.createObjectURL(b);var a=document.createElement(\'a\');a.href=u;a.download=\'' + langLabel + '.' + (lang||'txt') + '\';a.click();URL.revokeObjectURL(u);" style="border:none;background:rgba(255,255,255,.1);color:#D8D3CA;border-radius:8px;padding:4px 10px;font-size:11px;cursor:pointer;">Download</button>' +
+      '</div></div>' +
+      '<pre style="margin:0;padding:12px 14px;overflow-x:auto;font-family:\'SF Mono\',\'Fira Code\',monospace;font-size:13px;line-height:1.6;color:#E8E4DC;white-space:pre;">' + escapedCode + '</pre></div>'
+    );
+    return '\x00CODEBLOCK_' + idx + '\x00';
+  });
+
+  // 2. 提取行内代码
+  const inlineCodes = [];
+  processed = processed.replace(/`([^`]+)`/g, function(match, code) {
+    const idx = inlineCodes.length;
+    const escaped = code.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+    inlineCodes.push('<code style="background:#ECEAE4;padding:2px 6px;border-radius:5px;font-family:\'SF Mono\',monospace;font-size:14px;">' + escaped + '</code>');
+    return '\x00INLINE_' + idx + '\x00';
+  });
+
+  // 3. 转义剩余 HTML
+  processed = processed.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+
+  // 4. Quote blocks
+  processed = processed.replace(/^&gt; (.*)$/gm, '<div style="border-left:3px solid #D1CCC2;padding-left:12px;margin:6px 0;color:#6B665E;">$1</div>');
+
+  // 5. Bold & Italic
+  processed = processed.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
+  processed = processed.replace(/\*(.+?)\*/g, '<em>$1</em>');
+
+  // 6. 换行
+  processed = processed.replace(/\n/g, '<br>');
+
+  // 7. 还原代码块占位符
+  processed = processed.replace(/\x00CODEBLOCK_(\d+)\x00/g, function(m, idx) {
+    return codeBlocks[parseInt(idx)];
+  });
+
+  // 8. 还原行内代码占位符
+  processed = processed.replace(/\x00INLINE_(\d+)\x00/g, function(m, idx) {
+    return inlineCodes[parseInt(idx)];
+  });
+
+  return processed;
 }
 
 const EMOJI_LIST = ['😊','😢','😡','🥰','😴','🤔','✨','🌧️','☀️','🌈','💪','😭','🎉','💕','😤','🫠'];
