@@ -946,6 +946,15 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">名称</div>
 <input value="{{ memEditName }}" onInput="{{ memEditNameChange }}" placeholder="记忆名称" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
 </div>
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">记忆层级</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<sc-for list="{{ memLayerOptions }}" as="ml" hint-placeholder-count="4">
+<button onClick="{{ ml.pick }}" style="border:1px solid {{ ml.bd }};background:{{ ml.bg }};color:{{ ml.fg }};border-radius:14px;padding:6px 14px;font-size:13px;font-family:inherit;cursor:pointer;">{{ ml.label }}</button>
+</sc-for>
+</div>
+<div style="font-size:11px;color:#9A958B;margin-top:6px;line-height:1.5;">核心=永不遗忘 · 长期=重要事件 · 近期=7天活跃 · 意识=上次状态</div>
+</div>
 <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;flex-wrap:wrap;">
 <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
 <input type="checkbox" checked="{{ memEditAlwaysOn }}" onChange="{{ memEditAlwaysOnChange }}" style="width:16px;height:16px;accent-color:#1A1815;"> 常驻
@@ -954,15 +963,6 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <span>权重</span>
 <input value="{{ memEditWeight }}" onInput="{{ memEditWeightChange }}" type="number" min="0" max="10" step="0.5" style="width:50px;border:1px solid #E7E3DA;border-radius:8px;padding:4px 6px;font-family:inherit;font-size:13px;text-align:center;">
 </label>
-</div>
-<div style="margin-bottom:14px;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">记忆层级</div>
-<div style="display:flex;gap:8px;flex-wrap:wrap;">
-<sc-for list="{{ memLayerOptions }}" as="ml" hint-placeholder-count="4">
-<button onClick="{{ ml.pick }}" style="border:1px solid {{ ml.bd }};background:{{ ml.bg }};color:{{ ml.fg }};border-radius:14px;padding:5px 12px;font-size:12px;font-family:inherit;cursor:pointer;">{{ ml.label }}</button>
-</sc-for>
-</div>
-<div style="font-size:11px;color:#9A958B;margin-top:6px;line-height:1.5;">核心=永不遗忘 · 长期=重要事件 · 近期=7天活跃 · 意识=上次状态</div>
 </div>
 <div style="display:flex;gap:12px;margin-bottom:14px;">
 <label style="display:flex;align-items:center;gap:6px;font-size:13px;color:#3A362F;cursor:pointer;">
@@ -973,8 +973,12 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </label>
 </div>
 <div style="margin-bottom:14px;">
-<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个，留空则常驻）</div>
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">触发关键词（每行一个，留空则按层级规则）</div>
 <textarea value="{{ memEditTriggers }}" onInput="{{ memEditTriggersChange }}" placeholder="关键词1&#10;关键词2&#10;..." rows="2" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;resize:vertical;"></textarea>
+</div>
+<div style="margin-bottom:14px;">
+<div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">事件日期（可选，关联日记）</div>
+<input value="{{ memEditEventDate }}" onInput="{{ memEditEventDateChange }}" placeholder="YYYY-MM-DD" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
 </div>
 <div>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
@@ -1540,6 +1544,67 @@ function loadData() {
     const raw = localStorage.getItem(STORAGE_KEY);
     if (raw) {
       const data = JSON.parse(raw);
+      // ---- 迁移旧数据结构 ----
+      let migrated = false;
+      if (data.chats) {
+        for (const chatId of Object.keys(data.chats)) {
+          const chat = data.chats[chatId];
+          if (chat.messages && !chat.thinkingEntries) {
+            chat.thinkingEntries = [];
+            for (const msg of chat.messages) {
+              if (!msg.id) {
+                msg.id = genId();
+                migrated = true;
+              }
+              if (msg.thinking) {
+                chat.thinkingEntries.push({
+                  msgId: msg.id,
+                  content: msg.thinking
+                });
+                delete msg.thinking;
+                migrated = true;
+              }
+              if (!msg.variants) {
+                msg.variants = [msg.text];
+                msg.variantIdx = 0;
+                migrated = true;
+              }
+            }
+          }
+        }
+      }
+      if (migrated) {
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+      }
+      // 检查数据是否有效
+      if (data.chats && Object.keys(data.chats).length > 0) {
+        return data;
+      }
+    }
+    // 主数据不存在或无效，尝试从备份恢复
+    const backupRaw = localStorage.getItem(STORAGE_KEY + '_backup');
+    if (backupRaw) {
+      const backup = JSON.parse(backupRaw);
+      if (backup.chats && Object.keys(backup.chats).length > 0) {
+        console.warn('[Kel] 主数据丢失，已从备份恢复');
+        // 把备份写回主存储
+        localStorage.setItem(STORAGE_KEY, JSON.stringify(backup));
+        return backup;
+      }
+    }
+    return {};
+  } catch(e) {
+    console.error('[Kel] loadData 解析失败', e);
+    try {
+      const backupRaw = localStorage.getItem(STORAGE_KEY + '_backup');
+      if (backupRaw) {
+        const backup = JSON.parse(backupRaw);
+        if (backup.chats) return backup;
+      }
+    } catch(e2) {}
+    return {};
+  }
+}
       // ---- 迁移旧数据结构（在这里执行，保证每次加载都检查） ----
       let migrated = false;
       if (data.chats) {
@@ -1713,6 +1778,7 @@ memEditAlwaysOn: false,
 memEditWeight: 1,
 memEditPosition: 'before',
 memEditLayer: 'short',
+memEditEventDate: '',
 memEditTag: '',
 memFilterLayer: 'all',
 tab: 'home',
@@ -1846,7 +1912,27 @@ this.state.anniversaries = [{ id: genId(), name: '纪念日', date: saved.annivD
 if (!this.state.chats[this.state.currentChatId]) {
 this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
 }
-setTimeout(() => { this.applyTheme(this.state.activeThemeId); this.applyCustomCss(); this.applyCustomFont(); this.applyMsgFontSize(); }, 100);
+setTimeout(async () => {
+this.applyTheme(this.state.activeThemeId);
+this.applyCustomCss();
+this.applyCustomFont();
+this.applyMsgFontSize();
+// 从 IndexedDB 加载字体
+const fontName = localStorage.getItem('kel-font-name');
+if (fontName) {
+try {
+const db = await this._openFontDB();
+const tx = db.transaction('fonts', 'readonly');
+const store = tx.objectStore('fonts');
+const result = await store.get('user-font');
+if (result && result.blob) {
+const url = URL.createObjectURL(result.blob);
+this.setState({ localFontData: url, localFontName: result.name });
+this.applyLocalFont();
+}
+} catch(e) {}
+}
+}, 100);
 // 用户首次触摸时激活保活音频（浏览器要求用户交互后才能播放音频）
 const activateKeepAlive = () => {
   if (this.state.keepAliveEnabled && !this._musicPlaying) {
@@ -1870,9 +1956,11 @@ document.addEventListener('visibilitychange', () => {
 this._keepAliveAudio = null;
 this._musicAudio = null;
 this._musicPlaying = false;
-this._musicList = JSON.parse(localStorage.getItem('kel-music-list') || '[]');
+this._musicList = [];
 this._musicIdx = 0;
 this._musicVolume = parseFloat(localStorage.getItem('kel-music-volume') || '0.5');
+// 从 IndexedDB 加载音乐列表
+this._loadMusicFromDB();
 
 // 初始化保活（静音音频）
 this._initKeepAlive = () => {
@@ -1886,7 +1974,7 @@ this._initKeepAlive = () => {
 };
 
 // 音乐播放器方法
-this._playMusic = (idx) => {
+this._playMusic = async (idx) => {
   if (this._musicList.length === 0) return;
   if (idx >= this._musicList.length) idx = 0;
   if (idx < 0) idx = this._musicList.length - 1;
@@ -1898,15 +1986,37 @@ this._playMusic = (idx) => {
       this._playMusic(this._musicIdx + 1);
     });
   }
-  this._musicAudio.src = track.data;
-  this._musicAudio.volume = this._musicVolume;
-  this._musicAudio.play().catch(() => {});
-  this._musicPlaying = true;
-  // 播放音乐时停止静音保活（音乐本身就能保活）
-  if (this._keepAliveAudio) {
-    this._keepAliveAudio.pause();
+  try {
+    // 从 IndexedDB 读取音频 blob
+    const db = await this._openMusicDB();
+    const tx = db.transaction('music', 'readonly');
+    const store = tx.objectStore('music');
+    const result = await new Promise((resolve, reject) => {
+      const req = store.get(track.id);
+      req.onsuccess = () => resolve(req.result);
+      req.onerror = () => reject(req.error);
+    });
+    if (!result || !result.blob) {
+      this.show('音频数据丢失: ' + track.name);
+      return;
+    }
+    // 释放旧的 URL
+    if (this._currentMusicUrl) {
+      URL.revokeObjectURL(this._currentMusicUrl);
+    }
+    this._currentMusicUrl = URL.createObjectURL(result.blob);
+    this._musicAudio.src = this._currentMusicUrl;
+    this._musicAudio.volume = this._musicVolume;
+    await this._musicAudio.play();
+    this._musicPlaying = true;
+    // 播放音乐时停止静音保活（音乐本身就能保活）
+    if (this._keepAliveAudio) {
+      this._keepAliveAudio.pause();
+    }
+    this.setState({ musicPlaying: true, musicCurrentName: track.name, musicIdx: idx });
+  } catch(err) {
+    this.show('播放失败: ' + err.message);
   }
-  this.setState({ musicPlaying: true, musicCurrentName: track.name, musicIdx: idx });
 };
 
 this._pauseMusic = () => {
@@ -1938,30 +2048,51 @@ this._addMusicFile = () => {
   input.type = 'file';
   input.accept = 'audio/*';
   input.multiple = true;
-  input.onchange = (e) => {
+  input.onchange = async (e) => {
     const files = Array.from(e.target.files || []);
     let loaded = 0;
     for (const file of files) {
-      if (file.size > 15 * 1024 * 1024) { this.show(file.name + ' 超过15MB，跳过'); continue; }
-      const reader = new FileReader();
-      reader.onload = () => {
-        this._musicList.push({ name: file.name.replace(/\.[^.]+$/, ''), data: reader.result });
+      if (file.size > 100 * 1024 * 1024) { this.show(file.name + ' 超过100MB，跳过'); continue; }
+      try {
+        const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+        const entry = { id: id, name: file.name.replace(/\.[^.]+$/, ''), size: file.size, type: file.type };
+        // 存 blob 到 IndexedDB
+        const db = await this._openMusicDB();
+        const tx = db.transaction('music', 'readwrite');
+        const store = tx.objectStore('music');
+        await new Promise((resolve, reject) => {
+          const req = store.put({ id: id, blob: file, meta: entry });
+          req.onsuccess = resolve;
+          req.onerror = () => reject(req.error);
+        });
+        this._musicList.push(entry);
         loaded++;
-        if (loaded === files.length || loaded === files.filter(f => f.size <= 15*1024*1024).length) {
-          localStorage.setItem('kel-music-list', JSON.stringify(this._musicList));
-          this.setState({ musicCount: this._musicList.length });
-          this.show(loaded + ' 首音乐已添加');
-        }
-      };
-      reader.readAsDataURL(file);
+      } catch(err) {
+        this.show(file.name + ' 添加失败: ' + err.message);
+      }
+    }
+    if (loaded > 0) {
+      // 只在 localStorage 存元数据（不存音频数据）
+      localStorage.setItem('kel-music-meta', JSON.stringify(this._musicList));
+      this.setState({ musicCount: this._musicList.length });
+      this.show(loaded + ' 首音乐已添加');
     }
   };
   input.click();
 };
 
-this._removeMusicTrack = (idx) => {
+this._removeMusicTrack = async (idx) => {
+  const track = this._musicList[idx];
+  if (track && track.id) {
+    try {
+      const db = await this._openMusicDB();
+      const tx = db.transaction('music', 'readwrite');
+      const store = tx.objectStore('music');
+      store.delete(track.id);
+    } catch(e) {}
+  }
   this._musicList.splice(idx, 1);
-  localStorage.setItem('kel-music-list', JSON.stringify(this._musicList));
+  localStorage.setItem('kel-music-meta', JSON.stringify(this._musicList));
   if (this._musicIdx >= this._musicList.length) this._musicIdx = 0;
   this.setState({ musicCount: this._musicList.length });
   this.show('已移除');
@@ -2038,7 +2169,7 @@ return this.state.anniversaries[this.state.activeAnnivIdx] || this.state.anniver
 
 persist() {
 const s = this.state;
-saveData({
+const data = {
 apiPresets: s.apiPresets,
 activePresetId: s.activePresetId,
 personas: s.personas,
@@ -2059,7 +2190,94 @@ aiAvatar: s.aiAvatar,
 customCss: s.customCss,
 customFont: s.customFont,
 localFontName: s.localFontName,
-localFontData: s.localFontData,
+msgFontSize: s.msgFontSize,
+activeThemeId: s.activeThemeId,
+customTheme: s.customTheme,
+anniversaries: s.anniversaries,
+activeAnnivIdx: s.activeAnnivIdx,
+pledges: s.pledges,
+diaries: s.diaries,
+kelMood: s.kelMood,
+regexRules: s.regexRules,
+fontPresets: s.fontPresets,
+keepAliveEnabled: s.keepAliveEnabled,
+};
+// 先尝试写入
+try {
+const json = JSON.stringify(data);
+localStorage.setItem(STORAGE_KEY, json);
+// 验证写入是否成功
+const verify = localStorage.getItem(STORAGE_KEY);
+if (!verify || verify.length < json.length * 0.9) {
+console.error('[Kel] 写入验证失败，尝试清理后重写');
+// 尝试清除旧备份腾出空间
+localStorage.removeItem(STORAGE_KEY + '_backup');
+localStorage.setItem(STORAGE_KEY, json);
+}
+// 写入备份（只保存关键数据，不含头像等大数据）
+try {
+const backupData = JSON.stringify({
+chats: s.chats,
+memories: s.memories,
+currentChatId: s.currentChatId,
+diaries: s.diaries,
+pledges: s.pledges,
+anniversaries: s.anniversaries,
+_backupTime: Date.now()
+});
+localStorage.setItem(STORAGE_KEY + '_backup', backupData);
+} catch(e2) {
+// backup 写不下就算了，主数据已经存了
+}
+} catch(e) {
+console.error('[Kel] localStorage 写入失败:', e);
+// localStorage 满了，尝试用 IndexedDB 存储
+this._saveToIndexedDB(data);
+}
+}
+
+async _saveToIndexedDB(data) {
+try {
+const db = await new Promise((resolve, reject) => {
+const req = indexedDB.open('KelHomeData', 1);
+req.onerror = () => reject(req.error);
+req.onsuccess = () => resolve(req.result);
+req.onupgradeneeded = (e) => {
+const db = e.target.result;
+if (!db.objectStoreNames.contains('appdata')) {
+db.createObjectStore('appdata', { keyPath: 'id' });
+}
+};
+});
+const tx = db.transaction('appdata', 'readwrite');
+const store = tx.objectStore('appdata');
+store.put({ id: 'main', data: data, savedAt: Date.now() });
+console.log('[Kel] 数据已存入 IndexedDB');
+} catch(e) {
+console.error('[Kel] IndexedDB 也写入失败:', e);
+}
+}
+apiPresets: s.apiPresets,
+activePresetId: s.activePresetId,
+personas: s.personas,
+activePersonaId: s.activePersonaId,
+styles: s.styles,
+activeStyleId: s.activeStyleId,
+prompts: s.prompts,
+currentChatId: s.currentChatId,
+chats: s.chats,
+petEnabled: s.petEnabled,
+petSizeIdx: s.petSizeIdx,
+soundEnabled: s.soundEnabled,
+memoryCount: s.memoryCount,
+avatarSize: s.avatarSize,
+memories: s.memories,
+userAvatar: s.userAvatar,
+aiAvatar: s.aiAvatar,
+customCss: s.customCss,
+customFont: s.customFont,
+localFontName: s.localFontName,
+// localFontData 不再存 localStorage，改存 IndexedDB
 msgFontSize: s.msgFontSize,
 activeThemeId: s.activeThemeId,
 customTheme: s.customTheme,
@@ -2164,6 +2382,7 @@ memEditAlwaysOn: mem ? !!mem.alwaysOn : false,
 memEditWeight: mem ? mem.weight : 1,
 memEditPosition: mem ? mem.position : 'before',
 memEditLayer: mem ? (mem.layer || 'short') : 'short',
+memEditEventDate: mem ? (mem.eventDate || '') : '',
 memEditTag: mem ? (mem.tag || 'general') : 'general'
 });
 }
@@ -2182,6 +2401,7 @@ weight: parseFloat(s.memEditWeight) || 1,
 position: s.memEditPosition || 'before',
 layer: layer,
 tag: s.memEditTag || 'general',
+eventDate: s.memEditEventDate || '',
 pinned: layer === 'core',
 createdAt: (s.memories.find(m => m.id === s.memEditId) || {}).createdAt || Date.now(),
 lastReferencedAt: Date.now(),
@@ -2859,7 +3079,22 @@ if (data.heartfelt) updates.heartfelt = data.heartfelt;
 if (data.fontPresets) updates.fontPresets = data.fontPresets;
 if (data.regexRules) updates.regexRules = data.regexRules;
 this.setState(updates, () => {
+// 强制写入并验证
 this.persist();
+// 二次确认写入成功
+setTimeout(() => {
+const verify = localStorage.getItem(STORAGE_KEY);
+if (verify) {
+const parsed = JSON.parse(verify);
+const chatCount = parsed.chats ? Object.keys(parsed.chats).length : 0;
+console.log('[Kel] 导入验证: ' + chatCount + ' chats saved');
+if (chatCount === 0) {
+// 写入失败，用 IndexedDB 兜底
+this._saveToIndexedDB(updates);
+this.show('⚠️ localStorage 可能已满，数据存入 IndexedDB');
+}
+}
+}, 200);
 if (updates.activeThemeId) this.applyTheme(updates.activeThemeId);
 this.applyCustomCss();
 this.applyCustomFont();
@@ -2971,19 +3206,85 @@ pickFontFile() {
 const input = document.createElement('input');
 input.type = 'file';
 input.accept = '.ttf,.otf,.woff,.woff2';
-input.onchange = (e) => {
+input.onchange = async (e) => {
 const file = e.target.files[0];
 if (!file) return;
-const reader = new FileReader();
-reader.onload = () => {
-this.setState({ localFontData: reader.result, localFontName: file.name });
-this.persist();
+if (file.size > 20 * 1024 * 1024) {
+this.show('字体文件超过 20MB，建议使用 Web 字体链接');
+return;
+}
+try {
+// 存到 IndexedDB
+const db = await this._openFontDB();
+const tx = db.transaction('fonts', 'readwrite');
+const store = tx.objectStore('fonts');
+await store.put({ id: 'user-font', name: file.name, blob: file });
+await tx.complete;
+// 读取并应用
+const url = URL.createObjectURL(file);
+this.setState({ localFontData: url, localFontName: file.name });
+localStorage.setItem('kel-font-name', file.name); // 只存名字，不存数据
 this.applyLocalFont();
 this.show('字体已加载: ' + file.name);
-};
-reader.readAsDataURL(file);
+} catch(e) {
+this.show('字体加载失败: ' + e.message);
+}
 };
 input.click();
+}
+
+async _openMusicDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('KelMusic', 1);
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => resolve(req.result);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('music')) {
+        db.createObjectStore('music', { keyPath: 'id' });
+      }
+    };
+  });
+}
+
+async _loadMusicFromDB() {
+  try {
+    // 先读元数据
+    const meta = localStorage.getItem('kel-music-meta');
+    if (meta) {
+      this._musicList = JSON.parse(meta);
+      this.setState({ musicCount: this._musicList.length });
+    }
+    // 兼容旧版：如果 kel-music-list 里有 data 字段的数据，迁移到 IndexedDB
+    const oldData = localStorage.getItem('kel-music-list');
+    if (oldData) {
+      const oldList = JSON.parse(oldData);
+      if (oldList.length > 0 && oldList[0].data) {
+        const db = await this._openMusicDB();
+        for (const track of oldList) {
+          if (!track.data) continue;
+          const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+          // base64 转 blob
+          const resp = await fetch(track.data);
+          const blob = await resp.blob();
+          const tx = db.transaction('music', 'readwrite');
+          const store = tx.objectStore('music');
+          const entry = { id: id, name: track.name, size: blob.size, type: blob.type };
+          await new Promise((resolve, reject) => {
+            const req = store.put({ id: id, blob: blob, meta: entry });
+            req.onsuccess = resolve;
+            req.onerror = () => reject(req.error);
+          });
+          this._musicList.push(entry);
+        }
+        localStorage.setItem('kel-music-meta', JSON.stringify(this._musicList));
+        localStorage.removeItem('kel-music-list'); // 删除旧数据释放空间
+        this.setState({ musicCount: this._musicList.length });
+      }
+    }
+  } catch(e) {
+    console.error('[Kel] 音乐加载失败:', e);
+  }
 }
 
 saveCurrentFontAsPreset(name) {
@@ -3792,7 +4093,10 @@ memContentFontSize: s.memFullscreen ? '15px' : '14px',
 memContentMinH: s.memFullscreen ? '60vh' : '120px',
 memEditPosBefore: s.memEditPosition === 'before',
 memEditPosAfter: s.memEditPosition === 'after',
-memLayerOptions: ['core', 'long', 'short', 'consciousness'].map(layer => ({
+memEditEventDate: s.memEditEventDate || '',
+memEditEventDateChange: (e) => self.setState({ memEditEventDate: e.target.value }),
+memLayerOptions:
+ ['core', 'long', 'short', 'consciousness'].map(layer => ({
   label: layer === 'core' ? '核心' : layer === 'long' ? '长期' : layer === 'short' ? '近期' : '意识',
   bg: s.memEditLayer === layer ? '#1A1815' : 'var(--bg-card, #FFF)',
   bd: s.memEditLayer === layer ? '#1A1815' : '#E7E3DA',
