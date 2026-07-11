@@ -45,6 +45,15 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <sc-if value="{{ isChat }}" hint-placeholder-val="{{ true }}">
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;">
 
+<!-- multi-select header -->
+<sc-if value="{{ multiSelectMode }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;top:0;left:0;right:0;z-index:80;background:var(--bg-main, #F5F3EE);padding:18px 16px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:1px solid #ECE8DF;">
+<button onClick="{{ exitMultiSelect }}" style="border:none;background:transparent;font-size:15px;color:#6B665E;font-family:inherit;cursor:pointer;">取消</button>
+<span style="font-size:14px;font-weight:600;color:var(--text-primary, #1A1815);">已选 {{ multiSelectCount }} 条</span>
+<button onClick="{{ multiSelectAll }}" style="border:none;background:transparent;font-size:15px;color:#6B665E;font-family:inherit;cursor:pointer;">全选</button>
+</div>
+</sc-if>
+
 <!-- header -->
 <div style="flex:none;padding:18px 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:9px;">
 <div style="display:flex;align-items:center;gap:9px;min-width:0;">
@@ -84,6 +93,20 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <!-- messages -->
 <sc-for list="{{ messages }}" as="m" hint-placeholder-count="4">
 <div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;" onContextMenu="{{ m.longPress }}">
+<sc-if value="{{ multiSelectMode }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ m.toggleSelect }}" style="width:24px;height:24px;border-radius:50%;border:2px solid {{ m.selectBd }};background:{{ m.selectBg }};display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;margin-bottom:4px;">
+<sc-if value="{{ m.isSelected }}" hint-placeholder-val="{{ false }}">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</sc-if>
+</button>
+</sc-if>
+<sc-if value="{{ multiSelectMode }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ m.toggleSelect }}" style="width:24px;height:24px;border-radius:50%;border:2px solid {{ m.selectBd }};background:{{ m.selectBg }};display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;margin-bottom:4px;">
+<sc-if value="{{ m.isSelected }}" hint-placeholder-val="{{ false }}">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M5 12l5 5L20 7" stroke="#FFF" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</sc-if>
+</button>
+</sc-if>
 <div style="max-width:{{ m.maxW }};width:{{ m.fullW }};">
 <!-- thinking icon button (completely decoupled from bubble) -->
 <sc-if value="{{ m.hasThink }}" hint-placeholder-val="{{ false }}">
@@ -128,7 +151,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- message bubble -->
 <sc-if value="{{ m.showNormal }}" hint-placeholder-val="{{ true }}">
-<div style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:{{ m.bubblePadding }};font-size:var(--msg-font-size, 13px);line-height:1.55;letter-spacing:-0.008em;word-break:break-word;display:{{ m.bubbleDisplay }};width:fit-content;max-width:100%;">
+<div style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:{{ m.bubblePadding }};font-size:var(--msg-font-size, 13px);line-height:1.55;letter-spacing:-0.008em;word-break:break-word;display:{{ m.bubbleDisplay }};">
 
 <sc-if value="{{ m.hasQuote }}" hint-placeholder-val="{{ false }}">
 <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;padding:3px 8px;background:rgba(0,0,0,.06);border-radius:6px;border-left:2px solid rgba(0,0,0,.2);">
@@ -150,6 +173,15 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </div>
 </sc-if>
 
+<!-- reactions display -->
+<sc-if value="{{ m.hasReactions }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;gap:4px;margin-top:3px;flex-wrap:wrap;justify-content:{{ m.reactJustify }};">
+<sc-for list="{{ m.reactions }}" as="r" hint-placeholder-count="0">
+<span onClick="{{ r.remove }}" style="background:rgba(0,0,0,.04);border:1px solid #E7E3DA;border-radius:12px;padding:2px 6px;font-size:14px;cursor:pointer;">{{ r.emoji }}</span>
+</sc-for>
+</div>
+</sc-if>
+
 <!-- user actions (outside bubble) -->
 <sc-if value="{{ m.showUserActions }}" hint-placeholder-val="{{ false }}">
 <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:4px;opacity:.4;">
@@ -159,6 +191,15 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
   <button onClick="{{ m.edit }}" style="width:24px;height:24px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
     <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
+</div>
+</sc-if>
+
+<!-- reactions display -->
+<sc-if value="{{ m.hasReactions }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;gap:4px;margin-top:3px;flex-wrap:wrap;justify-content:{{ m.reactJustify }};">
+<sc-for list="{{ m.reactions }}" as="r" hint-placeholder-count="0">
+<span onClick="{{ r.remove }}" style="background:rgba(0,0,0,.04);border:1px solid #E7E3DA;border-radius:12px;padding:2px 6px;font-size:14px;cursor:pointer;">{{ r.emoji }}</span>
+</sc-for>
 </div>
 </sc-if>
 
@@ -204,6 +245,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </div>
 
 <!-- input bar -->
+<sc-if value="{{ !multiSelectMode }}" hint-placeholder-val="{{ true }}">
 <div style="flex:none;padding:6px 14px calc(env(safe-area-inset-bottom, 0px) + 10px);">
 <!-- quoted message preview -->
 <sc-if value="{{ quotedMsg }}" hint-placeholder-val="{{ false }}">
@@ -218,6 +260,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
   </button>
 </div>
 </sc-if>
+
 <!-- view -->
 <sc-if value="{{ hasAttachment }}" hint-placeholder-val="{{ false }}">
 <div style="padding:0 4px 8px;display:flex;align-items:center;gap:10px;">
@@ -257,6 +300,19 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </div>
 </div>
 </div>
+</div>
+</sc-if>
+
+<!-- multi-select bottom bar -->
+<sc-if value="{{ multiSelectMode }}" hint-placeholder-val="{{ false }}">
+<div style="flex:none;padding:12px 14px calc(env(safe-area-inset-bottom, 0px) + 10px);display:flex;align-items:center;justify-content:center;gap:16px;background:var(--bg-main, #F5F3EE);border-top:1px solid #ECE8DF;">
+<button onClick="{{ multiDeleteSelected }}" style="display:flex;align-items:center;gap:8px;border:none;background:#FF4757;color:#FFF;border-radius:20px;padding:12px 24px;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="#FFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+删除选中
+</button>
+</div>
+</sc-if>
+
 </div>
 </sc-if>
 
@@ -1510,11 +1566,20 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <!-- context menu -->
 <sc-if value="{{ contextMenuOpen }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;z-index:500;" onClick="{{ closeContextMenu }}">
-<div style="position:absolute;top:{{ contextMenuTop }};left:50%;transform:translateX(-50%);background:#1A1815;border-radius:14px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.3);display:flex;gap:2px;animation:fadeUp .15s ease both;" onClick="{{ stopProp }}">
+<!-- reaction emoji bar -->
+<div style="position:absolute;top:{{ contextMenuReactionTop }};left:50%;transform:translateX(-50%);background:var(--bg-card, #FFF);border-radius:20px;padding:6px 10px;box-shadow:0 4px 20px rgba(0,0,0,.15);display:flex;gap:4px;animation:fadeUp .15s ease both;" onClick="{{ stopProp }}">
+<sc-for list="{{ reactionEmojis }}" as="re" hint-placeholder-count="8">
+<button onClick="{{ re.pick }}" style="width:36px;height:36px;border:none;background:transparent;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;">{{ re.emoji }}</button>
+</sc-for>
+<button onClick="{{ openReactionInput }}" style="width:36px;height:36px;border:none;background:#F2EFE8;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:14px;cursor:pointer;color:#6B665E;">+</button>
+</div>
+<!-- action buttons -->
+<div style="position:absolute;top:{{ contextMenuTop }};left:50%;transform:translateX(-50%);background:#1A1815;border-radius:14px;padding:6px;box-shadow:0 8px 30px rgba(0,0,0,.3);display:flex;gap:2px;animation:fadeUp .15s ease both;flex-wrap:wrap;max-width:320px;justify-content:center;" onClick="{{ stopProp }}">
 <button onClick="{{ ctxCopy }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">复制</button>
 <button onClick="{{ ctxQuote }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">引用</button>
 <button onClick="{{ ctxEdit }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">编辑</button>
 <button onClick="{{ ctxResend }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">重发</button>
+<button onClick="{{ ctxMultiSelect }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">多选</button>
 <button onClick="{{ ctxDelete }}" style="border:none;background:transparent;color:#FF6B6B;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">删除</button>
 </div>
 </div>
@@ -1743,7 +1808,8 @@ html = html.replace(/(\s|<br\s*\/?>)+$/i, '');
 return html;
 }
 
-const EMOJI_LIST = ['😊','😢','😡','🥰','😴','🤔','✨','🌧️','☀️','🌈','💪','😭','🎉','💕','😤','🫠'];
+const EMOJI_LIST = ['😊','😢','😡','🥰','😴','🤔','✨','🌧️','☀️','🌈','💪','😭','🎉','💕','😤','🫠','👍','❤️','🥺','😮','😢','🥰','😈','✨'];
+
 
 // Theme presets
 const THEME_PRESETS = [
@@ -1866,6 +1932,13 @@ regexRules: saved.regexRules || [],
 fontPresets: saved.fontPresets || [],
 regexEditId: null,
 quotedMsg: null,
+multiSelectMode: false,
+multiSelectedIds: [],
+// 表情贴纸
+reactionPickerIdx: -1,
+// 多选模式
+multiSelectMode: false,
+multiSelectedIds: [],
 regexEditName: '',
 regexEditPattern: '',
 regexEditAction: '',
@@ -3032,10 +3105,27 @@ this.show('图片已删除');
 // ====== Export / Import ======
 async exportData() {
 const s = this.state;
+// 导出时移除聊天消息中的图片数据
+const cleanChats = {};
+for (const [id, chat] of Object.entries(s.chats)) {
+  cleanChats[id] = {
+    ...chat,
+    messages: (chat.messages || []).map(m => {
+      const cleaned = { ...m };
+      delete cleaned.image;
+      delete cleaned.imageMime;
+      delete cleaned.imageUrl;
+      if (cleaned.file && cleaned.file.isImage) {
+        delete cleaned.file;
+      }
+      return cleaned;
+    })
+  };
+}
 const exportObj = {
 exportDate: new Date().toISOString(),
-version: '3.1',
-chats: s.chats,
+version: '4.4',
+chats: cleanChats,
 personas: s.personas,
 activePersonaId: s.activePersonaId,
 worldbooks: s.worldbooks,
@@ -3938,9 +4028,42 @@ del: () => {
 edit: () => self.setState({ editIdx: i, editText: displayText }),
 longPress: (e) => {
 e.preventDefault();
+if (s.multiSelectMode) {
+  const ids = [...s.multiSelectedIds];
+  const mId = m.id;
+  const idx2 = ids.indexOf(mId);
+  if (idx2 >= 0) ids.splice(idx2, 1);
+  else ids.push(mId);
+  self.setState({ multiSelectedIds: ids });
+  return;
+}
 const rect = e.target.getBoundingClientRect();
 self.setState({ contextMenuIdx: i, contextMenuX: rect.left, contextMenuY: rect.top - 10 });
 },
+isSelected: s.multiSelectedIds.includes(m.id),
+selectBd: s.multiSelectedIds.includes(m.id) ? '#1A1815' : '#D1CCC2',
+selectBg: s.multiSelectedIds.includes(m.id) ? '#1A1815' : 'transparent',
+toggleSelect: () => {
+  const ids = [...s.multiSelectedIds];
+  const mId = m.id;
+  const idx2 = ids.indexOf(mId);
+  if (idx2 >= 0) ids.splice(idx2, 1);
+  else ids.push(mId);
+  self.setState({ multiSelectedIds: ids });
+},
+hasReactions: !!(m.reactions && m.reactions.length > 0),
+reactions: (m.reactions || []).map(r => ({
+  emoji: r,
+  remove: () => {
+    const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
+    const newMsgs = [...c.messages];
+    const msg = { ...newMsgs[i] };
+    msg.reactions = (msg.reactions || []).filter(x => x !== r);
+    newMsgs[i] = msg; c.messages = newMsgs; chats[s.currentChatId] = c;
+    self.setState({ chats }); self.persist();
+  }
+})),
+reactJustify: isUser ? 'flex-end' : 'flex-start',
 contentRef: (el) => {
 if (el && el._lastText !== rendered) {
 el._lastText = rendered;
@@ -4456,6 +4579,61 @@ diaryComments,
 diaryCommentText: s.diaryCommentText || '',
 contextMenuOpen: s.contextMenuIdx >= 0,
 contextMenuTop: Math.max(60, s.contextMenuY) + 'px',
+contextMenuReactionTop: Math.max(20, s.contextMenuY - 55) + 'px',
+multiSelectMode: s.multiSelectMode,
+multiSelectCount: s.multiSelectedIds.length,
+exitMultiSelect: () => self.setState({ multiSelectMode: false, multiSelectedIds: [] }),
+multiSelectAll: () => {
+  const allIds = msgs.map(m => m.id).filter(Boolean);
+  self.setState({ multiSelectedIds: allIds });
+},
+multiDeleteSelected: () => {
+  if (s.multiSelectedIds.length === 0) { self.show('没有选中消息'); return; }
+  self.setState({
+    deleteConfirmOpen: true,
+    deleteConfirmType: 'multiMessage',
+    deleteConfirmText: '确定删除选中的 ' + s.multiSelectedIds.length + ' 条消息？'
+  });
+},
+ctxMultiSelect: () => {
+  const idx = s.contextMenuIdx;
+  const m = msgs[idx];
+  self.setState({
+    multiSelectMode: true,
+    multiSelectedIds: m && m.id ? [m.id] : [],
+    contextMenuIdx: -1
+  });
+},
+reactionEmojis: REACTION_EMOJIS.map(emoji => ({
+  emoji,
+  pick: () => {
+    const idx = s.contextMenuIdx;
+    if (idx < 0) return;
+    const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
+    const newMsgs = [...c.messages];
+    const msg = { ...newMsgs[idx] };
+    const reactions = [...(msg.reactions || [])];
+    if (!reactions.includes(emoji)) reactions.push(emoji);
+    msg.reactions = reactions;
+    newMsgs[idx] = msg; c.messages = newMsgs; chats[s.currentChatId] = c;
+    self.setState({ chats, contextMenuIdx: -1 });
+    self.persist();
+  }
+})),
+openReactionInput: () => {
+  const custom = prompt('输入自定义表情/文字');
+  if (custom && custom.trim()) {
+    const idx = s.contextMenuIdx;
+    if (idx < 0) return;
+    const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
+    const newMsgs = [...c.messages];
+    const msg = { ...newMsgs[idx] };
+    msg.reactions = [...(msg.reactions || []), custom.trim()];
+    newMsgs[idx] = msg; c.messages = newMsgs; chats[s.currentChatId] = c;
+    self.setState({ chats, contextMenuIdx: -1 });
+    self.persist();
+  }
+},
 closeContextMenu: () => self.setState({ contextMenuIdx: -1 }),
 stopProp: (e) => e.stopPropagation(),
 ctxCopy: () => {
@@ -4522,14 +4700,21 @@ self.setState({ memories, deleteConfirmOpen: false });
 self.persist();
 self.show('已删除');
 }
- else if (type === 'memory') {
+} else if (type === 'memory') {
 const memories = s.memories.filter(m => m.id !== id);
 self.setState({ memories, deleteConfirmOpen: false });
 self.persist();
 self.show('记忆已删除');
+} else if (type === 'multiMessage') {
+const chats = { ...s.chats };
+const c = { ...chats[s.currentChatId] };
+c.messages = c.messages.filter(m => !s.multiSelectedIds.includes(m.id));
+chats[s.currentChatId] = c;
+self.setState({ chats, deleteConfirmOpen: false, multiSelectMode: false, multiSelectedIds: [] });
+self.persist();
+self.show('已删除 ' + s.multiSelectedIds.length + ' 条');
 }
 self.setState({ deleteConfirmType: '', deleteConfirmId: null });
-},
 
 // ======== ACTIONS ========
 toggleDrawer: () => self.setState(v => ({ drawer: !v.drawer })),
