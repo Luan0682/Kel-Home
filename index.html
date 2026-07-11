@@ -87,9 +87,10 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="max-width:{{ m.maxW }};width:{{ m.fullW }};">
 <!-- thinking icon button (completely decoupled from bubble) -->
 <sc-if value="{{ m.hasThink }}" hint-placeholder-val="{{ false }}">
-<button onClick="{{ m.openThinkModal }}" style="display:inline-flex;align-items:center;gap:5px;border:none;background:rgba(0,0,0,.04);border-radius:10px;padding:3px 8px;margin-bottom:4px;cursor:pointer;font-family:inherit;">
+<button onClick="{{ m.openThinkModal }}" style="display:inline-flex;align-items:center;gap:5px;border:none;background:rgba(0,0,0,.04);border-radius:10px;padding:3px 8px;margin-bottom:4px;cursor:pointer;font-family:inherit;max-width:90%;">
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.5;"><circle cx="12" cy="12" r="8.5" stroke="#9A958B" stroke-width="1.4"/><path d="M12 8v4l2.5 1.5" stroke="#9A958B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  <span style="font-size:11px;color:#9A958B;">思考过程</span>
+  <span style="font-size:11px;color:#9A958B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ m.thinkSummary }}</span>
+  <svg width="10" height="10" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.4;"><path d="M9 6l6 6-6 6" stroke="#9A958B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
 </sc-if>
 
@@ -1539,12 +1540,13 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div onClick="{{ closeThinkModal }}" style="position:absolute;inset:0;background:rgba(0,0,0,.2);animation:fadeIn .15s ease both;"></div>
 <div style="position:absolute;bottom:0;left:0;right:0;background:var(--bg-main, #F5F3EE);border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:70%;display:flex;flex-direction:column;">
 <div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 14px;flex:none;"></div>
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex:none;">
+<div style="display:flex;align-items:center;justify-content:center;position:relative;margin-bottom:12px;flex:none;">
 <span style="font-size:15px;font-weight:600;color:var(--text-primary, #1A1815);">思考过程</span>
-<button onClick="{{ closeThinkModal }}" style="width:32px;height:32px;border-radius:50%;background:var(--bg-card, #FFF);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<button onClick="{{ closeThinkModal }}" style="position:absolute;right:0;width:32px;height:32px;border-radius:50%;background:var(--bg-card, #FFF);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
 </div>
+
 <div class="sa" style="flex:1;min-height:0;overflow-y:auto;padding:12px 14px;background:rgba(0,0,0,.03);border-radius:12px;font-size:13px;line-height:1.7;color:#6B665E;white-space:pre-wrap;word-break:break-word;">{{ thinkModalContent }}</div>
 </div>
 </div>
@@ -3827,7 +3829,17 @@ if (!isUser) {
   thinkingContent = entry ? entry.content : '';
 }
 const hasThink = !isUser && !!thinkingContent && thinkingContent.length > 0;
-
+// 生成思考概括（取前30字，去掉换行）
+let thinkSummary = '';
+if (hasThink) {
+  // 提取关键内容作为概括
+  const cleanThink = thinkingContent.replace(/\n+/g, ' ').trim();
+  if (cleanThink.length <= 25) {
+    thinkSummary = cleanThink;
+  } else {
+    thinkSummary = cleanThink.slice(0, 25) + '…';
+  }
+}
 return {
 isUser,
 align: isUser ? 'flex-end' : 'flex-start',
@@ -3850,12 +3862,17 @@ if (last) return '4px 22px 22px 4px';
 return '4px 22px 22px 4px';
 }
 })(),
-gap: isLastInGroup(i) ? '16px' : '2px',
+gap: (() => {
+  // 如果当前消息内容为空且没有图片，不给间距
+  if (!rendered && !m.imageUrl) return '0px';
+  return isLastInGroup(i) ? '14px' : '2px';
+})(),
 text: displayText,
 rendered: rendered,
 hasThink: hasThink,
 thinkSummary: hasThink ? thinkingContent.replace(/\n/g, ' ').slice(0, 50) + (thinkingContent.length > 50 ? '…' : '') : '',
 thinkContent: thinkingContent,
+thinkSummary: thinkSummary,
 timestamp: m.timestamp || '',
 openThinkModal: () => self.setState({ thinkModalOpen: true, thinkModalContent: thinkingContent }),
 showAiAvatar: !isUser && !!s.aiAvatar && isFirstInGroup(i),
@@ -3875,8 +3892,8 @@ self.deleteImageFromMessage(i);
 showNormal: s.editIdx !== i && !!rendered,
 hasQuote: !!(m.quote || (displayText.match(/^> .+/m) && !isUser)),
 quoteText: m.quote ? (m.quote.sender + '：' + m.quote.text) : (displayText.match(/^> (.+)/m) ? displayText.match(/^> (.+)/m)[1].slice(0, 40) : ''),
-bubblePadding: (!rendered && !m.quote) ? '0' : '6px 15px',
-bubbleDisplay: (!rendered && !m.quote) ? 'none' : 'block',
+bubblePadding: !rendered ? '0' : '6px 15px',
+bubbleDisplay: !rendered ? 'none' : 'block',
 showEdit: s.editIdx === i,
 showActions: !isUser && isLast && !s.isBusy && isLastInGroup(i),
 showUserActions: isUser && !s.isBusy && isLastInGroup(i),
