@@ -85,6 +85,13 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <sc-for list="{{ messages }}" as="m" hint-placeholder-count="4">
 <div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;" onContextMenu="{{ m.longPress }}">
 <div style="max-width:{{ m.maxW }};width:{{ m.fullW }};">
+<!-- thinking icon button (completely decoupled from bubble) -->
+<sc-if value="{{ m.hasThink }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ m.openThinkModal }}" style="display:inline-flex;align-items:center;gap:5px;border:none;background:rgba(0,0,0,.04);border-radius:10px;padding:3px 8px;margin-bottom:4px;cursor:pointer;font-family:inherit;">
+  <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.5;"><circle cx="12" cy="12" r="8.5" stroke="#9A958B" stroke-width="1.4"/><path d="M12 8v4l2.5 1.5" stroke="#9A958B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <span style="font-size:11px;color:#9A958B;">思考过程</span>
+</button>
+</sc-if>
 
 <!-- User avatar + timestamp -->
 <sc-if value="{{ m.showUserAvatar }}" hint-placeholder-val="{{ false }}">
@@ -1526,6 +1533,23 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </div>
 </sc-if>
 
+<!-- Thinking Modal (fully decoupled) -->
+<sc-if value="{{ thinkModalOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:450;">
+<div onClick="{{ closeThinkModal }}" style="position:absolute;inset:0;background:rgba(0,0,0,.2);animation:fadeIn .15s ease both;"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;background:var(--bg-main, #F5F3EE);border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:70%;display:flex;flex-direction:column;">
+<div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 14px;flex:none;"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;flex:none;">
+<span style="font-size:15px;font-weight:600;color:var(--text-primary, #1A1815);">思考过程</span>
+<button onClick="{{ closeThinkModal }}" style="width:32px;height:32px;border-radius:50%;background:var(--bg-card, #FFF);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button>
+</div>
+<div class="sa" style="flex:1;min-height:0;overflow-y:auto;padding:12px 14px;background:rgba(0,0,0,.03);border-radius:12px;font-size:13px;line-height:1.7;color:#6B665E;white-space:pre-wrap;word-break:break-word;">{{ thinkModalContent }}</div>
+</div>
+</div>
+</sc-if>
+
 <!-- toast -->
 <sc-if value="{{ toastShow }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;bottom:50px;left:50%;transform:translateX(-50%);background:#1A1815;color:#F5F3EE;font-size:13px;padding:10px 20px;border-radius:20px;box-shadow:0 6px 20px rgba(0,0,0,.18);animation:fadeUp .25s ease both;white-space:nowrap;">{{ toastText }}</div>
@@ -1709,12 +1733,10 @@ html = html.replace(/\n/g, '<br>');
 const parts = html.split(/(<div style="position:relative[\s\S]*?<\/pre><\/div>)/);
 html = parts.map(p => p.startsWith('<div style="position:relative') ? p : p.replace(/\n/g, '<br>')).join('');
 }
-// 在 return html 之前加：
-// 清理连续空行（3个以上br合并为2个）
-html = html.replace(/(<br\s*\/?>){3,}/gi, '<br>');
-// 清理开头和结尾的br
-html = html.replace(/^(<br\s*\/?>)+/i, '');
-html = html.replace(/(<br\s*\/?>)+$/i, '');
+// 掐头去尾：去除开头结尾多余的 br 和空白，压缩连续 br
+html = html.replace(/(<br\s*\/?>\s*){2,}/gi, '<br>');
+html = html.replace(/^(\s|<br\s*\/?>)+/i, '');
+html = html.replace(/(\s|<br\s*\/?>)+$/i, '');
 return html;
 }
 
@@ -1738,6 +1760,8 @@ super(props);
 const saved = loadData();
 this.state = {
 thinkOpenMap: {},
+thinkModalOpen: false,
+thinkModalContent: '',
 memories: saved.memories || [],
 memEditId: null,
 memEditName: '',
@@ -3833,13 +3857,7 @@ hasThink: hasThink,
 thinkSummary: hasThink ? thinkingContent.replace(/\n/g, ' ').slice(0, 50) + (thinkingContent.length > 50 ? '…' : '') : '',
 thinkContent: thinkingContent,
 timestamp: m.timestamp || '',
-thinkOpen: s.thinkOpenMap && s.thinkOpenMap[i] || false,
-thinkRot: (s.thinkOpenMap && s.thinkOpenMap[i]) ? 'rotate(90deg)' : 'rotate(0deg)',
-toggleThink: () => {
-const map = { ...(s.thinkOpenMap || {}) };
-map[i] = !map[i];
-self.setState({ thinkOpenMap: map });
-},
+openThinkModal: () => self.setState({ thinkModalOpen: true, thinkModalContent: thinkingContent }),
 showAiAvatar: !isUser && !!s.aiAvatar && isFirstInGroup(i),
 showUserAvatar: isUser && !!s.userAvatar && isFirstInGroup(i),
 showTimestampOnly: isFirstInGroup(i) && ((!isUser && !s.aiAvatar) || (isUser && !s.userAvatar)),
@@ -4498,6 +4516,9 @@ togglePlus: () => self.setState(v => ({ plus: !v.plus })),
 clearQuote: () => self.setState({ quotedMsg: null }),
 toggleProfile: () => self.setState(v => ({ profile: !v.profile, drawer: false })),
 closeImagePreview: () => self.setState({ imagePreviewOpen: false, imagePreviewUrl: '' }),
+thinkModalOpen: s.thinkModalOpen,
+thinkModalContent: s.thinkModalContent || '',
+closeThinkModal: () => self.setState({ thinkModalOpen: false }),
 navChat: () => { self.setState({ tab: 'chat', drawer: false }); self.scrollToBottom(); },
 navHome: () => self.setState({ tab: 'home', drawer: false }),
 navMore: () => self.setState({ tab: 'more', drawer: false }),
