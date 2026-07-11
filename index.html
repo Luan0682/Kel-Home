@@ -1924,8 +1924,8 @@ const THEME_PRESETS = [
 ];
 
 class Component extends DCLogic {
-constructor() {
-super();
+constructor(props) {
+super(props);
 const saved = {};
 this.state = {
 thinkOpenMap: {},
@@ -2086,24 +2086,53 @@ if (!this.state.chats[this.state.currentChatId]) {
 this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
 }
 setTimeout(async () => {
+// 从 IndexedDB 加载真实数据
+try {
+  const saved = await loadDataAsync();
+  if (saved && Object.keys(saved).length > 0) {
+    // 迁移旧 memories 为 chunks
+    if (saved.memories && saved.memories.length > 0 && !saved.chunks) {
+      saved.chunks = this._migrateMemoriesToChunks(saved.memories);
+    }
+    if (saved.worldbooks && saved.worldbooks.length > 0) {
+      const existingIds = new Set((saved.memories || []).map(m => m.id));
+      for (const wb of saved.worldbooks) {
+        if (!existingIds.has(wb.id)) {
+          if (!saved.memories) saved.memories = [];
+          saved.memories.push({
+            id: wb.id, name: wb.name || '未命名', content: wb.content || '',
+            triggers: wb.triggers || [], alwaysOn: wb.alwaysOn || false,
+            weight: wb.weight || 1, position: wb.position || 'before',
+            layer: wb.alwaysOn ? 'core' : 'long', tag: wb.tag || 'general',
+            createdAt: Date.now(), lastReferencedAt: Date.now(),
+            sourceType: 'migrated', pinned: wb.alwaysOn || false
+          });
+        }
+      }
+    }
+    if (saved.annivDate && (!saved.anniversaries || saved.anniversaries.length === 0)) {
+      saved.anniversaries = [{ id: genId(), name: '纪念日', date: saved.annivDate }];
+    }
+    this.setState({ ...saved, dataLoaded: true });
+  }
+} catch(e) { console.error('[Kel] 数据加载失败', e); }
 this.applyTheme(this.state.activeThemeId);
 this.applyCustomCss();
 this.applyCustomFont();
 this.applyMsgFontSize();
-// 从 IndexedDB 加载字体
 const fontName = localStorage.getItem('kel-font-name');
 if (fontName) {
-try {
-const db = await this._openFontDB();
-const tx = db.transaction('fonts', 'readonly');
-const store = tx.objectStore('fonts');
-const result = await store.get('user-font');
-if (result && result.blob) {
-const url = URL.createObjectURL(result.blob);
-this.setState({ localFontData: url, localFontName: result.name });
-this.applyLocalFont();
-}
-} catch(e) {}
+  try {
+    const db = await this._openFontDB();
+    const tx = db.transaction('fonts', 'readonly');
+    const store = tx.objectStore('fonts');
+    const result = await store.get('user-font');
+    if (result && result.blob) {
+      const url = URL.createObjectURL(result.blob);
+      this.setState({ localFontData: url, localFontName: result.name });
+      this.applyLocalFont();
+    }
+  } catch(e) {}
 }
 }, 100);
 // 用户首次触摸时激活保活音频（浏览器要求用户交互后才能播放音频）
@@ -3447,20 +3476,6 @@ applyMsgFontSize() {
 document.documentElement.style.setProperty('--msg-font-size', (this.state.msgFontSize || 16) + 'px');
 }
 
-_openFontDB() {
-  return new Promise((resolve, reject) => {
-    const req = indexedDB.open('KelFonts', 1);
-    req.onerror = () => reject(req.error);
-    req.onsuccess = () => resolve(req.result);
-    req.onupgradeneeded = (e) => {
-      const db = e.target.result;
-      if (!db.objectStoreNames.contains('fonts')) {
-        db.createObjectStore('fonts', { keyPath: 'id' });
-      }
-    };
-  });
-}
-
 pickFontFile() {
 const input = document.createElement('input');
 input.type = 'file';
@@ -3861,83 +3876,6 @@ tap: () => self.diarySelectDate(dateStr)
 }
 
 return cells;
-}
-
-async componentDidMount() {
-  const saved = await loadDataAsync();
-  
-  // ----- 迁移逻辑（原构造函数中的迁移） -----
-  if (saved.worldbooks && saved.worldbooks.length > 0) {
-    const existingIds = new Set((saved.memories || []).map(m => m.id));
-    for (const wb of saved.worldbooks) {
-      if (!existingIds.has(wb.id)) {
-        if (!saved.memories) saved.memories = [];
-        saved.memories.push({
-          id: wb.id,
-          name: wb.name || '未命名',
-          content: wb.content || '',
-          triggers: wb.triggers || [],
-          alwaysOn: wb.alwaysOn || false,
-          weight: wb.weight || 1,
-          position: wb.position || 'before',
-          layer: wb.alwaysOn ? 'core' : 'long',
-          tag: wb.tag || 'general',
-          createdAt: Date.now(),
-          lastReferencedAt: Date.now(),
-          sourceType: 'migrated',
-          pinned: wb.alwaysOn || false
-        });
-      }
-    }
-    delete saved.worldbooks;
-  }
-  if (saved.annivDate && (!saved.anniversaries || saved.anniversaries.length === 0)) {
-    saved.anniversaries = [{ id: genId(), name: '纪念日', date: saved.annivDate }];
-  }
-  if (!saved.chats || !saved.chats[saved.currentChatId]) {
-    if (!saved.chats) saved.chats = {};
-    saved.chats[saved.currentChatId] = { id: saved.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
-  }
-  // ----- 迁移旧 memories 为 chunks -----
-if (saved.memories && saved.memories.length > 0 && !saved.chunks) {
-  saved.chunks = this._migrateMemoriesToChunks(saved.memories);
-  // 删除旧字段（可选）
-  delete saved.memories;
-}
-  // ----- 迁移结束 -----
-
-  // 合并数据到 state
-  this.setState((prevState) => ({
-    ...prevState,
-    ...saved,
-    dataLoaded: true,
-  }), () => {
-    // 应用主题、字体等（原 constructor 中的 setTimeout 逻辑移到这里）
-    this.applyTheme(this.state.activeThemeId);
-    this.applyCustomCss();
-    this.applyCustomFont();
-    this.applyMsgFontSize();
-    setTimeout(async () => {
-      const fontName = localStorage.getItem('kel-font-name');
-      if (fontName) {
-        try {
-          const db = await this._openFontDB();
-          const tx = db.transaction('fonts', 'readonly');
-          const store = tx.objectStore('fonts');
-          const result = await store.get('user-font');
-          if (result && result.blob) {
-            const url = URL.createObjectURL(result.blob);
-            this.setState({ localFontData: url, localFontName: result.name });
-            this.applyLocalFont();
-          }
-        } catch(e) {}
-      }
-    }, 100);
-    if (this.state.keepAliveEnabled) {
-      this._initKeepAlive();
-    }
-    this._loadMusicFromDB();
-  });
 }
 
 // ====== RENDER ======
