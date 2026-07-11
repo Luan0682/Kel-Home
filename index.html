@@ -657,43 +657,88 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <!-- ========== MEMORY PAGE ========== -->
 <sc-if value="{{ isMemoryPage }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:8px 20px 24px;">
+
+<!-- 顶部 -->
 <div style="padding:4px 0 6px;">
 <button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
 </button>
 </div>
-<div style="padding:6px 0 20px;display:flex;align-items:center;justify-content:space-between;">
+
+<!-- 标题行 -->
+<div style="padding:6px 0 12px;display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:10px;">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#1A1815" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:var(--text-primary, #1A1815);letter-spacing:-.01em;">记忆</div>
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#68544B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:27px;font-weight:400;color:#68544B;letter-spacing:-.01em;">记忆</div>
 </div>
-<button onClick="{{ newMemory }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
+<div style="display:flex;align-items:center;gap:8px;">
+<button onClick="{{ openMemorySettings }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:1px solid #EDE9E0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#68544B" stroke-width="1.5"/><path d="M19 12c0-.4 0-.8-.1-1.2l2-1.6-2-3.4-2.4 1a7 7 0 0 0-2-1.2L16 3H8l-.5 2.6a7 7 0 0 0-2 1.2l-2.4-1-2 3.4 2 1.6c-.1.4-.1.8-.1 1.2s0 .8.1 1.2l-2 1.6 2 3.4 2.4-1a7 7 0 0 0 2 1.2L8 21h8l.5-2.6a7 7 0 0 0 2-1.2l2.4 1 2-3.4-2-1.6c.1-.4.1-.8.1-1.2Z" stroke="#68544B" stroke-width="1.3" stroke-linejoin="round"/></svg>
+</button>
+<button onClick="{{ newMemory }}" style="border:none;background:#68544B;color:#FFF;border-radius:18px;padding:8px 14px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
+</div>
 </div>
 
-<!-- Memory category filter -->
+<!-- 统计行 -->
+<div style="padding:0 0 14px;font-size:12px;color:#9A958B;display:flex;gap:12px;flex-wrap:wrap;">
+<span>共 {{ memTotalCount }} 条</span>
+<span style="color:#E8A09A;">● 核心 {{ memCoreCount }}</span>
+<span style="color:#7BAFD4;">● 长期 {{ memLongCount }}</span>
+<span style="color:#6BAF92;">● 近期 {{ memShortCount }}</span>
+<span style="color:#A88ED4;">● 意识 {{ memConsCount }}</span>
+</div>
+
+<!-- 层级筛选 -->
 <div style="display:flex;gap:8px;overflow-x:auto;padding-bottom:14px;">
-<sc-for list="{{ memCategoryOptions }}" as="mc" hint-placeholder-count="4">
-<button onClick="{{ mc.pick }}" style="flex:none;border:1px solid {{ mc.bd }};background:{{ mc.bg }};border-radius:16px;padding:6px 14px;font-size:13px;color:{{ mc.fg }};font-family:inherit;cursor:pointer;">{{ mc.label }}</button>
+<sc-for list="{{ memCategoryOptions }}" as="mc" hint-placeholder-count="5">
+<button onClick="{{ mc.pick }}" style="flex:none;border:1px solid {{ mc.bd }};background:{{ mc.bg }};border-radius:16px;padding:6px 14px;font-size:13px;color:{{ mc.fg }};font-family:inherit;cursor:pointer;transition:all .15s;">{{ mc.label }}</button>
 </sc-for>
 </div>
 
+<!-- 记忆卡片列表 -->
 <sc-if value="{{ memListHasItems }}" hint-placeholder-val="{{ true }}">
 <sc-for list="{{ memoryList }}" as="mem" hint-placeholder-count="3">
-<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;cursor:pointer;" onClick="{{ mem.open }}">
-<div style="display:flex;align-items:center;justify-content:space-between;">
-<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none" style="flex:none;"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ mem.name }}</span>
-<span style="font-size:11px;color:#9A958B;background:#F2EFE8;border-radius:8px;padding:2px 8px;flex:none;">{{ mem.tag }}</span>
-<span style="font-size:11px;color:#9A958B;background:{{ mem.activeBg }};border-radius:8px;padding:2px 8px;flex:none;">{{ mem.activeLabel }}</span>
+<div style="background:{{ mem.cardBg }};border:1px solid {{ mem.cardBd }};border-radius:16px;padding:14px 16px;margin-bottom:10px;cursor:pointer;transition:transform .1s;" onClick="{{ mem.open }}">
+<!-- 顶部：层级标签 + 名称 + 固定标记 -->
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+<span style="font-size:10px;color:{{ mem.layerColor }};background:{{ mem.layerBg }};border-radius:6px;padding:2px 7px;font-weight:600;letter-spacing:.5px;">{{ mem.tag }}</span>
+<sc-if value="{{ mem.isPinned }}" hint-placeholder-val="{{ false }}">
+<span style="font-size:11px;">📌</span>
+</sc-if>
+<span style="flex:1;font-size:14px;font-weight:600;color:#68544B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ mem.name }}</span>
 </div>
+<!-- 内容预览 -->
+<div style="font-size:13px;color:#6B665E;line-height:1.55;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;margin-bottom:10px;">{{ mem.preview }}</div>
+<!-- 权重进度条 -->
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:8px;">
+<div style="flex:1;height:4px;background:#F2EFE8;border-radius:2px;overflow:hidden;">
+<div style="height:100%;background:{{ mem.weightBarColor }};border-radius:2px;width:{{ mem.weightPercent }}%;transition:width .3s;"></div>
 </div>
-<div style="font-size:13px;color:#6B665E;margin-top:6px;line-height:1.5;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;">{{ mem.preview }}</div>
+<span style="font-size:11px;color:#9A958B;font-variant-numeric:tabular-nums;min-width:32px;">{{ mem.weightDisplay }}</span>
+</div>
+<!-- 底部信息行 -->
+<div style="display:flex;align-items:center;gap:8px;font-size:11px;color:#B8B3A8;flex-wrap:wrap;">
+<span style="display:flex;align-items:center;gap:3px;">
+<svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z" stroke="#B8B3A8" stroke-width="2"/><circle cx="12" cy="12" r="3" stroke="#B8B3A8" stroke-width="2"/></svg>
+{{ mem.surfaceText }}
+</span>
+<span>·</span>
+<span>{{ mem.sourceLabel }}</span>
+<sc-if value="{{ mem.hasLastSurface }}" hint-placeholder-val="{{ false }}">
+<span>·</span>
+<span>{{ mem.lastSurfaceText }}</span>
+</sc-if>
+</div>
 </div>
 </sc-for>
 </sc-if>
+
 <sc-if value="{{ !memListHasItems }}" hint-placeholder-val="{{ false }}">
-<div style="text-align:center;padding:50px 0;color:#B8B3A8;font-size:14px;">还没有记忆，点击右上角新建</div>
+<div style="text-align:center;padding:50px 0;">
+<svg width="48" height="48" viewBox="0 0 24 24" fill="none" style="opacity:.2;margin-bottom:12px;"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#68544B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div style="color:#B8B3A8;font-size:14px;">还没有记忆</div>
+<div style="color:#D1CCC2;font-size:12px;margin-top:4px;">点击右上角 + 新建，用第一人称写下关于我们的事</div>
+</div>
 </sc-if>
 </div>
 </sc-if>
@@ -1028,6 +1073,10 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="font-size:12px;color:#B8B3A8;margin-bottom:6px;">事件日期（可选，关联日记）</div>
 <input value="{{ memEditEventDate }}" onInput="{{ memEditEventDateChange }}" placeholder="YYYY-MM-DD" style="width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:14px;color:#1A1815;">
 </div>
+<div style="margin-bottom:14px;display:flex;gap:16px;font-size:12px;color:#9A958B;">
+<span>被想起 {{ memEditSurfaceCount }} 次</span>
+<span>权重 {{ memEditCurrentWeight }}</span>
+</div>
 <div>
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
 <div style="font-size:12px;color:#B8B3A8;">内容</div>
@@ -1035,6 +1084,48 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </div>
 <textarea value="{{ memEditContent }}" onInput="{{ memEditContentChange }}" placeholder="记忆内容……" rows="{{ memContentRows }}" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:9px 12px;font-family:inherit;font-size:{{ memContentFontSize }};color:#1A1815;resize:vertical;min-height:{{ memContentMinH }};"></textarea>
 </div>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- Memory Settings Sheet -->
+<sc-if value="{{ isMemSettingsSheet }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:270;">
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;background:var(--bg-main, #F5F3EE);border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:85%;overflow-y:auto;">
+<div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+<button onClick="{{ closeSheet }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button>
+<span style="font-size:16px;font-weight:600;color:#68544B;">记忆设置</span>
+<button onClick="{{ saveMemorySettings }}" style="border:none;background:#68544B;color:#FFF;border-radius:18px;padding:8px 13px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
+</div>
+
+<!-- 记忆总结提示词 -->
+<div style="background:var(--bg-card, #FFF);border-radius:16px;border:1px solid var(--border-card, #EDE9E0);padding:16px;margin-bottom:14px;">
+<div style="font-size:13px;font-weight:600;color:#68544B;margin-bottom:6px;">记忆总结提示词</div>
+<div style="font-size:11px;color:#9A958B;margin-bottom:10px;">发送给 AI 时的指令，告诉它如何从聊天中提取记忆。用第一人称写。</div>
+<textarea value="{{ memSummaryPrompt }}" onInput="{{ memSummaryPromptChange }}" placeholder="请用第一人称（我）从以下对话中提取重要记忆。写下我真实感受到的、值得记住的事。每条记忆独立成段，50字以内。不要写旁白，不要用第三人称。" rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:12px;font-family:inherit;font-size:13px;line-height:1.7;color:#1A1815;resize:vertical;min-height:100px;"></textarea>
+</div>
+
+<!-- 从聊天提取记忆 -->
+<div style="background:var(--bg-card, #FFF);border-radius:16px;border:1px solid var(--border-card, #EDE9E0);padding:16px;">
+<div style="font-size:13px;font-weight:600;color:#68544B;margin-bottom:6px;">从聊天提取记忆</div>
+<div style="font-size:11px;color:#9A958B;margin-bottom:10px;">选择消息范围，用 AI 自动提取记忆写入库中。</div>
+<div style="display:flex;gap:10px;align-items:center;margin-bottom:12px;">
+<div style="flex:1;">
+<div style="font-size:11px;color:#9A958B;margin-bottom:4px;">起始（第几条）</div>
+<input value="{{ memExtractFrom }}" onInput="{{ memExtractFromChange }}" type="number" min="1" placeholder="1" style="width:100%;border:1px solid #E7E3DA;border-radius:10px;padding:8px 10px;font-family:inherit;font-size:13px;color:#1A1815;">
+</div>
+<div style="flex:1;">
+<div style="font-size:11px;color:#9A958B;margin-bottom:4px;">结束（第几条）</div>
+<input value="{{ memExtractTo }}" onInput="{{ memExtractToChange }}" type="number" min="1" placeholder="最后" style="width:100%;border:1px solid #E7E3DA;border-radius:10px;padding:8px 10px;font-family:inherit;font-size:13px;color:#1A1815;">
+</div>
+</div>
+<div style="font-size:11px;color:#9A958B;margin-bottom:10px;">当前对话共 {{ memExtractTotal }} 条消息</div>
+<button onClick="{{ memExtractFromChat }}" style="width:100%;border:none;background:#68544B;color:#FFF;border-radius:14px;padding:11px;font-size:14px;font-family:inherit;cursor:pointer;">提取记忆</button>
 </div>
 </div>
 </div>
@@ -1825,6 +1916,9 @@ memEditLayer: 'short',
 memEditEventDate: '',
 memEditTag: '',
 memFilterLayer: 'all',
+memSummaryPrompt: saved.memSummaryPrompt || '',
+memExtractFrom: '',
+memExtractTo: '',
 tab: 'home',
 sub: null,
 memory: false,
@@ -2363,6 +2457,7 @@ kelMood: s.kelMood,
 regexRules: s.regexRules,
 fontPresets: s.fontPresets,
 keepAliveEnabled: s.keepAliveEnabled,
+memSummaryPrompt: s.memSummaryPrompt,
 };
 // 优先写 IndexedDB（无容量限制）
 this._saveToIndexedDB(data);
@@ -2509,6 +2604,90 @@ let memories = [...s.memories.filter(m => m.id !== newMem.id), newMem];
 this.setState({ memories, sheet: null }, () => { this.persist(); });
 this.show('记忆已保存');
 }
+async _extractMemoriesFromChat() {
+  const s = this.state;
+  const preset = this.activePreset;
+  if (!preset.key) { this.show('请先设置 API Key'); return; }
+  const msgs = this.currentChat.messages || [];
+  if (msgs.length === 0) { this.show('当前对话没有消息'); return; }
+  const from = parseInt(s.memExtractFrom) || 1;
+  const to = parseInt(s.memExtractTo) || msgs.length;
+  const sliced = msgs.slice(from - 1, to);
+  if (sliced.length === 0) { this.show('选择范围内没有消息'); return; }
+
+  // 构建对话文本
+  let chatText = '';
+  for (const m of sliced) {
+    const role = m.role === 'user' ? '她' : '我';
+    const text = (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text || '';
+    chatText += role + '：' + text.slice(0, 300) + '\n';
+  }
+
+  const summaryPrompt = s.memSummaryPrompt || '请用第一人称（我）从以下对话中提取重要记忆。每条记忆独立成段，50字以内，写我真实感受到的事。不要旁白，不要第三人称。格式：每条记忆一行。';
+
+  const userMsg = summaryPrompt + '\n\n---\n\n' + chatText.slice(0, 6000);
+
+  this.show('正在提取记忆...');
+
+  try {
+    const headers = { 'Content-Type': 'application/json' };
+    let url = preset.url, body;
+    if (preset.apiType === 'anthropic') {
+      headers['x-api-key'] = preset.key;
+      headers['anthropic-version'] = '2025-04-15';
+      url += '/messages';
+      body = { model: preset.model, max_tokens: 1000, messages: [{ role: 'user', content: userMsg }] };
+    } else {
+      headers['Authorization'] = 'Bearer ' + preset.key;
+      url += '/chat/completions';
+      body = { model: preset.model, max_tokens: 1000, messages: [{ role: 'user', content: userMsg }] };
+    }
+
+    const res = await fetch(url, { method: 'POST', headers, body: JSON.stringify(body) });
+    const data = await res.json();
+    let reply = '';
+    if (preset.apiType === 'anthropic') {
+      for (const block of (data.content || [])) { if (block.type === 'text') reply += block.text; }
+    } else {
+      const msg = data.choices?.[0]?.message || {};
+      reply = msg.content || '';
+      reply = reply.replace(/<thinking[\s\S]*?<\/thinking>/gi, '').replace(/<\/?thinking[^>]*>/gi, '').trim();
+    }
+
+    if (!reply.trim()) { this.show('AI 没有返回记忆'); return; }
+
+    // 按行分割，每行一条记忆
+    const lines = reply.split('\n').map(l => l.replace(/^[-·•\d.]+\s*/, '').trim()).filter(l => l.length > 4);
+    const newMemories = [];
+    for (const line of lines) {
+      newMemories.push({
+        id: genId(),
+        name: line.slice(0, 20) + (line.length > 20 ? '…' : ''),
+        content: line,
+        triggers: [],
+        alwaysOn: false,
+        weight: 1,
+        position: 'before',
+        layer: 'short',
+        tag: 'general',
+        pinned: false,
+        createdAt: Date.now(),
+        lastReferencedAt: Date.now(),
+        sourceType: 'chat_extract',
+        surface_count: 0,
+        last_surfaced_at: 0,
+        updatedAt: Date.now()
+      });
+    }
+
+    const memories = [...s.memories, ...newMemories];
+    this.setState({ memories, sheet: null });
+    this.persist();
+    this.show('提取了 ' + newMemories.length + ' 条记忆');
+  } catch(e) {
+    this.show('提取失败: ' + e.message);
+  }
+}
 
 deleteMemory(id) {
 const memories = this.state.memories.filter(m => m.id !== id);
@@ -2533,7 +2712,7 @@ function getDecayScore(mem) {
   const daysSinceRef = (now - (mem.lastReferencedAt || mem.createdAt || now)) / (1000*60*60*24);
   if (mem.layer === 'long') return Math.max(0, 1 - (daysSinceRef / 120));
   if (mem.layer === 'short') return Math.max(0, 1 - (daysSinceRef / 14));
-  if (mem.layer === 'consciousness') return daysSinceRef < 3 ? 1.0 : 0;
+  if (mem.layer === 'consciousness') return daysSinceRef < 3 ? 1.0 : 0.05;
   return 1.0;
 }
 
@@ -2545,13 +2724,23 @@ const consciousnessMems = this.state.memories.filter(m => m.layer === 'conscious
 
 if (coreMems.length > 0) {
   sys += '## Core Memories（核心·永不遗忘）\n';
-  for (const mem of coreMems) { sys += '[' + mem.name + ']\n' + mem.content + '\n\n'; }
+  for (const mem of coreMems) {
+    sys += '[' + mem.name + ']\n' + mem.content + '\n\n';
+    // 核心记忆不冷却不加固weight，但记录浮现次数
+    mem.surface_count = (mem.surface_count || 0) + 1;
+    mem.last_surfaced_at = now;
+  }
 }
 
 if (longMems.length > 0) {
   sys += '## Long-term Memories（长期记忆）\n';
   for (const mem of longMems.sort((a,b) => getDecayScore(b)-getDecayScore(a)).slice(0, 20)) {
     sys += '[' + mem.name + ']\n' + mem.content + '\n\n';
+    // 加固
+    mem.weight = Math.min(1.0, (mem.weight || 0.5) + 0.03);
+    mem.lastReferencedAt = now;
+    mem.surface_count = (mem.surface_count || 0) + 1;
+    mem.last_surfaced_at = now;
   }
 }
 
@@ -2559,6 +2748,11 @@ if (shortMems.length > 0) {
   sys += '## Short-term Memories（近期记忆）\n';
   for (const mem of shortMems.sort((a,b) => (b.lastReferencedAt||0)-(a.lastReferencedAt||0)).slice(0, 10)) {
     sys += '[' + mem.name + ']\n' + mem.content + '\n\n';
+    // 加固（近期记忆加固幅度小一些，避免过度强化）
+    mem.weight = Math.min(1.0, (mem.weight || 0.5) + 0.02);
+    mem.lastReferencedAt = now;
+    mem.surface_count = (mem.surface_count || 0) + 1;
+    mem.last_surfaced_at = now;
   }
 }
 
@@ -2567,14 +2761,25 @@ if (consciousnessMems.length > 0) {
   sys += consciousnessMems[0].content + '\n\n';
 }
 
-// 触发式记忆（任何层级都可以有触发词）
+// 触发式记忆（任何层级都可以有触发词）+ 加固 + 冷却
 const triggeredMems = this.state.memories.filter(m => !m.alwaysOn && m.layer !== 'core' && m.triggers && m.triggers.length > 0 && getDecayScore(m) > 0.1);
+const COOLDOWN_BASE = 30 * 60 * 1000; // 基础冷却 30 分钟
+const COOLDOWN_PER_5 = 30 * 60 * 1000; // 每被想起5次多冷却30分钟
+const COOLDOWN_MAX = 3 * 60 * 60 * 1000; // 最大冷却 3 小时
 for (const mem of triggeredMems) {
+  // 冷却检查
+  const surfaceCount = mem.surface_count || 0;
+  const lastSurfaced = mem.last_surfaced_at || 0;
+  const cooldown = Math.min(COOLDOWN_MAX, COOLDOWN_BASE + Math.floor(surfaceCount / 5) * COOLDOWN_PER_5);
+  if (now - lastSurfaced < cooldown) continue; // 冷却中，跳过
   for (const trigger of mem.triggers) {
     if (trigger && lastMsgs.includes(trigger.toLowerCase())) {
       sys += '[Triggered: ' + mem.name + ']\n' + mem.content + '\n\n';
-      // 更新引用时间
+      // 加固：weight +0.05，上限 1.0
+      mem.weight = Math.min(1.0, (mem.weight || 0.5) + 0.05);
       mem.lastReferencedAt = now;
+      mem.last_surfaced_at = now;
+      mem.surface_count = surfaceCount + 1;
       break;
     }
   }
@@ -4161,15 +4366,37 @@ const filteredMemories = s.memories
 const layerLabels = { core: '核心', long: '长期', short: '近期', consciousness: '意识' };
 const layerColors = { core: '#FFE4E4', long: '#E4F0FF', short: '#F2EFE8', consciousness: '#E8F5E8' };
 
-const memoryList = filteredMemories.map(mem => ({
-...mem,
-tag: layerLabels[mem.layer || 'short'] || '近期',
-activeLabel: mem.pinned ? '📌' : (mem.alwaysOn ? '常驻' : '触发'),
-activeBg: layerColors[mem.layer || 'short'] || '#F2EFE8',
-preview: (mem.content || '').slice(0, 120),
-open: () => self.openMemoryEditor(mem.id),
-del: (e) => { e.stopPropagation(); self.setState({ deleteConfirmOpen: true, deleteConfirmType: 'memory', deleteConfirmId: mem.id, deleteConfirmText: '确定删除记忆「' + (mem.name || '未命名') + '」？' }); }
-}));
+const sourceLabels = { manual: '手写', diary: '日记提取', migrated: '迁移', chat_extract: '聊天提取' };
+const layerBarColors = { core: '#E8A09A', long: '#7BAFD4', short: '#6BAF92', consciousness: '#A88ED4' };
+const layerTextColors = { core: '#A04030', long: '#2C5F7C', short: '#3D6B55', consciousness: '#6B4E9A' };
+const layerCardBgs = { core: '#FFF8F7', long: '#F5FAFF', short: '#F2FBF7', consciousness: '#F8F5FF' };
+const layerCardBds = { core: '#F5DDD8', long: '#D8E8F5', short: '#D0EBDF', consciousness: '#E5DAF5' };
+
+const memoryList = filteredMemories.map(mem => {
+  const layer = mem.layer || 'short';
+  const weight = mem.weight || 1;
+  const surfaceCount = mem.surface_count || 0;
+  const lastSurfaced = mem.last_surfaced_at || 0;
+  const daysSinceFloat = lastSurfaced ? Math.floor((Date.now() - lastSurfaced) / (1000*60*60*24)) : -1;
+  return {
+    ...mem,
+    tag: layerLabels[layer] || '近期',
+    layerColor: layerTextColors[layer] || '#3D6B55',
+    layerBg: layerCardBgs[layer] || '#F2FBF7',
+    cardBg: layerCardBgs[layer] || 'var(--bg-card, #FFF)',
+    cardBd: layerCardBds[layer] || 'var(--border-card, #EDE9E0)',
+    isPinned: !!mem.pinned,
+    preview: (mem.content || '').slice(0, 120),
+    weightPercent: Math.round(weight * 100),
+    weightDisplay: weight.toFixed(2),
+    weightBarColor: layerBarColors[layer] || '#6BAF92',
+    surfaceText: surfaceCount + '次想起',
+    sourceLabel: sourceLabels[mem.sourceType || 'manual'] || '手写',
+    hasLastSurface: daysSinceFloat >= 0,
+    lastSurfaceText: daysSinceFloat === 0 ? '今天浮现' : (daysSinceFloat === 1 ? '昨天浮现' : (daysSinceFloat > 0 ? daysSinceFloat + '天前浮现' : '')),
+    open: () => self.openMemoryEditor(mem.id),
+  };
+});
 
 const memTagOptions = ['core', 'daily', 'monthly', 'general'].map(tag => ({
 label: tag === 'core' ? '核心' : tag === 'daily' ? '日常' : tag === 'monthly' ? '月度' : '通用',
@@ -4376,6 +4603,12 @@ wbListHasItems: false,
 wbCategoryOptions: [],
 memoryList,
 memListHasItems: filteredMemories.length > 0,
+memTotalCount: s.memories.length,
+memCoreCount: s.memories.filter(m => m.layer === 'core').length,
+memLongCount: s.memories.filter(m => m.layer === 'long').length,
+memShortCount: s.memories.filter(m => m.layer === 'short' || !m.layer).length,
+memConsCount: s.memories.filter(m => m.layer === 'consciousness').length,
+openMemorySettings: () => self.setState({ sheet: 'memSettings' }),
 memCategoryOptions,
 memTagOptions,
 isWorldbookEditorSheet: false,
@@ -4392,6 +4625,16 @@ wbContentFontSize: '14px',
 wbContentMinH: '120px',
 wbEditPosBefore: false,
 wbEditPosAfter: true,
+isMemSettingsSheet: s.sheet === 'memSettings',
+memSummaryPrompt: s.memSummaryPrompt || '',
+memSummaryPromptChange: (e) => self.setState({ memSummaryPrompt: e.target.value }),
+memExtractFrom: s.memExtractFrom || '',
+memExtractTo: s.memExtractTo || '',
+memExtractFromChange: (e) => self.setState({ memExtractFrom: e.target.value }),
+memExtractToChange: (e) => self.setState({ memExtractTo: e.target.value }),
+memExtractTotal: (self.currentChat.messages || []).length,
+saveMemorySettings: () => { self.persist(); self.setState({ sheet: null }); self.show('记忆设置已保存'); },
+memExtractFromChat: () => self._extractMemoriesFromChat(),
 isMemoryEditorSheet: s.sheet === 'memEditor',
 memEditName: s.memEditName || '',
 memEditContent: s.memEditContent || '',
@@ -4408,6 +4651,8 @@ memEditPosBefore: s.memEditPosition === 'before',
 memEditPosAfter: s.memEditPosition === 'after',
 memEditEventDate: s.memEditEventDate || '',
 memEditEventDateChange: (e) => self.setState({ memEditEventDate: e.target.value }),
+memEditSurfaceCount: (() => { const mem = s.memories.find(m => m.id === s.memEditId); return mem ? (mem.surface_count || 0) : 0; })(),
+memEditCurrentWeight: (() => { const mem = s.memories.find(m => m.id === s.memEditId); return mem ? (mem.weight || 1).toFixed(2) : '1.00'; })(),
 memLayerOptions:
  ['core', 'long', 'short', 'consciousness'].map(layer => ({
   label: layer === 'core' ? '核心' : layer === 'long' ? '长期' : layer === 'short' ? '近期' : '意识',
