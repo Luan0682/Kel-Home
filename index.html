@@ -133,10 +133,10 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- message body: normal -->
 <sc-if value="{{ m.showNormal }}" hint-placeholder-val="{{ true }}">
-<div style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:6px 15px;font-size:var(--msg-font-size, 13px);line-height:1.55;letter-spacing:-0.008em;word-break:break-word;">
+<div style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:{{ m.bubblePadding }};font-size:var(--msg-font-size, 13px);line-height:1.55;letter-spacing:-0.008em;word-break:break-word;display:{{ m.bubbleDisplay }};">
 <sc-if value="{{ m.hasQuote }}" hint-placeholder-val="{{ false }}">
-<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;padding:4px 8px;background:rgba(0,0,0,.06);border-radius:8px;border-left:2px solid rgba(0,0,0,.2);">
-<span style="font-size:11px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ m.quoteText }}</span>
+<div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;padding:3px 8px;background:rgba(0,0,0,.06);border-radius:6px;border-left:2px solid rgba(0,0,0,.2);">
+<span style="font-size:11px;opacity:.7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.quoteText }}</span>
 </div>
 </sc-if>
 <div ref="{{ m.contentRef }}" style="word-break:break-word;"></div>
@@ -1709,8 +1709,8 @@ return '<div style="position:relative;background:#1A1815;border-radius:12px;marg
 });
 // Inline code
 html = html.replace(/`([^`]+)`/g, '<code style="background:#ECEAE4;padding:2px 6px;border-radius:5px;font-family:\'SF Mono\',monospace;font-size:14px;">$1</code>');
-// Quote blocks (lines starting with > )
-html = html.replace(/^&gt; (.*)$/gm, '<div class="quote-block">$1</div>');
+// 移除引用行（已通过 quote 字段单独渲染）
+html = html.replace(/^(&gt; .*\n?)+\n*/gm, '');
 // Bold
 html = html.replace(/\*\*(.+?)\*\*/g, '<strong>$1</strong>');
 // Italic
@@ -3862,8 +3862,10 @@ self.deleteImageFromMessage(i);
 }
 },
 showNormal: s.editIdx !== i && !!rendered,
-hasQuote: !!m.quote,
-quoteText: m.quote ? (m.quote.sender + '：' + m.quote.text) : '',
+hasQuote: !!(m.quote || (displayText.match(/^> .+/m) && !isUser)),
+quoteText: m.quote ? (m.quote.sender + '：' + m.quote.text) : (displayText.match(/^> (.+)/m) ? displayText.match(/^> (.+)/m)[1].slice(0, 40) : ''),
+bubblePadding: (!rendered && !m.quote) ? '0' : '6px 15px',
+bubbleDisplay: (!rendered && !m.quote) ? 'none' : 'block',
 showEdit: s.editIdx === i,
 showActions: !isUser && isLast && !s.isBusy && isLastInGroup(i),
 showUserActions: isUser && !s.isBusy && isLastInGroup(i),
