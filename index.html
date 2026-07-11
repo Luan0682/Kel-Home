@@ -84,54 +84,54 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <!-- messages -->
 <sc-for list="{{ messages }}" as="m" hint-placeholder-count="4">
 <div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;" onContextMenu="{{ m.longPress }}">
-<div class="message-bubble" style="max-width:{{ m.maxW }};width:{{ m.fullW }};">
-<!-- thinking block -->
+<div style="max-width:{{ m.maxW }};width:{{ m.fullW }};">
+<!-- thinking block (outside bubble) -->
 <sc-if value="{{ m.hasThink }}" hint-placeholder-val="{{ false }}">
-<div style="margin-bottom:14px;">
-  <button onClick="{{ m.toggleThink }}" style="display:flex;align-items:center;gap:10px;width:100%;border:none;background:transparent;padding:4px 0;cursor:pointer;font-family:inherit;text-align:left;">
-    <svg width="15" height="15" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.55;"><circle cx="12" cy="12" r="8.5" stroke="#9A958B" stroke-width="1.4"/><path d="M12 8v4l2.5 1.5" stroke="#9A958B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span style="flex:1;font-size:13.5px;color:#9A958B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.thinkSummary }}</span>
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.45;transform:{{ m.thinkRot }};transition:transform .2s;"><path d="M9 6l6 6-6 6" stroke="#B8B3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div style="margin-bottom:6px;">
+  <button onClick="{{ m.toggleThink }}" style="display:flex;align-items:center;gap:8px;width:100%;border:none;background:transparent;padding:3px 0;cursor:pointer;font-family:inherit;text-align:left;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.5;"><circle cx="12" cy="12" r="8.5" stroke="#9A958B" stroke-width="1.4"/><path d="M12 8v4l2.5 1.5" stroke="#9A958B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span style="flex:1;font-size:12px;color:#9A958B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.thinkSummary }}</span>
+    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.4;transform:{{ m.thinkRot }};transition:transform .2s;"><path d="M9 6l6 6-6 6" stroke="#B8B3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
   <sc-if value="{{ m.thinkOpen }}" hint-placeholder-val="{{ false }}">
-    <div class="sa" style="margin-top:6px;padding:12px 14px;background:#F2EFE8;border-radius:12px;font-size:13px;line-height:1.7;color:#6B665E;white-space:pre-wrap;word-break:break-word;border-left:3px solid #D1CCC2;max-height:300px;overflow-y:auto;">{{ m.thinkContent }}</div>
+    <div class="sa" style="margin-top:4px;padding:10px 12px;background:rgba(0,0,0,.03);border-radius:10px;font-size:12px;line-height:1.7;color:#6B665E;white-space:pre-wrap;word-break:break-word;border-left:2px solid #D1CCC2;max-height:250px;overflow-y:auto;">{{ m.thinkContent }}</div>
   </sc-if>
 </div>
 </sc-if>
 
-<!-- User avatar + fixed timestamp -->
+<!-- User avatar + timestamp -->
 <sc-if value="{{ m.showUserAvatar }}" hint-placeholder-val="{{ false }}">
-<div class="message-header" style="display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:6px;">
+<div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:4px;">
 <span style="font-size:11px;color:#B8B3A8;">{{ m.timestamp }}</span>
 <img src="{{ userAvatar }}" style="width:{{ avatarSize }}px;height:{{ avatarSize }}px;border-radius:50%;object-fit:cover;" alt="">
 </div>
 </sc-if>
 
-<!-- AI avatar + fixed timestamp -->
+<!-- AI avatar + timestamp -->
 <sc-if value="{{ m.showAiAvatar }}" hint-placeholder-val="{{ false }}">
-<div class="message-header" style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
 <img src="{{ aiAvatar }}" style="width:{{ avatarSize }}px;height:{{ avatarSize }}px;border-radius:50%;object-fit:cover;" alt="">
 <span style="font-size:11px;color:#B8B3A8;">{{ m.timestamp }}</span>
 </div>
 </sc-if>
 
-<!-- timestamp if no avatar -->
+<!-- timestamp only -->
 <sc-if value="{{ m.showTimestampOnly }}" hint-placeholder-val="{{ false }}">
-<div style="display:flex;justify-content:{{ m.tsAlign }};margin-bottom:4px;">
+<div style="display:flex;justify-content:{{ m.tsAlign }};margin-bottom:3px;">
 <span style="font-size:11px;color:#B8B3A8;">{{ m.timestamp }}</span>
 </div>
 </sc-if>
 
-<!-- image attachment with long-press delete -->
+<!-- image -->
 <sc-if value="{{ m.hasImage }}" hint-placeholder-val="{{ false }}">
-<div style="margin-bottom:10px;display:flex;justify-content:{{ m.imgJustify }};">
+<div style="margin-bottom:6px;display:flex;justify-content:{{ m.imgJustify }};">
 <div style="position:relative;width:160px;height:160px;border-radius:14px;overflow:hidden;cursor:pointer;" onClick="{{ m.previewImage }}" onContextMenu="{{ m.longPressImage }}">
 <img src="{{ m.imageUrl }}" style="width:100%;height:100%;object-fit:cover;" alt="attachment">
 </div>
 </div>
 </sc-if>
 
-<!-- message body: normal -->
+<!-- message bubble -->
 <sc-if value="{{ m.showNormal }}" hint-placeholder-val="{{ true }}">
 <div style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:{{ m.bubblePadding }};font-size:var(--msg-font-size, 13px);line-height:1.55;letter-spacing:-0.008em;word-break:break-word;display:{{ m.bubbleDisplay }};">
 <sc-if value="{{ m.hasQuote }}" hint-placeholder-val="{{ false }}">
@@ -143,7 +143,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </div>
 </sc-if>
 
-<!-- message body: edit mode -->
+<!-- edit mode -->
 <sc-if value="{{ m.showEdit }}" hint-placeholder-val="{{ false }}">
 <div style="background:#ECEAE4;border-radius:22px;padding:12px 16px;">
 <textarea value="{{ editText }}" onInput="{{ editTextChange }}" rows="3" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:16px;line-height:1.6;color:#2B2620;min-height:60px;"></textarea>
@@ -154,40 +154,40 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </div>
 </sc-if>
 
-<!-- user actions -->
+<!-- user actions (outside bubble) -->
 <sc-if value="{{ m.showUserActions }}" hint-placeholder-val="{{ false }}">
-<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:6px;opacity:.45;">
-  <button onClick="{{ m.copy }}" style="width:25px;height:25px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2.5" stroke="#48453E" stroke-width="1.5"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1" stroke="#48453E" stroke-width="1.5"/></svg>
+<div style="display:flex;justify-content:flex-end;gap:8px;margin-top:4px;opacity:.4;">
+  <button onClick="{{ m.copy }}" style="width:24px;height:24px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2.5" stroke="#48453E" stroke-width="1.5"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1" stroke="#48453E" stroke-width="1.5"/></svg>
   </button>
-  <button onClick="{{ m.edit }}" style="width:25px;height:25px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  <button onClick="{{ m.edit }}" style="width:24px;height:24px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+    <svg width="13" height="13" viewBox="0 0 24 24" fill="none"><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
   </button>
 </div>
 </sc-if>
 
-<!-- actions row for AI -->
+<!-- AI actions (outside bubble) -->
 <sc-if value="{{ m.showActions }}" hint-placeholder-val="{{ false }}">
-<div style="display:flex;align-items:center;gap:13px;margin-top:10px;opacity:.62;">
-<button onClick="{{ m.copy }}" style="width:25px;height:25px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2.5" stroke="#48453E" stroke-width="1.5"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1" stroke="#48453E" stroke-width="1.5"/></svg>
+<div style="display:flex;align-items:center;gap:12px;margin-top:4px;opacity:.55;">
+<button onClick="{{ m.copy }}" style="width:24px;height:24px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><rect x="9" y="9" width="11" height="11" rx="2.5" stroke="#48453E" stroke-width="1.5"/><path d="M5 15H4a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v1" stroke="#48453E" stroke-width="1.5"/></svg>
 </button>
-<button onClick="{{ m.refresh }}" style="width:25px;height:25px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0 1 15.5-6.2M21 5v4h-4M21 12a9 9 0 0 1-15.5 6.2M3 19v-4h4" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<button onClick="{{ m.refresh }}" style="width:24px;height:24px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 12a9 9 0 0 1 15.5-6.2M21 5v4h-4M21 12a9 9 0 0 1-15.5 6.2M3 19v-4h4" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
-<button onClick="{{ m.edit }}" style="width:25px;height:25px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<button onClick="{{ m.edit }}" style="width:24px;height:24px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4L16.5 3.5z" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
-<button onClick="{{ m.del }}" style="width:25px;height:25px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<button onClick="{{ m.del }}" style="width:24px;height:24px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="#48453E" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
-<div style="display:flex;align-items:center;gap:8px;margin-left:auto;font-size:12px;color:#B8B3A8;">
-<button onClick="{{ m.prev }}" style="width:24px;height:24px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M14 6l-6 6 6 6" stroke="#B8B3A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<div style="display:flex;align-items:center;gap:6px;margin-left:auto;font-size:11px;color:#B8B3A8;">
+<button onClick="{{ m.prev }}" style="width:20px;height:20px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M14 6l-6 6 6 6" stroke="#B8B3A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
 <span style="font-weight:600;font-variant-numeric:tabular-nums;">{{ m.variantText }}</span>
-<button onClick="{{ m.next }}" style="width:24px;height:24px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M10 6l6 6-6 6" stroke="#B8B3A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<button onClick="{{ m.next }}" style="width:20px;height:20px;border:none;background:transparent;padding:0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="10" height="10" viewBox="0 0 24 24" fill="none"><path d="M10 6l6 6-6 6" stroke="#B8B3A8" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
 </div>
 </div>
