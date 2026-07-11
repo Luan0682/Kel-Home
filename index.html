@@ -81,7 +81,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="flex:1;min-height:0;position:relative;">
 <div style="position:absolute;top:0;left:0;right:0;height:24px;background:linear-gradient(var(--bg-main, #F5F3EE),rgba(245,243,238,0));z-index:5;pointer-events:none;"></div>
 <div style="position:absolute;bottom:0;left:0;right:0;height:20px;background:linear-gradient(rgba(245,243,238,0),var(--bg-main, #F5F3EE));z-index:5;pointer-events:none;"></div>
-<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:10px 20px 10px;display:flex;flex-direction:column;">
+<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:10px 20px 10px;">
 
 <div style="position:sticky;top:50%;left:50%;transform:translate(-50%,-50%);width:0;height:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0;">
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="opacity:.08;">
@@ -92,7 +92,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- messages -->
 <sc-for list="{{ messages }}" as="m" hint-placeholder-count="4">
-<div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;align-self:{{ m.align }};" onContextMenu="{{ m.longPress }}">
+<div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;" onContextMenu="{{ m.longPress }}">
 <sc-if value="{{ multiSelectMode }}" hint-placeholder-val="{{ false }}">
 <button onClick="{{ m.toggleSelect }}" style="width:24px;height:24px;border-radius:50%;border:2px solid {{ m.selectBd }};background:{{ m.selectBg }};display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;margin-bottom:4px;">
 <sc-if value="{{ m.isSelected }}" hint-placeholder-val="{{ false }}">
@@ -142,7 +142,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- message bubble -->
 <sc-if value="{{ m.showNormal }}" hint-placeholder-val="{{ true }}">
-<div style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:{{ m.bubblePadding }};font-size:var(--msg-font-size, 13px);line-height:1.55;letter-spacing:-0.008em;word-break:break-word;display:{{ m.bubbleDisplay }};width:fit-content;max-width:100%;">
+<div style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:{{ m.bubblePadding }};font-size:var(--msg-font-size, 13px);line-height:1.55;letter-spacing:-0.008em;word-break:break-word;display:{{ m.bubbleDisplay }};">
 
 <sc-if value="{{ m.hasQuote }}" hint-placeholder-val="{{ false }}">
 <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;padding:3px 8px;background:rgba(0,0,0,.06);border-radius:6px;border-left:2px solid rgba(0,0,0,.2);">
