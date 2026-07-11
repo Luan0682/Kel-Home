@@ -133,7 +133,14 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- message body: normal -->
 <sc-if value="{{ m.showNormal }}" hint-placeholder-val="{{ true }}">
-<div ref="{{ m.contentRef }}" style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:var(--msg-padding, 8px 14px);font-size:var(--msg-font-size, 16px);line-height:var(--msg-line-height, 1.5);letter-spacing:-0.008em;word-break:break-word;"></div>
+<div style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:6px 15px;font-size:var(--msg-font-size, 13px);line-height:1.55;letter-spacing:-0.008em;word-break:break-word;">
+<sc-if value="{{ m.hasQuote }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;padding:4px 8px;background:rgba(0,0,0,.06);border-radius:8px;border-left:2px solid rgba(0,0,0,.2);">
+<span style="font-size:11px;opacity:.7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ m.quoteText }}</span>
+</div>
+</sc-if>
+<div ref="{{ m.contentRef }}" style="word-break:break-word;"></div>
+</div>
 </sc-if>
 
 <!-- message body: edit mode -->
@@ -1722,7 +1729,8 @@ const EMOJI_LIST = ['😊','😢','😡','🥰','😴','🤔','✨','🌧️','�
 
 // Theme presets
 const THEME_PRESETS = [
-{ id: 'default', name: '默认米白', preview: 'linear-gradient(135deg, #F5F3EE, #d6d2c8)', checkColor: '#1A1815', vars: { '--bg-base': '#d6d2c8', '--bg-main': '#F5F3EE', '--bg-card': '#FFF', '--bg-input': '#FBFAF7', '--border-card': '#EDE9E0', '--border-input': '#E7E3DA', '--text-primary': '#1A1815', '--text-secondary': '#48453E', '--text-bold': '#3A362F', '--bubble-user': '#ECEAE4', '--bubble-ai': '#FFF' } },
+{ id: 'default', name: '默认米白', preview: 'linear-gradient(135deg, #F5F3EE, #d6d2c8)', checkColor: '#1A1815', vars: { '--bg-base': '#d6d2c8', '--bg-main': '#F5F3EE', '--bg-card': '#FFF', '--bg-input': '#FBFAF7', '--border-card': '#EDE9E0', '--border-input': '#E7E3DA', '--text-primary': '#1A1815', '--text-secondary': '#48453E', '--text-bold': '#3A362F', '--bubble-user': '#59483F', '--bubble-ai': '#D7EBE4', '--bubble-user-text': '#D7EBE4', '--bubble-ai-text': '#59483F'
+ } },
 { id: 'dark', name: '深夜黑', preview: 'linear-gradient(135deg, #1A1A2E, #16213E)', checkColor: '#7EC8E3', vars: { '--bg-base': '#0F0F1A', '--bg-main': '#1A1A2E', '--bg-card': '#252540', '--bg-input': '#1E1E35', '--border-card': '#35355A', '--border-input': '#30304E', '--text-primary': '#E8E8F0', '--text-secondary': '#A0A0C0', '--text-bold': '#D0D0E8', '--bubble-user': '#35355A', '--bubble-ai': '#252540' } },
 { id: 'mint', name: '薄荷巧克力', preview: 'linear-gradient(135deg, #D4EDDA, #8FBFA4)', checkColor: '#3D5C47', vars: { '--bg-base': '#8FBFA4', '--bg-main': '#D4EDDA', '--bg-card': '#E8F5ED', '--bg-input': '#E0F2E6', '--border-card': '#B8D9C4', '--border-input': '#AACFB8', '--text-primary': '#2B4035', '--text-secondary': '#4A7058', '--text-bold': '#3D5C47', '--bubble-user': '#B8D9C4', '--bubble-ai': '#E8F5ED' } },
 { id: 'deepBrown', name: '深棕', preview: 'linear-gradient(135deg, #4A3728, #2C1E14)', checkColor: '#D4A574', vars: { '--bg-base': '#1E1410', '--bg-main': '#2C1E14', '--bg-card': '#3E2C1E', '--bg-input': '#362618', '--border-card': '#5A4030', '--border-input': '#4E3828', '--text-primary': '#E8D8C8', '--text-secondary': '#B8A090', '--text-bold': '#D4B8A0','--bubble-user': '#5A4030', '--bubble-ai': '#3E2C1E' } },
@@ -2558,19 +2566,20 @@ const chats = { ...this.state.chats };
 const chat = { ...chats[chatId] };
 const timestamp = getFixedTimestamp();
 let fullText = text || '[File: ' + (this.state.attachment?.fileName || 'attachment') + ']';
-if (this.state.quotedMsg) {
-  const quoteLines = this.state.quotedMsg.text.split('\n').map(line => '> ' + line).join('\n');
-  fullText = quoteLines + '\n\n' + fullText;
-  this.setState({ quotedMsg: null }); // 发送后清空
+const quotedRef = this.state.quotedMsg ? this.state.quotedMsg : null;
+if (quotedRef) {
+  this.setState({ quotedMsg: null });
 }
 const newMsg = {
 id: genId(),
 role: 'user',
-text: fullText,   // 使用 fullText
-variants: [fullText], // 使用 fullText
+text: fullText,
+variants: [fullText],
 variantIdx: 0,
-timestamp: timestamp
+timestamp: timestamp,
+quote: quotedRef ? { sender: quotedRef.sender, text: (quotedRef.text || '').slice(0, 80) } : null
 };
+
 if (this.state.attachment) {
 newMsg.file = {
 base64: this.state.attachment.base64,
@@ -3807,24 +3816,24 @@ isUser,
 align: isUser ? 'flex-end' : 'flex-start',
 maxW: isUser ? '82%' : '96%',
 fullW: 'auto',
-bg: isUser ? 'var(--bubble-user, #ECEAE4)' : 'var(--bubble-ai, #FFF)',
-color: 'var(--text-primary, #2B2620)',
+bg: isUser ? 'var(--bubble-user, #59483F)' : 'var(--bubble-ai, #D7EBE4)',
+color: isUser ? 'var(--bubble-user-text, #D7EBE4)' : 'var(--bubble-ai-text, #59483F)',
 radius: (() => {
 const first = isFirstInGroup(i);
 const last = isLastInGroup(i);
 if (isUser) {
-if (first && last) return '22px 22px 6px 22px';
-if (first) return '22px 22px 6px 6px';
-if (last) return '6px 22px 6px 22px';
-return '6px 22px 6px 6px';
+if (first && last) return '22px 22px 4px 22px';
+if (first) return '22px 22px 4px 22px';
+if (last) return '22px 4px 4px 22px';
+return '22px 4px 4px 22px';
 } else {
-if (first && last) return '22px 22px 22px 6px';
-if (first) return '22px 22px 6px 6px';
-if (last) return '6px 6px 22px 6px';
-return '6px 6px 6px 6px';
+if (first && last) return '22px 22px 22px 4px';
+if (first) return '22px 22px 22px 4px';
+if (last) return '4px 22px 22px 4px';
+return '4px 22px 22px 4px';
 }
 })(),
-gap: isLastInGroup(i) ? '24px' : '4px',
+gap: isLastInGroup(i) ? '16px' : '2px',
 text: displayText,
 rendered: rendered,
 hasThink: hasThink,
@@ -3853,6 +3862,8 @@ self.deleteImageFromMessage(i);
 }
 },
 showNormal: s.editIdx !== i && !!rendered,
+hasQuote: !!m.quote,
+quoteText: m.quote ? (m.quote.sender + '：' + m.quote.text) : '',
 showEdit: s.editIdx === i,
 showActions: !isUser && isLast && !s.isBusy && isLastInGroup(i),
 showUserActions: isUser && !s.isBusy && isLastInGroup(i),
