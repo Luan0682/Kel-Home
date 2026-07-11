@@ -2052,7 +2052,8 @@ reactionPickerOpen: false,
 musicPlayerOpen: false,
 loopMode: 'none',
 musicCurrentTime: 0,
-musicDuration: 0
+musicDuration: 0,
+dataLoaded: false
 };
 // 迁移：把旧的世界书合并进记忆库
 if (saved.worldbooks && saved.worldbooks.length > 0) {
@@ -2084,8 +2085,6 @@ this.state.anniversaries = [{ id: genId(), name: '纪念日', date: saved.annivD
 if (!this.state.chats[this.state.currentChatId]) {
 this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
 }
-    dataLoaded: false,   // 新增
-  };
 setTimeout(async () => {
 this.applyTheme(this.state.activeThemeId);
 this.applyCustomCss();
@@ -2135,12 +2134,6 @@ this._musicIdx = 0;
 this._musicVolume = parseFloat(localStorage.getItem('kel-music-volume') || '0.5');
 // 从 IndexedDB 加载音乐列表
 this._loadMusicFromDB();
-_formatTime(seconds) {
-  if (!seconds || isNaN(seconds)) return '0:00';
-  const m = Math.floor(seconds / 60);
-  const sec = Math.floor(seconds % 60);
-  return m + ':' + (sec < 10 ? '0' : '') + sec;
-}
 
 // 初始化保活（静音音频）
 this._initKeepAlive = () => {
@@ -2415,6 +2408,27 @@ this._textareaEl.style.height = 'auto';
 this._textareaEl.style.height = '32px';
 this._textareaEl.style.overflowY = 'hidden';
 }
+}
+
+_formatTime(seconds) {
+  if (!seconds || isNaN(seconds)) return '0:00';
+  const m = Math.floor(seconds / 60);
+  const sec = Math.floor(seconds % 60);
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
+
+async _openFontDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('KelFonts', 1);
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => resolve(req.result);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('fonts')) {
+        db.createObjectStore('fonts', { keyPath: 'id' });
+      }
+    };
+  });
 }
 
 scrollToBottom() {
