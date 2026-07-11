@@ -1540,39 +1540,38 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 const STORAGE_KEY = 'kel-home-data';
 
 function loadData() {
-  try {
-    const raw = localStorage.getItem(STORAGE_KEY);
-    if (raw) {
-      const data = JSON.parse(raw);
-      // ---- 迁移旧数据结构 ----
-      let migrated = false;
-      if (data.chats) {
-        for (const chatId of Object.keys(data.chats)) {
-          const chat = data.chats[chatId];
-          if (chat.messages && !chat.thinkingEntries) {
-            chat.thinkingEntries = [];
-            for (const msg of chat.messages) {
-              if (!msg.id) {
-                msg.id = genId();
-                migrated = true;
-              }
-              if (msg.thinking) {
-                chat.thinkingEntries.push({
-                  msgId: msg.id,
-                  content: msg.thinking
-                });
-                delete msg.thinking;
-                migrated = true;
-              }
-              if (!msg.variants) {
-                msg.variants = [msg.text];
-                msg.variantIdx = 0;
-                migrated = true;
-              }
-            }
-          }
-        }
-      }
+try {
+const raw = localStorage.getItem(STORAGE_KEY);
+if (raw) {
+const data = JSON.parse(raw);
+let migrated = false;
+if (data.chats) {
+for (const chatId of Object.keys(data.chats)) {
+const chat = data.chats[chatId];
+if (chat.messages && !chat.thinkingEntries) {
+chat.thinkingEntries = [];
+for (const msg of chat.messages) {
+if (!msg.id) { msg.id = genId(); migrated = true; }
+if (msg.thinking) {
+chat.thinkingEntries.push({ msgId: msg.id, content: msg.thinking });
+delete msg.thinking;
+migrated = true;
+}
+if (!msg.variants) { msg.variants = [msg.text]; msg.variantIdx = 0; migrated = true; }
+}
+}
+}
+}
+if (data.chats && Object.keys(data.chats).length > 0) {
+return data;
+}
+}
+} catch(e) {
+console.error('[Kel] loadData 解析失败', e);
+}
+return {};
+}
+
       if (migrated) {
         localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
       }
@@ -1853,9 +1852,76 @@ if (!this.state.chats[this.state.currentChatId]) {
 this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
 }
 setTimeout(async () => {
+// 从 IndexedDB 读取最新数据（覆盖 localStorage 可能过时的版本）
+try {
+const mainDb = await new Promise((resolve, reject) => {
+const req = indexedDB.open('KelHomeData', 1);
+req.onerror = () => reject(req.error);
+req.onsuccess = () => resolve(req.result);
+req.onupgradeneeded = (e) => {
+const db = e.target.result;
+if (!db.objectStoreNames.contains('appdata')) {
+db.createObjectStore('appdata', { keyPath: 'id' });
+}
+};
+});
+const tx = mainDb.transaction('appdata', 'readonly');
+const store = tx.objectStore('appdata');
+const result = await new Promise((resolve) => {
+const req = store.get('main');
+req.onsuccess = () => resolve(req.result);
+req.onerror = () => resolve(null);
+});
+if (result && result.data && result.data.chats) {
+const idbData = result.data;
+const lsRaw = localStorage.getItem(STORAGE_KEY);
+const lsData = lsRaw ? JSON.parse(lsRaw) : {};
+const idbTime = result.data._savedAt || 0;
+const lsChats = lsData.chats ? Object.keys(lsData.chats).length : 0;
+const idbChats = idbData.chats ? Object.keys(idbData.chats).length : 0;
+// 用消息总数更多的那个版本
+const idbMsgCount = Object.values(idbData.chats || {}).reduce((sum, c) => sum + (c.messages ? c.messages.length : 0), 0);
+const lsMsgCount = Object.values(lsData.chats || {}).reduce((sum, c) => sum + (c.messages ? c.messages.length : 0), 0);
+if (idbMsgCount >= lsMsgCount) {
+console.log('[Kel] 使用 IndexedDB 数据 (msgs:', idbMsgCount, 'vs ls:', lsMsgCount, ')');
+this.setState({
+chats: idbData.chats || this.state.chats,
+memories: idbData.memories || this.state.memories,
+currentChatId: idbData.currentChatId || this.state.currentChatId,
+diaries: idbData.diaries || this.state.diaries,
+pledges: idbData.pledges || this.state.pledges,
+anniversaries: idbData.anniversaries || this.state.anniversaries,
+styles: idbData.styles || this.state.styles,
+activeStyleId: idbData.activeStyleId || this.state.activeStyleId,
+prompts: idbData.prompts || this.state.prompts,
+personas: idbData.personas || this.state.personas,
+activePersonaId: idbData.activePersonaId || this.state.activePersonaId,
+apiPresets: idbData.apiPresets || this.state.apiPresets,
+activePresetId: idbData.activePresetId || this.state.activePresetId,
+customCss: idbData.customCss || this.state.customCss,
+customFont: idbData.customFont || this.state.customFont,
+localFontName: idbData.localFontName || this.state.localFontName,
+msgFontSize: idbData.msgFontSize || this.state.msgFontSize,
+activeThemeId: idbData.activeThemeId || this.state.activeThemeId,
+customTheme: idbData.customTheme || this.state.customTheme,
+regexRules: idbData.regexRules || this.state.regexRules,
+fontPresets: idbData.fontPresets || this.state.fontPresets,
+kelMood: idbData.kelMood || this.state.kelMood,
+avatarSize: idbData.avatarSize || this.state.avatarSize,
+petEnabled: idbData.petEnabled !== undefined ? idbData.petEnabled : this.state.petEnabled,
+petSizeIdx: idbData.petSizeIdx !== undefined ? idbData.petSizeIdx : this.state.petSizeIdx,
+soundEnabled: idbData.soundEnabled !== undefined ? idbData.soundEnabled : this.state.soundEnabled,
+memoryCount: idbData.memoryCount || this.state.memoryCount,
+keepAliveEnabled: idbData.keepAliveEnabled !== undefined ? idbData.keepAliveEnabled : this.state.keepAliveEnabled,
+});
+}
+}
+} catch(e) { console.warn('[Kel] IndexedDB 主数据读取失败', e); }
+// 应用样式（在最新数据加载完之后）
 this.applyTheme(this.state.activeThemeId);
 this.applyCustomCss();
 this.applyCustomFont();
+this.applyMsgFontSize();
 this.applyMsgFontSize();
 // 从 IndexedDB 加载字体
 const fontName = localStorage.getItem('kel-font-name');
@@ -2173,6 +2239,17 @@ regexRules: s.regexRules,
 fontPresets: s.fontPresets,
 keepAliveEnabled: s.keepAliveEnabled,
 };
+// 优先写 IndexedDB（无容量限制）
+this._saveToIndexedDB(data);
+// 尝试同时写 localStorage（快速读取缓存）
+try {
+const json = JSON.stringify(data);
+localStorage.setItem(STORAGE_KEY, json);
+} catch(e) {
+console.warn('[Kel] localStorage 写入失败，数据已存 IndexedDB', e.message);
+}
+}
+
 // 先尝试写入
 try {
 const json = JSON.stringify(data);
@@ -2222,6 +2299,7 @@ db.createObjectStore('appdata', { keyPath: 'id' });
 });
 const tx = db.transaction('appdata', 'readwrite');
 const store = tx.objectStore('appdata');
+data._savedAt = Date.now();
 store.put({ id: 'main', data: data, savedAt: Date.now() });
 console.log('[Kel] 数据已存入 IndexedDB');
 } catch(e) {
