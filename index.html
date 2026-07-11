@@ -4699,7 +4699,6 @@ const memories = s.memories.filter(m => m.id !== id);
 self.setState({ memories, deleteConfirmOpen: false });
 self.persist();
 self.show('已删除');
-}
 } else if (type === 'memory') {
 const memories = s.memories.filter(m => m.id !== id);
 self.setState({ memories, deleteConfirmOpen: false });
