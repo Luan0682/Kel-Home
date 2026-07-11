@@ -1859,6 +1859,37 @@ this.applyCustomFont();
 this.applyMsgFontSize();
 // 从 IndexedDB 加载字体
 const fontName = localStorage.getItem('kel-font-name');
+// 从 IndexedDB 加载头像
+try {
+const avatarDb = await this._openAvatarDB();
+const avTx = avatarDb.transaction('avatars', 'readonly');
+const avStore = avTx.objectStore('avatars');
+const userAv = await new Promise(r => { const req = avStore.get('user'); req.onsuccess = () => r(req.result); req.onerror = () => r(null); });
+const aiAv = await new Promise(r => { const req = avStore.get('ai'); req.onsuccess = () => r(req.result); req.onerror = () => r(null); });
+if (userAv && userAv.data) this.setState({ userAvatar: userAv.data });
+if (aiAv && aiAv.data) this.setState({ aiAvatar: aiAv.data });
+} catch(e) { console.warn('[Kel] 头像加载失败', e); }
+// 一次性迁移：如果 localStorage 主数据里还有 base64 头像，迁移到 IndexedDB
+const rawCheck = localStorage.getItem(STORAGE_KEY);
+if (rawCheck) {
+try {
+const parsed = JSON.parse(rawCheck);
+if (parsed.userAvatar && parsed.userAvatar.startsWith('data:')) {
+const mdb = await this._openAvatarDB();
+const mtx = mdb.transaction('avatars', 'readwrite');
+const ms = mtx.objectStore('avatars');
+if (parsed.userAvatar) ms.put({ id: 'user', data: parsed.userAvatar });
+if (parsed.aiAvatar) ms.put({ id: 'ai', data: parsed.aiAvatar });
+localStorage.setItem('kel-avatar-user', '1');
+localStorage.setItem('kel-avatar-ai', '1');
+parsed.userAvatar = '';
+parsed.aiAvatar = '';
+localStorage.setItem(STORAGE_KEY, JSON.stringify(parsed));
+console.log('[Kel] 头像已迁移到 IndexedDB，释放 localStorage 空间');
+}
+} catch(e) {}
+}
+
 if (fontName) {
 try {
 const db = await this._openFontDB();
@@ -2125,8 +2156,8 @@ soundEnabled: s.soundEnabled,
 memoryCount: s.memoryCount,
 avatarSize: s.avatarSize,
 memories: s.memories,
-userAvatar: s.userAvatar,
-aiAvatar: s.aiAvatar,
+userAvatar: '',
+aiAvatar: '',
 customCss: s.customCss,
 customFont: s.customFont,
 localFontName: s.localFontName,
@@ -2876,7 +2907,7 @@ this.show('图片已删除');
 }
 
 // ====== Export / Import ======
-exportData() {
+async exportData() {
 const s = this.state;
 const exportObj = {
 exportDate: new Date().toISOString(),
@@ -2896,6 +2927,16 @@ aiAvatar: s.aiAvatar,
 customCss: s.customCss,
 customFont: s.customFont,
 activeThemeId: s.activeThemeId,
+customTheme: s.customTheme,
+msgFontSize: s.msgFontSize,
+localFontName: s.localFontName,
+fontPresets: s.fontPresets,
+petEnabled: s.petEnabled,
+petSizeIdx: s.petSizeIdx,
+soundEnabled: s.soundEnabled,
+memoryCount: s.memoryCount,
+regexRules: s.regexRules,
+keepAliveEnabled: s.keepAliveEnabled,
 avatarSize: s.avatarSize,
 anniversaries: s.anniversaries,
 activeAnnivIdx: s.activeAnnivIdx,
@@ -2905,6 +2946,17 @@ fontPresets: s.fontPresets,
 kelMood: s.kelMood,
 };
 const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+// 从 IndexedDB 读头像写入备份
+try {
+const avDb = await this._openAvatarDB();
+const avTx = avDb.transaction('avatars', 'readonly');
+const avS = avTx.objectStore('avatars');
+const u = await new Promise(r => { const req = avS.get('user'); req.onsuccess = () => r(req.result); req.onerror = () => r(null); });
+const a = await new Promise(r => { const req = avS.get('ai'); req.onsuccess = () => r(req.result); req.onerror = () => r(null); });
+if (u && u.data) exportObj.userAvatar = u.data;
+if (a && a.data) exportObj.aiAvatar = a.data;
+} catch(e) {}
+
 const url = URL.createObjectURL(blob);
 const a = document.createElement('a');
 a.href = url;
@@ -2962,8 +3014,30 @@ if (data.apiPresets) updates.apiPresets = [...this.state.apiPresets, ...data.api
 if (data.activePresetId) updates.activePresetId = data.activePresetId;
 if (data.activePersonaId) updates.activePersonaId = data.activePersonaId;
 if (data.activeStyleId) updates.activeStyleId = data.activeStyleId;
-if (data.userAvatar) updates.userAvatar = data.userAvatar;
-if (data.aiAvatar) updates.aiAvatar = data.aiAvatar;
+if (data.userAvatar && data.userAvatar.startsWith('data:')) {
+updates.userAvatar = data.userAvatar;
+(async () => {
+try {
+const db = await this._openAvatarDB();
+const tx = db.transaction('avatars', 'readwrite');
+const s = tx.objectStore('avatars');
+s.put({ id: 'user', data: data.userAvatar });
+localStorage.setItem('kel-avatar-user', '1');
+} catch(e) {}
+})();
+}
+if (data.aiAvatar && data.aiAvatar.startsWith('data:')) {
+updates.aiAvatar = data.aiAvatar;
+(async () => {
+try {
+const db = await this._openAvatarDB();
+const tx = db.transaction('avatars', 'readwrite');
+const s = tx.objectStore('avatars');
+s.put({ id: 'ai', data: data.aiAvatar });
+localStorage.setItem('kel-avatar-ai', '1');
+} catch(e) {}
+})();
+}
 if (data.customCss) updates.customCss = data.customCss;
 if (data.customFont) updates.customFont = data.customFont;
 if (data.activeThemeId) updates.activeThemeId = data.activeThemeId;
@@ -2975,6 +3049,14 @@ if (data.kelMood) updates.kelMood = data.kelMood;
 if (data.heartfelt) updates.heartfelt = data.heartfelt;
 if (data.fontPresets) updates.fontPresets = data.fontPresets;
 if (data.regexRules) updates.regexRules = data.regexRules;
+if (data.customTheme) updates.customTheme = data.customTheme;
+if (data.msgFontSize) updates.msgFontSize = data.msgFontSize;
+if (data.localFontName) updates.localFontName = data.localFontName;
+if (data.petEnabled !== undefined) updates.petEnabled = data.petEnabled;
+if (data.petSizeIdx !== undefined) updates.petSizeIdx = data.petSizeIdx;
+if (data.soundEnabled !== undefined) updates.soundEnabled = data.soundEnabled;
+if (data.memoryCount) updates.memoryCount = data.memoryCount;
+if (data.keepAliveEnabled !== undefined) updates.keepAliveEnabled = data.keepAliveEnabled;
 this.setState(updates, () => {
 // 强制写入并验证
 this.persist();
@@ -3048,10 +3130,30 @@ e.target.value = '';
 pickUserAvatar() {
 const input = document.createElement('input');
 input.type = 'file'; input.accept = 'image/*';
-input.onchange = (e) => {
+input.onchange = async (e) => {
 const file = e.target.files[0]; if (!file) return;
 const reader = new FileReader();
-reader.onload = () => { this.setState({ userAvatar: reader.result }); this.persist(); this.show('头像已更新'); };
+reader.onload = async () => {
+const dataUrl = reader.result;
+try {
+const db = await this._openAvatarDB();
+const tx = db.transaction('avatars', 'readwrite');
+const store = tx.objectStore('avatars');
+await new Promise((resolve, reject) => {
+const req = store.put({ id: 'user', data: dataUrl });
+req.onsuccess = resolve;
+req.onerror = () => reject(req.error);
+});
+this.setState({ userAvatar: dataUrl });
+localStorage.setItem('kel-avatar-user', '1');
+this.persist();
+this.show('头像已更新');
+} catch(err) {
+this.setState({ userAvatar: dataUrl });
+this.persist();
+this.show('头像已更新');
+}
+};
 reader.readAsDataURL(file);
 };
 input.click();
@@ -3060,10 +3162,30 @@ input.click();
 pickAiAvatar() {
 const input = document.createElement('input');
 input.type = 'file'; input.accept = 'image/*';
-input.onchange = (e) => {
+input.onchange = async (e) => {
 const file = e.target.files[0]; if (!file) return;
 const reader = new FileReader();
-reader.onload = () => { this.setState({ aiAvatar: reader.result }); this.persist(); this.show('AI 头像已更新'); };
+reader.onload = async () => {
+const dataUrl = reader.result;
+try {
+const db = await this._openAvatarDB();
+const tx = db.transaction('avatars', 'readwrite');
+const store = tx.objectStore('avatars');
+await new Promise((resolve, reject) => {
+const req = store.put({ id: 'ai', data: dataUrl });
+req.onsuccess = resolve;
+req.onerror = () => reject(req.error);
+});
+this.setState({ aiAvatar: dataUrl });
+localStorage.setItem('kel-avatar-ai', '1');
+this.persist();
+this.show('AI 头像已更新');
+} catch(err) {
+this.setState({ aiAvatar: dataUrl });
+this.persist();
+this.show('AI 头像已更新');
+}
+};
 reader.readAsDataURL(file);
 };
 input.click();
@@ -3133,6 +3255,19 @@ input.click();
 async _openMusicDB() {
   return new Promise((resolve, reject) => {
     const req = indexedDB.open('KelMusic', 1);
+    async _openFontDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('KelFonts', 1);
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => resolve(req.result);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('fonts')) {
+        db.createObjectStore('fonts', { keyPath: 'id' });
+      }
+    };
+  });
+}
     req.onerror = () => reject(req.error);
     req.onsuccess = () => resolve(req.result);
     req.onupgradeneeded = (e) => {
@@ -3161,6 +3296,20 @@ async _loadMusicFromDB() {
         for (const track of oldList) {
           if (!track.data) continue;
           const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
+      async _openAvatarDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('KelAvatars', 1);
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => resolve(req.result);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('avatars')) {
+        db.createObjectStore('avatars', { keyPath: 'id' });
+      }
+    };
+  });
+}
+
           // base64 转 blob
           const resp = await fetch(track.data);
           const blob = await resp.blob();
