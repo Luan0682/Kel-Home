@@ -100,8 +100,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </sc-if>
 </button>
 </sc-if>
-<div style="max-width:{{ m.maxW }};min-width:0;">
-
+<div style="max-width:{{ m.maxW }};min-width:0;width:fit-content;">
 <!-- thinking icon button (completely decoupled from bubble) -->
 <sc-if value="{{ m.hasThink }}" hint-placeholder-val="{{ false }}">
 <button onClick="{{ m.openThinkModal }}" style="display:inline-flex;align-items:center;gap:5px;border:none;background:rgba(0,0,0,.04);border-radius:10px;padding:3px 8px;margin-bottom:4px;cursor:pointer;font-family:inherit;max-width:min(90%, 240px);">
@@ -113,17 +112,17 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- User avatar + timestamp -->
 <sc-if value="{{ m.showUserAvatar }}" hint-placeholder-val="{{ false }}">
-<div style="display:flex;align-items:center;justify-content:flex-end;gap:8px;margin-bottom:4px;">
-<span style="font-size:11px;color:#B8B3A8;">{{ m.timestamp }}</span>
+<div style="display:flex;align-items:flex-end;justify-content:flex-end;gap:8px;margin-bottom:2px;">
+<span style="font-size:11px;color:#B8B3A8;margin-bottom:2px;">{{ m.timestamp }}</span>
 <img src="{{ userAvatar }}" style="width:{{ avatarSize }}px;height:{{ avatarSize }}px;border-radius:50%;object-fit:cover;" alt="">
 </div>
 </sc-if>
 
 <!-- AI avatar + timestamp -->
 <sc-if value="{{ m.showAiAvatar }}" hint-placeholder-val="{{ false }}">
-<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+<div style="display:flex;align-items:flex-end;gap:8px;margin-bottom:2px;">
 <img src="{{ aiAvatar }}" style="width:{{ avatarSize }}px;height:{{ avatarSize }}px;border-radius:50%;object-fit:cover;" alt="">
-<span style="font-size:11px;color:#B8B3A8;">{{ m.timestamp }}</span>
+<span style="font-size:11px;color:#B8B3A8;margin-bottom:2px;">{{ m.timestamp }}</span>
 </div>
 </sc-if>
 
