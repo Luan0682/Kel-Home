@@ -33,6 +33,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:none} }
 @keyframes breathe { 0%,100%{box-shadow:0 0 4px rgba(26,24,21,.15)} 50%{box-shadow:0 0 12px rgba(26,24,21,.35)} }
 @keyframes pulseGlow { 0%,100%{opacity:.6} 50%{opacity:1} }
+.quote-block { background:rgba(26,24,21,.04); border-left:2px solid #B8B3A8; border-radius:0 6px 6px 0; padding:4px 10px; margin:4px 0; font-size:13px; color:#9A958B; }
 </style>
 </helmet>
 
@@ -203,9 +204,15 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="flex:none;padding:6px 14px calc(env(safe-area-inset-bottom, 0px) + 10px);">
 <!-- quoted message preview -->
 <sc-if value="{{ quotedMsg }}" hint-placeholder-val="{{ false }}">
-<div style="background:var(--bg-card, #FFF); border-left:3px solid #1A1815; border-radius:6px; padding:8px 12px; margin-bottom:6px; font-size:13px; color:#6B665E; display:flex; justify-content:space-between; align-items:center;">
-  <span><strong>{{ quotedMsg.sender }}</strong>：{{ quotedMsg.text.slice(0, 60) }}{{ quotedMsg.text.length > 60 ? '…' : '' }}</span>
-  <button onClick="{{ clearQuote }}" style="border:none; background:transparent; cursor:pointer; opacity:.5; font-size:16px;">✕</button>
+<div style="background:rgba(26,24,21,.04);border-radius:10px;padding:6px 10px;margin-bottom:6px;display:flex;align-items:center;gap:8px;">
+  <div style="width:2px;height:28px;border-radius:1px;background:#9A958B;flex:none;"></div>
+  <div style="flex:1;min-width:0;">
+    <span style="font-size:12px;color:#9A958B;">{{ quotedMsg.sender }}</span>
+    <div style="font-size:12.5px;color:#6B665E;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;margin-top:1px;">{{ quotedMsg.preview }}</div>
+  </div>
+  <button onClick="{{ clearQuote }}" style="border:none;background:transparent;cursor:pointer;opacity:.4;padding:2px;flex:none;">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
 </div>
 </sc-if>
 <!-- view -->
@@ -1677,7 +1684,7 @@ return summary.trim();
 
 // Render markdown-like content to HTML with code blocks
 function renderContent(text, isUser) {
-if (!text) return '<span style="opacity:.4;">...</span>';
+if (!text || !text.trim()) return '';
 // Escape HTML first
 let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 // Code blocks - render as downloadable/copyable blocks
@@ -3845,7 +3852,7 @@ if (confirm('删除这张图片？')) {
 self.deleteImageFromMessage(i);
 }
 },
-showNormal: s.editIdx !== i,
+showNormal: s.editIdx !== i && !!rendered,
 showEdit: s.editIdx === i,
 showActions: !isUser && isLast && !s.isBusy && isLastInGroup(i),
 showUserActions: isUser && !s.isBusy && isLastInGroup(i),
@@ -3893,6 +3900,14 @@ contentRef: (el) => {
 if (el && el._lastText !== rendered) {
 el._lastText = rendered;
 el.innerHTML = rendered;
+// 如果内容为空，隐藏气泡背景
+if (!rendered) {
+el.style.padding = '0';
+el.style.background = 'transparent';
+} else {
+el.style.padding = '';
+el.style.background = '';
+}
 }
 },
 };
@@ -4280,7 +4295,7 @@ toastShow: s.toastShow,
 toastText: s.toastText,
 imagePreviewOpen: s.imagePreviewOpen,
 imagePreviewUrl: s.imagePreviewUrl || '',
-quotedMsg: s.quotedMsg,
+quotedMsg: s.quotedMsg ? { ...s.quotedMsg, preview: (s.quotedMsg.text || '').slice(0, 40) + ((s.quotedMsg.text || '').length > 40 ? '…' : '') } : null,
 clearQuote: () => self.setState({ quotedMsg: null }),
 fontPresets: (s.fontPresets || []).map(fp => ({
   name: fp.name || '未命名',
