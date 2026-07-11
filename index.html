@@ -1530,6 +1530,60 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="position:absolute;bottom:50px;left:50%;transform:translateX(-50%);background:#1A1815;color:#F5F3EE;font-size:13px;padding:10px 20px;border-radius:20px;box-shadow:0 6px 20px rgba(0,0,0,.18);animation:fadeUp .25s ease both;white-space:nowrap;">{{ toastText }}</div>
 </sc-if>
 
+<!-- Music Player Modal -->
+<sc-if value="{{ musicPlayerOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:350;">
+<div onClick="{{ closeMusicPlayer }}" style="position:absolute;inset:0;background:rgba(0,0,0,.25);animation:fadeIn .15s ease both;"></div>
+<div style="position:absolute;bottom:60px;left:16px;right:16px;background:rgba(245,243,238,.85);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:24px;padding:20px;box-shadow:0 10px 40px rgba(0,0,0,.15);animation:slideUp .25s ease both;border:1px solid rgba(255,255,255,.3);">
+
+<!-- disc -->
+<div style="display:flex;align-items:center;gap:16px;margin-bottom:16px;">
+<div style="width:56px;height:56px;border-radius:50%;background:linear-gradient(135deg,#1A1815,#3A362F);display:flex;align-items:center;justify-content:center;box-shadow:0 2px 8px rgba(0,0,0,.2);animation:{{ musicDiscAnim }};">
+<div style="width:18px;height:18px;border-radius:50%;background:rgba(255,255,255,.15);border:2px solid rgba(255,255,255,.2);"></div>
+</div>
+<div style="flex:1;min-width:0;">
+<div style="font-size:15px;font-weight:600;color:var(--text-primary, #1A1815);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ musicCurrentDisplay }}</div>
+<div style="font-size:12px;color:#9A958B;margin-top:3px;">{{ musicCountDisplay }}</div>
+</div>
+</div>
+
+<!-- controls -->
+<div style="display:flex;align-items:center;justify-content:center;gap:24px;margin-bottom:16px;">
+<button onClick="{{ musicPrev }}" style="width:36px;height:36px;border:none;background:rgba(26,24,21,.06);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M19 20L9 12l10-8v16ZM5 4v16" stroke="var(--text-primary, #1A1815)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<button onClick="{{ musicToggle }}" style="width:48px;height:48px;border:none;background:#1A1815;border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,.2);">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none">{{ musicPlayIcon }}</svg>
+</button>
+<button onClick="{{ musicNext }}" style="width:36px;height:36px;border:none;background:rgba(26,24,21,.06);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 4l10 8-10 8V4ZM19 4v16" stroke="var(--text-primary, #1A1815)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<button onClick="{{ musicToggleLoop }}" style="width:36px;height:36px;border:none;background:{{ musicLoopBg }};border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M17 2l4 4-4 4M3 11V9a4 4 0 0 1 4-4h14M7 22l-4-4 4-4M21 13v2a4 4 0 0 1-4 4H3" stroke="{{ musicLoopColor }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+</div>
+
+<!-- track list -->
+<div class="sa" style="max-height:180px;overflow-y:auto;border-top:1px solid rgba(26,24,21,.08);padding-top:12px;">
+<sc-for list="{{ musicTrackList }}" as="tk" hint-placeholder-count="3">
+<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 4px;border-radius:10px;background:{{ tk.bg }};cursor:pointer;" onClick="{{ tk.play }}">
+<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+<span style="font-size:13px;color:{{ tk.numColor }};width:20px;text-align:center;">{{ tk.num }}</span>
+<span style="font-size:14px;color:{{ tk.nameColor }};white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ tk.name }}</span>
+</div>
+<button onClick="{{ tk.del }}" style="border:none;background:transparent;cursor:pointer;opacity:.3;padding:4px;flex:none;">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
+</button>
+</div>
+</sc-for>
+<sc-if value="{{ musicListEmpty }}" hint-placeholder-val="{{ false }}">
+<div style="text-align:center;padding:20px 0;font-size:13px;color:#B8B3A8;">还没有音乐，去 Options 添加</div>
+</sc-if>
+</div>
+</div>
+</div>
+</sc-if>
+
 <!-- hidden file inputs -->
 <input type="file" accept=".txt,.html,.htm,.md,.zip,.json,.csv,.xml,.pdf,.doc,.docx,image/*" style="display:none;" id="kelFileInput" onChange="{{ handleFileSelect }}">
 <input type="file" accept=".json" style="display:none;" id="kelImportInput" onChange="{{ handleImportFile }}">
@@ -1786,6 +1840,8 @@ keepAliveEnabled: saved.keepAliveEnabled !== false,
 musicPlaying: false,
 musicCurrentName: '',
 musicIdx: 0,
+musicPlayerOpen: false,
+musicLoop: false,
 musicCount: JSON.parse(localStorage.getItem('kel-music-list') || '[]').length,
 musicVolume: parseFloat(localStorage.getItem('kel-music-volume') || '0.5')
 };
@@ -1994,8 +2050,13 @@ this._playMusic = async (idx) => {
   if (!this._musicAudio) {
     this._musicAudio = new Audio();
     this._musicAudio.addEventListener('ended', () => {
-      this._playMusic(this._musicIdx + 1);
-    });
+  if (this.state.musicLoop) {
+    this._playMusic(this._musicIdx);
+  } else {
+    this._playMusic(this._musicIdx + 1);
+  }
+});
+
   }
   try {
     // 从 IndexedDB 读取音频 blob
@@ -2722,7 +2783,12 @@ const regexPetState = regexResult.petState;
 // ===== 按段落分割（用空行 \n\n 分隔），过滤掉空白段落 =====
 const paragraphs = reply.split(/\n\s*\n/).filter(p => p.trim().length > 0);
 // 如果没有任何段落，就把整个回复当作一个段落
-const finalParagraphs = paragraphs.length > 0 ? paragraphs : [reply];
+const finalParagraphs = paragraphs.length > 0 ? paragraphs : (reply.trim() ? [reply] : []);
+if (finalParagraphs.length === 0) {
+  this.setState({ isBusy: false });
+  this.show('AI 返回了空内容');
+  return;
+}
 
 const timestamp = getFixedTimestamp();
 
@@ -2789,7 +2855,10 @@ for (let i = 0; i < finalParagraphs.length; i++) {
       detectedPet = lastMood;
     }
   }
-
+  
+  // 清理后如果段落为空，跳过不推送
+  text = text.trim();
+  if (!text) continue;
   // 最终表情：命令 > 正则 > 情感检测 > 默认 happy
   const finalPetState = finalPetFromCmd || detectedPet || 'happy';
 
@@ -3249,8 +3318,8 @@ input.accept = '.ttf,.otf,.woff,.woff2';
 input.onchange = async (e) => {
 const file = e.target.files[0];
 if (!file) return;
-if (file.size > 20 * 1024 * 1024) {
-this.show('字体文件超过 20MB，建议使用 Web 字体链接');
+if (file.size > 200 * 1024 * 1024) {
+this.show('字体文件超过 200MB');
 return;
 }
 try {
@@ -4636,7 +4705,7 @@ diaryExtractToMemory: () => {
 diaryAskKelComment: () => self.askKelComment(),
 // 音乐播放器
 keepAliveStatus: s.keepAliveEnabled ? 'On' : 'Off',
-musicStatusLabel: s.musicPlaying ? '▶ ' + (s.musicCurrentName || 'Playing') : (self._musicList.length > 0 ? '暂停中' : '未添加'),
+musicStatusLabel: s.musicPlaying ? '▶ ' + (s.musicCurrentName || 'Playing') : ((self._musicList || []).length > 0 ? '暂停中' : '未添加'),
 musicCount: s.musicCount || self._musicList.length || 0,
 toggleKeepAlive: () => {
   const next = !s.keepAliveEnabled;
@@ -4650,8 +4719,35 @@ toggleKeepAlive: () => {
     self.show('后台保活已关闭');
   }
 },
-toggleMusicPlayer: () => self._toggleMusic(),
-addMusicFiles: () => self._addMusicFile()
+toggleMusicPlayer: () => self.setState(v => ({ musicPlayerOpen: !v.musicPlayerOpen })),
+addMusicFiles: () => self._addMusicFile(),
+musicPlayerOpen: s.musicPlayerOpen,
+closeMusicPlayer: () => self.setState({ musicPlayerOpen: false }),
+musicCurrentDisplay: s.musicPlaying ? (s.musicCurrentName || '播放中') : '未播放',
+musicCountDisplay: (self._musicList || []).length + ' 首',
+musicDiscAnim: s.musicPlaying ? 'breathe 2s ease-in-out infinite' : 'none',
+musicPlayIcon: s.musicPlaying ? '<path d="M6 4h4v16H6V4ZM14 4h4v16h-4V4Z" fill="#F5F3EE"/>' : '<path d="M8 5v14l11-7L8 5Z" fill="#F5F3EE"/>',
+musicToggle: () => self._toggleMusic(),
+musicPrev: () => { if (self._musicList.length > 0) self._playMusic(self._musicIdx - 1); },
+musicNext: () => { if (self._musicList.length > 0) self._playMusic(self._musicIdx + 1); },
+musicToggleLoop: () => {
+  const next = !s.musicLoop;
+  self.setState({ musicLoop: next });
+  if (self._musicAudio) self._musicAudio.loop = next;
+  self.show(next ? '单曲循环' : '顺序播放');
+},
+musicLoopBg: s.musicLoop ? 'rgba(26,24,21,.12)' : 'transparent',
+musicLoopColor: s.musicLoop ? 'var(--text-primary, #1A1815)' : '#B8B3A8',
+musicListEmpty: (self._musicList || []).length === 0,
+musicTrackList: (self._musicList || []).map((tk, idx) => ({
+  num: String(idx + 1),
+  name: tk.name || '未命名',
+  bg: idx === s.musicIdx && s.musicPlaying ? 'rgba(26,24,21,.05)' : 'transparent',
+  numColor: idx === s.musicIdx && s.musicPlaying ? 'var(--text-primary, #1A1815)' : '#B8B3A8',
+  nameColor: idx === s.musicIdx && s.musicPlaying ? 'var(--text-primary, #1A1815)' : '#3A362F',
+  play: () => self._playMusic(idx),
+  del: (e) => { e.stopPropagation(); self._removeMusicTrack(idx); }
+}))
 };
 }
 }
