@@ -4435,13 +4435,7 @@ memEditPosBefore: s.memEditPosition === 'before',
 memEditPosAfter: s.memEditPosition === 'after',
 memEditEventDate: s.memEditEventDate || '',
 memEditEventDateChange: (e) => self.setState({ memEditEventDate: e.target.value }),
-memLayerOptions: ['core', 'long', 'short', 'consciousness'].map(layer => ({
-  label: layer === 'core' ? '核心' : layer === 'long' ? '长期' : layer === 'short' ? '近期' : '意识',
-  bg: s.memEditLayer === layer ? '#1A1815' : 'var(--bg-card, #FFF)',
-  bd: s.memEditLayer === layer ? '#1A1815' : '#E7E3DA',
-  fg: s.memEditLayer === layer ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
-  pick: () => self.setState({ memEditLayer: layer })
-})),
+memLayerOptions: ['core', 'long', 'short', 'consciousness'].map(layer => ({ label: layer === 'core' ? '核心' : layer === 'long' ? '长期' : layer === 'short' ? '近期' : '意识', bg: s.memEditLayer === layer ? '#1A1815' : 'var(--bg-card, #FFF)', bd: s.memEditLayer === layer ? '#1A1815' : '#E7E3DA', fg: s.memEditLayer === layer ? '#F5F3EE' : 'var(--text-primary, #2B2620)', pick: () => self.setState({ memEditLayer: layer }) })),
 
 avatarSize: s.avatarSize || 36,
 userAvatar: s.userAvatar || '',
