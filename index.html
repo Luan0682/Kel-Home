@@ -1891,8 +1891,7 @@ this.applyCustomCss();
 this.applyCustomFont();
 this.applyMsgFontSize();
 this.applyMsgFontSize();
-// 从 IndexedDB 加载字体
-const fontName = localStorage.getItem('kel-font-name');
+
 // 从 IndexedDB 加载头像
 try {
 const avatarDb = await this._openAvatarDB();
@@ -1924,20 +1923,27 @@ console.log('[Kel] 头像已迁移到 IndexedDB，释放 localStorage 空间');
 } catch(e) {}
 }
 
+// 从 IndexedDB 加载字体
+const fontName = localStorage.getItem('kel-font-name');
 if (fontName) {
 try {
 const db = await this._openFontDB();
 const tx = db.transaction('fonts', 'readonly');
 const store = tx.objectStore('fonts');
-const result = await store.get('user-font');
+const result = await new Promise((resolve) => {
+const req = store.get('user-font');
+req.onsuccess = () => resolve(req.result);
+req.onerror = () => resolve(null);
+});
 if (result && result.blob) {
 const url = URL.createObjectURL(result.blob);
 this.setState({ localFontData: url, localFontName: result.name });
 this.applyLocalFont();
 }
-} catch(e) {}
+} catch(e) { console.warn('[Kel] 字体加载失败', e); }
 }
-}, 100);
+}, 
+100);
 // 用户首次触摸时激活保活音频（浏览器要求用户交互后才能播放音频）
 const activateKeepAlive = () => {
   if (this.state.keepAliveEnabled && !this._musicPlaying) {
@@ -3230,7 +3236,10 @@ el.textContent = '@font-face { font-family: "' + fontName + '"; src: url(' + dat
 }
 
 applyMsgFontSize() {
-document.documentElement.style.setProperty('--msg-font-size', (this.state.msgFontSize || 16) + 'px');
+const size = this.state.msgFontSize || 16;
+document.documentElement.style.setProperty('--msg-font-size', size + 'px');
+document.documentElement.style.setProperty('--msg-line-height', size <= 14 ? '1.6' : '1.5');
+document.documentElement.style.setProperty('--msg-padding', size <= 14 ? '6px 12px' : '8px 14px');
 }
 
 pickFontFile() {
@@ -3353,7 +3362,7 @@ saveCurrentFontAsPreset(name) {
     id: genId(),
     name: name || (s.localFontName || s.customFont || '未命名字体'),
     type: s.localFontData ? 'local' : 'web',
-    fontData: s.localFontData || '',
+    fontData: '',
     fontName: s.localFontName || s.customFont || '',
   };
   this.setState({
@@ -3361,24 +3370,34 @@ saveCurrentFontAsPreset(name) {
   }, () => { this.persist(); this.show('字体预设已保存'); });
 }
 
-applyFontPreset(id) {
+async applyFontPreset(id) {
   const preset = this.state.fontPresets.find(p => p.id === id);
   if (!preset) return;
   if (preset.type === 'local') {
-    this.setState({
-      localFontData: preset.fontData,
-      localFontName: preset.fontName,
-      customFont: ''
-    }, () => {
-      this.applyLocalFont();
-      this.persist();
-    });
+    // 从 IndexedDB 读取字体 blob
+    try {
+      const db = await this._openFontDB();
+      const tx = db.transaction('fonts', 'readonly');
+      const store = tx.objectStore('fonts');
+      const result = await new Promise((resolve) => {
+        const req = store.get('user-font');
+        req.onsuccess = () => resolve(req.result);
+        req.onerror = () => resolve(null);
+      });
+      if (result && result.blob) {
+        const url = URL.createObjectURL(result.blob);
+        this.setState({ localFontData: url, localFontName: preset.fontName, customFont: '' }, () => {
+          this.applyLocalFont();
+          this.persist();
+        });
+      } else {
+        this.show('字体文件未找到，请重新上传');
+      }
+    } catch(e) {
+      this.show('字体加载失败');
+    }
   } else {
-    this.setState({
-      customFont: preset.fontName,
-      localFontData: '',
-      localFontName: ''
-    }, () => {
+    this.setState({ customFont: preset.fontName, localFontData: '', localFontName: '' }, () => {
       this.applyCustomFont();
       this.persist();
     });
