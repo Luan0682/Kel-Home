@@ -128,7 +128,8 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- message bubble -->
 <sc-if value="{{ m.showNormal }}" hint-placeholder-val="{{ true }}">
-<div style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:{{ m.bubblePadding }};font-size:var(--msg-font-size, 13px);line-height:1.55;letter-spacing:-0.008em;word-break:break-word;display:{{ m.bubbleDisplay }};">
+<div style="background:{{ m.bg }};color:{{ m.color }};border-radius:{{ m.radius }};padding:{{ m.bubblePadding }};font-size:var(--msg-font-size, 13px);line-height:1.55;letter-spacing:-0.008em;word-break:break-word;display:{{ m.bubbleDisplay }};width:fit-content;max-width:100%;">
+
 <sc-if value="{{ m.hasQuote }}" hint-placeholder-val="{{ false }}">
 <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px;padding:3px 8px;background:rgba(0,0,0,.06);border-radius:6px;border-left:2px solid rgba(0,0,0,.2);">
 <span style="font-size:11px;opacity:.7;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.quoteText }}</span>
@@ -3790,7 +3791,10 @@ return cells;
 renderVals() {
 const s = this.state;
 const chat = this.currentChat;
-const msgs = chat.messages || [];
+const msgs = (chat.messages || []).filter(m => {
+  const text = (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text || '';
+  return text.trim() || m.imageUrl || m.image;
+});
 const preset = this.activePreset;
 const persona = this.activePersona;
 const styleObj = this.activeStyleObj;
