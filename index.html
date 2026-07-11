@@ -4539,6 +4539,15 @@ const memSearchResults = buildMemSearchResults(s.memSearchQuery);
 const memSubTitles = { core: '核心记忆', long: '长期记忆', short: '近期记忆', consciousness: '意识' };
 const memSubColors = { core: '#A04030', long: '#2C5F7C', short: '#3D6B55', consciousness: '#6B4E9A' };
 
+const memoryList = filteredMemories.map(mem => ({
+  ...mem,
+  tag: layerLabels[mem.layer || 'short'] || '近期',
+  activeLabel: mem.pinned ? '📌' : (mem.alwaysOn ? '常驻' : '触发'),
+  activeBg: layerColors[mem.layer || 'short'] || '#F2EFE8',
+  preview: (mem.content || '').slice(0, 120),
+  open: () => self.openMemoryEditor(mem.id),
+}));
+
 const memTagOptions = ['core', 'daily', 'monthly', 'general'].map(tag => ({
 label: tag === 'core' ? '核心' : tag === 'daily' ? '日常' : tag === 'monthly' ? '月度' : '通用',
 bg: s.memEditTag === tag ? '#1A1815' : 'var(--bg-card, #FFF)',
