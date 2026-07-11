@@ -33,6 +33,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 @keyframes slideUp { from{transform:translateY(100%)} to{transform:none} }
 @keyframes breathe { 0%,100%{box-shadow:0 0 4px rgba(26,24,21,.15)} 50%{box-shadow:0 0 12px rgba(26,24,21,.35)} }
 @keyframes pulseGlow { 0%,100%{opacity:.6} 50%{opacity:1} }
+@keyframes spin { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 </style>
 </helmet>
 
@@ -73,6 +74,17 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="position:absolute;bottom:0;left:0;right:0;height:20px;background:linear-gradient(rgba(245,243,238,0),var(--bg-main, #F5F3EE));z-index:5;pointer-events:none;"></div>
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:10px 20px 10px;">
 
+<!-- 多选操作栏 -->
+<sc-if value="{{ multiSelectMode }}" hint-placeholder-val="{{ false }}">
+  <div style="background:var(--bg-card, #FFF);padding:8px 16px;border-bottom:1px solid var(--border-card, #EDE9E0);display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;border-radius:12px;">
+    <span style="font-size:14px;color:var(--text-primary, #1A1815);">已选 {{ selectedCount }} 条</span>
+    <div style="display:flex;gap:8px;">
+      <button onClick="{{ cancelMultiSelect }}" style="border:none;background:transparent;color:#6B665E;padding:6px 12px;font-size:13px;cursor:pointer;">取消</button>
+      <button onClick="{{ deleteSelected }}" style="border:none;background:#FF4757;color:#FFF;padding:6px 12px;border-radius:6px;font-size:13px;cursor:pointer;">删除</button>
+    </div>
+  </div>
+</sc-if>
+
 <div style="position:sticky;top:50%;left:50%;transform:translate(-50%,-50%);width:0;height:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0;">
 <svg width="64" height="64" viewBox="0 0 64 64" fill="none" style="opacity:.08;">
 <path d="M32 4 L34.5 26 L56 16 L38 28.5 L60 32 L38 35.5 L56 48 L34.5 38 L32 60 L29.5 38 L8 48 L26 35.5 L4 32 L26 28.5 L8 16 L29.5 26 Z" fill="#1A1815"/>
@@ -82,7 +94,11 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- messages -->
 <sc-for list="{{ messages }}" as="m" hint-placeholder-count="4">
-<div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;" onContextMenu="{{ m.longPress }}">
+<div style="display:flex;align-items:flex-start;gap:8px;margin-bottom:{{ m.gap }};">
+<sc-if value="{{ multiSelectMode }}" hint-placeholder-val="{{ false }}">
+  <input type="checkbox" checked="{{ m.selected }}" onChange="{{ m.toggleSelect }}" style="margin-top:6px;flex:none;width:18px;height:18px;accent-color:#1A1815;">
+</sc-if>
+<div style="flex:1;display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;" onContextMenu="{{ m.longPress }}">
 <div class="message-bubble" style="max-width:{{ m.maxW }};width:{{ m.fullW }};">
 <!-- thinking block -->
 <sc-if value="{{ m.hasThink }}" hint-placeholder-val="{{ false }}">
@@ -204,7 +220,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <!-- quoted message preview -->
 <sc-if value="{{ quotedMsg }}" hint-placeholder-val="{{ false }}">
 <div style="background:var(--bg-card, #FFF); border-left:3px solid #1A1815; border-radius:6px; padding:8px 12px; margin-bottom:6px; font-size:13px; color:#6B665E; display:flex; justify-content:space-between; align-items:center;">
-  <span><strong>{{ quotedMsg.sender }}</strong>：{{ quotedMsg.text.slice(0, 60) }}{{ quotedMsg.text.length > 60 ? '…' : '' }}</span>
+<span><strong>{{ quotedMsg.sender }}</strong>：{{ quotedMsg.text.slice(0, 20) }}{{ quotedMsg.text.length > 20 ? '…' : '' }}</span>
   <button onClick="{{ clearQuote }}" style="border:none; background:transparent; cursor:pointer; opacity:.5; font-size:16px;">✕</button>
 </div>
 </sc-if>
@@ -494,12 +510,133 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </sc-for>
 </div>
 
-<!-- Selected date diary view -->
-<sc-if value="{{ diaryHasSelected }}" hint-placeholder-val="{{ false }}">
+<!-- 日记详情独立页面 -->
+<sc-if value="{{ diaryDetailDate }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;background:var(--bg-main, #F5F3EE);z-index:10;overflow-y:auto;padding:8px 20px 24px;">
+  <div style="padding:4px 0 12px;">
+    <button onClick="{{ diaryCloseDetail }}" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#48453E" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </button>
+  </div>
+  
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+    <div style="font-size:20px;font-weight:600;color:var(--text-primary, #1A1815);">{{ diarySelectedLabel }}</div>
+    <div style="display:flex;gap:6px;">
+      <button onClick="{{ jumpToChatOnDate }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:14px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;">💬 聊天</button>
+      <button onClick="{{ diaryOpenStickerPicker }}" style="border:none;background:var(--bg-card, #FFF);border-radius:14px;padding:6px 12px;font-size:13px;color:#6B665E;cursor:pointer;border:1px solid var(--border-card, #EDE9E0);">{{ diaryStickerBtnLabel }}</button>
+    </div>
+  </div>
+
+  <!-- Emoji picker popup -->
+  <sc-if value="{{ diaryStickerPickerOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;padding:14px;margin-bottom:14px;box-shadow:0 4px 16px rgba(0,0,0,.08);">
+    <div style="font-size:12px;color:#B8B3A8;margin-bottom:8px;">我的心情</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;margin-bottom:12px;">
+      <sc-for list="{{ emojiOptions }}" as="em" hint-placeholder-count="16">
+        <button onClick="{{ em.pickMine }}" style="width:36px;height:36px;border-radius:10px;border:{{ em.mineBd }};background:{{ em.mineBg }};display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;">{{ em.emoji }}</button>
+      </sc-for>
+    </div>
+    <div style="font-size:12px;color:#B8B3A8;margin-bottom:8px;">Kel 的心情</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <sc-for list="{{ emojiOptions }}" as="em" hint-placeholder-count="16">
+        <button onClick="{{ em.pickKel }}" style="width:36px;height:36px;border-radius:10px;border:{{ em.kelBd }};background:{{ em.kelBg }};display:flex;align-items:center;justify-content:center;font-size:20px;cursor:pointer;">{{ em.emoji }}</button>
+      </sc-for>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:10px;">
+      <button onClick="{{ diaryCloseStickerPicker }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:14px;padding:6px 14px;font-size:13px;font-family:inherit;cursor:pointer;">完成</button>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- My diary card -->
+  <div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}">
+          <img src="{{ userAvatar }}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;">
+        </sc-if>
+        <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="10" r="3" stroke="#9A958B" stroke-width="1.5"/><path d="M5.6 19.5A7 7 0 0 1 12 16a7 7 0 0 1 6.4 3.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg>
+        </sc-if>
+        <span style="font-size:14px;font-weight:600;color:var(--text-primary, #1A1815);">我的日记</span>
+      </div>
+      <button onClick="{{ diaryEditMine }}" style="border:none;background:#F2EFE8;border-radius:12px;padding:5px 10px;font-size:12px;color:#6B665E;cursor:pointer;">{{ diaryMineBtn }}</button>
+    </div>
+    <sc-if value="{{ diaryMineIsEdit }}" hint-placeholder-val="{{ false }}">
+      <textarea value="{{ diaryMineText }}" onInput="{{ diaryMineInput }}" placeholder="写下今天的故事..." rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:12px;font-family:inherit;font-size:14px;line-height:1.7;color:#1A1815;resize:vertical;min-height:120px;"></textarea>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;">
+        <button onClick="{{ diaryCancelMine }}" style="padding:6px 14px;border:1px solid #DDD8CE;background:#FFF;border-radius:14px;font-size:13px;font-family:inherit;color:#6B665E;cursor:pointer;">取消</button>
+        <button onClick="{{ diarySaveMine }}" style="padding:6px 14px;border:none;background:#1A1815;border-radius:14px;font-size:13px;font-family:inherit;color:#F5F3EE;cursor:pointer;">保存</button>
+        <button onClick="{{ diaryExtractToMemory }}" style="padding:6px 14px;border:none;background:#F2EFE8;border-radius:14px;font-size:13px;font-family:inherit;color:#3A362F;cursor:pointer;">→ 提取为记忆</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ !diaryMineIsEdit }}" hint-placeholder-val="{{ true }}">
+      <div style="font-size:14px;line-height:1.7;color:#3A362F;white-space:pre-wrap;word-break:break-word;min-height:30px;">{{ diaryMineDisplay }}</div>
+    </sc-if>
+  </div>
+
+  <!-- Kel's diary card -->
+  <div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;margin-bottom:12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+      <div style="display:flex;align-items:center;gap:8px;">
+        <sc-if value="{{ hasAiAvatar }}" hint-placeholder-val="{{ false }}">
+          <img src="{{ aiAvatar }}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;">
+        </sc-if>
+        <sc-if value="{{ !hasAiAvatar }}" hint-placeholder-val="{{ true }}">
+          <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#9A958B" stroke-width="1.5"/><path d="M8 14s1.5 2 4 2 4-2 4-2" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/><circle cx="9" cy="10" r="1" fill="#9A958B"/><circle cx="15" cy="10" r="1" fill="#9A958B"/></svg>
+        </sc-if>
+        <span style="font-size:14px;font-weight:600;color:var(--text-primary, #1A1815);">Kel 的日记</span>
+      </div>
+      <button onClick="{{ diaryEditKel }}" style="border:none;background:#F2EFE8;border-radius:12px;padding:5px 10px;font-size:12px;color:#6B665E;cursor:pointer;">{{ diaryKelBtn }}</button>
+    </div>
+    <sc-if value="{{ diaryKelIsEdit }}" hint-placeholder-val="{{ false }}">
+      <textarea value="{{ diaryKelText }}" onInput="{{ diaryKelInput }}" placeholder="Kel 的日记..." rows="6" style="display:block;width:100%;border:none;outline:none;background:#F7F5F0;border-radius:12px;padding:12px;font-family:inherit;font-size:14px;line-height:1.7;color:#1A1815;resize:vertical;min-height:120px;"></textarea>
+      <div style="display:flex;justify-content:flex-end;gap:8px;margin-top:10px;">
+        <button onClick="{{ diaryCancelKel }}" style="padding:6px 14px;border:1px solid #DDD8CE;background:#FFF;border-radius:14px;font-size:13px;font-family:inherit;color:#6B665E;cursor:pointer;">取消</button>
+        <button onClick="{{ diarySaveKel }}" style="padding:6px 14px;border:none;background:#1A1815;border-radius:14px;font-size:13px;font-family:inherit;color:#F5F3EE;cursor:pointer;">保存</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ !diaryKelIsEdit }}" hint-placeholder-val="{{ true }}">
+      <div style="font-size:14px;line-height:1.7;color:#3A362F;white-space:pre-wrap;word-break:break-word;min-height:30px;">{{ diaryKelDisplay }}</div>
+    </sc-if>
+  </div>
+
+  <!-- Comments section -->
+  <div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:16px 18px;">
+    <div style="font-size:14px;font-weight:600;color:var(--text-primary, #1A1815);margin-bottom:12px;">评论区</div>
+    <sc-for list="{{ diaryComments }}" as="dc" hint-placeholder-count="0">
+      <div style="display:flex;gap:10px;margin-bottom:12px;">
+        <img src="{{ dc.avatar }}" style="width:24px;height:24px;border-radius:50%;object-fit:cover;flex:none;" alt="">
+        <div style="flex:1;">
+          <div style="display:flex;align-items:center;gap:6px;">
+            <span style="font-size:13px;font-weight:600;color:var(--text-primary, #1A1815);">{{ dc.name }}</span>
+            <span style="font-size:11px;color:#B8B3A8;">{{ dc.time }}</span>
+          </div>
+          <div style="font-size:13px;color:#3A362F;line-height:1.6;margin-top:3px;">{{ dc.text }}</div>
+        </div>
+        <button onClick="{{ dc.del }}" style="border:none;background:transparent;cursor:pointer;opacity:.3;flex:none;padding:0;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
+        </button>
+      </div>
+    </sc-for>
+    <div style="display:flex;gap:8px;align-items:flex-end;">
+      <textarea value="{{ diaryCommentText }}" onInput="{{ diaryCommentInput }}" placeholder="写评论..." rows="1" style="flex:1;border:1px solid #E7E3DA;outline:none;background:#F7F5F0;border-radius:14px;padding:8px 12px;font-family:inherit;font-size:13px;color:#1A1815;resize:none;min-height:36px;"></textarea>
+      <button onClick="{{ diaryAddComment }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:14px;padding:8px 12px;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;">发送</button>
+      <button onClick="{{ diaryAskKelComment }}" style="border:none;background:#F2EFE8;color:#3A362F;border-radius:14px;padding:8px 12px;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;">召唤Kel</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- 原日历下方的日记视图（已移至独立页面，但保留兼容） -->
+<sc-if value="{{ diaryHasSelected && !diaryDetailDate }}" hint-placeholder-val="{{ false }}">
 <div style="margin-bottom:16px;">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
 <div style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">{{ diarySelectedLabel }}</div>
-<button onClick="{{ diaryOpenStickerPicker }}" style="border:none;background:var(--bg-card, #FFF);border-radius:14px;padding:6px 12px;font-size:13px;color:#6B665E;cursor:pointer;border:1px solid var(--border-card, #EDE9E0);">{{ diaryStickerBtnLabel }}</button>
+<div style="display:flex;gap:6px;">
+  <button onClick="{{ jumpToChatOnDate }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:14px;padding:6px 12px;font-size:12px;font-family:inherit;cursor:pointer;">💬 聊天</button>
+  <button onClick="{{ diaryOpenStickerPicker }}" style="border:none;background:var(--bg-card, #FFF);border-radius:14px;padding:6px 12px;font-size:13px;color:#6B665E;cursor:pointer;border:1px solid var(--border-card, #EDE9E0);">{{ diaryStickerBtnLabel }}</button>
+</div>
 </div>
 
 <!-- Emoji picker popup -->
@@ -1505,8 +1642,77 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <button onClick="{{ ctxQuote }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">引用</button>
 <button onClick="{{ ctxEdit }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">编辑</button>
 <button onClick="{{ ctxResend }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">重发</button>
+<button onClick="{{ ctxMultiSelect }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">多选</button>
+<button onClick="{{ ctxReact }}" style="border:none;background:transparent;color:#F5F3EE;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">表情</button>
 <button onClick="{{ ctxDelete }}" style="border:none;background:transparent;color:#FF6B6B;padding:10px 14px;font-size:13px;font-family:inherit;cursor:pointer;border-radius:10px;">删除</button>
 </div>
+</div>
+</sc-if>
+
+<!-- reaction picker -->
+<sc-if value="{{ reactionPickerOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:550;display:flex;align-items:center;justify-content:center;">
+  <div onClick="{{ closeReactionPicker }}" style="position:absolute;inset:0;background:rgba(0,0,0,.3);"></div>
+  <div style="position:relative;background:var(--bg-main, #F5F3EE);border-radius:16px;padding:16px;width:280px;max-height:60vh;overflow-y:auto;box-shadow:0 10px 40px rgba(0,0,0,.2);animation:fadeUp .2s ease both;">
+    <div style="font-size:14px;font-weight:600;color:var(--text-primary, #1A1815);margin-bottom:12px;">选择表情</div>
+    <div style="display:flex;flex-wrap:wrap;gap:8px;">
+      <sc-for list="{{ reactionOptions }}" as="ro" hint-placeholder-count="16">
+        <button onClick="{{ ro.pick }}" style="width:40px;height:40px;border-radius:10px;border:1px solid var(--border-card, #EDE9E0);background:var(--bg-card, #FFF);display:flex;align-items:center;justify-content:center;font-size:24px;cursor:pointer;">{{ ro.emoji }}</button>
+      </sc-for>
+    </div>
+    <div style="display:flex;justify-content:flex-end;margin-top:12px;">
+      <button onClick="{{ closeReactionPicker }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:14px;padding:6px 14px;font-size:13px;font-family:inherit;cursor:pointer;">取消</button>
+    </div>
+  </div>
+</div>
+</sc-if>
+
+<!-- 音乐播放器弹窗 -->
+<sc-if value="{{ musicPlayerOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:800;display:flex;align-items:center;justify-content:center;" onClick="{{ closeMusicPlayer }}">
+  <div style="position:absolute;inset:0;background:rgba(0,0,0,.35);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);"></div>
+  <div style="position:relative;background:rgba(255,255,255,.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:24px;padding:24px;width:340px;max-height:80vh;overflow-y:auto;box-shadow:0 20px 60px rgba(0,0,0,.3);border:1px solid rgba(255,255,255,.3);" onClick="{{ stopProp }}">
+    <!-- 头部 -->
+    <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px;">
+      <span style="font-size:18px;font-weight:600;color:#1A1815;">🎵 播放器</span>
+      <button onClick="{{ closeMusicPlayer }}" style="border:none;background:rgba(0,0,0,.06);width:32px;height:32px;border-radius:50%;font-size:16px;cursor:pointer;display:flex;align-items:center;justify-content:center;">✕</button>
+    </div>
+    <!-- 唱片 -->
+    <div style="text-align:center;margin-bottom:16px;">
+      <div style="width:140px;height:140px;border-radius:50%;background:radial-gradient(circle at 30% 30%, #555, #1a1a1a);margin:0 auto;display:flex;align-items:center;justify-content:center;box-shadow:0 8px 30px rgba(0,0,0,.4);animation:{{ musicPlaying ? 'spin 4s linear infinite' : 'none' }};">
+        <div style="width:50px;height:50px;border-radius:50%;background:radial-gradient(circle at 40% 35%, #fff, #ccc);box-shadow:inset 0 -4px 8px rgba(0,0,0,.2);"></div>
+      </div>
+    </div>
+    <!-- 歌曲名 -->
+    <div style="text-align:center;font-size:17px;font-weight:600;color:#1A1815;margin-bottom:4px;">{{ musicCurrentName || '未选择' }}</div>
+    <!-- 进度条 -->
+    <div style="margin:12px 0 4px;">
+      <input type="range" min="0" max="{{ musicDuration || 1 }}" value="{{ musicCurrentTime }}" onInput="{{ musicSeek }}" style="width:100%;height:4px;border-radius:2px;accent-color:#1A1815;background:linear-gradient(to right, #1A1815 0%, #1A1815 {{ musicDuration > 0 ? (musicCurrentTime / musicDuration * 100) : 0 }}%, rgba(0,0,0,.15) {{ musicDuration > 0 ? (musicCurrentTime / musicDuration * 100) : 0 }}%, rgba(0,0,0,.15) 100%);cursor:pointer;appearance:none;-webkit-appearance:none;">
+    </div>
+    <div style="display:flex;justify-content:space-between;font-size:12px;color:#6B665E;">
+      <span>{{ musicCurrentTimeFormatted }}</span>
+      <span>{{ musicDurationFormatted }}</span>
+    </div>
+    <!-- 控制按钮 -->
+    <div style="display:flex;justify-content:center;align-items:center;gap:24px;margin-top:12px;">
+      <button onClick="{{ musicPrev }}" style="border:none;background:transparent;font-size:22px;cursor:pointer;opacity:.7;color:#1A1815;">⏮</button>
+      <button onClick="{{ musicTogglePlay }}" style="border:none;background:#1A1815;color:#F5F3EE;width:56px;height:56px;border-radius:50%;font-size:24px;cursor:pointer;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 12px rgba(0,0,0,.2);">{{ musicPlaying ? '⏸' : '▶' }}</button>
+      <button onClick="{{ musicNext }}" style="border:none;background:transparent;font-size:22px;cursor:pointer;opacity:.7;color:#1A1815;">⏭</button>
+      <button onClick="{{ toggleLoop }}" style="border:none;background:transparent;font-size:18px;cursor:pointer;color:{{ loopMode === 'one' ? '#1A1815' : '#9A958B' }};opacity:{{ loopMode === 'one' ? '1' : '.5' }};">🔁</button>
+    </div>
+    <!-- 播放列表 -->
+    <div style="margin-top:16px;border-top:1px solid rgba(0,0,0,.08);padding-top:12px;">
+      <div style="font-size:12px;color:#9A958B;margin-bottom:6px;">播放列表 ({{ musicListItems.length }})</div>
+      <div style="max-height:150px;overflow-y:auto;">
+        <sc-for list="{{ musicListItems }}" as="item" hint-placeholder-count="3">
+          <div onClick="{{ item.play }}" style="padding:8px 0;display:flex;justify-content:space-between;cursor:pointer;border-bottom:1px solid rgba(0,0,0,.05);">
+            <span style="font-size:14px;color:#1A1815;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;">{{ item.name }}</span>
+            <span style="font-size:12px;color:#9A958B;flex:none;">{{ item.duration }}</span>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
 </div>
 </sc-if>
 
@@ -1539,76 +1745,90 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
 const STORAGE_KEY = 'kel-home-data';
 
-function loadData() {
+// ====== 新的存储模块（IndexedDB 为主） ======
+function openDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('KelHome', 2);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('main')) {
+        db.createObjectStore('main', { keyPath: 'id' });
+      }
+    };
+    req.onsuccess = () => resolve(req.result);
+    req.onerror = () => reject(req.error);
+  });
+}
+
+async function loadDataAsync() {
   try {
-    const raw = localStorage.getItem(STORAGE_KEY);
+    const db = await openDB();
+    const tx = db.transaction('main', 'readonly');
+    const store = tx.objectStore('main');
+    const data = await new Promise((resolve, reject) => {
+      const req = store.get('appData');
+      req.onsuccess = () => resolve(req.result ? req.result.data : null);
+      req.onerror = reject;
+    });
+    if (data) {
+      console.log('[Kel] 从 IndexedDB 加载数据成功');
+      return data;
+    }
+  } catch (e) {
+    console.warn('[Kel] IndexedDB 读取失败，尝试 localStorage', e);
+  }
+  // 降级：尝试从 localStorage 读取（旧版数据）
+  try {
+    const raw = localStorage.getItem('kel-home-data');
     if (raw) {
-      const data = JSON.parse(raw);
-      // ---- 迁移旧数据结构 ----
-      let migrated = false;
-      if (data.chats) {
-        for (const chatId of Object.keys(data.chats)) {
-          const chat = data.chats[chatId];
-          if (chat.messages && !chat.thinkingEntries) {
-            chat.thinkingEntries = [];
-            for (const msg of chat.messages) {
-              if (!msg.id) {
-                msg.id = genId();
-                migrated = true;
-              }
-              if (msg.thinking) {
-                chat.thinkingEntries.push({
-                  msgId: msg.id,
-                  content: msg.thinking
-                });
-                delete msg.thinking;
-                migrated = true;
-              }
-              if (!msg.variants) {
-                msg.variants = [msg.text];
-                msg.variantIdx = 0;
-                migrated = true;
-              }
-            }
-          }
-        }
-      }
-      if (migrated) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      }
-      // 检查数据是否有效
-      if (data.chats && Object.keys(data.chats).length > 0) {
-        return data;
-      }
+      const parsed = JSON.parse(raw);
+      console.log('[Kel] 从 localStorage 迁移数据到 IndexedDB');
+      await saveDataAsync(parsed);
+      localStorage.removeItem('kel-home-data');
+      return parsed;
     }
-    // 主数据不存在或无效，尝试从备份恢复
-    const backupRaw = localStorage.getItem(STORAGE_KEY + '_backup');
-    if (backupRaw) {
-      const backup = JSON.parse(backupRaw);
-      if (backup.chats && Object.keys(backup.chats).length > 0) {
-        console.warn('[Kel] 主数据丢失，已从备份恢复');
-        // 把备份写回主存储
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(backup));
-        return backup;
-      }
-    }
-    return {};
-  } catch(e) {
-    console.error('[Kel] loadData 解析失败', e);
+  } catch(e) {}
+  return {}; // 空数据
+}
+
+async function saveDataAsync(data) {
+  try {
+    const db = await openDB();
+    const tx = db.transaction('main', 'readwrite');
+    const store = tx.objectStore('main');
+    await new Promise((resolve, reject) => {
+      const req = store.put({ id: 'appData', data, updatedAt: Date.now() });
+      req.onsuccess = resolve;
+      req.onerror = reject;
+    });
+    // 同时写入 localStorage 作为轻量备份（仅存关键配置，避免超限）
     try {
-      const backupRaw = localStorage.getItem(STORAGE_KEY + '_backup');
-      if (backupRaw) {
-        const backup = JSON.parse(backupRaw);
-        if (backup.chats) return backup;
-      }
-    } catch(e2) {}
-    return {};
+      const backup = {
+        currentChatId: data.currentChatId,
+        activePresetId: data.activePresetId,
+        activePersonaId: data.activePersonaId,
+        activeStyleId: data.activeStyleId,
+      };
+      localStorage.setItem('kel-home-data-backup', JSON.stringify(backup));
+    } catch(e) {}
+    console.log('[Kel] 数据已保存到 IndexedDB');
+  } catch (e) {
+    console.error('[Kel] IndexedDB 保存失败，尝试 localStorage 降级', e);
+    try {
+      localStorage.setItem('kel-home-data', JSON.stringify(data));
+    } catch(e2) {
+      console.error('[Kel] 所有存储方式均失败，数据可能丢失');
+    }
   }
 }
-function saveData(data) {
-try {
-localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-} catch(e) {}
+
+// 保留旧函数（兼容，但不再使用）
+function loadData() {
+  console.warn('[Kel] 请使用 loadDataAsync');
+  return {};
+}
+function saveData() {
+  console.warn('[Kel] 请使用 saveDataAsync');
 }
 
 function genId() {
@@ -1704,12 +1924,13 @@ const THEME_PRESETS = [
 ];
 
 class Component extends DCLogic {
-constructor(props) {
-super(props);
-const saved = loadData();
+constructor() {
+super();
+const saved = {};
 this.state = {
 thinkOpenMap: {},
 memories: saved.memories || [],
+chunks: saved.chunks || [],
 memEditId: null,
 memEditName: '',
 memEditContent: '',
@@ -1786,6 +2007,7 @@ diaries: saved.diaries || {},
 diaryViewYear: new Date().getFullYear(),
 diaryViewMonth: new Date().getMonth(),
 diarySelectedDate: null,
+diaryDetailDate: null,
 diaryMineEdit: false,
 diaryMineText: '',
 diaryKelEdit: false,
@@ -1793,6 +2015,7 @@ diaryKelText: '',
 diaryStickerPickerOpen: false,
 diaryCommentText: '',
 kelMood: saved.kelMood || 'idle',
+diaryDateFilter: null,
 imagePreviewOpen: false,
 imagePreviewUrl: '',
 // Pending lines for Enter-to-send
@@ -1820,7 +2043,16 @@ musicPlaying: false,
 musicCurrentName: '',
 musicIdx: 0,
 musicCount: JSON.parse(localStorage.getItem('kel-music-list') || '[]').length,
-musicVolume: parseFloat(localStorage.getItem('kel-music-volume') || '0.5')
+musicVolume: parseFloat(localStorage.getItem('kel-music-volume') || '0.5'),
+multiSelectMode: false,
+selectedMsgIds: [],
+reactions: {},
+reactionPickerTarget: null,
+reactionPickerOpen: false,
+musicPlayerOpen: false,
+loopMode: 'none',
+musicCurrentTime: 0,
+musicDuration: 0
 };
 // 迁移：把旧的世界书合并进记忆库
 if (saved.worldbooks && saved.worldbooks.length > 0) {
@@ -1852,6 +2084,8 @@ this.state.anniversaries = [{ id: genId(), name: '纪念日', date: saved.annivD
 if (!this.state.chats[this.state.currentChatId]) {
 this.state.chats[this.state.currentChatId] = { id: this.state.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
 }
+    dataLoaded: false,   // 新增
+  };
 setTimeout(async () => {
 this.applyTheme(this.state.activeThemeId);
 this.applyCustomCss();
@@ -1901,6 +2135,12 @@ this._musicIdx = 0;
 this._musicVolume = parseFloat(localStorage.getItem('kel-music-volume') || '0.5');
 // 从 IndexedDB 加载音乐列表
 this._loadMusicFromDB();
+_formatTime(seconds) {
+  if (!seconds || isNaN(seconds)) return '0:00';
+  const m = Math.floor(seconds / 60);
+  const sec = Math.floor(seconds % 60);
+  return m + ':' + (sec < 10 ? '0' : '') + sec;
+}
 
 // 初始化保活（静音音频）
 this._initKeepAlive = () => {
@@ -1922,8 +2162,39 @@ this._playMusic = async (idx) => {
   const track = this._musicList[idx];
   if (!this._musicAudio) {
     this._musicAudio = new Audio();
+    this._musicAudio.addEventListener('timeupdate', () => {
+      if (this._musicAudio && this._musicAudio.duration) {
+        this.setState({ 
+          musicCurrentTime: this._musicAudio.currentTime,
+          musicDuration: this._musicAudio.duration || 0
+        });
+      }
+    });
+    this._musicAudio.addEventListener('loadedmetadata', () => {
+      // 音频元数据加载完成后更新时长
+      if (this._musicAudio && this._musicAudio.duration) {
+        this.setState({ 
+          musicDuration: this._musicAudio.duration,
+          musicCurrentTime: 0
+        });
+        // 更新歌曲列表中的时长
+        const list = this._musicList.map((item, index) => {
+          if (index === this._musicIdx) {
+            return { ...item, duration: this._formatTime(this._musicAudio.duration) };
+          }
+          return item;
+        });
+        this._musicList = list;
+        localStorage.setItem('kel-music-meta', JSON.stringify(list));
+      }
+    });
     this._musicAudio.addEventListener('ended', () => {
-      this._playMusic(this._musicIdx + 1);
+      if (this.state.loopMode === 'one') {
+        this._musicAudio.currentTime = 0;
+        this._musicAudio.play();
+      } else {
+        this._playMusic(this._musicIdx + 1);
+      }
     });
   }
   try {
@@ -1947,13 +2218,21 @@ this._playMusic = async (idx) => {
     this._currentMusicUrl = URL.createObjectURL(result.blob);
     this._musicAudio.src = this._currentMusicUrl;
     this._musicAudio.volume = this._musicVolume;
+    this._musicAudio.loop = (this.state.loopMode === 'one');
     await this._musicAudio.play();
     this._musicPlaying = true;
     // 播放音乐时停止静音保活（音乐本身就能保活）
     if (this._keepAliveAudio) {
       this._keepAliveAudio.pause();
     }
-    this.setState({ musicPlaying: true, musicCurrentName: track.name, musicIdx: idx });
+    this.setState({ 
+      musicPlaying: true, 
+      musicCurrentName: track.name, 
+      musicIdx: idx,
+      musicPlayerOpen: true,
+      musicDuration: this._musicAudio.duration || 0,
+      musicCurrentTime: 0
+    });
   } catch(err) {
     this.show('播放失败: ' + err.message);
   }
@@ -1974,7 +2253,9 @@ this._pauseMusic = () => {
 this._toggleMusic = () => {
   if (this._musicPlaying) {
     this._pauseMusic();
+    this.setState({ musicPlayerOpen: false });
   } else {
+    this.setState({ musicPlayerOpen: true });
     if (this._musicList.length > 0) {
       this._playMusic(this._musicIdx);
     } else {
@@ -1995,7 +2276,30 @@ this._addMusicFile = () => {
       if (file.size > 100 * 1024 * 1024) { this.show(file.name + ' 超过100MB，跳过'); continue; }
       try {
         const id = Date.now().toString(36) + Math.random().toString(36).slice(2, 6);
-        const entry = { id: id, name: file.name.replace(/\.[^.]+$/, ''), size: file.size, type: file.type };
+        // 获取音频时长（利用临时 Audio 对象）
+        let duration = '--:--';
+        try {
+          const tempAudio = new Audio(URL.createObjectURL(file));
+          await new Promise((resolve) => {
+            tempAudio.addEventListener('loadedmetadata', () => {
+              if (tempAudio.duration) {
+                duration = this._formatTime(tempAudio.duration);
+              }
+              resolve();
+            });
+            tempAudio.addEventListener('error', () => resolve());
+            // 如果 3 秒后仍未加载完成，直接跳过
+            setTimeout(resolve, 3000);
+          });
+          URL.revokeObjectURL(tempAudio.src);
+        } catch(e) {}
+        const entry = { 
+          id: id, 
+          name: file.name.replace(/\.[^.]+$/, ''), 
+          size: file.size, 
+          type: file.type,
+          duration: duration 
+        };
         // 存 blob 到 IndexedDB
         const db = await this._openMusicDB();
         const tx = db.transaction('music', 'readwrite');
@@ -2012,7 +2316,6 @@ this._addMusicFile = () => {
       }
     }
     if (loaded > 0) {
-      // 只在 localStorage 存元数据（不存音频数据）
       localStorage.setItem('kel-music-meta', JSON.stringify(this._musicList));
       this.setState({ musicCount: this._musicList.length });
       this.show(loaded + ' 首音乐已添加');
@@ -2048,6 +2351,47 @@ this._setMusicVolume = (vol) => {
 this._clockTimer = setInterval(() => {
 this.setState({ currentTime: getCurrentTime() });
 }, 1000);
+}
+
+// ---------- 记忆迁移与检索 ----------
+_migrateMemoriesToChunks(memories) {
+  return memories.map(mem => ({
+    id: mem.id || genId(),
+    source: 'migrated',
+    section: mem.name || '未命名',
+    text: mem.content || '',
+    decay: mem.layer === 'core' ? 'keep' : (mem.layer === 'long' ? 'slow' : 'fade'),
+    tags: { content: [mem.tag || 'general'] },
+    strength: mem.alwaysOn ? 100 : 80,
+    importance: mem.alwaysOn ? 0.9 : 0.5,
+    created_at: new Date(mem.createdAt || Date.now()).toISOString().slice(0,10),
+    last_accessed: new Date(mem.lastReferencedAt || Date.now()).toISOString().slice(0,10),
+    access_count: 0,
+    _original: mem
+  }));
+}
+
+_retrieveChunks(query, chunks, topN = 3) {
+  if (!query || !chunks || !chunks.length) return [];
+  const terms = query.toLowerCase().split(/\s+/);
+  const scores = {};
+  for (const chunk of chunks) {
+    if (chunk.decay === 'archived') continue;
+    let score = 0;
+    const text = (chunk.text || '').toLowerCase();
+    for (const term of terms) {
+      if (text.includes(term)) score += 1;
+    }
+    const tags = chunk.tags?.content || [];
+    for (const tag of tags) {
+      if (query.toLowerCase().includes(tag.toLowerCase())) score += 2;
+    }
+    score *= (chunk.importance || 0.5);
+    score *= (chunk.strength || 50) / 100;
+    if (score > 0) scores[chunk.id] = score;
+  }
+  const sorted = Object.entries(scores).sort((a,b) => b[1] - a[1]).slice(0, topN);
+  return sorted.map(([id]) => chunks.find(c => c.id === id));
 }
 
 textareaRef(el) {
@@ -2107,95 +2451,66 @@ get activeAnniv() {
 return this.state.anniversaries[this.state.activeAnnivIdx] || this.state.anniversaries[0] || null;
 }
 
-persist() {
-const s = this.state;
-const data = {
-apiPresets: s.apiPresets,
-activePresetId: s.activePresetId,
-personas: s.personas,
-activePersonaId: s.activePersonaId,
-styles: s.styles,
-activeStyleId: s.activeStyleId,
-prompts: s.prompts,
-currentChatId: s.currentChatId,
-chats: s.chats,
-petEnabled: s.petEnabled,
-petSizeIdx: s.petSizeIdx,
-soundEnabled: s.soundEnabled,
-memoryCount: s.memoryCount,
-avatarSize: s.avatarSize,
-memories: s.memories,
-userAvatar: s.userAvatar,
-aiAvatar: s.aiAvatar,
-customCss: s.customCss,
-customFont: s.customFont,
-localFontName: s.localFontName,
-msgFontSize: s.msgFontSize,
-activeThemeId: s.activeThemeId,
-customTheme: s.customTheme,
-anniversaries: s.anniversaries,
-activeAnnivIdx: s.activeAnnivIdx,
-pledges: s.pledges,
-diaries: s.diaries,
-kelMood: s.kelMood,
-regexRules: s.regexRules,
-fontPresets: s.fontPresets,
-keepAliveEnabled: s.keepAliveEnabled,
-};
-// 先尝试写入
-try {
-const json = JSON.stringify(data);
-localStorage.setItem(STORAGE_KEY, json);
-// 验证写入是否成功
-const verify = localStorage.getItem(STORAGE_KEY);
-if (!verify || verify.length < json.length * 0.9) {
-console.error('[Kel] 写入验证失败，尝试清理后重写');
-// 尝试清除旧备份腾出空间
-localStorage.removeItem(STORAGE_KEY + '_backup');
-localStorage.setItem(STORAGE_KEY, json);
-}
-// 写入备份（只保存关键数据，不含头像等大数据）
-try {
-const backupData = JSON.stringify({
-chats: s.chats,
-memories: s.memories,
-currentChatId: s.currentChatId,
-diaries: s.diaries,
-pledges: s.pledges,
-anniversaries: s.anniversaries,
-_backupTime: Date.now()
-});
-localStorage.setItem(STORAGE_KEY + '_backup', backupData);
-} catch(e2) {
-// backup 写不下就算了，主数据已经存了
-}
-} catch(e) {
-console.error('[Kel] localStorage 写入失败:', e);
-// localStorage 满了，尝试用 IndexedDB 存储
-this._saveToIndexedDB(data);
-}
+async persist() {
+  const s = this.state;
+  const data = {
+    apiPresets: s.apiPresets,
+    activePresetId: s.activePresetId,
+    personas: s.personas,
+    activePersonaId: s.activePersonaId,
+    styles: s.styles,
+    activeStyleId: s.activeStyleId,
+    prompts: s.prompts,
+    currentChatId: s.currentChatId,
+    chats: s.chats,
+    petEnabled: s.petEnabled,
+    petSizeIdx: s.petSizeIdx,
+    soundEnabled: s.soundEnabled,
+    memoryCount: s.memoryCount,
+    avatarSize: s.avatarSize,
+    memories: s.memories,
+    chunks: s.chunks, 
+    userAvatar: s.userAvatar,
+    aiAvatar: s.aiAvatar,
+    customCss: s.customCss,
+    customFont: s.customFont,
+    localFontName: s.localFontName,
+    msgFontSize: s.msgFontSize,
+    activeThemeId: s.activeThemeId,
+    customTheme: s.customTheme,
+    anniversaries: s.anniversaries,
+    activeAnnivIdx: s.activeAnnivIdx,
+    pledges: s.pledges,
+    diaries: s.diaries,
+    kelMood: s.kelMood,
+    regexRules: s.regexRules,
+    fontPresets: s.fontPresets,
+    keepAliveEnabled: s.keepAliveEnabled,
+    reactions: s.reactions,
+  };
+  await saveDataAsync(data);
 }
 
 async _saveToIndexedDB(data) {
-try {
-const db = await new Promise((resolve, reject) => {
-const req = indexedDB.open('KelHomeData', 1);
-req.onerror = () => reject(req.error);
-req.onsuccess = () => resolve(req.result);
-req.onupgradeneeded = (e) => {
-const db = e.target.result;
-if (!db.objectStoreNames.contains('appdata')) {
-db.createObjectStore('appdata', { keyPath: 'id' });
-}
-};
-});
-const tx = db.transaction('appdata', 'readwrite');
-const store = tx.objectStore('appdata');
-store.put({ id: 'main', data: data, savedAt: Date.now() });
-console.log('[Kel] 数据已存入 IndexedDB');
-} catch(e) {
-console.error('[Kel] IndexedDB 也写入失败:', e);
-}
+  try {
+    const db = await new Promise((resolve, reject) => {
+      const req = indexedDB.open('KelHomeData', 1);
+      req.onerror = () => reject(req.error);
+      req.onsuccess = () => resolve(req.result);
+      req.onupgradeneeded = (e) => {
+        const db = e.target.result;
+        if (!db.objectStoreNames.contains('appdata')) {
+          db.createObjectStore('appdata', { keyPath: 'id' });
+        }
+      };
+    });
+    const tx = db.transaction('appdata', 'readwrite');
+    const store = tx.objectStore('appdata');
+    await store.put({ id: 'main', data: data, savedAt: Date.now() });
+    console.log('[Kel] 数据已存入 IndexedDB');
+  } catch(e) {
+    console.error('[Kel] IndexedDB 也写入失败:', e);
+  }
 }
 
 show(text) {
@@ -2267,53 +2582,47 @@ this.show('已删除');
 }
 
 // ====== Memory ======
-openMemoryEditor(id) {
-const mem = id ? this.state.memories.find(m => m.id === id) : null;
-this.setState({
-sheet: 'memEditor',
-memEditId: id || genId(),
-memEditName: mem ? mem.name : '',
-memEditContent: mem ? mem.content : '',
-memEditTriggers: mem ? (mem.triggers || []).join('\n') : '',
-memEditAlwaysOn: mem ? !!mem.alwaysOn : false,
-memEditWeight: mem ? mem.weight : 1,
-memEditPosition: mem ? mem.position : 'before',
-memEditLayer: mem ? (mem.layer || 'short') : 'short',
-memEditEventDate: mem ? (mem.eventDate || '') : '',
-memEditTag: mem ? (mem.tag || 'general') : 'general'
-});
+openChunkEditor(id) {
+  const chunk = id ? this.state.chunks.find(c => c.id === id) : null;
+  this.setState({
+    sheet: 'memEditor',
+    memEditId: id || genId(),
+    memEditName: chunk ? chunk.section : '',
+    memEditContent: chunk ? chunk.text : '',
+    memEditTriggers: chunk ? (chunk.tags?.content || []).join('\n') : '',
+    memEditAlwaysOn: chunk ? (chunk.decay === 'keep') : false,
+    memEditWeight: chunk ? chunk.importance : 0.5,
+    memEditLayer: chunk ? (chunk.decay === 'keep' ? 'core' : chunk.decay === 'slow' ? 'long' : 'short') : 'short',
+    memEditTag: chunk ? (chunk.tags?.content?.[0] || 'general') : 'general',
+  });
 }
 
-saveMemoryEditor() {
-const s = this.state;
-const triggers = s.memEditTriggers.split('\n').map(t => t.trim()).filter(Boolean);
-const layer = s.memEditLayer || 'short';
-const newMem = {
-id: s.memEditId || genId(),
-name: s.memEditName || '未命名记忆',
-content: s.memEditContent || '',
-triggers,
-alwaysOn: layer === 'core' ? true : s.memEditAlwaysOn,
-weight: parseFloat(s.memEditWeight) || 1,
-position: s.memEditPosition || 'before',
-layer: layer,
-tag: s.memEditTag || 'general',
-eventDate: s.memEditEventDate || '',
-pinned: layer === 'core',
-createdAt: (s.memories.find(m => m.id === s.memEditId) || {}).createdAt || Date.now(),
-lastReferencedAt: Date.now(),
-sourceType: (s.memories.find(m => m.id === s.memEditId) || {}).sourceType || 'manual',
-updatedAt: Date.now()
-};
-let memories = [...s.memories.filter(m => m.id !== newMem.id), newMem];
-this.setState({ memories, sheet: null }, () => { this.persist(); });
-this.show('记忆已保存');
+saveChunkEditor() {
+  const s = this.state;
+  const layer = s.memEditLayer || 'short';
+  const decayMap = { core: 'keep', long: 'slow', short: 'fade' };
+  const newChunk = {
+    id: s.memEditId || genId(),
+    source: 'manual',
+    section: s.memEditName || '未命名',
+    text: s.memEditContent || '',
+    decay: s.memEditAlwaysOn ? 'keep' : (decayMap[layer] || 'fade'),
+    tags: { content: s.memEditTriggers.split('\n').map(t => t.trim()).filter(Boolean) },
+    strength: 100,
+    importance: parseFloat(s.memEditWeight) || 0.5,
+    created_at: new Date().toISOString().slice(0,10),
+    last_accessed: new Date().toISOString().slice(0,10),
+    access_count: 0,
+  };
+  let chunks = [...(s.chunks || []).filter(c => c.id !== newChunk.id), newChunk];
+  this.setState({ chunks, sheet: null }, () => { this.persist(); });
+  this.show('记忆已保存');
 }
 
-deleteMemory(id) {
-const memories = this.state.memories.filter(m => m.id !== id);
-this.setState({ memories }, () => { this.persist(); });
-this.show('已删除');
+deleteChunk(id) {
+  const chunks = this.state.chunks.filter(c => c.id !== id);
+  this.setState({ chunks }, () => { this.persist(); });
+  this.show('已删除');
 }
 
 // ====== System Prompt Builder ======
@@ -2425,6 +2734,23 @@ if (userTimeline) {
 
 const memorySummary = buildMemorySummary(this.state.chats, this.state.currentChatId, this.state.memoryCount);
 if (memorySummary) sys += '## Context Memory\n' + memorySummary + '\n\n';
+
+// ----- 注入相关记忆 -----
+const lastUserMsg = this.currentChat.messages.filter(m => m.role === 'user').pop();
+if (lastUserMsg && this.state.chunks) {
+  const relevant = this._retrieveChunks(lastUserMsg.text, this.state.chunks, 3);
+  if (relevant.length > 0) {
+    sys += '## 相关记忆（来自历史记录）\n';
+    for (const ch of relevant) {
+      sys += `- [${ch.section}] ${ch.text}\n`;
+      ch.last_accessed = new Date().toISOString().slice(0,10);
+      ch.access_count = (ch.access_count || 0) + 1;
+      ch.strength = Math.min(100, (ch.strength || 50) + 5);
+    }
+    this.persist();
+  }
+}
+
 return sys.trim();
 }
 
@@ -2880,12 +3206,12 @@ exportData() {
 const s = this.state;
 const exportObj = {
 exportDate: new Date().toISOString(),
-version: '3.1',
+version: '3.2',
 chats: s.chats,
 personas: s.personas,
 activePersonaId: s.activePersonaId,
-worldbooks: s.worldbooks,
 memories: s.memories,
+chunks: s.chunks,
 styles: s.styles,
 activeStyleId: s.activeStyleId,
 prompts: s.prompts,
@@ -2896,6 +3222,7 @@ aiAvatar: s.aiAvatar,
 customCss: s.customCss,
 customFont: s.customFont,
 activeThemeId: s.activeThemeId,
+customTheme: s.customTheme,
 avatarSize: s.avatarSize,
 anniversaries: s.anniversaries,
 activeAnnivIdx: s.activeAnnivIdx,
@@ -2903,6 +3230,8 @@ pledges: s.pledges,
 diaries: s.diaries,
 fontPresets: s.fontPresets,
 kelMood: s.kelMood,
+regexRules: s.regexRules,
+// 不包含音乐列表和播放状态
 };
 const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
 const url = URL.createObjectURL(blob);
@@ -2975,6 +3304,11 @@ if (data.kelMood) updates.kelMood = data.kelMood;
 if (data.heartfelt) updates.heartfelt = data.heartfelt;
 if (data.fontPresets) updates.fontPresets = data.fontPresets;
 if (data.regexRules) updates.regexRules = data.regexRules;
+if (data.chunks) updates.chunks = [...this.state.chunks, ...data.chunks.filter(c => !this.state.chunks.find(x => x.id === c.id))];
+if (data.customCss) updates.customCss = data.customCss;
+if (data.customFont) updates.customFont = data.customFont;
+if (data.customTheme) updates.customTheme = data.customTheme;
+if (data.activeThemeId) updates.activeThemeId = data.activeThemeId;
 this.setState(updates, () => {
 // 强制写入并验证
 this.persist();
@@ -3166,7 +3500,7 @@ async _loadMusicFromDB() {
           const blob = await resp.blob();
           const tx = db.transaction('music', 'readwrite');
           const store = tx.objectStore('music');
-          const entry = { id: id, name: track.name, size: blob.size, type: blob.type };
+          const entry = { id: id, name: track.name, size: blob.size, type: blob.type, duration: '--:--' };
           await new Promise((resolve, reject) => {
             const req = store.put({ id: id, blob: blob, meta: entry });
             req.onsuccess = resolve;
@@ -3175,7 +3509,7 @@ async _loadMusicFromDB() {
           this._musicList.push(entry);
         }
         localStorage.setItem('kel-music-meta', JSON.stringify(this._musicList));
-        localStorage.removeItem('kel-music-list'); // 删除旧数据释放空间
+        localStorage.removeItem('kel-music-list');
         this.setState({ musicCount: this._musicList.length });
       }
     }
@@ -3387,6 +3721,7 @@ this.setState({ diaries }, () => this.persist());
 diarySelectDate(dateStr) {
 const entry = this.getDiaryEntry(dateStr);
 this.setState({
+diaryDetailDate: dateStr,
 diarySelectedDate: dateStr,
 diaryMineEdit: false,
 diaryMineText: entry.mine || '',
@@ -3498,6 +3833,83 @@ tap: () => self.diarySelectDate(dateStr)
 }
 
 return cells;
+}
+
+async componentDidMount() {
+  const saved = await loadDataAsync();
+  
+  // ----- 迁移逻辑（原构造函数中的迁移） -----
+  if (saved.worldbooks && saved.worldbooks.length > 0) {
+    const existingIds = new Set((saved.memories || []).map(m => m.id));
+    for (const wb of saved.worldbooks) {
+      if (!existingIds.has(wb.id)) {
+        if (!saved.memories) saved.memories = [];
+        saved.memories.push({
+          id: wb.id,
+          name: wb.name || '未命名',
+          content: wb.content || '',
+          triggers: wb.triggers || [],
+          alwaysOn: wb.alwaysOn || false,
+          weight: wb.weight || 1,
+          position: wb.position || 'before',
+          layer: wb.alwaysOn ? 'core' : 'long',
+          tag: wb.tag || 'general',
+          createdAt: Date.now(),
+          lastReferencedAt: Date.now(),
+          sourceType: 'migrated',
+          pinned: wb.alwaysOn || false
+        });
+      }
+    }
+    delete saved.worldbooks;
+  }
+  if (saved.annivDate && (!saved.anniversaries || saved.anniversaries.length === 0)) {
+    saved.anniversaries = [{ id: genId(), name: '纪念日', date: saved.annivDate }];
+  }
+  if (!saved.chats || !saved.chats[saved.currentChatId]) {
+    if (!saved.chats) saved.chats = {};
+    saved.chats[saved.currentChatId] = { id: saved.currentChatId, title: '新对话', messages: [], lastTime: Date.now() };
+  }
+  // ----- 迁移旧 memories 为 chunks -----
+if (saved.memories && saved.memories.length > 0 && !saved.chunks) {
+  saved.chunks = this._migrateMemoriesToChunks(saved.memories);
+  // 删除旧字段（可选）
+  delete saved.memories;
+}
+  // ----- 迁移结束 -----
+
+  // 合并数据到 state
+  this.setState((prevState) => ({
+    ...prevState,
+    ...saved,
+    dataLoaded: true,
+  }), () => {
+    // 应用主题、字体等（原 constructor 中的 setTimeout 逻辑移到这里）
+    this.applyTheme(this.state.activeThemeId);
+    this.applyCustomCss();
+    this.applyCustomFont();
+    this.applyMsgFontSize();
+    setTimeout(async () => {
+      const fontName = localStorage.getItem('kel-font-name');
+      if (fontName) {
+        try {
+          const db = await this._openFontDB();
+          const tx = db.transaction('fonts', 'readonly');
+          const store = tx.objectStore('fonts');
+          const result = await store.get('user-font');
+          if (result && result.blob) {
+            const url = URL.createObjectURL(result.blob);
+            this.setState({ localFontData: url, localFontName: result.name });
+            this.applyLocalFont();
+          }
+        } catch(e) {}
+      }
+    }, 100);
+    if (this.state.keepAliveEnabled) {
+      this._initKeepAlive();
+    }
+    this._loadMusicFromDB();
+  });
 }
 
 // ====== RENDER ======
@@ -3644,6 +4056,13 @@ el._lastText = rendered;
 el.innerHTML = rendered;
 }
 },
+selected: s.selectedMsgIds.includes(m.id),
+toggleSelect: () => {
+  const ids = s.selectedMsgIds.includes(m.id) 
+    ? s.selectedMsgIds.filter(id => id !== m.id) 
+    : [...s.selectedMsgIds, m.id];
+  self.setState({ selectedMsgIds: ids });
+},
 };
 });
 
@@ -3733,26 +4152,22 @@ fg: s.memFilterLayer === layer ? '#F5F3EE' : 'var(--text-primary, #2B2620)',
 pick: () => self.setState({ memFilterLayer: layer })
 }));
 
-const filteredMemories = s.memories
-.filter(mem => s.memFilterLayer === 'all' || (mem.layer || 'short') === s.memFilterLayer)
-.sort((a, b) => {
-  // 核心记忆置顶，其他按更新时间
-  if (a.layer === 'core' && b.layer !== 'core') return -1;
-  if (b.layer === 'core' && a.layer !== 'core') return 1;
-  return (b.updatedAt || b.createdAt || 0) - (a.updatedAt || a.createdAt || 0);
-});
+const filteredChunks = (s.chunks || [])
+  .filter(chunk => s.memFilterLayer === 'all' || (chunk.decay === s.memFilterLayer))
+  .sort((a, b) => {
+    if (a.decay === 'keep' && b.decay !== 'keep') return -1;
+    if (b.decay === 'keep' && a.decay !== 'keep') return 1;
+    return (b.strength || 0) - (a.strength || 0);
+  });
 
-const layerLabels = { core: '核心', long: '长期', short: '近期', consciousness: '意识' };
-const layerColors = { core: '#FFE4E4', long: '#E4F0FF', short: '#F2EFE8', consciousness: '#E8F5E8' };
-
-const memoryList = filteredMemories.map(mem => ({
-...mem,
-tag: layerLabels[mem.layer || 'short'] || '近期',
-activeLabel: mem.pinned ? '📌' : (mem.alwaysOn ? '常驻' : '触发'),
-activeBg: layerColors[mem.layer || 'short'] || '#F2EFE8',
-preview: (mem.content || '').slice(0, 120),
-open: () => self.openMemoryEditor(mem.id),
-del: (e) => { e.stopPropagation(); self.setState({ deleteConfirmOpen: true, deleteConfirmType: 'memory', deleteConfirmId: mem.id, deleteConfirmText: '确定删除记忆「' + (mem.name || '未命名') + '」？' }); }
+const memoryList = filteredChunks.map(chunk => ({
+  ...chunk,
+  tag: chunk.decay === 'keep' ? '核心' : chunk.decay === 'slow' ? '长期' : chunk.decay === 'fade' ? '近期' : '归档',
+  activeLabel: chunk.decay === 'keep' ? '📌' : (chunk.strength > 80 ? '常驻' : '触发'),
+  activeBg: chunk.decay === 'keep' ? '#FFE4E4' : chunk.decay === 'slow' ? '#E4F0FF' : '#F2EFE8',
+  preview: (chunk.text || '').slice(0, 120),
+  open: () => self.openChunkEditor(chunk.id),
+  del: (e) => { e.stopPropagation(); self.setState({ deleteConfirmOpen: true, deleteConfirmType: 'chunk', deleteConfirmId: chunk.id, deleteConfirmText: '确定删除记忆「' + (chunk.section || '未命名') + '」？' }); }
 }));
 
 const memTagOptions = ['core', 'daily', 'monthly', 'general'].map(tag => ({
@@ -3939,7 +4354,7 @@ activeCompanion: persona.name || 'Kel',
 personaPreview: (persona.content || '未设置 system prompt').slice(0, 120),
 promptCount: (s.prompts || []).length + ' items',
 totalChats: Object.values(s.chats).filter(c => c.messages && c.messages.length > 0).length,
-totalMemories: s.memories.length,
+totalMemories: (s.chunks || []).length,
 kelMoodEmoji: kelMoodEmoji,
 annivDisplayName: activeAnnivObj ? (activeAnnivObj.name || '纪念日') : '点击设置',
 annivDisplayDate: activeAnnivObj ? (activeAnnivObj.date || '未设置') : '',
@@ -3959,7 +4374,7 @@ wbList: [],
 wbListHasItems: false,
 wbCategoryOptions: [],
 memoryList,
-memListHasItems: filteredMemories.length > 0,
+memListHasItems: filteredChunks.length > 0,
 memCategoryOptions,
 memTagOptions,
 isWorldbookEditorSheet: false,
@@ -4211,11 +4626,11 @@ self.setState({ memories, deleteConfirmOpen: false });
 self.persist();
 self.show('已删除');
 }
- else if (type === 'memory') {
-const memories = s.memories.filter(m => m.id !== id);
-self.setState({ memories, deleteConfirmOpen: false });
-self.persist();
-self.show('记忆已删除');
+ else if (type === 'chunk') {
+  const chunks = s.chunks.filter(c => c.id !== id);
+  self.setState({ chunks, deleteConfirmOpen: false });
+  self.persist();
+  self.show('记忆已删除');
 }
 self.setState({ deleteConfirmType: '', deleteConfirmId: null });
 },
@@ -4300,7 +4715,7 @@ wbEditSetPosBefore: () => {},
 wbEditSetPosAfter: () => {},
 saveWorldbookEditor: () => {},
 deleteWorldbookFromEditor: () => {},
-newMemory: () => self.openMemoryEditor(null),
+newMemory: () => self.openChunkEditor(null),
 memEditNameChange: (e) => self.setState({ memEditName: e.target.value }),
 memEditContentChange: (e) => self.setState({ memEditContent: e.target.value }),
 memEditTriggersChange: (e) => self.setState({ memEditTriggers: e.target.value }),
@@ -4308,9 +4723,9 @@ memEditAlwaysOnChange: (e) => self.setState({ memEditAlwaysOn: e.target.checked 
 memEditWeightChange: (e) => self.setState({ memEditWeight: e.target.value }),
 memEditSetPosBefore: () => self.setState({ memEditPosition: 'before' }),
 memEditSetPosAfter: () => self.setState({ memEditPosition: 'after' }),
-saveMemoryEditor: () => self.saveMemoryEditor(),
+saveChunkEditor: () => self.saveChunkEditor(),
 deleteMemoryFromEditor: () => {
-if (s.memEditId) { self.deleteMemory(s.memEditId); self.setState({ sheet: null }); }
+if (s.memEditId) { self.deleteChunk(s.memEditId); self.setState({ sheet: null }); }
 },
 newApiDraft: () => {
 const id = genId();
@@ -4430,28 +4845,42 @@ diaryExtractToMemory: () => {
   if (entry.mine) content.push('她的日记：' + entry.mine);
   if (entry.kel) content.push('我的日记：' + entry.kel);
   if (content.length === 0) { self.show('当天没有日记内容'); return; }
-  const newMem = {
+  const newChunk = {
     id: genId(),
-    name: s.diarySelectedDate + ' 日记',
-    content: content.join('\n\n'),
-    triggers: [],
-    alwaysOn: false,
-    weight: 1,
-    position: 'before',
-    layer: 'long',
-    tag: 'diary',
-    pinned: false,
-    createdAt: Date.now(),
-    lastReferencedAt: Date.now(),
-    sourceType: 'diary',
-    sourceId: s.diarySelectedDate,
-    updatedAt: Date.now()
+    source: 'diary',
+    section: s.diarySelectedDate + ' 日记',
+    text: content.join('\n\n'),
+    decay: 'slow',
+    tags: { content: ['diary'] },
+    strength: 80,
+    importance: 0.5,
+    created_at: new Date().toISOString().slice(0,10),
+    last_accessed: new Date().toISOString().slice(0,10),
+    access_count: 0,
   };
-  const memories = [...s.memories, newMem];
-  self.setState({ memories }, () => { self.persist(); });
+  const chunks = [...s.chunks, newChunk];
+  self.setState({ chunks }, () => { self.persist(); });
   self.show('已提取为长期记忆');
 },
 diaryAskKelComment: () => self.askKelComment(),
+jumpToChatOnDate: () => {
+  if (!s.diarySelectedDate) return;
+  self.setState({ 
+    tab: 'chat', 
+    diaryDateFilter: s.diarySelectedDate,
+    drawer: false 
+  });
+  self.scrollToBottom();
+},
+diaryCloseDetail: () => {
+  self.setState({ 
+    diaryDetailDate: null,
+    diarySelectedDate: null,
+    diaryMineEdit: false,
+    diaryKelEdit: false,
+    diaryStickerPickerOpen: false
+  });
+},
 // 音乐播放器
 keepAliveStatus: s.keepAliveEnabled ? 'On' : 'Off',
 musicStatusLabel: s.musicPlaying ? '▶ ' + (s.musicCurrentName || 'Playing') : (self._musicList.length > 0 ? '暂停中' : '未添加'),
@@ -4469,7 +4898,87 @@ toggleKeepAlive: () => {
   }
 },
 toggleMusicPlayer: () => self._toggleMusic(),
-addMusicFiles: () => self._addMusicFile()
+addMusicFiles: () => self._addMusicFile(),
+// 多选和表情相关
+multiSelectMode: s.multiSelectMode,
+selectedCount: s.selectedMsgIds.length,
+cancelMultiSelect: () => self.setState({ multiSelectMode: false, selectedMsgIds: [] }),
+deleteSelected: () => {
+  const ids = s.selectedMsgIds;
+  const chatId = s.currentChatId;
+  const chats = { ...s.chats };
+  const chat = { ...chats[chatId] };
+  chat.messages = chat.messages.filter(m => !ids.includes(m.id));
+  chats[chatId] = chat;
+  self.setState({ chats, multiSelectMode: false, selectedMsgIds: [] });
+  self.persist();
+  self.show('已删除');
+},
+ctxMultiSelect: () => {
+  const idx = s.contextMenuIdx;
+  if (idx < 0) return;
+  const msg = msgs[idx];
+  if (!msg) return;
+  self.setState({ multiSelectMode: true, selectedMsgIds: [msg.id], contextMenuIdx: -1 });
+},
+ctxReact: () => {
+  const idx = s.contextMenuIdx;
+  if (idx < 0) return;
+  const msg = msgs[idx];
+  if (!msg) return;
+  self.setState({ reactionPickerTarget: msg.id, contextMenuIdx: -1, reactionPickerOpen: true });
+},
+closeReactionPicker: () => self.setState({ reactionPickerTarget: null, reactionPickerOpen: false }),
+reactionPickerOpen: s.reactionPickerOpen || false,
+reactionOptions: EMOJI_LIST.map(emoji => ({
+  emoji,
+  pick: () => {
+    const msgId = s.reactionPickerTarget;
+    if (!msgId) return;
+    const reactions = { ...s.reactions };
+    reactions[msgId] = { emoji, who: 'user' };
+    self.setState({ reactions, reactionPickerTarget: null, reactionPickerOpen: false });
+    self.persist();
+    self.show('已标记');
+  }
+})),
+// 音乐播放器相关
+musicPlayerOpen: s.musicPlayerOpen || false,
+loopMode: s.loopMode || 'none',
+musicCurrentTime: self._musicAudio ? self._musicAudio.currentTime : 0,
+musicDuration: self._musicAudio ? self._musicAudio.duration : 0,
+musicCurrentTimeFormatted: self._musicAudio ? self._formatTime(self._musicAudio.currentTime) : '0:00',
+musicDurationFormatted: self._musicAudio ? self._formatTime(self._musicAudio.duration) : '0:00',
+musicListItems: self._musicList.map((track, idx) => ({
+  name: track.name,
+  duration: track.duration || '--:--',
+  play: () => {
+    self._playMusic(idx);
+    self.setState({ musicPlayerOpen: true });
+  }
+})),
+closeMusicPlayer: () => {
+  self.setState({ musicPlayerOpen: false });
+  if (!self._musicPlaying) self._pauseMusic();
+},
+musicTogglePlay: () => self._toggleMusic(),
+musicPrev: () => self._playMusic(self._musicIdx - 1),
+musicNext: () => self._playMusic(self._musicIdx + 1),
+musicSeek: (e) => {
+  if (self._musicAudio) {
+    self._musicAudio.currentTime = parseFloat(e.target.value);
+    self.setState({ musicCurrentTime: self._musicAudio.currentTime });
+  }
+},
+toggleLoop: () => {
+  const next = s.loopMode === 'one' ? 'none' : 'one';
+  self.setState({ loopMode: next });
+  if (self._musicAudio) {
+    self._musicAudio.loop = (next === 'one');
+  }
+},
+stopProp: (e) => e.stopPropagation(),
+_formatTime: (seconds) => self._formatTime(seconds),
 };
 }
 }
