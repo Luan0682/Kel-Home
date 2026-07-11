@@ -1722,6 +1722,12 @@ html = html.replace(/\n/g, '<br>');
 const parts = html.split(/(<div style="position:relative[\s\S]*?<\/pre><\/div>)/);
 html = parts.map(p => p.startsWith('<div style="position:relative') ? p : p.replace(/\n/g, '<br>')).join('');
 }
+// 在 return html 之前加：
+// 清理连续空行（3个以上br合并为2个）
+html = html.replace(/(<br\s*\/?>){3,}/gi, '<br>');
+// 清理开头和结尾的br
+html = html.replace(/^(<br\s*\/?>)+/i, '');
+html = html.replace(/(<br\s*\/?>)+$/i, '');
 return html;
 }
 
