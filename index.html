@@ -1572,38 +1572,6 @@ console.error('[Kel] loadData 解析失败', e);
 return {};
 }
 
-      if (migrated) {
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
-      }
-      // 检查数据是否有效
-      if (data.chats && Object.keys(data.chats).length > 0) {
-        return data;
-      }
-    }
-    // 主数据不存在或无效，尝试从备份恢复
-    const backupRaw = localStorage.getItem(STORAGE_KEY + '_backup');
-    if (backupRaw) {
-      const backup = JSON.parse(backupRaw);
-      if (backup.chats && Object.keys(backup.chats).length > 0) {
-        console.warn('[Kel] 主数据丢失，已从备份恢复');
-        // 把备份写回主存储
-        localStorage.setItem(STORAGE_KEY, JSON.stringify(backup));
-        return backup;
-      }
-    }
-    return {};
-  } catch(e) {
-    console.error('[Kel] loadData 解析失败', e);
-    try {
-      const backupRaw = localStorage.getItem(STORAGE_KEY + '_backup');
-      if (backupRaw) {
-        const backup = JSON.parse(backupRaw);
-        if (backup.chats) return backup;
-      }
-    } catch(e2) {}
-    return {};
-  }
-}
 function saveData(data) {
 try {
 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
@@ -2247,40 +2215,6 @@ const json = JSON.stringify(data);
 localStorage.setItem(STORAGE_KEY, json);
 } catch(e) {
 console.warn('[Kel] localStorage 写入失败，数据已存 IndexedDB', e.message);
-}
-}
-
-// 先尝试写入
-try {
-const json = JSON.stringify(data);
-localStorage.setItem(STORAGE_KEY, json);
-// 验证写入是否成功
-const verify = localStorage.getItem(STORAGE_KEY);
-if (!verify || verify.length < json.length * 0.9) {
-console.error('[Kel] 写入验证失败，尝试清理后重写');
-// 尝试清除旧备份腾出空间
-localStorage.removeItem(STORAGE_KEY + '_backup');
-localStorage.setItem(STORAGE_KEY, json);
-}
-// 写入备份（只保存关键数据，不含头像等大数据）
-try {
-const backupData = JSON.stringify({
-chats: s.chats,
-memories: s.memories,
-currentChatId: s.currentChatId,
-diaries: s.diaries,
-pledges: s.pledges,
-anniversaries: s.anniversaries,
-_backupTime: Date.now()
-});
-localStorage.setItem(STORAGE_KEY + '_backup', backupData);
-} catch(e2) {
-// backup 写不下就算了，主数据已经存了
-}
-} catch(e) {
-console.error('[Kel] localStorage 写入失败:', e);
-// localStorage 满了，尝试用 IndexedDB 存储
-this._saveToIndexedDB(data);
 }
 }
 
