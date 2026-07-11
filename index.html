@@ -92,7 +92,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- messages -->
 <sc-for list="{{ messages }}" as="m" hint-placeholder-count="4">
-<div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;" onContextMenu="{{ m.longPress }}">
+<div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;max-width:100%;" onContextMenu="{{ m.longPress }}">
 <sc-if value="{{ multiSelectMode }}" hint-placeholder-val="{{ false }}">
 <button onClick="{{ m.toggleSelect }}" style="width:24px;height:24px;border-radius:50%;border:2px solid {{ m.selectBd }};background:{{ m.selectBg }};display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;margin-bottom:4px;">
 <sc-if value="{{ m.isSelected }}" hint-placeholder-val="{{ false }}">
@@ -100,10 +100,11 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 </sc-if>
 </button>
 </sc-if>
-<div style="max-width:{{ m.maxW }};width:{{ m.fullW }};">
+<div style="max-width:{{ m.maxW }};min-width:0;">
+
 <!-- thinking icon button (completely decoupled from bubble) -->
 <sc-if value="{{ m.hasThink }}" hint-placeholder-val="{{ false }}">
-<button onClick="{{ m.openThinkModal }}" style="display:inline-flex;align-items:center;gap:5px;border:none;background:rgba(0,0,0,.04);border-radius:10px;padding:3px 8px;margin-bottom:4px;cursor:pointer;font-family:inherit;max-width:90%;">
+<button onClick="{{ m.openThinkModal }}" style="display:inline-flex;align-items:center;gap:5px;border:none;background:rgba(0,0,0,.04);border-radius:10px;padding:3px 8px;margin-bottom:4px;cursor:pointer;font-family:inherit;max-width:min(90%, 240px);">
   <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.5;"><circle cx="12" cy="12" r="8.5" stroke="#9A958B" stroke-width="1.4"/><path d="M12 8v4l2.5 1.5" stroke="#9A958B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
   <span style="font-size:11px;color:#9A958B;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ m.thinkSummary }}</span>
   <svg width="10" height="10" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.4;"><path d="M9 6l6 6-6 6" stroke="#9A958B" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
