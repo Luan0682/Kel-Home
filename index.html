@@ -85,19 +85,6 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <sc-for list="{{ messages }}" as="m" hint-placeholder-count="4">
 <div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;" onContextMenu="{{ m.longPress }}">
 <div style="max-width:{{ m.maxW }};width:{{ m.fullW }};">
-<!-- thinking block (outside bubble) -->
-<sc-if value="{{ m.hasThink }}" hint-placeholder-val="{{ false }}">
-<div style="margin-bottom:6px;">
-  <button onClick="{{ m.toggleThink }}" style="display:flex;align-items:center;gap:8px;width:100%;border:none;background:transparent;padding:3px 0;cursor:pointer;font-family:inherit;text-align:left;">
-    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.5;"><circle cx="12" cy="12" r="8.5" stroke="#9A958B" stroke-width="1.4"/><path d="M12 8v4l2.5 1.5" stroke="#9A958B" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span style="flex:1;font-size:12px;color:#9A958B;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ m.thinkSummary }}</span>
-    <svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="flex:none;opacity:.4;transform:{{ m.thinkRot }};transition:transform .2s;"><path d="M9 6l6 6-6 6" stroke="#B8B3A8" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-  </button>
-  <sc-if value="{{ m.thinkOpen }}" hint-placeholder-val="{{ false }}">
-    <div class="sa" style="margin-top:4px;padding:10px 12px;background:rgba(0,0,0,.03);border-radius:10px;font-size:12px;line-height:1.7;color:#6B665E;white-space:pre-wrap;word-break:break-word;border-left:2px solid #D1CCC2;max-height:250px;overflow-y:auto;">{{ m.thinkContent }}</div>
-  </sc-if>
-</div>
-</sc-if>
 
 <!-- User avatar + timestamp -->
 <sc-if value="{{ m.showUserAvatar }}" hint-placeholder-val="{{ false }}">
