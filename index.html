@@ -3447,6 +3447,20 @@ applyMsgFontSize() {
 document.documentElement.style.setProperty('--msg-font-size', (this.state.msgFontSize || 16) + 'px');
 }
 
+_openFontDB() {
+  return new Promise((resolve, reject) => {
+    const req = indexedDB.open('KelFonts', 1);
+    req.onerror = () => reject(req.error);
+    req.onsuccess = () => resolve(req.result);
+    req.onupgradeneeded = (e) => {
+      const db = e.target.result;
+      if (!db.objectStoreNames.contains('fonts')) {
+        db.createObjectStore('fonts', { keyPath: 'id' });
+      }
+    };
+  });
+}
+
 pickFontFile() {
 const input = document.createElement('input');
 input.type = 'file';
