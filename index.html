@@ -3597,18 +3597,21 @@ this.show('已删除');
 }
 
 // ====== Delete image from message ======
-deleteImageFromMessage(msgIdx) {
+deleteImageFromMessage(msgId) {
 const chatId = this.state.currentChatId;
 const chats = { ...this.state.chats };
 const chat = { ...chats[chatId] };
-const newMsgs = [...chat.messages];
-const msg = { ...newMsgs[msgIdx] };
-delete msg.image;
-delete msg.imageMime;
-delete msg.imageUrl;
-delete msg.file;
-newMsgs[msgIdx] = msg;
-chat.messages = newMsgs;
+chat.messages = chat.messages.map(m => {
+  if (m.id === msgId) {
+    const cleaned = { ...m };
+    delete cleaned.image;
+    delete cleaned.imageMime;
+    delete cleaned.imageUrl;
+    delete cleaned.file;
+    return cleaned;
+  }
+  return m;
+});
 chats[chatId] = chat;
 this.setState({ chats });
 this.persist();
@@ -4495,7 +4498,7 @@ previewImage: () => self.setState({ imagePreviewOpen: true, imagePreviewUrl: m.i
 longPressImage: (e) => {
 e.preventDefault();
 if (confirm('删除这张图片？')) {
-self.deleteImageFromMessage(i);
+self.deleteImageFromMessage(m.id);
 }
 },
 showNormal: s.editIdx !== i && !!rendered,
@@ -4528,18 +4531,13 @@ self.setState({ chats }); self.persist();
 del: () => {
   const chats = { ...s.chats };
   const c = { ...chats[s.currentChatId] };
-  const msgId = c.messages[i].id;
-  c.messages = [...c.messages];
-  c.messages.splice(i, 1);
-  // 可选：如果想删除消息时同时删除关联的思维链，可以取消下面注释
-  // if (c.thinkingEntries) {
-  //   c.thinkingEntries = c.thinkingEntries.filter(e => e.msgId !== msgId);
-  // }
+  c.messages = c.messages.filter(msg => msg.id !== m.id);
   chats[s.currentChatId] = c;
   self.setState({ chats });
   self.persist();
   self.show('已删除');
 },
+
 edit: () => self.setState({ editIdx: i, editText: displayText }),
 longPress: (e) => {
 e.preventDefault();
@@ -5463,7 +5461,8 @@ self.regenerate(idx);
 },
 ctxDelete: () => {
 const idx = s.contextMenuIdx;
-self.setState({ contextMenuIdx: -1, deleteConfirmOpen: true, deleteConfirmType: 'message', deleteConfirmId: idx, deleteConfirmText: '删除这条消息？此操作不可撤销。' });
+const targetMsg = msgs[idx];
+self.setState({ contextMenuIdx: -1, deleteConfirmOpen: true, deleteConfirmType: 'message', deleteConfirmId: targetMsg ? targetMsg.id : null, deleteConfirmText: '删除这条消息？此操作不可撤销。' });
 },
 deleteConfirmOpen: s.deleteConfirmOpen,
 deleteConfirmText: s.deleteConfirmText || '',
@@ -5474,9 +5473,7 @@ const id = s.deleteConfirmId;
 if (type === 'message') {
 const chats = { ...s.chats };
 const c = { ...chats[s.currentChatId] };
-const msgIdx = id; // id 这里实际是消息索引
-c.messages = [...c.messages];
-c.messages.splice(msgIdx, 1);
+c.messages = c.messages.filter(m => m.id !== id);
 chats[s.currentChatId] = c;
 self.setState({ chats, deleteConfirmOpen: false, deleteConfirmType: '', deleteConfirmId: null });
 self.persist();
@@ -5533,12 +5530,10 @@ editTextChange: (e) => self.setState({ editText: e.target.value }),
 cancelEdit: () => self.setState({ editIdx: -1 }),
 saveEdit: () => {
 const idx = s.editIdx; if (idx < 0) return;
+const targetMsg = msgs[idx];
+if (!targetMsg) return;
 const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
-const newMsgs = [...c.messages];
-const oldMsg = newMsgs[idx];
-// 只修改当前消息的文字，不截断列表，不重新生成
-newMsgs[idx] = { ...oldMsg, text: s.editText, variants: [s.editText], variantIdx: 0 };
-c.messages = newMsgs;
+c.messages = c.messages.map(m => m.id === targetMsg.id ? { ...m, text: s.editText, variants: [s.editText], variantIdx: 0 } : m);
 chats[s.currentChatId] = c;
 self.setState({ chats, editIdx: -1, input: '' });
 self.persist();
