@@ -4977,7 +4977,8 @@ isHome: s.tab === 'home',
 isMore: s.tab === 'more',
 isSoulPage: s.tab === 'soul',
 isPeriodPage: s.tab === 'period',
-soulName: s.activePreset.aiName || 'Kel',
+soulName: persona.name || 'Kel',
+uploadAiAvatar: () => self.pickAiAvatar(),
 soulCharCount: (() => {
   const ss = s.soulSections;
   return (ss.personality.content + ss.rules.content + ss.about.content + ss.other.content).length;
