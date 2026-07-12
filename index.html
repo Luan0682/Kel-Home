@@ -302,77 +302,150 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 20px 24px;">
 
+<!-- 固定顶部 -->
 <div style="padding:12px 0 6px;position:sticky;top:0;z-index:10;background:var(--bg-main, #F5F3EE);">
-<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;margin-left:-4px;">
+<button onClick="{{ toggleDrawer }}" style="width:40px;height:40px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h12M4 17h16" stroke="#48453E" stroke-width="1.7" stroke-linecap="round"/></svg>
 </button>
 </div>
 
-<div style="padding:6px 0 24px;">
-<div style="font-size:12px;color:#B8B3A8;letter-spacing:2.5px;font-weight:600;">COMPANION</div>
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:29px;font-weight:400;color:var(--text-primary, #1A1815);margin-top:10px;line-height:1.25;letter-spacing:-.01em;">{{ homeGreeting }}</div>
-<div style="font-size:14px;color:#9A958B;margin-top:6px;">{{ currentTime }}</div>
-</div>
-
-<!-- Persona card -->
-<div onClick="{{ openAiSheet }}" style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:20px;margin-bottom:14px;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:12px;margin-bottom:10px;">
-<sc-if value="{{ hasAiAvatar }}" hint-placeholder-val="{{ false }}">
-<img src="{{ aiAvatar }}" style="width:42px;height:42px;border-radius:50%;object-fit:cover;">
-</sc-if>
-<div>
-<div style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">{{ activeCompanion }}</div>
-<div style="font-size:12px;color:#B8B3A8;margin-top:2px;">Persona · 点击编辑</div>
-</div>
-</div>
-<div style="font-size:13px;color:#6B665E;line-height:1.6;display:-webkit-box;-webkit-line-clamp:3;-webkit-box-orient:vertical;overflow:hidden;">{{ personaPreview }}</div>
-</div>
-
-<!-- Anniversary card -->
-<div onClick="{{ openAnnivSheet }}" style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div>
-<div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">{{ annivDisplayName }}</div>
-<div style="font-size:13px;color:#B8B3A8;margin-top:4px;">{{ annivDisplayDate }}</div>
-</div>
-<div style="display:flex;align-items:baseline;gap:3px;">
-<span style="font-family:'Newsreader',serif;font-size:38px;font-weight:400;color:var(--text-primary, #1A1815);line-height:1;letter-spacing:-.02em;">{{ annivDays }}</span>
-<span style="font-size:13px;color:#9A958B;">days</span>
+<!-- 在一起计时器 -->
+<div style="padding:10px 0 24px;text-align:center;">
+<div style="font-size:11px;color:#9A958B;letter-spacing:2px;font-weight:500;margin-bottom:8px;">TOGETHER SINCE 2025.06.30</div>
+<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;">
+<span style="font-family:'Newsreader',serif;font-size:42px;font-weight:300;color:#68544B;letter-spacing:-0.02em;">{{ togetherDays }}</span>
+<span style="font-size:13px;color:#9A958B;margin-right:8px;">天</span>
+<span style="font-family:'Newsreader',serif;font-size:24px;font-weight:300;color:#68544B;">{{ togetherHours }}</span>
+<span style="font-size:11px;color:#9A958B;margin-right:6px;">时</span>
+<span style="font-family:'Newsreader',serif;font-size:24px;font-weight:300;color:#68544B;">{{ togetherMins }}</span>
+<span style="font-size:11px;color:#9A958B;">分</span>
 </div>
 </div>
 
-<!-- Promises/Pledges card -->
-<div onClick="{{ openPledgesSheet }}" style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:20px;padding:18px 20px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div>
-<div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">约定</div>
-<div style="font-size:13px;color:#B8B3A8;margin-top:4px;">{{ pledgeSummary }}</div>
+<!-- 最近对话预览 -->
+<div onClick="{{ navChat }}" style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:20px;padding:16px 18px;margin-bottom:14px;cursor:pointer;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:10px;">
+<div onClick="{{ openAiSheet }}" style="width:36px;height:36px;border-radius:50%;overflow:hidden;display:flex;align-items:center;justify-content:center;background:#DFF2EC;flex:none;cursor:pointer;" >
+<sc-if value="{{ hasAiAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ aiAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
+<sc-if value="{{ !hasAiAvatar }}" hint-placeholder-val="{{ true }}"><span style="font-size:16px;">🤍</span></sc-if>
 </div>
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-
-<!-- status row -->
-<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px;margin-bottom:22px;">
-<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
-<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Chats</div>
-<div style="font-family:'Newsreader',serif;font-size:22px;color:var(--text-primary, #1A1815);margin-top:6px;">{{ totalChats }}</div>
-</div>
-<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
-<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Memories</div>
-<div style="font-family:'Newsreader',serif;font-size:22px;color:var(--text-primary, #1A1815);margin-top:6px;">{{ totalMemories }}</div>
-</div>
-<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:16px;padding:14px 12px;text-align:center;">
-<div style="font-size:11px;color:#B8B3A8;font-weight:500;">Kel 心情</div>
-<div style="font-size:22px;margin-top:6px;">{{ kelMoodEmoji }}</div>
+<div style="flex:1;min-width:0;">
+<div style="font-size:14px;font-weight:600;color:#68544B;">{{ activeCompanion }}</div>
+<div style="font-size:11px;color:#B8B3A8;">点头像编辑 · {{ homeLastTime }}</div>
 </div>
 </div>
-
-<!-- recent chats preview -->
-<div style="font-size:13px;font-weight:500;color:#9A958B;margin-bottom:12px;">最近对话</div>
-<sc-for list="{{ homeRecentChats }}" as="rc" hint-placeholder-count="3">
-<div onClick="{{ rc.open }}" style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);border-radius:18px;padding:14px 16px;margin-bottom:10px;cursor:pointer;">
-<div style="font-size:12px;color:#B8B3A8;font-weight:500;">{{ rc.time }}</div>
-<div style="font-size:14.5px;color:#3A362F;line-height:1.55;margin-top:4px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ rc.title }}</div>
+<sc-for list="{{ homeLastMessages }}" as="lm" hint-placeholder-count="3">
+<div style="font-size:13px;color:#6B665E;line-height:1.55;padding:3px 0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">
+<span style="color:{{ lm.roleColor }};font-weight:500;">{{ lm.roleLabel }}</span> {{ lm.text }}
 </div>
 </sc-for>
+</div>
+
+<!-- 纪念日 + 总消息数 -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+<!-- 纪念日 -->
+<div onClick="{{ openAnnivSheet }}" style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;padding:14px;cursor:pointer;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);">
+<div style="font-size:11px;color:#9A958B;font-weight:500;">纪念日</div>
+<div style="font-family:'Newsreader',serif;font-size:28px;color:#68544B;margin-top:6px;letter-spacing:-.02em;">{{ annivDays }}</div>
+<div style="font-size:11px;color:#B8B3A8;margin-top:2px;">{{ annivDisplayName }}</div>
+</div>
+<!-- 总消息 -->
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;padding:14px;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);">
+<div style="font-size:11px;color:#9A958B;font-weight:500;">总消息</div>
+<div style="font-family:'Newsreader',serif;font-size:28px;color:#68544B;margin-top:6px;letter-spacing:-.02em;">{{ homeTotalMsgs }}</div>
+<div style="font-size:11px;color:#B8B3A8;margin-top:2px;">{{ homeTotalRounds }} 轮对话</div>
+</div>
+</div>
+
+<!-- 四个入口方块 -->
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr 1fr;gap:10px;margin-bottom:14px;">
+<!-- 记忆 -->
+<div onClick="{{ navMemory }}" style="background:#F2FBF7;border:1px solid #D0EBDF;border-radius:14px;padding:12px 8px;cursor:pointer;text-align:center;">
+<div style="width:32px;height:32px;border-radius:10px;background:#DFF2EC;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M9 4.5a4 4 0 0 0-4 4v.3A3 3 0 0 0 5.6 14 3.3 3.3 0 0 0 9 18.5M15 4.5a4 4 0 0 1 4 4v.3A3 3 0 0 1 18.4 14 3.3 3.3 0 0 1 15 18.5M12 4.2v14.5" stroke="#4A9B7A" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<div style="font-size:11px;font-weight:500;color:#3D6B55;">记忆</div>
+<div style="font-size:10px;color:#9A958B;margin-top:2px;">{{ memTotalCount }}</div>
+</div>
+<!-- 日记 -->
+<div onClick="{{ navDiary }}" style="background:#F5FAFF;border:1px solid #D8E8F5;border-radius:14px;padding:12px 8px;cursor:pointer;text-align:center;">
+<div style="width:32px;height:32px;border-radius:10px;background:#E3F0FA;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20" stroke="#5A9BBF" stroke-width="1.5" stroke-linecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z" stroke="#5A9BBF" stroke-width="1.5"/></svg>
+</div>
+<div style="font-size:11px;font-weight:500;color:#2C5F7C;">日记</div>
+<div style="font-size:10px;color:#9A958B;margin-top:2px;">{{ homeDiaryCount }}</div>
+</div>
+<!-- 身心（Persona） -->
+<div onClick="{{ openAiSheet }}" style="background:#FFF8F7;border:1px solid #F5DDD8;border-radius:14px;padding:12px 8px;cursor:pointer;text-align:center;">
+<div style="width:32px;height:32px;border-radius:10px;background:#FCEAE7;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="8" r="4" stroke="#C47A6E" stroke-width="1.5"/><path d="M4 21v-1a6 6 0 0 1 6-6h4a6 6 0 0 1 6 6v1" stroke="#C47A6E" stroke-width="1.5" stroke-linecap="round"/></svg>
+</div>
+<div style="font-size:11px;font-weight:500;color:#A04030;">身心</div>
+<div style="font-size:10px;color:#9A958B;margin-top:2px;">编辑</div>
+</div>
+<!-- 月事 -->
+<div onClick="{{ navPeriod }}" style="background:#FDF5F8;border:1px solid #F5D8E2;border-radius:14px;padding:12px 8px;cursor:pointer;text-align:center;">
+<div style="width:32px;height:32px;border-radius:10px;background:#FAE8EF;display:flex;align-items:center;justify-content:center;margin:0 auto 6px;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 2C8.5 7 6 10 6 13.5a6 6 0 0 0 12 0C18 10 15.5 7 12 2z" stroke="#D47B94" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<div style="font-size:11px;font-weight:500;color:#8B3A55;">月事</div>
+<div style="font-size:10px;color:#9A958B;margin-top:2px;">{{ homePeriodStatus }}</div>
+</div>
+</div>
+
+<!-- 聊天热力图 -->
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;padding:14px 12px;margin-bottom:14px;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:10px;">
+<span style="font-size:12px;font-weight:600;color:#68544B;">本月活动</span>
+<span style="font-size:11px;color:#9A958B;">{{ homeHeatmapMonth }}</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px;">
+<span style="font-size:9px;color:#B8B3A8;text-align:center;">日</span>
+<span style="font-size:9px;color:#B8B3A8;text-align:center;">一</span>
+<span style="font-size:9px;color:#B8B3A8;text-align:center;">二</span>
+<span style="font-size:9px;color:#B8B3A8;text-align:center;">三</span>
+<span style="font-size:9px;color:#B8B3A8;text-align:center;">四</span>
+<span style="font-size:9px;color:#B8B3A8;text-align:center;">五</span>
+<span style="font-size:9px;color:#B8B3A8;text-align:center;">六</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">
+<sc-for list="{{ homeHeatmapCells }}" as="hc" hint-placeholder-count="35">
+<div style="aspect-ratio:1;border-radius:4px;background:{{ hc.bg }};min-height:14px;"></div>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;gap:6px;margin-top:8px;justify-content:flex-end;">
+<span style="font-size:9px;color:#B8B3A8;">少</span>
+<div style="width:10px;height:10px;border-radius:2px;background:#F2EFE8;"></div>
+<div style="width:10px;height:10px;border-radius:2px;background:#DFF2EC;"></div>
+<div style="width:10px;height:10px;border-radius:2px;background:#B8D4E8;"></div>
+<div style="width:10px;height:10px;border-radius:2px;background:#F5D5C8;"></div>
+<div style="width:10px;height:10px;border-radius:2px;background:#68544B;"></div>
+<span style="font-size:9px;color:#B8B3A8;">多</span>
+</div>
+</div>
+
+<!-- 约定卡片 -->
+<div onClick="{{ openPledgesSheet }}" style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;padding:14px 18px;margin-bottom:14px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;box-shadow:0 1px 2px rgba(43,38,30,.035),0 10px 30px -10px rgba(43,38,30,.07);">
+<div>
+<div style="font-size:14px;font-weight:500;color:#68544B;">约定</div>
+<div style="font-size:12px;color:#B8B3A8;margin-top:3px;">{{ pledgeSummary }}</div>
+</div>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+
+<!-- 最近对话列表 -->
+<div style="font-size:12px;font-weight:500;color:#9A958B;margin-bottom:10px;">最近对话</div>
+<sc-for list="{{ homeRecentChats }}" as="rc" hint-placeholder-count="3">
+<div onClick="{{ rc.open }}" style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:14px;padding:12px 14px;margin-bottom:8px;cursor:pointer;box-shadow:0 1px 2px rgba(43,38,30,.035);">
+<div style="display:flex;align-items:center;justify-content:space-between;">
+<div style="flex:1;min-width:0;">
+<div style="font-size:13.5px;color:#3A362F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ rc.title }}</div>
+</div>
+<span style="font-size:11px;color:#B8B3A8;flex:none;margin-left:10px;">{{ rc.time }}</span>
+</div>
+</div>
+</sc-for>
+
 </div>
 </sc-if>
 
@@ -722,10 +795,10 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <div style="display:flex;align-items:center;gap:6px;margin-top:8px;justify-content:flex-end;">
 <span style="font-size:9px;color:#B8B3A8;">少</span>
 <div style="width:10px;height:10px;border-radius:2px;background:#F2EFE8;"></div>
-<div style="width:10px;height:10px;border-radius:2px;background:#C8E6D9;"></div>
-<div style="width:10px;height:10px;border-radius:2px;background:#7BBFA3;"></div>
-<div style="width:10px;height:10px;border-radius:2px;background:#4A9B7A;"></div>
-<div style="width:10px;height:10px;border-radius:2px;background:#2D6B52;"></div>
+<div style="width:10px;height:10px;border-radius:2px;background:#DFF2EC;"></div>
+<div style="width:10px;height:10px;border-radius:2px;background:#B8D4E8;"></div>
+<div style="width:10px;height:10px;border-radius:2px;background:#F5D5C8;"></div>
+<div style="width:10px;height:10px;border-radius:2px;background:#68544B;"></div>
 <span style="font-size:9px;color:#B8B3A8;">多</span>
 </div>
 </div>
@@ -934,11 +1007,12 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <!-- recent chats list -->
 <div class="sa" style="flex:1;min-height:0;overflow-y:auto;padding:0 16px;">
 <sc-for list="{{ recentChats }}" as="c" hint-placeholder-count="8">
-<div style="padding:8px 12px;border-radius:10px;display:flex;align-items:center;justify-content:space-between;gap:8px;cursor:pointer;" onClick="{{ c.open }}" onContextMenu="{{ c.rename }}">
+<div style="padding:10px 12px;border-radius:10px;display:flex;align-items:center;gap:8px;cursor:pointer;background:{{ c.pinBg }};" onClick="{{ c.open }}" onContextMenu="{{ c.longPress }}">
+<sc-if value="{{ c.isPinned }}" hint-placeholder-val="{{ false }}">
+<span style="font-size:10px;color:#68544B;">📌</span>
+</sc-if>
 <span style="flex:1;font-size:14.5px;color:#3A362F;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ c.title }}</span>
-<button onClick="{{ c.del }}" style="flex:none;width:26px;height:26px;border:none;background:transparent;display:flex;align-items:center;justify-content:center;cursor:pointer;opacity:.35;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
-</button>
+<span style="font-size:11px;color:#B8B3A8;flex:none;">{{ c.timeLabel }}</span>
 </div>
 </sc-for>
 </div>
@@ -4210,10 +4284,12 @@ return cells;
 renderVals() {
 const s = this.state;
 const chat = this.currentChat;
-const msgs = (chat.messages || []).filter(m => {
+const allMsgs = (chat.messages || []).filter(m => {
   const text = (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text || '';
   return text.trim() || m.imageUrl || m.image;
 });
+// 只渲染最近100条，防止大量消息卡顿
+const msgs = allMsgs.length > 100 ? allMsgs.slice(-100) : allMsgs;
 const preset = this.activePreset;
 const persona = this.activePersona;
 const styleObj = this.activeStyleObj;
@@ -4415,17 +4491,45 @@ const chatList = Object.values(s.chats)
 .filter(c => c.messages && c.messages.length > 0)
 .sort((a, b) => (b.lastTime || 0) - (a.lastTime || 0))
 .slice(0, 30);
-const recentChats = chatList.map(c => ({
+const recentChats = chatList
+.sort((a, b) => {
+  // 置顶优先，然后按时间
+  const aPin = a.pinned ? 1 : 0;
+  const bPin = b.pinned ? 1 : 0;
+  if (aPin !== bPin) return bPin - aPin;
+  return (b.lastTime || 0) - (a.lastTime || 0);
+})
+.map(c => ({
 title: c.title || '新对话',
+isPinned: !!c.pinned,
+pinBg: c.pinned ? 'rgba(104,84,75,.04)' : 'transparent',
+timeLabel: c.lastTime ? (() => {
+  const d = new Date(c.lastTime);
+  const now = new Date();
+  if (d.toDateString() === now.toDateString()) return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+  const diff = Math.floor((now - d) / (1000*60*60*24));
+  if (diff === 1) return '昨天';
+  if (diff < 7) return diff + '天前';
+  return (d.getMonth()+1) + '/' + d.getDate();
+})() : '',
 open: () => self.openChat(c.id),
-del: (e) => { e.stopPropagation(); self.deleteChat(c.id); },
-rename: (e) => {
-e.stopPropagation();
-const newName = prompt('修改标题', c.title || '');
-if (newName !== null && newName.trim()) {
-const chats = { ...s.chats }; chats[c.id] = { ...chats[c.id], title: newName.trim() };
-self.setState({ chats }); self.persist();
-}
+longPress: (e) => {
+  e.preventDefault();
+  e.stopPropagation();
+  const action = prompt('操作：输入 1=改名 2=置顶/取消置顶 3=删除', '');
+  if (action === '1') {
+    const newName = prompt('修改标题', c.title || '');
+    if (newName !== null && newName.trim()) {
+      const chats = { ...s.chats }; chats[c.id] = { ...chats[c.id], title: newName.trim() };
+      self.setState({ chats }); self.persist();
+    }
+  } else if (action === '2') {
+    const chats = { ...s.chats }; chats[c.id] = { ...chats[c.id], pinned: !c.pinned };
+    self.setState({ chats }); self.persist();
+    self.show(c.pinned ? '已取消置顶' : '已置顶');
+  } else if (action === '3') {
+    if (confirm('删除「' + (c.title || '新对话') + '」？')) self.deleteChat(c.id);
+  }
 }
 }));
 
@@ -4571,10 +4675,10 @@ function buildMemHeatmap() {
     const count = dayCounts[d] || 0;
     const isFuture = d > today.getDate() && month === today.getMonth() && year === today.getFullYear();
     let bg = '#F2EFE8';
-    if (!isFuture && count > 0 && count <= 10) bg = '#C8E6D9';
-    else if (!isFuture && count > 10 && count <= 25) bg = '#7BBFA3';
-    else if (!isFuture && count > 25 && count <= 50) bg = '#4A9B7A';
-    else if (!isFuture && count > 50) bg = '#2D6B52';
+    if (!isFuture && count > 0 && count <= 10) bg = '#DFF2EC';
+    else if (!isFuture && count > 10 && count <= 25) bg = '#B8D4E8';
+    else if (!isFuture && count > 25 && count <= 50) bg = '#F5D5C8';
+    else if (!isFuture && count > 50) bg = '#68544B';
     if (isFuture) bg = 'rgba(0,0,0,.02)';
 
     const dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
@@ -4792,6 +4896,20 @@ recentChats,
 homeRecentChats,
 homeGreeting: getGreeting(),
 currentTime: s.currentTime,
+// 在一起计时器（从2025-06-30算起）
+togetherDays: (() => { const start = new Date('2025-06-30T00:00:00'); const diff = Date.now() - start.getTime(); return Math.floor(diff / (1000*60*60*24)); })(),
+togetherHours: (() => { const start = new Date('2025-06-30T00:00:00'); const diff = Date.now() - start.getTime(); return Math.floor((diff % (1000*60*60*24)) / (1000*60*60)); })(),
+togetherMins: (() => { const start = new Date('2025-06-30T00:00:00'); const diff = Date.now() - start.getTime(); return Math.floor((diff % (1000*60*60)) / (1000*60)); })(),
+// Home 页数据
+homeTotalMsgs: (() => { let count = 0; for (const c of Object.values(s.chats)) { count += (c.messages || []).length; } return count; })(),
+homeTotalRounds: (() => { let count = 0; for (const c of Object.values(s.chats)) { count += (c.messages || []).filter(m => m.role === 'user').length; } return count; })(),
+homeLastTime: (() => { const c = self.currentChat; const last = c.messages && c.messages.length > 0 ? c.messages[c.messages.length-1] : null; return last && last.timestamp ? last.timestamp.slice(11, 16) : ''; })(),
+homeLastMessages: (() => { const c = self.currentChat; const msgs = (c.messages || []).slice(-3); return msgs.map(m => ({ roleLabel: m.role === 'user' ? '你：' : 'Kel：', roleColor: m.role === 'user' ? '#9A958B' : '#68544B', text: ((m.variants ? m.variants[m.variantIdx||0] : m.text) || '').slice(0, 50) })); })(),
+homeDiaryCount: Object.keys(s.diaries || {}).filter(k => { const e = s.diaries[k]; return e && (e.mine || e.kel); }).length,
+homePeriodStatus: '未设置',
+homeHeatmapMonth: (() => { const now = new Date(); return now.getFullYear() + '年' + (now.getMonth()+1) + '月'; })(),
+homeHeatmapCells: memHeatmapCells,
+navPeriod: () => self.show('月事页面开发中'),
 isBusy: s.isBusy,
 input: s.input,
 editText: s.editText,
