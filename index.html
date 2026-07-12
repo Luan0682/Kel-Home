@@ -25,6 +25,7 @@ html,body { margin:0; padding:0; height:100%; -webkit-font-smoothing:antialiased
 body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0 0 0; }
 .sa::-webkit-scrollbar { width:0; display:none; }
 .sa { scrollbar-width:none; -webkit-overflow-scrolling:touch; }
+.msg-wrap { content-visibility:auto; contain-intrinsic-size:0 60px; }
 @keyframes fadeUp { from{opacity:0;transform:translateY(8px)} to{opacity:1;transform:none} }
 @keyframes fadeIn { from{opacity:0} to{opacity:1} }
 @keyframes dots { 0%,100%{opacity:.25} 50%{opacity:1} }
@@ -92,7 +93,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- messages -->
 <sc-for list="{{ messages }}" as="m" hint-placeholder-count="4">
-<div style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;" onContextMenu="{{ m.longPress }}">
+<div class="msg-wrap" style="margin-bottom:{{ m.gap }};display:flex;flex-direction:column;align-items:{{ m.align }};animation:fadeUp .35s ease both;" onContextMenu="{{ m.longPress }}">
 <sc-if value="{{ multiSelectMode }}" hint-placeholder-val="{{ false }}">
 <button onClick="{{ m.toggleSelect }}" style="width:24px;height:24px;border-radius:50%;border:2px solid {{ m.selectBd }};background:{{ m.selectBg }};display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;margin-bottom:4px;">
 <sc-if value="{{ m.isSelected }}" hint-placeholder-val="{{ false }}">
@@ -320,7 +321,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 <span style="font-family:'Newsreader',serif;font-size:24px;font-weight:300;color:#68544B;">{{ togetherMins }}</span>
 <span style="font-size:11px;color:#9A958B;">分</span>
 </div>
-<div style="font-size:10px;color:#B8B3A8;margin-top:4px;">since 2025.06.30</div>
+<div style="font-size:10px;color:#B8B3A8;margin-top:4px;">since 2026.06.30</div>
 </div>
 
 <!-- 最近对话预览（一句） -->
@@ -2914,17 +2915,14 @@ _saveSoulPage() {
     ss.about.content.trim() ? '## 关于江吟\n' + ss.about.content.trim() : '',
     ss.other.content.trim() ? '## 其他\n' + ss.other.content.trim() : ''
   ].filter(p => p);
-  
   const merged = parts.join('\n\n');
-  
-  const presets = [...this.state.presets];
-  const idx = presets.findIndex(p => p.id === this.state.activePresetId);
-  if (idx >= 0) {
-    presets[idx] = { ...presets[idx], persona: merged };
-    this.setState({ presets });
-    this.persist();
-    this.show('已保存');
-  }
+  // 写入当前 persona
+  const personas = this.state.personas.map(p =>
+    p.id === this.state.activePersonaId ? { ...p, content: merged } : p
+  );
+  this.setState({ personas });
+  this.persist();
+  this.show('已保存到 Persona');
 }
 
 async _extractMemoriesFromChat() {
@@ -3540,10 +3538,6 @@ if (msgThinking) {
 
 // 全部推送完毕，确保 isBusy 为 false，并让小人恢复 idle
 this.setState({ isBusy: false });
-}
-
-_splitReplyIntoMessages(reply, thinking) {
-  return [reply];
 }
 
 regenerate(msgIdx) {
@@ -4212,7 +4206,7 @@ for (let i = 0; i < chat.messages.length; i++) {
 const m = chat.messages[i];
 const text = (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text || '';
 if (text.toLowerCase().includes(q)) {
-results.push({ chatId: chat.id, chatTitle: chat.title || '新对话', msgIdx: i, snippet: text.slice(0, 120) });
+results.push({ chatId: chat.id, chatTitle: chat.title || '新对话', msgIdx: i, msgId: chat.messages[i].id, snippet: text.slice(0, 120) });
 if (results.length >= 30) break;
 }
 }
@@ -4221,10 +4215,24 @@ if (results.length >= 30) break;
 this.setState({ searchResults: results });
 }
 
-openSearchResult(chatId) {
+openSearchResult(chatId, msgId) {
 this.setState({ currentChatId: chatId, tab: 'chat', drawer: false, searchQuery: '', searchResults: [] });
 this.persist();
+if (msgId) {
+setTimeout(() => {
+const el = document.querySelector('[data-msg-id="' + msgId + '"]');
+if (el) {
+el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+el.style.transition = 'background .3s';
+el.style.background = 'rgba(104,84,75,.1)';
+setTimeout(() => { el.style.background = ''; }, 1800);
+} else {
 this.scrollToBottom();
+}
+}, 200);
+} else {
+this.scrollToBottom();
+}
 }
 
 // ====== Models Fetch ======
@@ -4401,8 +4409,7 @@ const allMsgs = (chat.messages || []).filter(m => {
   const text = (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text || '';
   return text.trim() || m.imageUrl || m.image;
 });
-// 只渲染最近100条，防止大量消息卡顿
-const msgs = allMsgs.length > 100 ? allMsgs.slice(-100) : allMsgs;
+const msgs = allMsgs;
 const preset = this.activePreset;
 const persona = this.activePersona;
 const styleObj = this.activeStyleObj;
@@ -4581,7 +4588,6 @@ contentRef: (el) => {
 if (el && el._lastText !== rendered) {
 el._lastText = rendered;
 el.innerHTML = rendered;
-// 如果内容为空，隐藏气泡背景
 if (!rendered) {
 el.style.padding = '0';
 el.style.background = 'transparent';
@@ -4589,6 +4595,11 @@ el.style.background = 'transparent';
 el.style.padding = '';
 el.style.background = '';
 }
+// 标记 msg-id 到外层容器用于搜索跳转
+try {
+const wrap = el.closest('.msg-wrap');
+if (wrap && m.id) wrap.setAttribute('data-msg-id', m.id);
+} catch(e) {}
 }
 },
 };
@@ -4781,7 +4792,7 @@ function buildMemHeatmap() {
 
   for (let d = 1; d <= daysInMonth; d++) {
     const count = dayCounts[d] || 0;
-    const isFuture = d > today.getDate() && month === today.getMonth() && year === today.getFullYear();
+    const isFuture = new Date(year, month, d, 23, 59) > today;
     let bg = '#F2EFE8';
     if (!isFuture && count > 0 && count <= 10) bg = '#DFF2EC';
     else if (!isFuture && count > 10 && count <= 25) bg = '#B8D4E8';
@@ -5092,9 +5103,9 @@ homeRecentChats,
 homeGreeting: getGreeting(),
 currentTime: s.currentTime,
 // 在一起计时器（从2025-06-30算起）
-togetherDays: (() => { const start = new Date('2025-06-30T00:00:00'); const diff = Date.now() - start.getTime(); return Math.floor(diff / (1000*60*60*24)); })(),
-togetherHours: (() => { const start = new Date('2025-06-30T00:00:00'); const diff = Date.now() - start.getTime(); return Math.floor((diff % (1000*60*60*24)) / (1000*60*60)); })(),
-togetherMins: (() => { const start = new Date('2025-06-30T00:00:00'); const diff = Date.now() - start.getTime(); return Math.floor((diff % (1000*60*60)) / (1000*60)); })(),
+togetherDays: (() => { const start = new Date('2026-06-30T00:00:00'); const diff = Date.now() - start.getTime(); return Math.max(0, Math.floor(diff / (1000*60*60*24))); })(),
+togetherHours: (() => { const start = new Date('2026-06-30T00:00:00'); const diff = Date.now() - start.getTime(); return Math.max(0, Math.floor((diff % (1000*60*60*24)) / (1000*60*60))); })(),
+togetherMins: (() => { const start = new Date('2026-06-30T00:00:00'); const diff = Date.now() - start.getTime(); return Math.max(0, Math.floor((diff % (1000*60*60)) / (1000*60))); })(),
 navSoul: () => self.setState({ tab: 'soul', drawer: false }),
 // Home 页数据
 homeTotalMsgs: (() => { let count = 0; for (const c of Object.values(s.chats)) { count += (c.messages || []).length; } return count; })(),
@@ -5270,7 +5281,7 @@ searchOpen: !!(s.searchQuery && s.searchQuery.trim()),
 searchQuery: s.searchQuery || '',
 searchResults: (s.searchResults || []).map(r => ({
 ...r,
-open: () => self.openSearchResult(r.chatId)
+open: () => self.openSearchResult(r.chatId, r.msgId)
 })),
 apiOptions,
 apiName: apiDraft.name || '',
