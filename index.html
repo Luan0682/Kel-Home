@@ -4294,9 +4294,6 @@ time: new Date().toLocaleTimeString()
 diaries[dateStr] = { ...diaries[dateStr], comments };
 this.setState({ diaries, diaryCommentText: '' }, () => this.persist());
 }
-diaryTabQuarter: () => self.setState({ diaryViewTab: 'quarter' }),
-diaryTabMonth: () => self.setState({ diaryViewTab: 'month' }),
-diaryTabWeek: () => self.setState({ diaryViewTab: 'week' }),
 diaryTabQBg: (s.diaryViewTab||'week')==='quarter' ? '#FFF' : 'transparent',
 diaryTabQFg: (s.diaryViewTab||'week')==='quarter' ? '#5C4033' : '#8B7355',
 diaryTabQFw: (s.diaryViewTab||'week')==='quarter' ? '600' : '400',
