@@ -287,10 +287,10 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 
 <!-- multi-select bottom bar -->
 <sc-if value="{{ multiSelectMode }}" hint-placeholder-val="{{ false }}">
-<div style="flex:none;padding:12px 14px calc(env(safe-area-inset-bottom, 0px) + 10px);display:flex;align-items:center;justify-content:center;gap:16px;background:var(--bg-main, #F5F3EE);border-top:1px solid #ECE8DF;">
-<button onClick="{{ multiDeleteSelected }}" style="display:flex;align-items:center;gap:8px;border:none;background:#FF4757;color:#FFF;border-radius:20px;padding:12px 24px;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="#FFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-删除选中
+<div style="flex:none;padding:16px 14px calc(env(safe-area-inset-bottom, 0px) + 16px);display:flex;align-items:center;justify-content:center;gap:16px;background:var(--bg-main, #F5F3EE);border-top:2px solid #1A1815;box-shadow:0 -4px 12px rgba(0,0,0,.08);">
+<button onClick="{{ multiDeleteSelected }}" style="display:flex;align-items:center;gap:8px;border:none;background:#FF4757;color:#FFF;border-radius:20px;padding:14px 32px;font-size:15px;font-weight:600;font-family:inherit;cursor:pointer;box-shadow:0 2px 8px rgba(255,71,87,.3);">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+删除选中 ({{ multiSelectCount }})
 </button>
 </div>
 </sc-if>
@@ -2290,6 +2290,21 @@ musicVolume: parseFloat(localStorage.getItem('kel-music-volume') || '0.5'),
 errorLogs: JSON.parse(localStorage.getItem('kel-error-logs') || '[]'),
 errorLogOpen: false
 };
+
+// 迁移：为所有消息补全 id
+if (saved.chats) {
+  for (const chatId of Object.keys(saved.chats)) {
+    const chat = saved.chats[chatId];
+    if (chat.messages) {
+      for (const msg of chat.messages) {
+        if (!msg.id) {
+          msg.id = genId();
+        }
+      }
+    }
+  }
+}
+
 // 迁移：把旧的世界书合并进记忆库
 if (saved.worldbooks && saved.worldbooks.length > 0) {
   const existingIds = new Set(this.state.memories.map(m => m.id));
@@ -2686,6 +2701,14 @@ return this.state.anniversaries[this.state.activeAnnivIdx] || this.state.anniver
 
 persist() {
 const s = this.state;
+// 确保所有消息都有 id
+const chats = {};
+for (const [chatId, chat] of Object.entries(s.chats)) {
+  chats[chatId] = {
+    ...chat,
+    messages: (chat.messages || []).map(m => m.id ? m : { ...m, id: genId() })
+  };
+}
 const data = {
 apiPresets: s.apiPresets,
 activePresetId: s.activePresetId,
@@ -2695,7 +2718,7 @@ styles: s.styles,
 activeStyleId: s.activeStyleId,
 prompts: s.prompts,
 currentChatId: s.currentChatId,
-chats: s.chats,
+chats: chats,
 petEnabled: s.petEnabled,
 petSizeIdx: s.petSizeIdx,
 soundEnabled: s.soundEnabled,
@@ -5451,10 +5474,11 @@ const id = s.deleteConfirmId;
 if (type === 'message') {
 const chats = { ...s.chats };
 const c = { ...chats[s.currentChatId] };
+const msgIdx = id; // id 这里实际是消息索引
 c.messages = [...c.messages];
-c.messages.splice(id, 1);
+c.messages.splice(msgIdx, 1);
 chats[s.currentChatId] = c;
-self.setState({ chats, deleteConfirmOpen: false });
+self.setState({ chats, deleteConfirmOpen: false, deleteConfirmType: '', deleteConfirmId: null });
 self.persist();
 self.show('已删除');
 } else if (type === 'worldbook') {
