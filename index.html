@@ -4294,15 +4294,6 @@ time: new Date().toLocaleTimeString()
 diaries[dateStr] = { ...diaries[dateStr], comments };
 this.setState({ diaries, diaryCommentText: '' }, () => this.persist());
 }
-diaryTabQBg: (s.diaryViewTab||'week')==='quarter' ? '#FFF' : 'transparent',
-diaryTabQFg: (s.diaryViewTab||'week')==='quarter' ? '#5C4033' : '#8B7355',
-diaryTabQFw: (s.diaryViewTab||'week')==='quarter' ? '600' : '400',
-diaryTabMBg: (s.diaryViewTab||'week')==='month' ? '#FFF' : 'transparent',
-diaryTabMFg: (s.diaryViewTab||'week')==='month' ? '#5C4033' : '#8B7355',
-diaryTabMFw: (s.diaryViewTab||'week')==='month' ? '600' : '400',
-diaryTabWBg: (s.diaryViewTab||'week')==='week' ? '#FFF' : 'transparent',
-diaryTabWFg: (s.diaryViewTab||'week')==='week' ? '#5C4033' : '#8B7355',
-diaryTabWFw: (s.diaryViewTab||'week')==='week' ? '600' : '400',
 diaryWeekPrev() {
   const base = this.state.diaryWeekBase ? new Date(this.state.diaryWeekBase) : new Date();
   base.setDate(base.getDate() - 7);
