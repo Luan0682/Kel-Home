@@ -20,7 +20,7 @@
 <x-dc>
 <helmet>
 <style>
-* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; }
+* { box-sizing:border-box; -webkit-tap-highlight-color:transparent; user-select:none; -webkit-user-select:none; }
 html,body { margin:0; padding:0; height:100%; -webkit-font-smoothing:antialiased; -moz-osx-font-smoothing:grayscale; text-rendering:optimizeLegibility; }
 body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0 0 0; }
 .sa::-webkit-scrollbar { width:0; display:none; }
@@ -42,6 +42,7 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 @keyframes pulseGlow { 0%,100%{opacity:.6} 50%{opacity:1} }
 @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 .quote-block { background:rgba(26,24,21,.04); border-left:2px solid #B8B3A8; border-radius:0 6px 6px 0; padding:4px 10px; margin:4px 0; font-size:13px; color:#9A958B; }
+input, textarea { user-select:text; -webkit-user-select:text; }
 </style>
 </helmet>
 
@@ -5408,26 +5409,28 @@ diaryDayEntries: (() => {
   const day = s.diaries[dateStr || ''];
   if (!day) return [];
   const tagDefs = {heartbeat:{icon:'💓',label:'心动',color:'#D4536A',bg:'#FEF0F3'},sweet:{icon:'🍬',label:'甜',color:'#E8A04C',bg:'#FFF8ED'},sad:{icon:'🌧',label:'难过',color:'#6B8CAE',bg:'#F0F5FA'},hot:{icon:'🔥',label:'激烈',color:'#C75030',bg:'#FFF0ED'},miss:{icon:'🌙',label:'想你',color:'#8B6EB5',bg:'#F5F0FA'},peace:{icon:'☁️',label:'平静',color:'#7BA88E',bg:'#F0F8F3'}};
-  let entries = [];
-  if (day.entries && day.entries.length > 0) {
-    entries = day.entries.map(e => {
-      const isLocked = e.locked && e.locked.until > Date.now();
-      const lockRemain = isLocked ? (() => { const diff=e.locked.until-Date.now(); const h=Math.floor(diff/3600000); const m=Math.floor((diff%3600000)/60000); return h>0?(h+'h '+m+'m'):(m+'m'); })() : '';
-      const unlockTime = isLocked ? new Date(e.locked.until).toLocaleString().slice(5,16) : '';
-      const tags = (e.tags||[]).map(t => tagDefs[t]||{icon:'✨',label:t,color:'#8B7355',bg:'#F5EDE4'});
-      const comments = e.comments || [];
-      return {
-        id: e.id, time: e.time||'--:--', author: e.author==='kel'?'Kel':'我',
-        authorColor: e.author==='kel'?'#5C8B6A':'#5C4033',
-        text: e.text||'', isLocked: isLocked, lockRemain: lockRemain, unlockTime: unlockTime,
-        hasTags: tags.length>0, tags: tags, commentCount: comments.length,
-        dotBorder: e.author==='kel'?'#A8D5BA':'#F4A7B9', dotFill: e.author==='kel'?'#E8F5ED':'#FEF0F3',
-        openDetail: () => self.setState({ diaryDetailOpen:true, diaryDetailId:e.id, diaryDetailCommentInput:'' })
-      };
-    });
-  } else if (day.mine || day.kel) {
-    if (day.mine) entries.push({ id:'old-mine', time:'--:--', author:'我', authorColor:'#5C4033', text:day.mine, isLocked:false, lockRemain:'', unlockTime:'', hasTags:false, tags:[], commentCount:(day.comments||[]).length, dotBorder:'#F4A7B9', dotFill:'#FEF0F3', openDetail:()=>{} });
-    if (day.kel) entries.push({ id:'old-kel', time:'--:--', author:'Kel', authorColor:'#5C8B6A', text:day.kel, isLocked:false, lockRemain:'', unlockTime:'', hasTags:false, tags:[], commentCount:0, dotBorder:'#A8D5BA', dotFill:'#E8F5ED', openDetail:()=>{} });
+let entries = [];
+if (day.entries && day.entries.length > 0) {
+  entries = day.entries.map(e => {
+    const isLocked = e.locked && e.locked.until > Date.now();
+    const lockRemain = isLocked ? (() => { const diff=e.locked.until-Date.now(); const h=Math.floor(diff/3600000); const m=Math.floor((diff%3600000)/60000); return h>0?(h+'h '+m+'m'):(m+'m'); })() : '';
+    const unlockTime = isLocked ? new Date(e.locked.until).toLocaleString().slice(5,16) : '';
+    const tags = (e.tags||[]).map(t => tagDefs[t]||{icon:'✨',label:t,color:'#8B7355',bg:'#F5EDE4'});
+    const comments = e.comments || [];
+    return {
+      id: e.id, time: e.time||'--:--', author: e.author==='kel'?'Kel':'我',
+      authorColor: e.author==='kel'?'#5C8B6A':'#5C4033',
+      text: e.text||'', isLocked: isLocked, lockRemain: lockRemain, unlockTime: unlockTime,
+      hasTags: tags.length>0, tags: tags, commentCount: comments.length,
+      dotBorder: e.author==='kel'?'#A8D5BA':'#F4A7B9', dotFill: e.author==='kel'?'#E8F5ED':'#FEF0F3',
+      openDetail: () => self.setState({ diaryDetailOpen:true, diaryDetailId:e.id, diaryDetailCommentInput:'' })
+    };
+  });
+}
+if (day.mine || day.kel) {
+
+    if (day.mine) entries.push({ id:'old-mine', time:'--:--', author:'我', authorColor:'#5C4033', text:day.mine, isLocked:false, lockRemain:'', unlockTime:'', hasTags:false, tags:[], commentCount:(day.comments||[]).length, dotBorder:'#F4A7B9', dotFill:'#FEF0F3', openDetail:()=>self.setState({diaryDetailOpen:true,diaryDetailId:'old-mine',diaryDetailCommentInput:''}) });
+if (day.kel) entries.push({ id:'old-kel', time:'--:--', author:'Kel', authorColor:'#5C8B6A', text:day.kel, isLocked:false, lockRemain:'', unlockTime:'', hasTags:false, tags:[], commentCount:0, dotBorder:'#A8D5BA', dotFill:'#E8F5ED', openDetail:()=>self.setState({diaryDetailOpen:true,diaryDetailId:'old-kel',diaryDetailCommentInput:''}) });
   }
   return entries;
 })(),
@@ -5456,9 +5459,9 @@ closeDiaryDetail: () => self.setState({ diaryDetailOpen: false, diaryDetailId: n
 diaryDetailTime: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return ''; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return ''; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e ? (s.diarySelectedDate.replace(/-/g,'.')+' '+e.time) : ''; })(),
 diaryDetailHasTags: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return false; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return false; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e && e.tags && e.tags.length>0; })(),
 diaryDetailTags: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return []; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return []; const e=day.entries.find(x=>x.id===s.diaryDetailId); if(!e||!e.tags) return []; const defs={heartbeat:{icon:'💓',label:'心动',color:'#D4536A',bg:'#FEF0F3'},sweet:{icon:'🍬',label:'甜',color:'#E8A04C',bg:'#FFF8ED'},sad:{icon:'🌧',label:'难过',color:'#6B8CAE',bg:'#F0F5FA'},hot:{icon:'🔥',label:'激烈',color:'#C75030',bg:'#FFF0ED'},miss:{icon:'🌙',label:'想你',color:'#8B6EB5',bg:'#F5F0FA'},peace:{icon:'☁️',label:'平静',color:'#7BA88E',bg:'#F0F8F3'}}; return e.tags.map(t=>defs[t]||{icon:'✨',label:t,color:'#8B7355',bg:'#F5EDE4'}); })(),
-diaryDetailAuthor: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return ''; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return ''; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e ? (e.author==='kel'?'Kel':'我') : ''; })(),
-diaryDetailAvatar: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return ''; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return ''; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e ? (e.author==='kel'? s.aiAvatar : s.userAvatar) : ''; })(),
-diaryDetailText: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return ''; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return ''; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e ? e.text : ''; })(),
+diaryDetailAuthor: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return ''; if(s.diaryDetailId==='old-mine') return '我'; if(s.diaryDetailId==='old-kel') return 'Kel'; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return ''; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e ? (e.author==='kel'?'Kel':'我') : ''; })(),
+diaryDetailAvatar: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return ''; if(s.diaryDetailId==='old-mine') return s.userAvatar; if(s.diaryDetailId==='old-kel') return s.aiAvatar; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return ''; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e ? (e.author==='kel'? s.aiAvatar : s.userAvatar) : ''; })(),
+diaryDetailText: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return ''; const day=s.diaries[s.diarySelectedDate]; if(!day) return ''; if(s.diaryDetailId==='old-mine') return day.mine||''; if(s.diaryDetailId==='old-kel') return day.kel||''; if(!day.entries) return ''; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e ? e.text : ''; })(),
 diaryDetailComments: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return []; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return []; const e=day.entries.find(x=>x.id===s.diaryDetailId); if(!e||!e.comments) return []; return e.comments.map(c=>({ name:c.who==='kel'?'Kel':'我', avatar:c.who==='kel'?s.aiAvatar:s.userAvatar, time:c.time, text:c.text })); })(),
 diaryDetailCommentInput: s.diaryDetailCommentInput || '',
 diaryDetailCommentChange: (e) => self.setState({ diaryDetailCommentInput: e.target.value }),
