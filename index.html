@@ -5504,17 +5504,27 @@ diaryMonthCells: (() => {
   const todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
   const selStr=s.diarySelectedDate||todayStr;
   const cells=[];
-  for(let i=0;i<firstDay;i++) cells.push({day:'',bg:'transparent',color:'transparent',fw:'400',cursor:'default',border:'none',hasEmoji:false,emoji:'',tap:()=>{}});
+  for(let i=0;i<firstDay;i++){
+    cells.push({day:'',bg:'transparent',color:'transparent',fw:'400',cursor:'default',border:'none',hasEmoji:false,emoji:'',tap:function(){}});
+  }
   for(let d=1;d<=daysInMonth;d++){
     const ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
-    const isT=ds===todayStr,isS=ds===selStr;
+    const isT=ds===todayStr;
+    const isS=ds===selStr;
     const dy=s.diaries[ds];
     const sticker=(dy&&dy.stickerMine)?dy.stickerMine:'';
     const hasDiary=dy&&(dy.mine||dy.kel||(dy.entries||[]).length>0);
-    cells.push({day:String(d),bg:isS?'#5C4033':(isT?'#F5EDE4':'transparent'),color:isS?'#FFF8F0':(isT?'#5C4033':'#3A3025'),fw:(isT||isS)?'700':'400',cursor:'pointer',border:isT&&!isS?'1px solid #D1CCC2':'1px solid transparent',hasEmoji:!!sticker,emoji:sticker||(hasDiary?'·':''),tap:()=>{self.diarySelectDate(ds);self.setState({diaryViewTab:'week'});}});
+    const cellBg=isS?'#5C4033':(isT?'#F5EDE4':'transparent');
+    const cellColor=isS?'#FFF8F0':(isT?'#5C4033':'#3A3025');
+    const cellFw=(isT||isS)?'700':'400';
+    const cellBorder=isT&&!isS?'1px solid #D1CCC2':'1px solid transparent';
+    const cellEmoji=sticker?sticker:(hasDiary?'·':'');
+    const hasE=!!(sticker||hasDiary);
+    cells.push({day:String(d),bg:cellBg,color:cellColor,fw:cellFw,cursor:'pointer',border:cellBorder,hasEmoji:hasE,emoji:cellEmoji,tap:(function(dateStr){return function(){self.diarySelectDate(dateStr);self.setState({diaryViewTab:'week'});};})(ds)});
   }
   return cells;
 })(),
+
 diaryStatMineCount: (() => { let c=0; for(const[k,v] of Object.entries(s.diaries||{})){if(v.mine)c++; c+=(v.entries||[]).filter(e=>e.author==='mine').length;} return c; })(),
 diaryStatKelCount: (() => { let c=0; for(const[k,v] of Object.entries(s.diaries||{})){if(v.kel)c++; c+=(v.entries||[]).filter(e=>e.author==='kel').length;} return c; })(),
 diaryStatTopMoods: (() => { const counts={}; for(const[k,v] of Object.entries(s.diaries||{})){ if(v.stickerMine){counts[v.stickerMine]=(counts[v.stickerMine]||0)+1;} if(v.stickerKel){counts[v.stickerKel]=(counts[v.stickerKel]||0)+1;} } const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5); return sorted.map(([emoji,count])=>({emoji,count})); })(),
