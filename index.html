@@ -2202,33 +2202,7 @@ soundEnabled: saved.soundEnabled !== false,
 memoryCount: saved.memoryCount || 10,
 avatarSize: saved.avatarSize || 36,
 apiPresets: saved.apiPresets || [{ id: 'default', name: 'Default', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: true }],
-activePresetId: saved.activePresetId || (presets[0] ? presets[0].id : null),
-// 如果 soulSections 是空的但 persona 有内容，自动拆分
-soulSections: (() => {
-  const ss = {
-    personality: { expanded: false, content: saved.soulPersonality || '' },
-    rules: { expanded: false, content: saved.soulRules || '' },
-    about: { expanded: false, content: saved.soulAbout || '' },
-    other: { expanded: false, content: saved.soulOther || '' }
-  };
-  // 如果四个都是空但 activePreset 的 persona 有内容，尝试自动拆分
-  const ap = presets.find(p => p.id === (saved.activePresetId || (presets[0] ? presets[0].id : null)));
-  if (ap && ap.persona && !saved.soulPersonality && !saved.soulRules && !saved.soulAbout && !saved.soulOther) {
-    const text = ap.persona;
-    const sections = text.split(/##\s*/);
-    for (const sec of sections) {
-      const lines = sec.trim().split('\n');
-      const title = lines[0].toLowerCase();
-      const content = lines.slice(1).join('\n').trim();
-      if (title.includes('人格')) ss.personality.content = content;
-      else if (title.includes('规则')) ss.rules.content = content;
-      else if (title.includes('关于') || title.includes('江吟')) ss.about.content = content;
-      else if (title.includes('其他')) ss.other.content = content;
-      else if (content && !ss.other.content) ss.other.content = content;
-    }
-  }
-  return ss;
-})(),
+activePresetId: saved.activePresetId || 'default',
 personas: saved.personas || [{ id: 'default', name: 'Kel', content: '' }],
 activePersonaId: saved.activePersonaId || 'default',
 personaDraft: null,
