@@ -698,19 +698,98 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <sc-if value="{{ isDiaryPage }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#FFF8F0;">
 
-<!-- 顶部标题行 -->
-<div style="flex:none;padding:20px 20px 12px;display:flex;align-items:center;justify-content:space-between;">
-<div>
-<div style="font-size:24px;font-weight:700;color:#5C4033;letter-spacing:-0.5px;">TODAY</div>
-<div style="font-size:12px;color:#8B7355;margin-top:2px;">{{ diaryTodayLabel }}</div>
+<!-- 顶部标题 + tab栏 -->
+<div style="flex:none;padding:16px 20px 0;">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+<div style="font-size:20px;font-weight:700;color:#5C4033;">日记</div>
+<span style="font-size:12px;color:#8B7355;">{{ diaryTodayLabel }}</span>
 </div>
-<div style="display:flex;align-items:center;gap:8px;">
-<sc-if value="{{ diarySelectedMood }}" hint-placeholder-val="{{ false }}">
-<div style="background:#F5EDE4;border-radius:14px;padding:4px 10px;font-size:12px;color:#5C4033;">{{ diarySelectedMood }}</div>
+<!-- 季度/月/周 tab -->
+<div style="display:flex;gap:0;background:#F5EDE4;border-radius:12px;padding:3px;margin-bottom:14px;">
+<button onClick="{{ diaryTabQuarter }}" style="flex:1;border:none;background:{{ diaryTabQBg }};color:{{ diaryTabQFg }};border-radius:10px;padding:8px 0;font-size:13px;font-weight:{{ diaryTabQFw }};font-family:inherit;cursor:pointer;">季度</button>
+<button onClick="{{ diaryTabMonth }}" style="flex:1;border:none;background:{{ diaryTabMBg }};color:{{ diaryTabMFg }};border-radius:10px;padding:8px 0;font-size:13px;font-weight:{{ diaryTabMFw }};font-family:inherit;cursor:pointer;">月</button>
+<button onClick="{{ diaryTabWeek }}" style="flex:1;border:none;background:{{ diaryTabWBg }};color:{{ diaryTabWFg }};border-radius:10px;padding:8px 0;font-size:13px;font-weight:{{ diaryTabWFw }};font-family:inherit;cursor:pointer;">周</button>
+</div>
+</div>
+<!-- ===== 季度视图 ===== -->
+<sc-if value="{{ isDiaryQuarter }}" hint-placeholder-val="{{ false }}">
+<div class="sa" style="flex:1;min-height:0;overflow-y:auto;padding:0 16px 80px;">
+
+<!-- 3个月小日历 -->
+<sc-for list="{{ diaryQuarterMonths }}" as="qm" hint-placeholder-count="3">
+<div style="margin-bottom:16px;background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);border-radius:14px;padding:12px 14px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+<div style="font-size:13px;font-weight:600;color:#5C4033;margin-bottom:8px;">{{ qm.label }}</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:4px;">
+<span style="font-size:8px;color:#8B7355;text-align:center;">日</span><span style="font-size:8px;color:#8B7355;text-align:center;">一</span><span style="font-size:8px;color:#8B7355;text-align:center;">二</span><span style="font-size:8px;color:#8B7355;text-align:center;">三</span><span style="font-size:8px;color:#8B7355;text-align:center;">四</span><span style="font-size:8px;color:#8B7355;text-align:center;">五</span><span style="font-size:8px;color:#8B7355;text-align:center;">六</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;">
+<sc-for list="{{ qm.cells }}" as="qc" hint-placeholder-count="35">
+<div onClick="{{ qc.tap }}" style="aspect-ratio:1;display:flex;align-items:center;justify-content:center;border-radius:8px;background:{{ qc.bg }};cursor:{{ qc.cursor }};position:relative;min-height:20px;">
+<span style="font-size:9px;color:{{ qc.color }};">{{ qc.day }}</span>
+<sc-if value="{{ qc.hasEmoji }}" hint-placeholder-val="{{ false }}">
+<span style="position:absolute;bottom:0;font-size:7px;">{{ qc.emoji }}</span>
 </sc-if>
-<span style="font-size:12px;color:#8B7355;">{{ diarySelectedCount }} 篇</span>
+</div>
+</sc-for>
 </div>
 </div>
+</sc-for>
+
+<!-- 统计 -->
+<div style="background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);border-radius:14px;padding:14px 16px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+<div style="font-size:13px;font-weight:600;color:#5C4033;margin-bottom:10px;">统计</div>
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:12px;">
+<div style="text-align:center;padding:10px;background:#FEF0F3;border-radius:10px;">
+<div style="font-size:20px;font-weight:600;color:#D4536A;">{{ diaryStatMineCount }}</div>
+<div style="font-size:11px;color:#8B7355;margin-top:2px;">我的日记</div>
+</div>
+<div style="text-align:center;padding:10px;background:#E8F5ED;border-radius:10px;">
+<div style="font-size:20px;font-weight:600;color:#5C8B6A;">{{ diaryStatKelCount }}</div>
+<div style="font-size:11px;color:#8B7355;margin-top:2px;">Kel的日记</div>
+</div>
+</div>
+<div style="font-size:12px;color:#5C4033;font-weight:500;margin-bottom:6px;">情绪 Top 3</div>
+<div style="display:flex;gap:8px;flex-wrap:wrap;">
+<sc-for list="{{ diaryStatTopMoods }}" as="tm" hint-placeholder-count="3">
+<div style="background:#F5EDE4;border-radius:10px;padding:5px 12px;font-size:12px;color:#5C4033;">{{ tm.emoji }} {{ tm.count }}次</div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== 月视图 ===== -->
+<sc-if value="{{ isDiaryMonth }}" hint-placeholder-val="{{ false }}">
+<div class="sa" style="flex:1;min-height:0;overflow-y:auto;padding:0 16px 80px;">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+<button onClick="{{ diaryMonthPrev }}" style="width:30px;height:30px;border-radius:50%;background:#FFF;border:1px solid #F0EBE3;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M14 6l-6 6 6 6" stroke="#5C4033" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div style="font-size:15px;font-weight:600;color:#5C4033;">{{ diaryMonthTitle }}</div>
+<button onClick="{{ diaryMonthNext }}" style="width:30px;height:30px;border-radius:50%;background:#FFF;border:1px solid #F0EBE3;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M10 6l6 6-6 6" stroke="#5C4033" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+</div>
+<div style="background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);border-radius:14px;padding:14px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:6px;">
+<span style="font-size:10px;color:#8B7355;text-align:center;">日</span><span style="font-size:10px;color:#8B7355;text-align:center;">一</span><span style="font-size:10px;color:#8B7355;text-align:center;">二</span><span style="font-size:10px;color:#8B7355;text-align:center;">三</span><span style="font-size:10px;color:#8B7355;text-align:center;">四</span><span style="font-size:10px;color:#8B7355;text-align:center;">五</span><span style="font-size:10px;color:#8B7355;text-align:center;">六</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">
+<sc-for list="{{ diaryMonthCells }}" as="mc" hint-placeholder-count="35">
+<div onClick="{{ mc.tap }}" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;background:{{ mc.bg }};cursor:{{ mc.cursor }};position:relative;min-height:36px;border:{{ mc.border }};">
+<span style="font-size:12px;font-weight:{{ mc.fw }};color:{{ mc.color }};">{{ mc.day }}</span>
+<sc-if value="{{ mc.hasEmoji }}" hint-placeholder-val="{{ false }}">
+<span style="font-size:10px;position:absolute;bottom:2px;">{{ mc.emoji }}</span>
+</sc-if>
+</div>
+</sc-for>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- ===== 周视图 ===== -->
+<sc-if value="{{ isDiaryWeek }}" hint-placeholder-val="{{ true }}">
 
 <!-- 横向周日历条 -->
 <div style="flex:none;padding:0 8px 14px;position:relative;">
@@ -817,7 +896,9 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </sc-if>
 
 </div>
+</sc-if>
 
+<!-- 底部写日记入口按钮 -->  
 <!-- 底部写日记按钮 -->
 <div style="position:absolute;bottom:20px;right:20px;z-index:10;">
 <button onClick="{{ diaryOpenWrite }}" style="width:52px;height:52px;border-radius:50%;background:#5C4033;border:none;box-shadow:0 4px 16px rgba(92,64,51,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;">
@@ -1712,13 +1793,12 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- Diary Detail Sheet -->
 <sc-if value="{{ isDiaryDetailSheet }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;inset:0;z-index:270;">
-<div onClick="{{ closeDiaryDetail }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-<div class="sa" style="position:absolute;bottom:0;left:0;right:0;background:#FFF8F0;border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:90%;overflow-y:auto;">
-<div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+<div style="position:absolute;inset:0;z-index:270;animation:fadeIn .15s ease both;">
+<div class="sa" style="position:absolute;inset:0;background:#FFF8F0;overflow-y:auto;padding:0 16px 30px;animation:slideIn .2s ease both;">
+<div style="height:env(safe-area-inset-top,12px);"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;padding-top:16px;">
 <button onClick="{{ closeDiaryDetail }}" style="width:34px;height:34px;border-radius:50%;background:#FFF;border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#5C4033" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
 <span style="font-size:13px;color:#8B7355;">{{ diaryDetailTime }}</span>
 <div style="display:flex;gap:8px;">
@@ -2142,7 +2222,7 @@ diaryKelEdit: false,
 diaryKelText: '',
 diaryStickerPickerOpen: false,
 diaryCommentText: '',
-diaryWeekBase: null,
+diaryViewTab: 'week',
 diaryWriteOpen: false,
 diaryWriteText: '',
 diaryWriteAuthor: 'mine',
@@ -4214,6 +4294,18 @@ time: new Date().toLocaleTimeString()
 diaries[dateStr] = { ...diaries[dateStr], comments };
 this.setState({ diaries, diaryCommentText: '' }, () => this.persist());
 }
+diaryTabQuarter: () => self.setState({ diaryViewTab: 'quarter' }),
+diaryTabMonth: () => self.setState({ diaryViewTab: 'month' }),
+diaryTabWeek: () => self.setState({ diaryViewTab: 'week' }),
+diaryTabQBg: (s.diaryViewTab||'week')==='quarter' ? '#FFF' : 'transparent',
+diaryTabQFg: (s.diaryViewTab||'week')==='quarter' ? '#5C4033' : '#8B7355',
+diaryTabQFw: (s.diaryViewTab||'week')==='quarter' ? '600' : '400',
+diaryTabMBg: (s.diaryViewTab||'week')==='month' ? '#FFF' : 'transparent',
+diaryTabMFg: (s.diaryViewTab||'week')==='month' ? '#5C4033' : '#8B7355',
+diaryTabMFw: (s.diaryViewTab||'week')==='month' ? '600' : '400',
+diaryTabWBg: (s.diaryViewTab||'week')==='week' ? '#FFF' : 'transparent',
+diaryTabWFg: (s.diaryViewTab||'week')==='week' ? '#5C4033' : '#8B7355',
+diaryTabWFw: (s.diaryViewTab||'week')==='week' ? '600' : '400',
 diaryWeekPrev() {
   const base = this.state.diaryWeekBase ? new Date(this.state.diaryWeekBase) : new Date();
   base.setDate(base.getDate() - 7);
@@ -4265,7 +4357,9 @@ diaryDeleteEntry(entryId) {
   if (!dateStr) return;
   const diaries = { ...this.state.diaries };
   const day = { ...diaries[dateStr] };
-  day.entries = (day.entries || []).filter(e => e.id !== entryId);
+  if (entryId === 'old-mine') { day.mine = ''; }
+  else if (entryId === 'old-kel') { day.kel = ''; }
+  else { day.entries = (day.entries || []).filter(e => e.id !== entryId); }
   diaries[dateStr] = day;
   this.setState({ diaries, diaryDetailOpen: false, diaryDetailId: null });
   this.persist();
@@ -4289,17 +4383,24 @@ diaryAddDetailComment(text) {
   const dateStr = this.state.diarySelectedDate;
   const diaries = { ...this.state.diaries };
   const day = { ...diaries[dateStr] };
-  day.entries = (day.entries || []).map(e => {
-    if (e.id === this.state.diaryDetailId) {
-      const comments = [...(e.comments || [])];
-      comments.push({ id: genId(), who: 'mine', text: text.trim(), time: new Date().toLocaleTimeString().slice(0,5) });
-      return { ...e, comments };
-    }
-    return e;
-  });
+  const detailId = this.state.diaryDetailId;
+  const newComment = { id: genId(), who: 'mine', text: text.trim(), time: new Date().toLocaleTimeString().slice(0,5) };
+  if (detailId === 'old-mine' || detailId === 'old-kel') {
+    if (!day.comments) day.comments = [];
+    day.comments = [...day.comments, newComment];
+  } else {
+    day.entries = (day.entries || []).map(e => {
+      if (e.id === detailId) {
+        const comments = [...(e.comments || []), newComment];
+        return { ...e, comments };
+      }
+      return e;
+    });
+  }
   diaries[dateStr] = day;
   this.setState({ diaries, diaryDetailCommentInput: '' });
   this.persist();
+  this.show('评论已发送');
 }
 
 async askKelComment() {
@@ -5377,6 +5478,46 @@ newRegex: () => self.openRegexEditor(null),
 saveRegex: () => self.saveRegexRule(),
 deleteRegex: () => { if (s.regexEditId) self.deleteRegexRule(s.regexEditId); },
 diaryMonthLabel: (() => { const m = ['一月','二月','三月','四月','五月','六月','七月','八月','九月','十月','十一月','十二月']; return m[s.diaryViewMonth] || ''; })(),
+diaryTabQuarter: () => self.setState({ diaryViewTab: 'quarter' }),
+diaryTabMonth: () => self.setState({ diaryViewTab: 'month' }),
+diaryTabWeek: () => self.setState({ diaryViewTab: 'week' }),
+diaryTabQBg: (s.diaryViewTab||'week')==='quarter' ? '#FFF' : 'transparent',
+diaryTabQFg: (s.diaryViewTab||'week')==='quarter' ? '#5C4033' : '#8B7355',
+diaryTabQFw: (s.diaryViewTab||'week')==='quarter' ? '600' : '400',
+diaryTabMBg: (s.diaryViewTab||'week')==='month' ? '#FFF' : 'transparent',
+diaryTabMFg: (s.diaryViewTab||'week')==='month' ? '#5C4033' : '#8B7355',
+diaryTabMFw: (s.diaryViewTab||'week')==='month' ? '600' : '400',
+diaryTabWBg: (s.diaryViewTab||'week')==='week' ? '#FFF' : 'transparent',
+diaryTabWFg: (s.diaryViewTab||'week')==='week' ? '#5C4033' : '#8B7355',
+diaryTabWFw: (s.diaryViewTab||'week')==='week' ? '600' : '400',
+isDiaryQuarter: (s.diaryViewTab||'week')==='quarter',
+isDiaryMonth: (s.diaryViewTab||'week')==='month',
+isDiaryWeek: (s.diaryViewTab||'week')==='week',
+diaryMonthTitle: s.diaryViewYear + '年' + (s.diaryViewMonth+1) + '月',
+diaryMonthPrev: () => { let y=s.diaryViewYear,m=s.diaryViewMonth-1; if(m<0){m=11;y--;} self.setState({diaryViewYear:y,diaryViewMonth:m}); },
+diaryMonthNext: () => { let y=s.diaryViewYear,m=s.diaryViewMonth+1; if(m>11){m=0;y++;} self.setState({diaryViewYear:y,diaryViewMonth:m}); },
+diaryMonthCells: (() => {
+  const year=s.diaryViewYear, month=s.diaryViewMonth;
+  const firstDay=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const today=new Date();
+  const todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  const selStr=s.diarySelectedDate||todayStr;
+  const cells=[];
+  for(let i=0;i<firstDay;i++) cells.push({day:'',bg:'transparent',color:'transparent',fw:'400',cursor:'default',border:'none',hasEmoji:false,emoji:'',tap:()=>{}});
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const isT=ds===todayStr,isS=ds===selStr;
+    const dy=s.diaries[ds];
+    const sticker=(dy&&dy.stickerMine)?dy.stickerMine:'';
+    const hasDiary=dy&&(dy.mine||dy.kel||(dy.entries||[]).length>0);
+    cells.push({day:String(d),bg:isS?'#5C4033':(isT?'#F5EDE4':'transparent'),color:isS?'#FFF8F0':(isT?'#5C4033':'#3A3025'),fw:(isT||isS)?'700':'400',cursor:'pointer',border:isT&&!isS?'1px solid #D1CCC2':'1px solid transparent',hasEmoji:!!sticker,emoji:sticker||(hasDiary?'·':''),tap:()=>{self.diarySelectDate(ds);self.setState({diaryViewTab:'week'});}});
+  }
+  return cells;
+})(),
+diaryStatMineCount: (() => { let c=0; for(const[k,v] of Object.entries(s.diaries||{})){if(v.mine)c++; c+=(v.entries||[]).filter(e=>e.author==='mine').length;} return c; })(),
+diaryStatKelCount: (() => { let c=0; for(const[k,v] of Object.entries(s.diaries||{})){if(v.kel)c++; c+=(v.entries||[]).filter(e=>e.author==='kel').length;} return c; })(),
+diaryStatTopMoods: (() => { const counts={}; for(const[k,v] of Object.entries(s.diaries||{})){ if(v.stickerMine){counts[v.stickerMine]=(counts[v.stickerMine]||0)+1;} if(v.stickerKel){counts[v.stickerKel]=(counts[v.stickerKel]||0)+1;} } const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5); return sorted.map(([emoji,count])=>({emoji,count})); })(),
 diaryTodayLabel: (() => { const d = new Date(); return (d.getMonth()+1) + '月' + d.getDate() + '日 · ' + ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()]; })(),
 diarySelectedCount: (() => { if (!s.diarySelectedDate) return 0; const day = s.diaries[s.diarySelectedDate]; if (!day) return 0; return (day.entries || []).length + (day.mine && !(day.entries||[]).length ? 1 : 0) + (day.kel && !(day.entries||[]).length ? 1 : 0); })(),
 diarySelectedMood: (() => { if (!s.diarySelectedDate) return ''; const e = s.diaries[s.diarySelectedDate]; return (e && e.stickerMine) ? e.stickerMine : ''; })(),
@@ -5462,11 +5603,11 @@ diaryDetailTags: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return [
 diaryDetailAuthor: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return ''; if(s.diaryDetailId==='old-mine') return '我'; if(s.diaryDetailId==='old-kel') return 'Kel'; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return ''; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e ? (e.author==='kel'?'Kel':'我') : ''; })(),
 diaryDetailAvatar: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return ''; if(s.diaryDetailId==='old-mine') return s.userAvatar; if(s.diaryDetailId==='old-kel') return s.aiAvatar; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return ''; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e ? (e.author==='kel'? s.aiAvatar : s.userAvatar) : ''; })(),
 diaryDetailText: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return ''; const day=s.diaries[s.diarySelectedDate]; if(!day) return ''; if(s.diaryDetailId==='old-mine') return day.mine||''; if(s.diaryDetailId==='old-kel') return day.kel||''; if(!day.entries) return ''; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e ? e.text : ''; })(),
-diaryDetailComments: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return []; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return []; const e=day.entries.find(x=>x.id===s.diaryDetailId); if(!e||!e.comments) return []; return e.comments.map(c=>({ name:c.who==='kel'?'Kel':'我', avatar:c.who==='kel'?s.aiAvatar:s.userAvatar, time:c.time, text:c.text })); })(),
+diaryDetailComments: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return []; const day=s.diaries[s.diarySelectedDate]; if(!day) return []; let comments=[]; if(s.diaryDetailId==='old-mine'||s.diaryDetailId==='old-kel'){ comments=day.comments||[]; } else { if(!day.entries) return []; const e=day.entries.find(x=>x.id===s.diaryDetailId); if(!e) return []; comments=e.comments||[]; } return comments.map(c=>({ name:c.who==='kel'?'Kel':'我', avatar:c.who==='kel'?s.aiAvatar:s.userAvatar, time:c.time, text:c.text })); })(),
 diaryDetailCommentInput: s.diaryDetailCommentInput || '',
 diaryDetailCommentChange: (e) => self.setState({ diaryDetailCommentInput: e.target.value }),
 diaryDetailAddComment: () => self.diaryAddDetailComment(s.diaryDetailCommentInput),
-diaryDetailDelete: () => { if(s.diaryDetailId) self.diaryDeleteEntry(s.diaryDetailId); },
+diaryDetailDelete: () => { if(s.diaryDetailId) self.setState({ deleteConfirmOpen:true, deleteConfirmType:'diaryEntry', deleteConfirmId:s.diaryDetailId, deleteConfirmText:'确定删除这篇日记？此操作不可撤销。' }); },
 diaryDetailLock: () => { if(s.diaryDetailId) self.diaryLockEntry(s.diaryDetailId, 86400000); },
 
 diaryYearMonth: s.diaryViewYear + '年' + (s.diaryViewMonth + 1) + '月',
@@ -5618,7 +5759,8 @@ const memories = s.memories.filter(m => m.id !== id);
 self.setState({ memories, deleteConfirmOpen: false });
 self.persist();
 self.show('记忆已删除');
-} else if (type === 'multiMessage') {
+} else if (type === 'diaryEntry') {
+self.diaryDeleteEntry(id);
 const chats = { ...s.chats };
 const c = { ...chats[s.currentChatId] };
 c.messages = c.messages.filter(m => !s.multiSelectedIds.includes(m.id));
