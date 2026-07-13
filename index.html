@@ -513,7 +513,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(43,38,30,.04);">
 <sc-for list="{{ pinnedChats }}" as="c" hint-placeholder-count="1">
 <div style="padding:13px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid #F5F3EE;" onClick="{{ c.open }}" onContextMenu="{{ c.longPress }}">
-<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;cursor:pointer;margin-bottom:20px;margin-left:4px;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;">
+<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;cursor:pointer;margin-left:4px;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;">
 <sc-if value="{{ hasAiAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ aiAvatar }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></sc-if>
 <sc-if value="{{ !hasAiAvatar }}" hint-placeholder-val="{{ true }}"><span style="font-size:14px;">🤍</span></sc-if>
 </div>
@@ -6440,6 +6440,7 @@ return {
 true: true, false: false,
 // ===== 侧栏导航高亮 =====
 navHomeClass: s.tab === 'home' ? 'active' : '',
+
 sidebarWidth: s.tab === 'chat' ? '0px' : '56px',
 sidebarDisplay: s.tab === 'chat' ? 'none' : 'flex',
 chatBack: () => self.setState({ tab: 'home' }),
@@ -7852,38 +7853,7 @@ musicTrackList: (self._musicList || []).map((tk, idx) => ({
   play: () => self._playMusic(idx),
   del: (e) => { e.stopPropagation(); self._removeMusicTrack(idx); }
 })),
-// 初始化原版 PhotoStack
-setTimeout(() => {
-  const containers = document.querySelectorAll('.photostack');
-  containers.forEach(el => {
-    if (el._initialized) return;
-    if (typeof PhotoStack !== 'undefined') {
-      try {
-        // 从子元素中读取所有 img 的 src
-        const images = Array.from(el.querySelectorAll('img')).map(img => img.src);
-        if (images.length < 2) return;
-        // 清空容器（原版 PhotoStack 会自己构建 DOM）
-        el.innerHTML = '';
-        new PhotoStack(el, images, {
-          width: 160,
-          height: 200,
-          peek: 15,
-          peekStep: 12,
-          rotStep: 2.2,
-          scaleStep: 0.06,
-          flingVel: 0.4,
-          counter: true,
-          onChange: (index) => {
-            console.log('[PhotoStack] 切换到第', index + 1, '张');
-          }
-        });
-        el._initialized = true;
-      } catch(e) {
-        console.warn('[PhotoStack] 初始化失败:', e);
-      }
-    }
-  });
-}, 500);
+
 // ===== 清单数据 =====
 checklistOpen: s.checklistOpen,
 checklistItemsRendered: this._getTodoRenderedItems(),
