@@ -46,6 +46,44 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 @keyframes heartbeat { 0%,100%{transform:scale(1)} 14%{transform:scale(1.3)} 28%{transform:scale(1)} 42%{transform:scale(1.2)} 56%{transform:scale(1)} }
 .shake { animation: shakeAnim .4s ease; }
 @keyframes shakeAnim { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(4px)} }
+/* ─── Checklist Receipt Styles ─── */
+:root {
+  --rc-paper: #F0EBE0;
+  --rc-ink: #2A2620;
+  --rc-faded: #86806E;
+  --rc-veryfaded: #BAB4A4;
+  --rc-rule: rgba(60,50,40,0.32);
+  --rc-rule-soft: rgba(60,50,40,0.16);
+  --rc-stamp: #A8362D;
+  --rc-overdue: #C84A3F;
+  --rc-mono: "SF Mono","JetBrains Mono","Menlo","Source Han Mono SC","Consolas",monospace;
+  --rc-serif: "Source Han Serif SC","Songti SC","STSong","PT Serif",Georgia,serif;
+}
+.receipt-sheet {
+  background: var(--rc-paper);
+  background-image: radial-gradient(ellipse at top, rgba(255,250,235,0.12) 0%, transparent 55%),
+                    repeating-linear-gradient(90deg, rgba(60,40,20,0.012) 0, rgba(60,40,20,0.012) 1px, transparent 1px);
+  clip-path: polygon(
+    0% 8px, 1.667% 0, 3.333% 8px, 5% 0, 6.667% 8px, 8.333% 0,
+    10% 8px, 11.667% 0, 13.333% 8px, 15% 0, 16.667% 8px, 18.333% 0,
+    20% 8px, 21.667% 0, 23.333% 8px, 25% 0, 26.667% 8px, 28.333% 0,
+    30% 8px, 31.667% 0, 33.333% 8px, 35% 0, 36.667% 8px, 38.333% 0,
+    40% 8px, 41.667% 0, 43.333% 8px, 45% 0, 46.667% 8px, 48.333% 0,
+    50% 8px, 51.667% 0, 53.333% 8px, 55% 0, 56.667% 8px, 58.333% 0,
+    60% 8px, 61.667% 0, 63.333% 8px, 65% 0, 66.667% 8px, 68.333% 0,
+    70% 8px, 71.667% 0, 73.333% 8px, 75% 0, 76.667% 8px, 78.333% 0,
+    80% 8px, 81.667% 0, 83.333% 8px, 85% 0, 86.667% 8px, 88.333% 0,
+    90% 8px, 91.667% 0, 93.333% 8px, 95% 0, 96.667% 8px, 98.333% 0,
+    100% 8px, 100% 100%, 0% 100%
+  );
+}
+.sheet-handle:active { cursor: grabbing; }
+.checklist-item.done .checklist-check::before { content: "[✓]"; }
+.checklist-item.done .checklist-body { color: var(--rc-veryfaded); text-decoration: line-through; text-decoration-color: var(--rc-faded); }
+.checklist-item-new .checklist-body:empty::before { content: "+ 新增一项"; color: var(--rc-faded); }
+.checklist-item-new .checklist-del-x, .checklist-item-new .checklist-check { visibility: hidden; }
+.checklist-check::before { content: "[ ]"; }
+#checklist-barcode i { display: block; background: var(--rc-ink); opacity: 0.85; }
 </style>
 </helmet>
 
@@ -79,10 +117,19 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div class="nav-icon {{ navDiaryClass }}" onClick="{{ navDiary }}">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="var(--text-secondary, #68544B)" stroke-width="1.5"/><path d="M8 7h8M8 11h5" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/><path d="M4 7.5h2M4 16.5h2" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/></svg>
 </div>
-<!-- Calendar (原月事) -->
+<!-- Calendar -->
 <div class="nav-icon {{ navPeriodClass }}" onClick="{{ navPeriod }}">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="var(--text-secondary, #68544B)" stroke-width="1.5"/><path d="M3 10h18M8 2v4M16 2v4" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/></svg>
 </div>
+
+<!-- Checklist -->
+<div class="nav-icon {{ navChecklistClass }}" onClick="{{ navChecklist }}">
+  <svg width="20" height="20" viewBox="0 0 24 24" fill="none">
+    <rect x="3" y="4" width="18" height="16" rx="2" stroke="var(--text-secondary, #68544B)" stroke-width="1.5"/>
+    <path d="M8 9h8M8 13h6M8 17h4" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/>
+  </svg>
+</div>
+
 <!-- Memory -->
 <div class="nav-icon {{ navMemClass }}" onClick="{{ navMemory }}">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 4v16M8 6c0 3 4 4 4 8M16 6c0 3-4 4-4 8" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="20" r="1" fill="var(--text-secondary, #68544B)"/></svg>
@@ -398,7 +445,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(43,38,30,.04);">
 <sc-for list="{{ pinnedChats }}" as="c" hint-placeholder-count="1">
 <div style="padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;" onClick="{{ c.open }}" onContextMenu="{{ c.longPress }}">
-<div style="width:36px;height:36px;border-radius:50%;background:#DFF2EC;display:flex;align-items:center;justify-content:center;flex:none;">
+<div style="width:36px;height:36px;border-radius:50%;overflow:hidden;cursor:pointer;margin-bottom:20px;margin-left:4px;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;">
 <sc-if value="{{ hasAiAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ aiAvatar }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></sc-if>
 <sc-if value="{{ !hasAiAvatar }}" hint-placeholder-val="{{ true }}"><span style="font-size:14px;">🤍</span></sc-if>
 </div>
@@ -1515,24 +1562,153 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <img src="{{ petGif }}" width="{{ petSize }}" height="{{ petSize }}" style="image-rendering:pixelated;" alt="Kel">
 </div>
 </sc-if>
-
+<!-- ===== CHECKLIST RECEIPT DRAWER ===== -->
+<sc-if value="{{ checklistOpen }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;inset:0;z-index:300;">
+    <!-- 遮罩 -->
+    <div onClick="{{ closeChecklist }}" style="position:absolute;inset:0;background:rgba(0,0,0,.3);animation:fadeIn .2s ease both;"></div>
+    <!-- 抽屉 -->
+    <div class="receipt-sheet" style="position:absolute;bottom:0;left:0;right:0;background:var(--rc-paper, #F0EBE0);border-radius:16px 16px 0 0;max-height:92vh;height:var(--ck-h, 62vh);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1), height 0.28s cubic-bezier(0.32,0.72,0,1);transform:translateY(0);display:flex;flex-direction:column;box-shadow:0 -8px 32px rgba(0,0,0,0.28);">
+      
+      <!-- 拖拽手柄 -->
+      <div class="sheet-handle" id="checklist-handle" style="position:absolute;top:14px;left:50%;transform:translateX(-50%);width:44px;height:5px;border-radius:3px;background:var(--rc-faded, #86806E);opacity:0.4;cursor:grab;touch-action:none;z-index:5;"></div>
+      
+      <!-- 滚动内容（收据） -->
+      <div class="rc-scroll" style="flex:1;min-height:0;overflow-y:auto;padding:46px 22px calc(env(safe-area-inset-bottom,0px)+20px);">
+        
+        <!-- 收据头 -->
+        <div class="rc-head" style="text-align:center;margin-bottom:10px;">
+          <div class="rc-brand" style="font-size:10px;color:var(--rc-faded, #86806E);letter-spacing:4px;font-weight:700;">{{ checklistBrand }}</div>
+          <div class="rc-title" style="font-family:var(--rc-serif, 'Source Han Serif SC','Songti SC',serif);font-style:italic;font-size:30px;font-weight:700;color:var(--rc-ink, #2A2620);margin-top:4px;letter-spacing:1px;line-height:1.1;">Today's Receipt</div>
+          <div class="rc-date" style="font-size:11px;color:var(--rc-faded, #86806E);margin-top:6px;letter-spacing:2px;">{{ checklistDate }}</div>
+        </div>
+        
+        <div class="rc-dashes" style="font-size:11px;color:var(--rc-rule, rgba(60,50,40,0.32));letter-spacing:1px;text-align:center;user-select:none;padding:4px 0;white-space:nowrap;overflow:hidden;">{{ checklistDash }}</div>
+        
+        <div class="rc-row" style="display:flex;justify-content:space-between;font-size:12px;color:var(--rc-ink, #2A2620);letter-spacing:0.5px;padding:3px 0;">
+          <span>开店</span><span>00:00</span>
+        </div>
+        <div class="rc-row" style="display:flex;justify-content:space-between;font-size:12px;color:var(--rc-ink, #2A2620);letter-spacing:0.5px;padding:3px 0;">
+          <span>柜员</span><span>{{ checklistClerks }}</span>
+        </div>
+        <div class="rc-row" style="display:flex;justify-content:space-between;font-size:12px;color:var(--rc-ink, #2A2620);letter-spacing:0.5px;padding:3px 0;">
+          <span>此刻</span><span>{{ checklistNow }}</span>
+        </div>
+        <div class="rc-row" style="display:flex;justify-content:space-between;font-size:12px;color:var(--rc-ink, #2A2620);letter-spacing:0.5px;padding:3px 0;">
+          <span>单据号</span><span>{{ checklistSerial }}</span>
+        </div>
+        
+        <div class="rc-dashes" style="font-size:11px;color:var(--rc-rule, rgba(60,50,40,0.32));letter-spacing:1px;text-align:center;user-select:none;padding:4px 0;white-space:nowrap;overflow:hidden;">{{ checklistDash }}</div>
+        
+        <div class="rc-section-label" style="text-align:center;font-size:11px;color:var(--rc-faded, #86806E);letter-spacing:3px;font-weight:700;padding:4px 0 10px;">
+          TODAY'S ORDER · <span id="checklist-total-label">{{ checklistTotal }}</span> 项
+        </div>
+        
+        <!-- 清单列表 -->
+        <div class="list" id="checklist-list">
+          <sc-for list="{{ checklistItemsRendered }}" as="item" hint-placeholder-count="5">
+            <div class="checklist-item {{ item.doneClass }}" style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:0.5px dashed var(--rc-rule-soft, rgba(60,50,40,0.16));">
+              <!-- 复选框 -->
+              <button class="checklist-check" onClick="{{ item.toggle }}" style="flex:0 0 auto;border:0;background:transparent;padding:0;margin:0;font-family:var(--rc-mono,'SF Mono',monospace);font-size:14px;color:var(--rc-ink, #2A2620);letter-spacing:0.5px;line-height:1.45;cursor:pointer;transition:transform .12s ease;">
+                {{ item.checkMark }}
+              </button>
+              
+              <!-- 时间戳徽章 -->
+              <sc-if value="{{ item.hasTrigger }}" hint-placeholder-val="{{ false }}">
+                <span class="checklist-trigger" style="flex:0 0 auto;align-self:flex-start;margin-top:1px;font-family:var(--rc-mono,'SF Mono',monospace);font-size:11.5px;letter-spacing:0.4px;color:var(--rc-stamp, #A8362D);padding:0 5px;border:0.5px solid var(--rc-rule-soft, rgba(60,50,40,0.16));border-radius:3px;line-height:1.6;">{{ item.badgeText }}</span>
+              </sc-if>
+              
+              <!-- 正文 -->
+              <div class="checklist-body" style="flex:1;min-width:0;font-family:var(--rc-mono,'SF Mono',monospace);font-size:13.5px;line-height:1.45;letter-spacing:0.2px;color:var(--rc-ink, #2A2620);white-space:pre-wrap;word-break:break-word;">{{ item.body }}</div>
+              
+              <!-- 逾期感叹号 -->
+              <sc-if value="{{ item.overdue }}" hint-placeholder-val="{{ false }}">
+                <span class="checklist-overdue-bang" style="flex:0 0 auto;align-self:flex-start;font-family:var(--rc-mono,'SF Mono',monospace);font-size:13.5px;font-weight:700;color:var(--rc-stamp, #A8362D);">!</span>
+              </sc-if>
+              
+              <!-- 署名 -->
+              <sc-if value="{{ item.showBy }}" hint-placeholder-val="{{ false }}">
+                <span class="checklist-by" style="flex:0 0 auto;font-style:italic;font-size:11px;color:var(--rc-faded, #86806E);letter-spacing:0.5px;line-height:1.6;">{{ item.byLabel }}</span>
+              </sc-if>
+              
+              <!-- 删除按钮 -->
+              <button class="checklist-del-x" onClick="{{ item.delete }}" style="flex:0 0 auto;border:0;background:transparent;cursor:pointer;font-family:var(--rc-mono,'SF Mono',monospace);font-size:14px;color:var(--rc-veryfaded, #BAB4A4);line-height:1.45;padding:0 2px;">×</button>
+            </div>
+          </sc-for>
+          
+          <!-- 新增行 -->
+          <div class="checklist-item checklist-item-new" style="display:flex;align-items:flex-start;gap:10px;padding:6px 0;border-bottom:0.5px dashed var(--rc-rule-soft, rgba(60,50,40,0.16));">
+            <button class="checklist-check" style="flex:0 0 auto;border:0;background:transparent;padding:0;margin:0;font-family:var(--rc-mono,'SF Mono',monospace);font-size:14px;color:var(--rc-ink, #2A2620);letter-spacing:0.5px;line-height:1.45;cursor:pointer;visibility:hidden;">[ ]</button>
+            <div class="checklist-body" contenteditable="true" id="checklist-new-input" style="flex:1;min-width:0;font-family:var(--rc-mono,'SF Mono',monospace);font-size:13px;line-height:1.45;color:var(--rc-faded, #86806E);outline:none;white-space:pre-wrap;word-break:break-word;" placeholder="+ 新增一项" @keydown="{{ checklistNewKeydown }}"></div>
+            <button class="checklist-del-x" style="flex:0 0 auto;border:0;background:transparent;cursor:pointer;font-family:var(--rc-mono,'SF Mono',monospace);font-size:14px;color:var(--rc-veryfaded, #BAB4A4);line-height:1.45;padding:0 2px;visibility:hidden;">×</button>
+          </div>
+        </div>
+        
+        <div style="height:14px;"></div>
+        <div class="rc-dashes" style="font-size:11px;color:var(--rc-rule, rgba(60,50,40,0.32));letter-spacing:1px;text-align:center;user-select:none;padding:4px 0;white-space:nowrap;overflow:hidden;">{{ checklistDash }}</div>
+        
+        <div class="rc-row" style="display:flex;justify-content:space-between;font-size:12px;color:var(--rc-ink, #2A2620);letter-spacing:0.5px;padding:3px 0;">
+          <span>小计</span><span>{{ checklistSubtotal }}</span>
+        </div>
+        <div class="rc-row faded" style="display:flex;justify-content:space-between;font-size:12px;color:var(--rc-faded, #86806E);letter-spacing:0.5px;padding:3px 0;">
+          <span>已结清</span><span>{{ checklistDone }}</span>
+        </div>
+        <div class="rc-row" style="display:flex;justify-content:space-between;font-size:12px;color:var(--rc-ink, #2A2620);letter-spacing:0.5px;padding:3px 0;">
+          <span>未结清</span><span>{{ checklistUndone }}</span>
+        </div>
+        
+        <div class="rc-progress-row" style="display:flex;align-items:center;gap:10px;padding:6px 0;font-size:12px;color:var(--rc-ink, #2A2620);letter-spacing:0.5px;">
+          <span>进度</span>
+          <span class="rc-progress-bar" style="flex:1;letter-spacing:-0.5px;overflow:hidden;white-space:nowrap;">{{ checklistProgressBar }}</span>
+          <span class="rc-progress-pct" style="font-size:11px;color:var(--rc-faded, #86806E);">{{ checklistProgressPct }}</span>
+        </div>
+        
+        <div class="rc-row faded" style="display:flex;justify-content:space-between;font-size:12px;color:var(--rc-faded, #86806E);letter-spacing:0.5px;padding:3px 0;">
+          <span>零点结账</span><span>{{ checklistMidnight }}</span>
+        </div>
+        
+        <div class="rc-dashes" style="font-size:11px;color:var(--rc-rule, rgba(60,50,40,0.32));letter-spacing:1px;text-align:center;user-select:none;padding:4px 0;white-space:nowrap;overflow:hidden;">{{ checklistDash }}</div>
+        
+        <div class="rc-stamp-wrap" style="text-align:center;padding:14px 0 4px;">
+          <span class="rc-stamp" style="display:inline-block;padding:6px 14px;border:2.5px solid var(--rc-stamp, #A8362D);border-radius:4px;color:var(--rc-stamp, #A8362D);font-family:var(--rc-serif, 'Source Han Serif SC',serif);font-style:italic;font-size:14px;font-weight:700;letter-spacing:2px;transform:rotate(-4deg);opacity:0.82;">PAID · 谢谢</span>
+        </div>
+        
+        <div class="rc-foot-note" style="text-align:center;padding:8px 8px 0;font-family:var(--rc-serif, 'Source Han Serif SC',serif);font-style:italic;font-size:13px;color:var(--rc-faded, #86806E);line-height:1.7;">{{ checklistFoot }}</div>
+        
+        <div class="rc-barcode" id="checklist-barcode" style="display:flex;align-items:flex-end;gap:1px;justify-content:center;height:38px;"></div>
+        <div class="rc-barcode-serial" style="text-align:center;font-size:10px;color:var(--rc-faded, #86806E);letter-spacing:3px;">{{ checklistBarcodeSerial }}</div>
+        
+      </div>
+    </div>
+  </div>
+</sc-if>
 </div>
 
-<!-- Profile Card -->
+<!-- Profile Card (大正方形圆角) -->
 <sc-if value="{{ profileCardOpen }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;inset:0;z-index:300;" onClick="{{ closeProfileCard }}">
-<div style="position:absolute;top:60px;left:70px;width:240px;background:rgba(255,255,255,0.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.5);border-radius:22px;padding:20px;box-shadow:0 8px 32px rgba(0,0,0,0.12);animation:fadeUp .2s ease both;" onClick="{{ stopProp }}">
-<div style="width:100%;height:80px;border-radius:14px;background:var(--bubble-ai, #D7EBE4);margin-bottom:-24px;"></div>
-<div style="display:flex;flex-direction:column;align-items:center;">
-<div onClick="{{ pickUserAvatar }}" style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:3px solid #FFF;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
-<sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
-<sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:var(--bubble-ai, #D7EBE4);display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="var(--bubble-user, #59483F)" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
-</div>
-<div style="font-size:15px;font-weight:600;color:var(--bubble-user, #59483F);margin-top:10px;">江吟</div>
-<div style="font-size:12px;color:var(--bubble-user, #59483F);opacity:.5;margin-top:6px;text-align:center;line-height:1.5;">{{ profileGreeting }}</div>
-</div>
-</div>
-</div>
+  <div style="position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);animation:fadeIn .2s ease both;" onClick="{{ closeProfileCard }}">
+    <div style="width:300px;height:300px;border-radius:24px;background:var(--bg-main, #F5F3EE);box-shadow:0 20px 60px rgba(0,0,0,0.3);overflow:hidden;display:flex;flex-direction:column;position:relative;" onClick="{{ stopProp }}">
+      
+      <!-- 上半部分：头像背景区（可放置自定义图片） -->
+      <div style="flex:1;background:var(--bubble-ai, #D7EBE4);display:flex;align-items:center;justify-content:center;position:relative;min-height:0;">
+        <!-- 这里可以放背景图片或装饰 -->
+        <div style="position:absolute;inset:0;background:linear-gradient(135deg, rgba(215,235,228,0.6), rgba(255,255,255,0.2));"></div>
+        <!-- 头像居中 -->
+        <div onClick="{{ pickUserAvatar }}" style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:3px solid #FFF;box-shadow:0 4px 16px rgba(0,0,0,0.15);cursor:pointer;z-index:2;">
+          <sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
+          <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="#59483F" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="#59483F" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
+        </div>
+      </div>
+      
+      <!-- 下半部分：半透明磨砂内容区 -->
+      <div style="height:50%;background:rgba(255,255,255,0.75);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;border-top:1px solid rgba(255,255,255,0.3);">
+        <div style="font-size:18px;font-weight:600;color:var(--bubble-user, #59483F);">江吟</div>
+        <div style="font-size:13px;color:var(--bubble-user, #59483F);opacity:0.6;margin-top:6px;text-align:center;line-height:1.5;">{{ profileGreeting }}</div>
+        <button onClick="{{ closeProfileCard }}" style="margin-top:14px;border:none;background:rgba(0,0,0,0.05);border-radius:20px;padding:6px 18px;font-size:12px;color:#6B665E;cursor:pointer;">关闭</button>
+      </div>
+      
+    </div>
+  </div>
 </sc-if>
 
 <!-- ========== MODALS & SHEETS ========== -->
@@ -2502,7 +2678,12 @@ return summary.trim();
 function renderContent(text, isUser) {
 if (!text || !text.trim()) return '';
 // Escape HTML first
-let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
+// 处理引用行（以 > 开头的行，支持多行引用）
+html = html.replace(/^(&gt; .*(\n|$))+/gm, function(match) {
+  const lines = match.split('\n').filter(l => l.trim().startsWith('&gt;'));
+  const content = lines.map(l => l.replace(/^&gt; /, '').trim()).join('\n');
+  return `<blockquote style="border-left:3px solid var(--rc-faded, #86806E);padding:4px 12px;margin:6px 0;background:rgba(0,0,0,0.04);border-radius:0 6px 6px 0;color:var(--rc-faded, #86806E);font-style:italic;">${content}</blockquote>`;
+});
 // Code blocks - render as downloadable/copyable blocks
 html = html.replace(/```(\w*)\n([\s\S]*?)```/g, function(match, lang, code) {
 const langLabel = lang || 'code';
@@ -2539,8 +2720,7 @@ return html;
 }
 
 const EMOJI_LIST = ['😊','😢','😡','🥰','😴','🤔','✨','🌧️','☀️','🌈','💪','😭','🎉','💕','😤','🫠','👍','❤️','🥺','😮','😢','🥰','😈','✨'];
-const REACTION_EMOJIS = ['👍','❤️','😂','😮','😢','🥰','👎','✨'];
-
+const REACTION_EMOJIS = ['♡', '✓', '✘', '-_-||', '⚤', '☃', '❣', '✦'];
 // Theme presets
 const THEME_PRESETS = [
 { id: 'default', name: '默认米白', preview: 'linear-gradient(135deg, #F5F3EE, #d6d2c8)', checkColor: '#1A1815', vars: { '--bg-base': '#d6d2c8', '--bg-main': '#F5F3EE', '--bg-card': '#FFF', '--bg-input': '#FBFAF7', '--border-card': '#EDE9E0', '--border-input': '#E7E3DA', '--text-primary': '#1A1815', '--text-secondary': '#48453E', '--text-bold': '#3A362F', '--bubble-user': '#59483F', '--bubble-ai': '#D7EBE4', '--bubble-user-text': '#D7EBE4', '--bubble-ai-text': '#59483F'
@@ -2557,6 +2737,24 @@ class Component extends DCLogic {
 constructor(props) {
 super(props);
 const saved = loadData();
+
+// === 迁移旧 todos 到 checklist ===
+if (saved && saved.todos && saved.todos.length > 0 && !localStorage.getItem('kel-checklist-migrated')) {
+  saved.checklistItems = saved.todos.map(t => ({
+    id: t.id || Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    body: t.body || '',
+    done: t.done || false,
+    done_at: t.done_at || null,
+    is_fixed: t.is_fixed !== undefined ? t.is_fixed : true,
+    trigger_at: t.trigger_at || null,
+    notified: t.notified || false,
+    created_by: t.created_by || 'user',
+    created_at: t.created_at || Date.now(),
+    updated_at: t.updated_at || Date.now()
+  }));
+  localStorage.setItem('kel-checklist-migrated', 'true');
+}
+
 this.state = {
 thinkOpenMap: {},
 thinkModalOpen: false,
@@ -2738,7 +2936,14 @@ todoEditBody: '',
 todoEditAt: '',
 todoEditIn: '',
 todoEditIsFixed: true,
-accounts: saved.accounts || []
+accounts: saved.accounts || [],
+// ===== 清单新状态 =====
+checklistOpen: false,
+checklistItems: saved.checklistItems || [],
+checklistSnap: 0.62,
+checklistDragStart: null,
+checklistDragStartSnap: 0.62,
+checklistNewText: '',
 };
 
 // 迁移：为所有消息补全 id
@@ -3103,9 +3308,11 @@ this._resetTimer = setInterval(() => {
   this._resetTodosAtMidnight();
 }, 3600000);
 
-// 页面加载时立即检查
-setTimeout(() => this._checkTodoReminders(), 3000);
-setTimeout(() => this._resetTodosAtMidnight(), 5000);
+// 清单定时器
+this._checklistTimer = setInterval(() => this._checkReminders(), 60000);
+this._resetTimer = setInterval(() => this._resetChecklistAtMidnight(), 3600000);
+setTimeout(() => this._checkReminders(), 3000);
+setTimeout(() => this._resetChecklistAtMidnight(), 5000);
 
 // 请求通知权限
 if ('Notification' in window && Notification.permission === 'default') {
@@ -3382,6 +3589,141 @@ show(text) {
 if (this._t) clearTimeout(this._t);
 this.setState({ toastShow: true, toastText: text });
 this._t = setTimeout(() => this.setState({ toastShow: false }), 1800);
+}
+// ====== Checklist Methods ======
+_checkReminders() {
+  const now = Date.now();
+  const items = this.state.checklistItems;
+  const due = items.filter(t => 
+    t.trigger_at && 
+    t.trigger_at <= now && 
+    t.trigger_at > now - 60000 && 
+    !t.notified && 
+    !t.done
+  );
+  if (due.length === 0) return;
+  
+  const updated = items.map(t => 
+    due.find(d => d.id === t.id) ? { ...t, notified: true } : t
+  );
+  this.setState({ checklistItems: updated });
+  this._persistChecklist();
+  
+  if (this.state.soundEnabled) {
+    try { new Audio('./notification.mp3').play(); } catch(e) {}
+  }
+  
+  for (const todo of due) {
+    if ('Notification' in window && Notification.permission === 'granted') {
+      new Notification('⏰ Kel 提醒你', {
+        body: todo.body,
+        icon: this.state.aiAvatar || '',
+        tag: 'checklist-' + todo.id,
+        requireInteraction: true
+      });
+    }
+  }
+  
+  if (document.visibilityState === 'visible') {
+    const list = due.map(t => '• ' + t.body).join('\n');
+    this.show('⏰ 待办提醒\n' + list);
+  }
+}
+
+_resetChecklistAtMidnight() {
+  const now = new Date();
+  const today = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  const lastReset = localStorage.getItem('kel-checklist-last-reset');
+  if (lastReset === today) return;
+  
+  const items = this.state.checklistItems.map(t => {
+    if (t.is_fixed) {
+      return { ...t, done: false, done_at: null, notified: false };
+    }
+    return t;
+  }).filter(t => {
+    if (t.is_fixed) return true;
+    if (t.done || !t.trigger_at) return false;
+    return true;
+  });
+  
+  this.setState({ checklistItems: items });
+  this._persistChecklist();
+  localStorage.setItem('kel-checklist-last-reset', today);
+}
+
+_addChecklistItem(body, isFixed = true, trigger_at = null) {
+  if (!body.trim()) return;
+  const newItem = {
+    id: Date.now().toString(36) + Math.random().toString(36).slice(2,6),
+    body: body.trim(),
+    done: false,
+    done_at: null,
+    is_fixed: isFixed,
+    trigger_at: trigger_at || null,
+    notified: false,
+    created_by: 'user',
+    created_at: Date.now(),
+    updated_at: Date.now()
+  };
+  const items = [...this.state.checklistItems, newItem];
+  this.setState({ checklistItems: items });
+  this._persistChecklist();
+}
+
+_toggleChecklistItem(id) {
+  const items = this.state.checklistItems.map(t => 
+    t.id === id ? { ...t, done: !t.done, done_at: !t.done ? Date.now() : null } : t
+  );
+  this.setState({ checklistItems: items });
+  this._persistChecklist();
+}
+
+_deleteChecklistItem(id) {
+  const items = this.state.checklistItems.filter(t => t.id !== id);
+  this.setState({ checklistItems: items });
+  this._persistChecklist();
+}
+
+_persistChecklist() {
+  const data = { checklistItems: this.state.checklistItems };
+  localStorage.setItem('kel-checklist-data', JSON.stringify(data));
+}
+
+_getChecklistRenderedItems() {
+  const now = Date.now();
+  const items = this.state.checklistItems || [];
+  const overdue = items.filter(t => t.trigger_at && t.trigger_at <= now && !t.done);
+  const rest = items.filter(t => !(t.trigger_at && t.trigger_at <= now && !t.done));
+  const sorted = [...overdue, ...rest];
+  
+  return sorted.map(item => {
+    const isOverdue = item.trigger_at && item.trigger_at <= now && !item.done;
+    const hasTrigger = !!item.trigger_at;
+    const badgeText = hasTrigger ? (() => {
+      const d = new Date(item.trigger_at);
+      const hh = String(d.getHours()).padStart(2,'0');
+      const mm = String(d.getMinutes()).padStart(2,'0');
+      const today = new Date();
+      if (d.toDateString() === today.toDateString()) return `${hh}:${mm}`;
+      return `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${hh}:${mm}`;
+    })() : '';
+    
+    return {
+      id: item.id,
+      body: item.body,
+      done: item.done,
+      doneClass: item.done ? 'done' : '',
+      checkMark: item.done ? '[✓]' : '[ ]',
+      hasTrigger: hasTrigger,
+      badgeText: badgeText,
+      overdue: isOverdue,
+      showBy: item.created_by === 'assistant',
+      byLabel: item.created_by === 'assistant' ? (this.state.NAMES?.assistant || 'PARTNER') : '',
+      toggle: () => this._toggleChecklistItem(item.id),
+      delete: () => this._deleteChecklistItem(item.id)
+    };
+  });
 }
 
 // ====== Theme ======
@@ -6693,18 +7035,24 @@ ctxMultiSelect: () => {
 reactionEmojis: REACTION_EMOJIS.map(emoji => ({
   emoji,
   pick: () => {
-    const idx = s.contextMenuIdx;
-    if (idx < 0) return;
-    const chats = { ...s.chats }; const c = { ...chats[s.currentChatId] };
-    const newMsgs = [...c.messages];
-    const msg = { ...newMsgs[idx] };
-    const reactions = [...(msg.reactions || [])];
-    if (!reactions.includes(emoji)) reactions.push(emoji);
-    msg.reactions = reactions;
-    newMsgs[idx] = msg; c.messages = newMsgs; chats[s.currentChatId] = c;
-    self.setState({ chats, contextMenuIdx: -1 });
-    self.persist();
-  }
+  const idx = s.contextMenuIdx;
+  if (idx < 0) return;
+  // 立即清除菜单，防止重复点击
+  self.setState({ contextMenuIdx: -1 });
+  const chats = { ...s.chats };
+  const c = { ...chats[s.currentChatId] };
+  const newMsgs = [...c.messages];
+  if (idx >= newMsgs.length) return;
+  const msg = { ...newMsgs[idx] };
+  const reactions = [...(msg.reactions || [])];
+  if (!reactions.includes(emoji)) reactions.push(emoji);
+  msg.reactions = reactions;
+  newMsgs[idx] = msg;
+  c.messages = newMsgs;
+  chats[s.currentChatId] = c;
+  self.setState({ chats });
+  self.persist();
+}
 })),
 openReactionInput: () => {
   const custom = prompt('输入自定义表情/文字');
@@ -7127,7 +7475,83 @@ musicTrackList: (self._musicList || []).map((tk, idx) => ({
   nameColor: idx === s.musicIdx && s.musicPlaying ? 'var(--text-primary, #1A1815)' : '#3A362F',
   play: () => self._playMusic(idx),
   del: (e) => { e.stopPropagation(); self._removeMusicTrack(idx); }
-}))
+})),
+// ===== 清单数据 =====
+checklistOpen: s.checklistOpen,
+checklistItemsRendered: this._getChecklistRenderedItems(),
+checklistBrand: this.state.APP_NAME || 'YOUR-APP',
+checklistClerks: (this.state.NAMES?.assistant || 'PARTNER') + ' · ' + (this.state.NAMES?.user || 'YOU'),
+checklistDate: (() => {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  const wd = ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()];
+  return `${y} / ${m} / ${day} · ${wd}`;
+})(),
+checklistNow: (() => {
+  const d = new Date();
+  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
+})(),
+checklistSerial: (() => {
+  const d = new Date();
+  const y = String(d.getFullYear()).slice(2);
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  const total = (s.checklistItems || []).length;
+  return `#${y}-${m}-${day}-${String(total).padStart(3,'0')}`;
+})(),
+checklistTotal: (s.checklistItems || []).length,
+checklistDash: '─ '.repeat(18).trim(),
+checklistSubtotal: (s.checklistItems || []).length + ' 项',
+checklistDone: (s.checklistItems || []).filter(t => t.done).length + ' 项',
+checklistUndone: (s.checklistItems || []).filter(t => !t.done).length + ' 项',
+checklistProgressBar: (() => {
+  const total = (s.checklistItems || []).length;
+  const done = (s.checklistItems || []).filter(t => t.done).length;
+  const pct = total ? done/total : 0;
+  const w = 18;
+  const filled = Math.round(pct * w);
+  return '█'.repeat(filled) + '░'.repeat(w - filled);
+})(),
+checklistProgressPct: (() => {
+  const total = (s.checklistItems || []).length;
+  const done = (s.checklistItems || []).filter(t => t.done).length;
+  return total ? Math.round(done/total * 100) + '%' : '0%';
+})(),
+checklistMidnight: (() => {
+  const d = new Date();
+  const minsLeft = (24 - d.getHours()) * 60 - d.getMinutes();
+  return String(Math.floor(minsLeft/60)).padStart(2,'0') + ':' + String(minsLeft%60).padStart(2,'0') + ' 后';
+})(),
+checklistFoot: `今天也辛苦了，${this.state.NAMES?.user || 'YOU'}。\n零点之后，未结清的会自动清零。`,
+checklistBarcodeSerial: (() => {
+  const d = new Date();
+  const y = String(d.getFullYear()).slice(2);
+  const m = String(d.getMonth()+1).padStart(2,'0');
+  const day = String(d.getDate()).padStart(2,'0');
+  const total = (s.checklistItems || []).length;
+  return `${y} ${m} ${day} ${String(total).padStart(3,'0')}`;
+})(),
+checklistNewKeydown: (e) => {
+  if (e.key === 'Enter' && !e.shiftKey) {
+    e.preventDefault();
+    const el = document.getElementById('checklist-new-input');
+    if (el) {
+      const text = el.innerText.trim();
+      if (text) {
+        this._addChecklistItem(text, true, null);
+        el.innerText = '';
+      }
+    }
+  }
+},
+navChecklist: () => {
+  this.setState({ checklistOpen: true, plus: false, profile: false, drawer: false });
+},
+closeChecklist: () => {
+  this.setState({ checklistOpen: false });
+},
 };
 }
 }
