@@ -5577,7 +5577,7 @@ initPhotoStack() {
       }
     }
   });
-},
+}
 // ====== RENDER ======
 renderVals() {
 const s = this.state;
@@ -7600,7 +7600,7 @@ musicTrackList: (self._musicList || []).map((tk, idx) => ({
   del: (e) => { e.stopPropagation(); self._removeMusicTrack(idx); }
 })),
 // 初始化 PhotoStack
-initPhotoStack: () => {
+initPhotoStackUI: () => {
   setTimeout(() => {
     const containers = document.querySelectorAll('.photostack-container');
     containers.forEach(el => {
