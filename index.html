@@ -456,7 +456,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div style="font-size:11px;color:#B8B3A8;font-weight:600;letter-spacing:.5px;padding:0 4px 8px;">置顶</div>
 <div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;overflow:hidden;box-shadow:0 1px 3px rgba(43,38,30,.04);">
 <sc-for list="{{ pinnedChats }}" as="c" hint-placeholder-count="1">
-<div style="padding:14px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;" onClick="{{ c.open }}" onContextMenu="{{ c.longPress }}">
+<div style="padding:13px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;border-bottom:1px solid #F5F3EE;" onClick="{{ c.open }}" onContextMenu="{{ c.longPress }}">
 <div style="width:36px;height:36px;border-radius:50%;overflow:hidden;cursor:pointer;margin-bottom:20px;margin-left:4px;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;">
 <sc-if value="{{ hasAiAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ aiAvatar }}" style="width:100%;height:100%;border-radius:50%;object-fit:cover;"></sc-if>
 <sc-if value="{{ !hasAiAvatar }}" hint-placeholder-val="{{ true }}"><span style="font-size:14px;">🤍</span></sc-if>
@@ -4177,7 +4177,9 @@ handleInputKey(e) {
 if (e.key === 'Enter' && !e.shiftKey) {
 e.preventDefault();
 const text = (this.state.input || '').trim();
-if (!text && !this.state.attachment) return;
+const hasImages = this.state.attachments && this.state.attachments.length > 0;
+// 没有文字也没有图片 → 不发送
+if (!text && !hasImages) return;
 if (this.state.isBusy) return;
 
 const chatId = this.state.currentChatId;
@@ -5561,8 +5563,15 @@ return cells;
 // ====== PhotoStack 初始化 ======
 initPhotoStack() {
   const containers = document.querySelectorAll('.photostack-container');
+  if (containers.length === 0) {
+    // 如果没找到容器，300ms 后重试一次
+    setTimeout(() => this.initPhotoStack(), 500);
+    return;
+  }
   containers.forEach(el => {
     if (el._initialized) return;
+    // 检查容器是否有子元素（图片）
+    if (el.children.length === 0) return;
     if (typeof PhotoStack !== 'undefined') {
       try {
         new PhotoStack(el, {
@@ -5572,9 +5581,12 @@ initPhotoStack() {
           transition: 'all 0.3s cubic-bezier(0.32, 0.72, 0, 1)'
         });
         el._initialized = true;
+        console.log('[PhotoStack] 初始化成功:', el);
       } catch(e) {
         console.warn('[PhotoStack] 初始化失败:', e);
       }
+    } else {
+      console.warn('[PhotoStack] 库未加载，请检查 photostack.umd.js 是否引入');
     }
   });
 }
@@ -6186,7 +6198,7 @@ self.show('自定义配色已应用');
 }
 };
 // 延迟初始化 PhotoStack
-setTimeout(() => this.initPhotoStack(), 300);
+setTimeout(() => this.initPhotoStack(), 500);
 
 return {
 true: true, false: false,
