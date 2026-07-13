@@ -1526,41 +1526,41 @@ input, textarea { user-select:text; -webkit-user-select:text; }
   <div style="position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);animation:fadeIn .2s ease both;" onClick="{{ closeProfileCard }}">
     <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.35);position:relative;" onClick="{{ stopProp }}">
 
-      <!-- 上半部分：背景图区域，点击可换图 -->
-      <div onClick="{{ pickProfileBg }}" style="position:absolute;top:0;left:0;right:0;height:55%;background:#FFF;cursor:pointer;display:flex;align-items:center;justify-content:center;">
+      <!-- 整个正方形的背景图（全覆盖） -->
+      <div onClick="{{ pickProfileBg }}" style="position:absolute;inset:0;background:#222;cursor:pointer;">
         <sc-if value="{{ hasProfileBg }}" hint-placeholder-val="{{ false }}">
           <img src="{{ profileBgUrl }}" style="width:100%;height:100%;object-fit:cover;" alt="">
         </sc-if>
         <sc-if value="{{ !hasProfileBg }}" hint-placeholder-val="{{ true }}">
-          <div style="display:flex;flex-direction:column;align-items:center;gap:6px;opacity:0.3;">
-            <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="3" stroke="#68544B" stroke-width="1.5"/><circle cx="8.5" cy="10" r="1.5" stroke="#68544B" stroke-width="1.3"/><path d="M5 18l4.5-4 3 2.5L16 12l3 3" stroke="#68544B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-            <span style="font-size:11px;color:#68544B;">点击设置背景</span>
+          <div style="width:100%;height:100%;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;opacity:0.4;">
+            <svg width="28" height="28" viewBox="0 0 24 24" fill="none"><rect x="3" y="5" width="18" height="14" rx="3" stroke="#FFF" stroke-width="1.5"/><circle cx="8.5" cy="10" r="1.5" stroke="#FFF" stroke-width="1.3"/><path d="M5 18l4.5-4 3 2.5L16 12l3 3" stroke="#FFF" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            <span style="font-size:12px;color:#FFF;">点击设置背景</span>
           </div>
         </sc-if>
       </div>
 
-      <!-- 下半部分：磨砂圆角层 -->
-      <div style="position:absolute;bottom:0;left:0;right:0;height:50%;background:rgba(255,255,255,0.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:20px 20px 24px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;">
-        <!-- 头像居中（骑在分界线上） -->
-        <div onClick="{{ pickUserAvatar }}" style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:3px solid #FFF;box-shadow:0 4px 16px rgba(0,0,0,0.15);cursor:pointer;position:absolute;top:-40px;">
+      <!-- 下半部分：磨砂圆角，透出背景图 -->
+      <div style="position:absolute;bottom:0;left:0;right:0;height:50%;background:rgba(255,255,255,0.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:20px 20px 24px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;">
+        <!-- 头像（骑在分界线上） -->
+        <div onClick="{{ pickUserAvatar }}" style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:3px solid #FFF;box-shadow:0 4px 20px rgba(0,0,0,0.25);cursor:pointer;position:absolute;top:-40px;">
           <sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
-          <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:#ECEAE4;display:flex;align-items:center;justify-content:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="#9A958B" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
+          <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:#ECEAE4;display:flex;align-items:center;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="#9A958B" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
         </div>
-        <!-- 名字和问候语 -->
- <div style="margin-top:30px;text-align:center;">
-  <div style="font-size:20px;font-weight:700;color:var(--bubble-user, #59483F);">江吟</div>
-  <div style="font-size:14px;color:var(--bubble-user, #59483F);opacity:0.6;margin-top:10px;line-height:1.6;">{{ profileGreeting }}</div>
-</div>
-
-        <!-- 关闭按钮 -->
-        <button onClick="{{ closeProfileCard }}" style="position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.06);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#68544B" stroke-width="2" stroke-linecap="round"/></svg>
+        <!-- 名字 + 问候语 -->
+        <div style="margin-top:32px;text-align:center;">
+          <div style="font-size:20px;font-weight:700;color:#2B2620;text-shadow:0 1px 8px rgba(255,255,255,0.6);">江吟</div>
+          <div style="font-size:14px;color:#3A362F;opacity:0.75;margin-top:10px;line-height:1.6;text-shadow:0 1px 6px rgba(255,255,255,0.5);">{{ profileGreeting }}</div>
+        </div>
+        <!-- 关闭 × -->
+        <button onClick="{{ closeProfileCard }}" style="position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.08);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#3A362F" stroke-width="2" stroke-linecap="round"/></svg>
         </button>
       </div>
 
     </div>
   </div>
 </sc-if>
+
 
 <!-- ========== MODALS & SHEETS ========== -->
 
@@ -5431,19 +5431,28 @@ initPhotoStack() {
     try {
       const attr = el.getAttribute('data-images');
       if (attr) images = JSON.parse(attr);
-    } catch(e) {}
-    if (images.length < 2) return;
+    } catch(e) { return; }
+    if (!images || images.length < 2) return;
+    // 清空模板预渲染的img标签
     el.innerHTML = '';
-    el._ps = new PhotoStack(el, images, {
-      width: 160,
-      height: 200,
-      counter: true,
-      onTap: (i) => {
-        this.setState({ imagePreviewOpen: true, imagePreviewUrl: images[i] });
-      }
-    });
+    el.style.overflow = 'visible';
+    try {
+      el._ps = new PhotoStack(el, images, {
+        width: 160,
+        height: 200,
+        counter: true,
+        onTap: (i) => {
+          this.setState({ imagePreviewOpen: true, imagePreviewUrl: images[i] });
+        }
+      });
+    } catch(err) {
+      console.warn('[PhotoStack] init failed:', err);
+      // 降级：显示第一张图
+      el.innerHTML = '<img src="' + images[0] + '" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">';
+    }
   });
 }
+
 
 // ====== RENDER ======
 renderVals() {
@@ -6054,7 +6063,7 @@ self.show('自定义配色已应用');
 }
 };
 // 延迟初始化 PhotoStack
-setTimeout(() => this.initPhotoStack(), 500);
+setTimeout(() => this.initPhotoStack(), 800);
 
 return {
 true: true, false: false,
