@@ -2678,6 +2678,7 @@ return summary.trim();
 function renderContent(text, isUser) {
 if (!text || !text.trim()) return '';
 // Escape HTML first
+let html = text.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;');
 // 处理引用行（以 > 开头的行，支持多行引用）
 html = html.replace(/^(&gt; .*(\n|$))+/gm, function(match) {
   const lines = match.split('\n').filter(l => l.trim().startsWith('&gt;'));
@@ -2688,12 +2689,12 @@ html = html.replace(/^(&gt; .*(\n|$))+/gm, function(match) {
 html = html.replace(/```(\w*)\n([\s\S]*?)```/g, function(match, lang, code) {
 const langLabel = lang || 'code';
 const escapedCode = code.replace(/'/g, '&#39;').replace(/"/g, '&quot;');
-return '<div style="position:relative;background:#1A1815;border-radius:12px;margin:8px 0;overflow:hidden;">' +
+return '<div class="code-block-container" style="position:relative;background:#1A1815;border-radius:12px;margin:8px 0;overflow:hidden;">' +
 '<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 14px;background:rgba(255,255,255,.06);">' +
 '<span style="font-size:11px;color:#9A958B;">' + langLabel + '</span>' +
 '<div style="display:flex;gap:6px;">' +
-'<button type="button" onclick="event.stopPropagation();navigator.clipboard.writeText(this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="...">Copy</button>' +
-'<button type="button" onclick="event.stopPropagation();var t=this.closest(\'div[style*=position\\:relative]\').querySelector(\'pre\').innerText;var b=new Blob([t],{type:\'text/plain\'});var u=URL.createObjectURL(b);var a=document.createElement(\'a\');a.href=u;a.download=\'' + langLabel + '.' + (lang||'txt') + '\';a.click();URL.revokeObjectURL(u);" style="...">Download</button>' +
+'<button type="button" onclick="event.stopPropagation();navigator.clipboard.writeText(this.closest(\'.code-block-container\').querySelector(\'pre\').innerText);this.textContent=\'✓\';setTimeout(()=>this.textContent=\'Copy\',1500)" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#FFF;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;">Copy</button>' +
+'<button type="button" onclick="event.stopPropagation();var t=this.closest(\'.code-block-container\').querySelector(\'pre\').innerText;var b=new Blob([t],{type:\'text/plain\'});var u=URL.createObjectURL(b);var a=document.createElement(\'a\');a.href=u;a.download=\'' + langLabel + '.' + (lang||'txt') + '\';a.click();URL.revokeObjectURL(u);" style="background:rgba(255,255,255,0.1);border:1px solid rgba(255,255,255,0.2);color:#FFF;border-radius:6px;padding:4px 10px;font-size:11px;cursor:pointer;">Download</button>' +
 '</div></div>' +
 '<pre style="margin:0;padding:12px 14px;overflow-x:auto;font-family:\'SF Mono\',\'Fira Code\',monospace;font-size:13px;line-height:1.6;color:#E8E4DC;white-space:pre;">' + code + '</pre></div>';
 });
@@ -4355,11 +4356,25 @@ reply = regexResult.text;
 reply = reply.replace(/[\u200B-\u200D\uFEFF]/g, '');
 const regexPetState = regexResult.petState;
 
-// Split AI reply
-// ===== 按段落分割（用空行 \n\n 分隔），过滤掉空白段落 =====
-const paragraphs = reply.split(/\n\s*\n/).filter(p => p.trim().length > 0);
-// 如果没有任何段落，就把整个回复当作一个段落
-const finalParagraphs = paragraphs.length > 0 ? paragraphs : (reply.trim() ? [reply] : []);
+// Split AI reply preserving code blocks
+// 提取所有代码块并用占位符替换
+let codeBlocks = [];
+let replyWithPlaceholders = reply.replace(/```(\w*)\n([\s\S]*?)```/g, function(match, lang, code) {
+    const idx = codeBlocks.length;
+    codeBlocks.push({lang, code});
+    return `__CODE_BLOCK_${idx}__`;
+});
+// 按空行分割
+let parts = replyWithPlaceholders.split(/\n\s*\n/).filter(p => p.trim().length > 0);
+// 还原代码块
+parts = parts.map(p => {
+    return p.replace(/__CODE_BLOCK_(\d+)__/g, function(match, idx) {
+        const block = codeBlocks[parseInt(idx)];
+        return '```' + block.lang + '\n' + block.code + '```';
+    });
+});
+// 如果没有任何段落，则整体
+const finalParagraphs = parts.length > 0 ? parts : (reply.trim() ? [reply] : []);
 if (finalParagraphs.length === 0) {
   this.setState({ isBusy: false });
   this.show('AI 返回了空内容');
