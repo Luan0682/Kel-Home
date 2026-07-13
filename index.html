@@ -1175,7 +1175,6 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:10px;border-radius:50%;background:#C8A2D4;"></div><span style="font-size:10px;color:#8B7355;">排卵日</span></div>
 <div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:10px;border-radius:50%;background:rgba(200,162,212,0.3);"></div><span style="font-size:10px;color:#8B7355;">排卵期</span></div>
 <div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:10px;border-radius:50%;border:1.5px solid #5C4033;background:transparent;"></div><span style="font-size:10px;color:#8B7355;">今天</span></div>
-<div style="display:flex;align-items:center;gap:4px;"><span style="font-size:11px;color:#5C4033;">♥</span><span style="font-size:10px;color:#8B7355;">做爱</span></div>
 </div>
 </div>
 
@@ -1235,7 +1234,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div style="position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.92);animation:fadeIn .3s ease both;">
 <div style="text-align:center;padding:40px 30px;max-width:320px;">
 <!-- 跳动爱心 -->
-<div style="font-size:48px;margin-bottom:30px;animation:heartbeat 1.2s ease-in-out infinite;">♡</div>
+<div style="font-size:48px;margin-bottom:30px;animation:heartbeat 1.2s ease-in-out infinite;color:#FF4D6D;text-shadow:0 0 20px rgba(255,77,109,0.5);">♡</div>
 <!-- 密码输入 -->
 <input value="{{ sexPasswordInput }}" onInput="{{ sexPasswordChange }}" onKeyDown="{{ sexPasswordKeyDown }}" type="password" placeholder="..." autofocus style="width:200px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:12px 16px;font-size:18px;color:#FFF0F0;text-align:center;outline:none;font-family:inherit;letter-spacing:4px;" class="{{ sexPasswordShake }}">
 <div style="margin-top:20px;">
@@ -3060,7 +3059,9 @@ this._setMusicVolume = (vol) => {
 };
 
 this._clockTimer = setInterval(() => {
-this.setState({ currentTime: getCurrentTime() });
+if (this.state.tab === 'home') {
+  this.setState({ currentTime: getCurrentTime() });
+}
 }, 1000);
 
 // ====== 待办定时提醒 Tick ======
@@ -4243,6 +4244,7 @@ pledges: s.pledges,
 diaries: s.diaries,
 fontPresets: s.fontPresets,
 kelMood: s.kelMood,
+sexData: s.sexData || JSON.parse(localStorage.getItem('_cl_data') || '{}'),
 };
 const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
 // 从 IndexedDB 读头像写入备份
@@ -4355,6 +4357,7 @@ if (data.petEnabled !== undefined) updates.petEnabled = data.petEnabled;
 if (data.petSizeIdx !== undefined) updates.petSizeIdx = data.petSizeIdx;
 if (data.soundEnabled !== undefined) updates.soundEnabled = data.soundEnabled;
 if (data.memoryCount) updates.memoryCount = data.memoryCount;
+if (data.sexData) { updates.sexData = data.sexData; localStorage.setItem('_cl_data', JSON.stringify(data.sexData)); }
 if (data.keepAliveEnabled !== undefined) updates.keepAliveEnabled = data.keepAliveEnabled;
 this.setState(updates, () => {
 // 强制写入并验证
@@ -6542,11 +6545,11 @@ if (day.entries && day.entries.length > 0) {
     };
   });
 }
-if (day.mine || day.kel) {
+if (!day.entries || day.entries.length === 0) {
+  if (day.mine) entries.push({ id:'old-mine', time:'--:--', author:'我', authorColor:'#5C4033', text:day.mine, isLocked:false, lockRemain:'', unlockTime:'', hasTags:false, tags:[], commentCount:(day.comments||[]).length, dotBorder:'#F4A7B9', dotFill:'#FEF0F3', openDetail:()=>self.setState({diaryDetailOpen:true,diaryDetailId:'old-mine',diaryDetailCommentInput:''}) });
+  if (day.kel) entries.push({ id:'old-kel', time:'--:--', author:'Kel', authorColor:'#5C8B6A', text:day.kel, isLocked:false, lockRemain:'', unlockTime:'', hasTags:false, tags:[], commentCount:0, dotBorder:'#A8D5BA', dotFill:'#E8F5ED', openDetail:()=>self.setState({diaryDetailOpen:true,diaryDetailId:'old-kel',diaryDetailCommentInput:''}) });
+}
 
-    if (day.mine) entries.push({ id:'old-mine', time:'--:--', author:'我', authorColor:'#5C4033', text:day.mine, isLocked:false, lockRemain:'', unlockTime:'', hasTags:false, tags:[], commentCount:(day.comments||[]).length, dotBorder:'#F4A7B9', dotFill:'#FEF0F3', openDetail:()=>self.setState({diaryDetailOpen:true,diaryDetailId:'old-mine',diaryDetailCommentInput:''}) });
-if (day.kel) entries.push({ id:'old-kel', time:'--:--', author:'Kel', authorColor:'#5C8B6A', text:day.kel, isLocked:false, lockRemain:'', unlockTime:'', hasTags:false, tags:[], commentCount:0, dotBorder:'#A8D5BA', dotFill:'#E8F5ED', openDetail:()=>self.setState({diaryDetailOpen:true,diaryDetailId:'old-kel',diaryDetailCommentInput:''}) });
-  }
   return entries;
 })(),
 diaryOpenWrite: () => self.setState({ diaryWriteOpen:true, diaryWriteText:'', diaryWriteAuthor:'mine', diaryWriteTags:[], diaryWriteLock:'' }),
