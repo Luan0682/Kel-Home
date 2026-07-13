@@ -15,6 +15,8 @@
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#1A1815">
 <script src="./support.js"></script>
+<link rel="stylesheet" href="./photo-stack.css">
+<script src="./photo-stack.js"></script>
 </head>
 <body>
 <x-dc>
@@ -293,24 +295,22 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- images -->
 <sc-if value="{{ m.hasImages }}" hint-placeholder-val="{{ false }}">
-<div style="margin-bottom:6px;display:flex;justify-content:{{ m.imgJustify }};">
-  <sc-if value="{{ m.images.length === 1 }}" hint-placeholder-val="{{ true }}">
-    <!-- 单张图片 -->
-    <div style="position:relative;width:160px;height:160px;border-radius:14px;overflow:hidden;cursor:pointer;" onClick="{{ m.previewImage }}" onContextMenu="{{ m.longPressImage }}">
-      <img src="{{ m.images[0].preview }}" style="width:100%;height:100%;object-fit:cover;" alt="attachment">
-    </div>
-  </sc-if>
-  <sc-if value="{{ m.images.length > 1 }}" hint-placeholder-val="{{ false }}">
-    <!-- 多张图片：PhotoStack 堆叠效果 -->
-    <div class="photostack-container" id="photostack-{{ m.id }}" style="width:160px;height:200px;border-radius:14px;overflow:hidden;">
-      <sc-for list="{{ m.images }}" as="img" hint-placeholder-count="3">
-        <div class="photostack-item" style="width:100%;height:100%;">
-          <img src="{{ img.preview }}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" alt="">
-        </div>
-      </sc-for>
-    </div>
-  </sc-if>
+  <div style="margin-bottom:6px;display:flex;justify-content:{{ m.imgJustify }};">
+    <sc-if value="{{ m.images.length === 1 }}" hint-placeholder-val="{{ true }}">
+      <!-- 单张图片 -->
+      <div style="position:relative;width:160px;height:160px;border-radius:14px;overflow:hidden;cursor:pointer;" onClick="{{ m.previewImage }}" onContextMenu="{{ m.longPressImage }}">
+        <img src="{{ m.images[0].preview }}" style="width:100%;height:100%;object-fit:cover;" alt="attachment">
+      </div>
+    </sc-if>
+    <sc-if value="{{ m.images.length > 1 }}" hint-placeholder-val="{{ false }}">
+      <!-- 多张图片：使用原版 PhotoStack -->
+<div class="photostack" id="photostack-{{ m.id }}" style="width:160px;height:200px;border-radius:14px;overflow:hidden;cursor:pointer;" data-images="{{ m.imagesJson }}">
+  <sc-for list="{{ m.images }}" as="img" hint-placeholder-count="3">
+    <img src="{{ img.preview }}" style="width:100%;height:100%;object-fit:cover;display:block;" alt="">
+  </sc-for>
 </div>
+    </sc-if>
+  </div>
 </sc-if>
 
 <!-- message bubble -->
@@ -2656,190 +2656,6 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 </div>
 </x-dc>
-// ===== PhotoStack 轻量实现（内联版） =====
-(function() {
-  // 如果已定义则跳过
-  if (typeof PhotoStack !== 'undefined') return;
-
-  class PhotoStack {
-    constructor(container, options = {}) {
-      if (!container) return;
-      this.container = container;
-      this.items = Array.from(container.querySelectorAll('.photostack-item'));
-      if (this.items.length < 2) return;
-
-      this.options = Object.assign({
-        gap: 8,
-        scale: 0.08,
-        rotation: 6,
-        transition: 'all 0.3s cubic-bezier(0.32, 0.72, 0, 1)'
-      }, options);
-
-      this.currentIndex = 0;
-      this.total = this.items.length;
-      this._init();
-      this._bindEvents();
-    }
-
-    _init() {
-      // 先重置所有样式
-      this.items.forEach((item, idx) => {
-        item.style.position = 'absolute';
-        item.style.top = '0';
-        item.style.left = '0';
-        item.style.width = '100%';
-        item.style.height = '100%';
-        item.style.backfaceVisibility = 'hidden';
-        item.style.transition = this.options.transition;
-        item.style.borderRadius = '14px';
-        item.style.overflow = 'hidden';
-        item.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)';
-        item.style.cursor = 'grab';
-        item.dataset.index = idx;
-      });
-
-      // 添加指示器
-      this._createDots();
-
-      // 更新堆叠位置
-      this._updateStack();
-    }
-
-    _createDots() {
-      const dotsContainer = document.createElement('div');
-      dotsContainer.className = 'photostack-dots';
-      for (let i = 0; i < this.total; i++) {
-        const dot = document.createElement('span');
-        dot.className = 'photostack-dot' + (i === 0 ? ' active' : '');
-        dot.dataset.index = i;
-        dotsContainer.appendChild(dot);
-      }
-      this.container.appendChild(dotsContainer);
-      this.dots = dotsContainer.querySelectorAll('.photostack-dot');
-    }
-
-    _updateStack() {
-      const total = this.total;
-      const current = this.currentIndex;
-      const { gap, scale, rotation } = this.options;
-
-      this.items.forEach((item, idx) => {
-        let offset = idx - current;
-        // 循环处理（让第一张和最后一张也能衔接）
-        if (offset > total / 2) offset -= total;
-        if (offset < -total / 2) offset += total;
-
-        const absOffset = Math.abs(offset);
-        const isActive = offset === 0;
-
-        // 计算变换
-        const translateY = -absOffset * gap;
-        const scaleVal = 1 - absOffset * scale;
-        const rotateVal = offset * rotation;
-
-        let zIndex = total - absOffset;
-        let opacity = 1 - absOffset * 0.15;
-        if (opacity < 0.3) opacity = 0.3;
-
-        // 应用样式
-        item.style.transform = `translateY(${translateY}px) scale(${scaleVal}) rotate(${rotateVal}deg)`;
-        item.style.zIndex = zIndex;
-        item.style.opacity = opacity;
-        item.style.pointerEvents = isActive ? 'auto' : 'none';
-      });
-
-      // 更新指示器
-      if (this.dots) {
-        this.dots.forEach((dot, idx) => {
-          dot.classList.toggle('active', idx === current);
-        });
-      }
-    }
-
-    _bindEvents() {
-      // 触摸/鼠标拖拽事件
-      let startY = 0;
-      let isDragging = false;
-      let startIndex = 0;
-
-      const onStart = (e) => {
-        if (!e.target.closest('.photostack-item')) return;
-        const touch = e.touches ? e.touches[0] : e;
-        startY = touch.clientY;
-        isDragging = true;
-        startIndex = this.currentIndex;
-        this.container.style.cursor = 'grabbing';
-      };
-
-      const onMove = (e) => {
-        if (!isDragging) return;
-        e.preventDefault();
-        const touch = e.touches ? e.touches[0] : e;
-        const delta = startY - touch.clientY;
-        if (Math.abs(delta) > 40) {
-          const dir = delta > 0 ? -1 : 1; // 上滑上一张，下滑下一张
-          const newIndex = this.currentIndex + dir;
-          if (newIndex >= 0 && newIndex < this.total) {
-            this.currentIndex = newIndex;
-            this._updateStack();
-            // 触发自定义事件
-            this.container.dispatchEvent(new CustomEvent('photostack-change', {
-              detail: { index: newIndex }
-            }));
-          }
-          isDragging = false;
-          this.container.style.cursor = 'grab';
-        }
-      };
-
-      const onEnd = () => {
-        isDragging = false;
-        this.container.style.cursor = 'grab';
-      };
-
-      // 使用 pointer events 统一处理（兼容触控和鼠标）
-      this.container.addEventListener('pointerdown', onStart);
-      this.container.addEventListener('pointermove', onMove);
-      this.container.addEventListener('pointerup', onEnd);
-      this.container.addEventListener('pointercancel', onEnd);
-
-      // 键盘左右键切换
-      this.container.addEventListener('keydown', (e) => {
-        if (e.key === 'ArrowLeft') {
-          e.preventDefault();
-          if (this.currentIndex > 0) {
-            this.currentIndex--;
-            this._updateStack();
-            this.container.dispatchEvent(new CustomEvent('photostack-change', {
-              detail: { index: this.currentIndex }
-            }));
-          }
-        } else if (e.key === 'ArrowRight') {
-          e.preventDefault();
-          if (this.currentIndex < this.total - 1) {
-            this.currentIndex++;
-            this._updateStack();
-            this.container.dispatchEvent(new CustomEvent('photostack-change', {
-              detail: { index: this.currentIndex }
-            }));
-          }
-        }
-      });
-      this.container.setAttribute('tabindex', '0');
-    }
-
-    // 外部方法：跳转到指定索引
-    goTo(index) {
-      if (index >= 0 && index < this.total) {
-        this.currentIndex = index;
-        this._updateStack();
-      }
-    }
-  }
-
-  // 暴露到全局
-  window.PhotoStack = PhotoStack;
-})();
 
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
 const STORAGE_KEY = 'kel-home-data';
@@ -2973,7 +2789,7 @@ return html;
 }
 
 const EMOJI_LIST = ['😊','😢','😡','🥰','😴','🤔','✨','🌧️','☀️','🌈','💪','😭','🎉','💕','😤','🫠','👍','❤️','🥺','😮','😢','🥰','😈','✨'];
-const REACTION_EMOJIS = ['🥹', '❤️', '🥺', '😮', '😢', '🥰', '💓', '✨'];
+const REACTION_EMOJIS = ['♡', '❤️', '🥺', '😮', '😢', '🥰', '💓', '✨'];
 // Theme presets
 const THEME_PRESETS = [
 { id: 'default', name: '默认米白', preview: 'linear-gradient(135deg, #F5F3EE, #d6d2c8)', checkColor: '#1A1815', vars: { '--bg-base': '#d6d2c8', '--bg-main': '#F5F3EE', '--bg-card': '#FFF', '--bg-input': '#FBFAF7', '--border-card': '#EDE9E0', '--border-input': '#E7E3DA', '--text-primary': '#1A1815', '--text-secondary': '#48453E', '--text-bold': '#3A362F', '--bubble-user': '#59483F', '--bubble-ai': '#D7EBE4', '--bubble-user-text': '#D7EBE4', '--bubble-ai-text': '#59483F'
@@ -4443,6 +4259,7 @@ timestamp: timestamp,
 quote: quotedRef ? { sender: quotedRef.sender, text: (quotedRef.text || '').slice(0, 80) } : null
 };
 
+// 处理图片附件（只保留这一段，没有重复）
 if (hasImages) {
   newMsg.images = this.state.attachments.map(att => ({
     base64: att.base64,
@@ -4454,19 +4271,6 @@ if (hasImages) {
   newMsg.image = this.state.attachments[0].base64;
   newMsg.imageMime = this.state.attachments[0].mimeType;
   newMsg.imageUrl = this.state.attachments[0].preview;
-}
-if (this.state.attachments && this.state.attachments.length > 0) {
-  newMsg.images = this.state.attachments.map(att => ({
-    base64: att.base64,
-    mimeType: att.mimeType,
-    preview: att.preview,
-    fileName: att.fileName
-  }));
-  // 兼容旧版：第一张作为主图
-  const first = this.state.attachments[0];
-  newMsg.image = first.base64;
-  newMsg.imageMime = first.mimeType;
-  newMsg.imageUrl = first.preview;
 }
 const msgs = [...chat.messages, newMsg];
 chat.messages = msgs;
@@ -4524,6 +4328,25 @@ this.persist();
 
 const chatId = this.state.currentChatId;
 const finalMsgs = this.state.chats[chatId].messages;
+
+// ---- 新增：确保最后一条用户消息包含图片数据 ----
+if (finalMsgs.length > 0) {
+  const last = finalMsgs[finalMsgs.length - 1];
+  if (last.role === 'user' && this.state.attachments && this.state.attachments.length > 0) {
+    last.images = this.state.attachments.map(att => ({
+      base64: att.base64,
+      mimeType: att.mimeType,
+      preview: att.preview,
+      fileName: att.fileName
+    }));
+    // 同时设置单图兼容字段
+    last.image = this.state.attachments[0].base64;
+    last.imageMime = this.state.attachments[0].mimeType;
+    last.imageUrl = this.state.attachments[0].preview;
+  }
+}
+// ---- 新增结束 ----
+
 this.setState({ isBusy: true, pendingLines: [] });
 this.scrollToBottom();
 
@@ -5943,6 +5766,7 @@ showTimestampOnly: isFirstInGroup(i) && ((!isUser && !s.aiAvatar) || (isUser && 
 tsAlign: isUser ? 'flex-end' : 'flex-start',
 hasImages: !!(m.images && m.images.length > 0),
 images: m.images || [],
+imagesJson: m.images ? JSON.stringify(m.images.map(img => img.preview)) : '[]',
 imageUrl: m.imageUrl || '',
 imgJustify: isUser ? 'flex-end' : 'flex-start',
 previewImage: () => {
@@ -7870,24 +7694,38 @@ musicTrackList: (self._musicList || []).map((tk, idx) => ({
   play: () => self._playMusic(idx),
   del: (e) => { e.stopPropagation(); self._removeMusicTrack(idx); }
 })),
-// 初始化 PhotoStack
-initPhotoStackUI: () => {
-  setTimeout(() => {
-    const containers = document.querySelectorAll('.photostack-container');
-    containers.forEach(el => {
-      if (el._initialized) return;
-      if (typeof PhotoStack !== 'undefined') {
-        new PhotoStack(el, {
-          gap: 8,
-          scale: 0.08,
-          rotation: 6,
-          transition: 'all 0.3s cubic-bezier(0.32, 0.72, 0, 1)'
+// 初始化原版 PhotoStack
+setTimeout(() => {
+  const containers = document.querySelectorAll('.photostack');
+  containers.forEach(el => {
+    if (el._initialized) return;
+    if (typeof PhotoStack !== 'undefined') {
+      try {
+        // 从子元素中读取所有 img 的 src
+        const images = Array.from(el.querySelectorAll('img')).map(img => img.src);
+        if (images.length < 2) return;
+        // 清空容器（原版 PhotoStack 会自己构建 DOM）
+        el.innerHTML = '';
+        new PhotoStack(el, images, {
+          width: 160,
+          height: 200,
+          peek: 15,
+          peekStep: 12,
+          rotStep: 2.2,
+          scaleStep: 0.06,
+          flingVel: 0.4,
+          counter: true,
+          onChange: (index) => {
+            console.log('[PhotoStack] 切换到第', index + 1, '张');
+          }
         });
         el._initialized = true;
+      } catch(e) {
+        console.warn('[PhotoStack] 初始化失败:', e);
       }
-    });
-  }, 200);
-},
+    }
+  });
+}, 500);
 // ===== 清单数据 =====
 checklistOpen: s.checklistOpen,
 checklistItemsRendered: this._getTodoRenderedItems(),
