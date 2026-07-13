@@ -15,6 +15,8 @@
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#1A1815">
 <script src="./support.js"></script>
+<link rel="stylesheet" href="./photostack.css">
+<script src="./photostack.umd.js"></script>
 </head>
 <body>
 <x-dc>
@@ -232,12 +234,25 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </div>
 </sc-if>
 
-<!-- image -->
-<sc-if value="{{ m.hasImage }}" hint-placeholder-val="{{ false }}">
+<!-- images -->
+<sc-if value="{{ m.hasImages }}" hint-placeholder-val="{{ false }}">
 <div style="margin-bottom:6px;display:flex;justify-content:{{ m.imgJustify }};">
-<div style="position:relative;width:160px;height:160px;border-radius:14px;overflow:hidden;cursor:pointer;" onClick="{{ m.previewImage }}" onContextMenu="{{ m.longPressImage }}">
-<img src="{{ m.imageUrl }}" style="width:100%;height:100%;object-fit:cover;" alt="attachment">
-</div>
+  <sc-if value="{{ m.images.length === 1 }}" hint-placeholder-val="{{ true }}">
+    <!-- 单张图片 -->
+    <div style="position:relative;width:160px;height:160px;border-radius:14px;overflow:hidden;cursor:pointer;" onClick="{{ m.previewImage }}" onContextMenu="{{ m.longPressImage }}">
+      <img src="{{ m.images[0].preview }}" style="width:100%;height:100%;object-fit:cover;" alt="attachment">
+    </div>
+  </sc-if>
+  <sc-if value="{{ m.images.length > 1 }}" hint-placeholder-val="{{ false }}">
+    <!-- 多张图片：PhotoStack 堆叠效果 -->
+    <div class="photostack-container" id="photostack-{{ m.id }}" style="width:160px;height:200px;border-radius:14px;overflow:hidden;">
+      <sc-for list="{{ m.images }}" as="img" hint-placeholder-count="3">
+        <div class="photostack-item" style="width:100%;height:100%;">
+          <img src="{{ img.preview }}" style="width:100%;height:100%;object-fit:cover;border-radius:14px;" alt="">
+        </div>
+      </sc-for>
+    </div>
+  </sc-if>
 </div>
 </sc-if>
 
@@ -344,20 +359,17 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </sc-if>
 
 <!-- attachment preview -->
-<sc-if value="{{ hasAttachment }}" hint-placeholder-val="{{ false }}">
-<div style="padding:0 4px 8px;display:flex;align-items:center;gap:10px;">
-<div style="position:relative;width:50px;height:50px;border-radius:12px;overflow:hidden;border:1px solid #E7E3DA;display:flex;align-items:center;justify-content:center;background:#F2EFE8;">
-<sc-if value="{{ attachmentIsImage }}" hint-placeholder-val="{{ false }}">
-<img src="{{ attachmentPreview }}" style="width:100%;height:100%;object-fit:cover;" alt="">
-</sc-if>
-<sc-if value="{{ !attachmentIsImage }}" hint-placeholder-val="{{ true }}">
-<span style="font-size:20px;">📄</span>
-</sc-if>
-<button onClick="{{ removeAttachment }}" style="position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.55);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="8" height="8" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/></svg>
-</button>
-</div>
-<span style="font-size:11px;color:#9A958B;max-width:120px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ attachmentFileName }}</span>
+<sc-if value="{{ hasAttachments }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 4px 8px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+  <sc-for list="{{ attachmentPreviews }}" as="att" hint-placeholder-count="3">
+    <div style="position:relative;width:50px;height:50px;border-radius:12px;overflow:hidden;border:1px solid #E7E3DA;display:flex;align-items:center;justify-content:center;background:#F2EFE8;flex:none;">
+      <img src="{{ att.preview }}" style="width:100%;height:100%;object-fit:cover;" alt="">
+      <button onClick="{{ removeAttachment }}" style="position:absolute;top:2px;right:2px;width:18px;height:18px;border-radius:50%;background:rgba(0,0,0,.55);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+        <svg width="8" height="8" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#FFF" stroke-width="2.5" stroke-linecap="round"/></svg>
+      </button>
+    </div>
+  </sc-for>
+  <span style="font-size:11px;color:#9A958B;">{{ attachmentCount }} 张图片</span>
 </div>
 </sc-if>
 
@@ -2801,7 +2813,7 @@ editText: '',
 currentThoughtText: '',
 apiAdvanced: false,
 petState: 'idle',
-attachment: null,
+attachments: [],
 petEnabled: saved.petEnabled !== false,
 petSizeIdx: saved.petSizeIdx || 1,
 soundEnabled: saved.soundEnabled !== false,
@@ -4172,7 +4184,7 @@ const chatId = this.state.currentChatId;
 const chats = { ...this.state.chats };
 const chat = { ...chats[chatId] };
 const timestamp = getFixedTimestamp();
-let fullText = text || '[File: ' + (this.state.attachment?.fileName || 'attachment') + ']';
+let fullText = text || '';
 const quotedRef = this.state.quotedMsg ? this.state.quotedMsg : null;
 if (quotedRef) {
   this.setState({ quotedMsg: null });
@@ -4187,21 +4199,18 @@ timestamp: timestamp,
 quote: quotedRef ? { sender: quotedRef.sender, text: (quotedRef.text || '').slice(0, 80) } : null
 };
 
-if (this.state.attachment) {
-newMsg.file = {
-base64: this.state.attachment.base64,
-mimeType: this.state.attachment.mimeType,
-fileName: this.state.attachment.fileName,
-fileSize: this.state.attachment.fileSize,
-isImage: this.state.attachment.isImage,
-isText: this.state.attachment.isText,
-textContent: this.state.attachment.textContent
-};
-if (this.state.attachment.isImage) {
-newMsg.image = this.state.attachment.base64;
-newMsg.imageMime = this.state.attachment.mimeType;
-newMsg.imageUrl = this.state.attachment.preview;
-}
+if (this.state.attachments && this.state.attachments.length > 0) {
+  newMsg.images = this.state.attachments.map(att => ({
+    base64: att.base64,
+    mimeType: att.mimeType,
+    preview: att.preview,
+    fileName: att.fileName
+  }));
+  // 兼容旧版：第一张作为主图
+  const first = this.state.attachments[0];
+  newMsg.image = first.base64;
+  newMsg.imageMime = first.mimeType;
+  newMsg.imageUrl = first.preview;
 }
 const msgs = [...chat.messages, newMsg];
 chat.messages = msgs;
@@ -4210,7 +4219,7 @@ if (msgs.filter(m => m.role === 'user').length === 1) {
 chat.title = (text || 'Image').slice(0, 30) + ((text || '').length > 30 ? '...' : '');
 }
 chats[chatId] = chat;
-this.setState({ input: '', attachment: null, chats, pendingLines: [...this.state.pendingLines, text] });
+this.setState({ input: '', attachments: [], chats, pendingLines: [...this.state.pendingLines, text] });
 this.resetTextarea();
 this.persist();
 this.scrollToBottom();
@@ -4591,7 +4600,7 @@ newChat() {
 const id = genId();
 const chats = { ...this.state.chats };
 chats[id] = { id, title: '新对话', messages: [], lastTime: Date.now() };
-this.setState({ currentChatId: id, chats, drawer: false, tab: 'chat', input: '', attachment: null, pendingLines: [] });
+this.setState({ currentChatId: id, chats, drawer: false, tab: 'chat', input: '', attachments: [], pendingLines: [] });
 this.persist();
 }
 
@@ -4841,41 +4850,57 @@ e.target.value = '';
 
 // ====== File Handling ======
 pickImageFile() {
-const input = document.getElementById('kelFileInput');
-if (input) input.click();
+  const input = document.getElementById('kelFileInput');
+  if (input) {
+    input.accept = 'image/*';
+    input.multiple = true;
+    input.click();
+  }
 }
 
 handleFile(e) {
-const file = e.target.files && e.target.files[0];
-if (!file) return;
-const maxSize = 20 * 1024 * 1024;
-if (file.size > maxSize) { this.show('文件超过 20MB'); return; }
-const isImage = file.type.startsWith('image/');
-const textExts = ['.txt', '.html', '.htm', '.md', '.json', '.csv', '.xml'];
-const isText = textExts.some(ext => file.name.toLowerCase().endsWith(ext));
-const reader = new FileReader();
-if (isImage || isText) {
-reader.onload = () => {
-const result = reader.result;
-const base64 = isImage ? result.split(',')[1] : btoa(unescape(encodeURIComponent(result)));
-this.setState({
-attachment: { base64, mimeType: file.type || 'application/octet-stream', preview: isImage ? result : null, fileName: file.name, fileSize: file.size, isImage, isText, textContent: isText ? result : null },
-plus: false
-});
-};
-if (isImage) reader.readAsDataURL(file);
-else reader.readAsText(file);
-} else {
-reader.onload = () => {
-const base64 = reader.result.split(',')[1];
-this.setState({
-attachment: { base64, mimeType: file.type || 'application/octet-stream', preview: null, fileName: file.name, fileSize: file.size, isImage: false, isText: false, textContent: null },
-plus: false
-});
-};
-reader.readAsDataURL(file);
-}
-e.target.value = '';
+  const files = e.target.files;
+  if (!files || files.length === 0) return;
+  
+  const maxSize = 20 * 1024 * 1024;
+  const imageFiles = [];
+  let loaded = 0;
+  
+  for (const file of files) {
+    if (!file.type.startsWith('image/')) continue;
+    if (file.size > maxSize) { 
+      this.show(file.name + ' 超过 20MB，已跳过'); 
+      continue; 
+    }
+    imageFiles.push(file);
+  }
+  
+  if (imageFiles.length === 0) { this.show('没有有效的图片'); return; }
+  
+  const attachments = [];
+  for (const file of imageFiles) {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result;
+      const base64 = result.split(',')[1];
+      attachments.push({
+        base64,
+        mimeType: file.type,
+        preview: result,
+        fileName: file.name,
+        fileSize: file.size,
+        isImage: true,
+        isText: false,
+        textContent: null
+      });
+      loaded++;
+      if (loaded === imageFiles.length) {
+        this.setState({ attachments, plus: false });
+      }
+    };
+    reader.readAsDataURL(file);
+  }
+  e.target.value = '';
 }
 
 // ====== Avatars ======
@@ -5533,6 +5558,26 @@ tap: () => self.diarySelectDate(dateStr)
 return cells;
 }
 
+// ====== PhotoStack 初始化 ======
+initPhotoStack() {
+  const containers = document.querySelectorAll('.photostack-container');
+  containers.forEach(el => {
+    if (el._initialized) return;
+    if (typeof PhotoStack !== 'undefined') {
+      try {
+        new PhotoStack(el, {
+          gap: 8,
+          scale: 0.08,
+          rotation: 6,
+          transition: 'all 0.3s cubic-bezier(0.32, 0.72, 0, 1)'
+        });
+        el._initialized = true;
+      } catch(e) {
+        console.warn('[PhotoStack] 初始化失败:', e);
+      }
+    }
+  });
+},
 // ====== RENDER ======
 renderVals() {
 const s = this.state;
@@ -5630,10 +5675,17 @@ showAiAvatar: !isUser && !!s.aiAvatar && isFirstInGroup(i),
 showUserAvatar: isUser && !!s.userAvatar && isFirstInGroup(i),
 showTimestampOnly: isFirstInGroup(i) && ((!isUser && !s.aiAvatar) || (isUser && !s.userAvatar)),
 tsAlign: isUser ? 'flex-end' : 'flex-start',
-hasImage: !!m.imageUrl,
+hasImages: !!(m.images && m.images.length > 0),
+images: m.images || [],
 imageUrl: m.imageUrl || '',
 imgJustify: isUser ? 'flex-end' : 'flex-start',
-previewImage: () => self.setState({ imagePreviewOpen: true, imagePreviewUrl: m.imageUrl }),
+previewImage: () => {
+  if (m.images && m.images.length > 0) {
+    self.setState({ imagePreviewOpen: true, imagePreviewUrl: m.images[0].preview });
+  } else if (m.imageUrl) {
+    self.setState({ imagePreviewOpen: true, imagePreviewUrl: m.imageUrl });
+  }
+},
 longPressImage: (e) => {
 e.preventDefault();
 if (confirm('删除这张图片？')) {
@@ -6133,6 +6185,8 @@ self.persist();
 self.show('自定义配色已应用');
 }
 };
+// 延迟初始化 PhotoStack
+setTimeout(() => this.initPhotoStack(), 300);
 
 return {
 true: true, false: false,
@@ -6663,10 +6717,10 @@ navPeriod: () => self.setState({ tab: 'period' }),
 isBusy: s.isBusy,
 input: s.input,
 editText: s.editText,
-hasAttachment: !!s.attachment,
-attachmentPreview: s.attachment ? s.attachment.preview : '',
-attachmentIsImage: !!(s.attachment && s.attachment.isImage),
-attachmentFileName: s.attachment ? s.attachment.fileName : '',
+hasAttachments: !!(s.attachments && s.attachments.length > 0),
+attachmentPreviews: s.attachments || [],
+attachmentCount: (s.attachments || []).length,
+removeAttachment: () => this.setState({ attachments: [] }),
 activeModel: preset.model || 'Not set',
 activeStyle: styleObj.title || 'Default',
 activeCompanion: persona.name || 'Kel',
@@ -7545,6 +7599,24 @@ musicTrackList: (self._musicList || []).map((tk, idx) => ({
   play: () => self._playMusic(idx),
   del: (e) => { e.stopPropagation(); self._removeMusicTrack(idx); }
 })),
+// 初始化 PhotoStack
+initPhotoStack: () => {
+  setTimeout(() => {
+    const containers = document.querySelectorAll('.photostack-container');
+    containers.forEach(el => {
+      if (el._initialized) return;
+      if (typeof PhotoStack !== 'undefined') {
+        new PhotoStack(el, {
+          gap: 8,
+          scale: 0.08,
+          rotation: 6,
+          transition: 'all 0.3s cubic-bezier(0.32, 0.72, 0, 1)'
+        });
+        el._initialized = true;
+      }
+    });
+  }, 200);
+},
 // ===== 清单数据 =====
 checklistOpen: s.checklistOpen,
 checklistItemsRendered: this._getTodoRenderedItems(),
@@ -7567,25 +7639,25 @@ checklistSerial: (() => {
   const y = String(d.getFullYear()).slice(2);
   const m = String(d.getMonth()+1).padStart(2,'0');
   const day = String(d.getDate()).padStart(2,'0');
-  const total = (s.checklistItems || []).length;
+  const total = (s.todos || []).length;
   return `#${y}-${m}-${day}-${String(total).padStart(3,'0')}`;
 })(),
-checklistTotal: (s.checklistItems || []).length,
+checklistTotal: (s.todos || []).length,
 checklistDash: '─ '.repeat(18).trim(),
-checklistSubtotal: (s.checklistItems || []).length + ' 项',
-checklistDone: (s.checklistItems || []).filter(t => t.done).length + ' 项',
-checklistUndone: (s.checklistItems || []).filter(t => !t.done).length + ' 项',
+checklistSubtotal: (s.todos || []).length + ' 项',
+checklistDone: (s.todos || []).filter(t => t.done).length + ' 项',
+checklistUndone: (s.todos || []).filter(t => !t.done).length + ' 项',
 checklistProgressBar: (() => {
-  const total = (s.checklistItems || []).length;
-  const done = (s.checklistItems || []).filter(t => t.done).length;
+  const total = (s.todos || []).length;
+  const done = (s.todos || []).filter(t => t.done).length;
   const pct = total ? done/total : 0;
   const w = 18;
   const filled = Math.round(pct * w);
   return '█'.repeat(filled) + '░'.repeat(w - filled);
 })(),
 checklistProgressPct: (() => {
-  const total = (s.checklistItems || []).length;
-  const done = (s.checklistItems || []).filter(t => t.done).length;
+  const total = (s.todos || []).length;
+  const done = (s.todos || []).filter(t => t.done).length;
   return total ? Math.round(done/total * 100) + '%' : '0%';
 })(),
 checklistMidnight: (() => {
@@ -7599,7 +7671,7 @@ checklistBarcodeSerial: (() => {
   const y = String(d.getFullYear()).slice(2);
   const m = String(d.getMonth()+1).padStart(2,'0');
   const day = String(d.getDate()).padStart(2,'0');
-  const total = (s.checklistItems || []).length;
+  const total = (s.todos || []).length;
   return `${y} ${m} ${day} ${String(total).padStart(3,'0')}`;
 })(),
 checklistNewKeydown: (e) => {
@@ -7609,7 +7681,6 @@ checklistNewKeydown: (e) => {
     if (el) {
       const text = el.innerText.trim();
       if (text) {
-        // 直接添加待办（固定每日任务）
         const newTodo = {
           id: genId(),
           body: text,
@@ -7626,12 +7697,6 @@ checklistNewKeydown: (e) => {
         this.persist();
         el.innerText = '';
         this.show('已添加');
-      }
-    }
-  }
-},
-   this._addChecklistItem(text, true, null);
-        el.innerText = '';
       }
     }
   }
