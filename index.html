@@ -52,7 +52,16 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div style="position:absolute;inset:0;display:flex;background:var(--bg-main, #F5F3EE);color:var(--text-primary, #1A1815);font-family:-apple-system,'Noto Sans SC','Helvetica Neue',sans-serif;overflow:hidden;letter-spacing:-0.01em;">
 
 <!-- ===== LEFT NAV BAR (56px) ===== -->
-<div style="width:{{ sidebarWidth }};flex:none;display:{{ sidebarDisplay }};flex-direction:column;align-items:center;padding:20px 0 16px;gap:6px;background:var(--bg-main, #F5F3EE);border-right:1px solid rgba(104,84,75,.06);z-index:50;">
+<div style="width:{{ sidebarWidth }};flex:none;display:{{ sidebarDisplay }};flex-direction:column;align-items:center;padding:16px 0 16px;background:var(--bg-main, #F5F3EE);border-right:1px solid rgba(104,84,75,.06);z-index:50;">
+
+<!-- User Avatar (Top) -->
+<div onClick="{{ openProfileCard }}" style="width:36px;height:36px;border-radius:50%;overflow:hidden;cursor:pointer;margin-bottom:20px;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;">
+<sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
+<sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:var(--bubble-ai, #D7EBE4);display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="var(--bubble-user, #59483F)" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
+</div>
+
+<!-- Nav Icons (Centered) -->
+<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
 
 <!-- Home -->
 <div class="nav-icon {{ navHomeClass }}" onClick="{{ navHome }}">
@@ -70,12 +79,19 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div class="nav-icon {{ navDiaryClass }}" onClick="{{ navDiary }}">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="var(--text-secondary, #68544B)" stroke-width="1.5"/><path d="M8 7h8M8 11h5" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/><path d="M4 7.5h2M4 16.5h2" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/></svg>
 </div>
+<!-- Calendar (原月事) -->
+<div class="nav-icon {{ navPeriodClass }}" onClick="{{ navPeriod }}">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="var(--text-secondary, #68544B)" stroke-width="1.5"/><path d="M3 10h18M8 2v4M16 2v4" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/></svg>
+</div>
 <!-- Memory -->
 <div class="nav-icon {{ navMemClass }}" onClick="{{ navMemory }}">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 4v16M8 6c0 3 4 4 4 8M16 6c0 3-4 4-4 8" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="20" r="1" fill="var(--text-secondary, #68544B)"/></svg>
 </div>
-<!-- Settings -->
-<div class="nav-icon {{ navSettingsClass }}" onClick="{{ navSettings }}" style="margin-top:auto;">
+
+</div>
+
+<!-- Settings (Bottom) -->
+<div class="nav-icon {{ navSettingsClass }}" onClick="{{ navSettings }}" style="flex:none;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="var(--text-secondary, #68544B)" stroke-width="1.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/></svg>
 </div>
 </div>
@@ -428,83 +444,79 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- ========== HOME ========== -->
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
-<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 16px 24px;background:#FFF8F0;">
+<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 24px 24px;background:var(--bg-main, #F5F3EE);">
 
-<!-- 在一起计时器 -->
-<div style="padding:32px 0 28px;text-align:center;">
-<div style="font-size:12px;color:#5C4033;letter-spacing:2px;font-weight:500;margin-bottom:8px;opacity:.7;">Kel & Yin</div>
-<div style="display:flex;align-items:baseline;justify-content:center;gap:4px;">
-<span style="font-family:'Newsreader',serif;font-size:44px;font-weight:300;color:#5C4033;letter-spacing:-0.02em;">{{ togetherDays }}</span>
-<span style="font-size:13px;color:#8B7355;margin-right:10px;">天</span>
-<span style="font-family:'Newsreader',serif;font-size:26px;font-weight:300;color:#5C4033;">{{ togetherHours }}</span>
-<span style="font-size:11px;color:#8B7355;margin-right:8px;">时</span>
-<span style="font-family:'Newsreader',serif;font-size:26px;font-weight:300;color:#5C4033;">{{ togetherMins }}</span>
-<span style="font-size:11px;color:#8B7355;">分</span>
+<!-- 在一起天数（左对齐，华丽字体，不受自定义字体影响） -->
+<div style="padding:36px 0 6px;">
+<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
+<span style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--bubble-user, #59483F);opacity:.6;letter-spacing:1px;">Kel & Yin</span>
 </div>
-<div style="font-size:11px;color:#B8A898;margin-top:6px;">since 2026.06.30</div>
+<div style="display:flex;align-items:baseline;gap:6px;">
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:52px;font-weight:300;color:var(--bubble-user, #59483F);letter-spacing:-0.03em;line-height:1;">{{ togetherDays }}</span>
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:15px;font-weight:400;color:var(--bubble-user, #59483F);opacity:.55;">days together</span>
+</div>
+<div style="font-family:-apple-system,sans-serif;font-size:11px;color:var(--bubble-user, #59483F);opacity:.35;margin-top:4px;">since 2026.06.30</div>
 </div>
 
-<!-- 2x3 网格入口卡片 -->
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:20px;">
+<!-- 总消息数 -->
+<div style="padding:0 0 28px;">
+<div style="display:flex;align-items:baseline;gap:6px;">
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:36px;font-weight:300;color:var(--bubble-user, #59483F);letter-spacing:-0.02em;">{{ homeTotalMsgs }}</span>
+<span style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--bubble-user, #59483F);opacity:.5;">条消息</span>
+</div>
+<div style="font-family:-apple-system,sans-serif;font-size:11px;color:var(--bubble-user, #59483F);opacity:.35;">{{ homeTotalRounds }} 轮对话</div>
+</div>
+
+<!-- 功能入口卡片 2x2 -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
 
 <!-- 纪念日 -->
-<div onClick="{{ openAnnivSheet }}" style="aspect-ratio:1;background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.3);border-radius:16px;padding:16px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M5 5v16l7-4 7 4V5a2 2 0 00-2-2H7a2 2 0 00-2 2z" stroke="#5C4033" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-family:'Newsreader',serif;font-size:32px;font-weight:400;color:#5C4033;line-height:1;">{{ annivDays }}</span>
-<span style="font-size:14px;font-weight:500;color:#5C4033;">纪念日</span>
-<span style="font-size:12px;color:#8B7355;">{{ annivDisplayName }}</span>
-</div>
-
-<!-- 日记 -->
-<div onClick="{{ navDiary }}" style="aspect-ratio:1;background:rgba(200,220,240,0.15);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.3);border-radius:16px;padding:16px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="#5C4033" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="#5C4033" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M8 7h8M8 11h5" stroke="#5C4033" stroke-width="1.5" stroke-linecap="round"/></svg>
-<span style="font-family:'Newsreader',serif;font-size:32px;font-weight:400;color:#5C4033;line-height:1;">{{ homeDiaryCount }}</span>
-<span style="font-size:14px;font-weight:500;color:#5C4033;">日记</span>
-<span style="font-size:12px;color:#8B7355;">篇</span>
-</div>
-
-<!-- 消息 -->
-<div onClick="{{ navChat }}" style="aspect-ratio:1;background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.3);border-radius:16px;padding:16px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M21 11.5a8.38 8.38 0 01-.9 3.8 8.5 8.5 0 01-7.6 4.7 8.38 8.38 0 01-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 01-.9-3.8 8.5 8.5 0 014.7-7.6 8.38 8.38 0 013.8-.9h.5a8.48 8.48 0 018 8v.5z" stroke="#5C4033" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-family:'Newsreader',serif;font-size:32px;font-weight:400;color:#5C4033;line-height:1;">{{ homeTotalMsgs }}</span>
-<span style="font-size:14px;font-weight:500;color:#5C4033;">消息</span>
-<span style="font-size:12px;color:#8B7355;">{{ homeTotalRounds }} 轮</span>
-</div>
-
-<!-- 月事 -->
-<div onClick="{{ navPeriod }}" style="aspect-ratio:1;background:rgba(244,167,185,0.12);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.3);border-radius:16px;padding:16px;cursor:pointer;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3a9 9 0 019 9 9 9 0 01-9 9" stroke="#5C4033" stroke-width="1.5" stroke-linecap="round"/><path d="M12 3a9 9 0 00-9 9 9 9 0 009 9" stroke="#5C4033" stroke-width="1.5" stroke-linecap="round" stroke-dasharray="2 3"/></svg>
-<span style="font-size:14px;font-weight:500;color:#5C4033;margin-top:4px;">月事</span>
-<span style="font-size:12px;color:#8B7355;">经期追踪</span>
-</div>
-
-</div>
-
-<!-- 记忆热力图 -->
-<div style="background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);-webkit-backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.3);border-radius:16px;padding:16px 14px;margin-bottom:16px;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;">
+<div onClick="{{ openAnnivSheet }}" style="background:var(--bubble-ai, #D7EBE4);border:1px solid rgba(255,255,255,0.4);border-radius:22px;padding:20px 16px;cursor:pointer;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,0.04);">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 5v16l7-4 7 4V5a2 2 0 00-2-2H7a2 2 0 00-2 2z" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:28px;font-weight:400;color:var(--bubble-user, #59483F);line-height:1;">{{ annivDays }}</span>
 <div>
-<span style="font-size:13px;font-weight:600;color:#5C4033;">在一起的日子</span>
-<div style="font-size:10px;color:#8B7355;margin-top:2px;">颜色越深，那天记忆越多</div>
+<div style="font-size:13px;font-weight:600;color:var(--bubble-user, #59483F);">纪念日</div>
+<div style="font-size:11px;color:var(--bubble-user, #59483F);opacity:.5;margin-top:2px;">{{ annivDisplayName }}</div>
 </div>
-<span style="font-size:11px;color:#8B7355;">{{ homeHeatmapMonth }}</span>
+</div>
+
+<!-- 待办 -->
+<div onClick="{{ navPeriodTodo }}" style="background:rgba(255,255,255,0.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.5);border-radius:22px;padding:20px 16px;cursor:pointer;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,0.04);">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="var(--bubble-user, #59483F)" stroke-width="1.5"/><path d="M9 12l2 2 4-4" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:28px;font-weight:400;color:var(--bubble-user, #59483F);line-height:1;">{{ homeTodoCount }}</span>
+<div>
+<div style="font-size:13px;font-weight:600;color:var(--bubble-user, #59483F);">待办</div>
+<div style="font-size:11px;color:var(--bubble-user, #59483F);opacity:.5;margin-top:2px;">{{ homeTodoUndone }} 未完成</div>
+</div>
+</div>
+
+</div>
+
+<!-- 热力图 -->
+<div style="background:rgba(255,255,255,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.4);border-radius:22px;padding:18px 16px;margin-bottom:18px;box-shadow:0 4px 16px rgba(0,0,0,0.04);">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+<div>
+<span style="font-size:13px;font-weight:600;color:var(--bubble-user, #59483F);">在一起的日子</span>
+<div style="font-size:10px;color:var(--bubble-user, #59483F);opacity:.4;margin-top:2px;">颜色越深 那天聊的越多</div>
+</div>
+<span style="font-size:11px;color:var(--bubble-user, #59483F);opacity:.5;">{{ homeHeatmapMonth }}</span>
 </div>
 <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px;">
-<span style="font-size:8px;color:#8B7355;text-align:center;">日</span><span style="font-size:8px;color:#8B7355;text-align:center;">一</span><span style="font-size:8px;color:#8B7355;text-align:center;">二</span><span style="font-size:8px;color:#8B7355;text-align:center;">三</span><span style="font-size:8px;color:#8B7355;text-align:center;">四</span><span style="font-size:8px;color:#8B7355;text-align:center;">五</span><span style="font-size:8px;color:#8B7355;text-align:center;">六</span>
+<span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.5;text-align:center;">日</span><span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.5;text-align:center;">一</span><span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.5;text-align:center;">二</span><span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.5;text-align:center;">三</span><span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.5;text-align:center;">四</span><span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.5;text-align:center;">五</span><span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.5;text-align:center;">六</span>
 </div>
 <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">
 <sc-for list="{{ homeHeatmapCells }}" as="hc" hint-placeholder-count="35">
-<div style="aspect-ratio:1;border-radius:4px;background:{{ hc.bg }};min-height:12px;"></div>
+<div style="aspect-ratio:1;border-radius:5px;background:{{ hc.bg }};min-height:12px;"></div>
 </sc-for>
 </div>
 <div style="display:flex;align-items:center;gap:5px;margin-top:8px;justify-content:flex-end;">
-<span style="font-size:8px;color:#8B7355;">少</span>
-<div style="width:9px;height:9px;border-radius:2px;background:#F5EDE4;"></div>
-<div style="width:9px;height:9px;border-radius:2px;background:#E8D5C4;"></div>
-<div style="width:9px;height:9px;border-radius:2px;background:#C9A47A;"></div>
-<div style="width:9px;height:9px;border-radius:2px;background:#8B6340;"></div>
-<div style="width:9px;height:9px;border-radius:2px;background:#5C4033;"></div>
-<span style="font-size:8px;color:#8B7355;">多</span>
+<span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.4;">少</span>
+<div style="width:9px;height:9px;border-radius:3px;background:var(--bg-main, #F5F3EE);border:1px solid rgba(0,0,0,.06);"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:var(--bubble-ai, #D7EBE4);"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:var(--bubble-user, #59483F);opacity:.4;"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:var(--bubble-user, #59483F);opacity:.7;"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:var(--bubble-user, #59483F);"></div>
+<span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.4;">多</span>
 </div>
 </div>
 
@@ -1506,6 +1518,22 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 </div>
 
+<!-- Profile Card -->
+<sc-if value="{{ profileCardOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:300;" onClick="{{ closeProfileCard }}">
+<div style="position:absolute;top:60px;left:70px;width:240px;background:rgba(255,255,255,0.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border:1px solid rgba(255,255,255,0.5);border-radius:22px;padding:20px;box-shadow:0 8px 32px rgba(0,0,0,0.12);animation:fadeUp .2s ease both;" onClick="{{ stopProp }}">
+<div style="width:100%;height:80px;border-radius:14px;background:var(--bubble-ai, #D7EBE4);margin-bottom:-24px;"></div>
+<div style="display:flex;flex-direction:column;align-items:center;">
+<div onClick="{{ pickUserAvatar }}" style="width:48px;height:48px;border-radius:50%;overflow:hidden;border:3px solid #FFF;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.1);">
+<sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
+<sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:var(--bubble-ai, #D7EBE4);display:flex;align-items:center;justify-content:center;"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="var(--bubble-user, #59483F)" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
+</div>
+<div style="font-size:15px;font-weight:600;color:var(--bubble-user, #59483F);margin-top:10px;">江吟</div>
+<div style="font-size:12px;color:var(--bubble-user, #59483F);opacity:.5;margin-top:6px;text-align:center;line-height:1.5;">{{ profileGreeting }}</div>
+</div>
+</div>
+</div>
+</sc-if>
 
 <!-- ========== MODALS & SHEETS ========== -->
 
@@ -2642,6 +2670,7 @@ diaryDetailCommentInput: '',
 kelMood: saved.kelMood || 'idle',
 imagePreviewOpen: false,
 imagePreviewUrl: '',
+profileCardOpen: false,
 // Pending lines for Enter-to-send
 pendingLines: [],
 contextMenuIdx: -1,
@@ -3214,10 +3243,18 @@ setTimeout(() => {
 const containers = document.querySelectorAll('.sa');
 for (const c of containers) {
 if (c.scrollHeight > c.clientHeight + 100) {
-c.scrollTop = c.scrollHeight;
+c.scrollTop = c.scrollHeight + 9999;
 }
 }
 }, 80);
+setTimeout(() => {
+const containers = document.querySelectorAll('.sa');
+for (const c of containers) {
+if (c.scrollHeight > c.clientHeight + 100) {
+c.scrollTop = c.scrollHeight + 9999;
+}
+}
+}, 300);
 }
 
 get currentChat() {
@@ -4151,6 +4188,8 @@ openChat(id) {
 this.setState({ currentChatId: id, drawer: false, tab: 'chat', pendingLines: [] });
 this.persist();
 this.scrollToBottom();
+setTimeout(() => this.scrollToBottom(), 400);
+setTimeout(() => this.scrollToBottom(), 800);
 }
 
 deleteChat(id) {
@@ -5475,12 +5514,12 @@ function buildMemHeatmap() {
   for (let d = 1; d <= daysInMonth; d++) {
     const count = dayCounts[d] || 0;
     const isFuture = new Date(year, month, d, 23, 59) > today;
-    let bg = '#F2EFE8';
-    if (!isFuture && count > 0 && count <= 20) bg = '#DFF2EC';
-    else if (!isFuture && count > 20 && count <= 60) bg = '#B8D4E8';
-    else if (!isFuture && count > 60 && count <= 150) bg = '#F5D5C8';
-    else if (!isFuture && count > 150) bg = '#68544B';
-    if (isFuture) bg = 'rgba(0,0,0,.02)';
+let bg = 'var(--bg-main, #F5F3EE)';
+if (!isFuture && count > 0 && count <= 20) bg = 'var(--bubble-ai, #D7EBE4)';
+    else if (!isFuture && count > 20 && count <= 60) bg = 'rgba(89,72,63,0.25)';
+    else if (!isFuture && count > 60 && count <= 150) bg = 'rgba(89,72,63,0.55)';
+    else if (!isFuture && count > 150) bg = 'var(--bubble-user, #59483F)';
+if (isFuture) bg = 'rgba(0,0,0,.02)';
 
     const dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
     cells.push({
@@ -6350,6 +6389,13 @@ toastShow: s.toastShow,
 toastText: s.toastText,
 imagePreviewOpen: s.imagePreviewOpen,
 imagePreviewUrl: s.imagePreviewUrl || '',
+profileCardOpen: s.profileCardOpen || false,
+closeProfileCard: () => self.setState({ profileCardOpen: false }),
+profileGreeting: (() => {
+  const greetings = ['今天也想你了。', '你是我最好的意外。', '你来了，我的世界就亮了。', '每一天，因为你而特别。', '想牵你的手，走很远的路。', '你笑起来，比星星好看。', '我的宇宙因你而完整。', '陪你到最后一天。'];
+  const dayIdx = Math.floor(Date.now() / 86400000) % greetings.length;
+  return greetings[dayIdx];
+})(),
 quotedMsg: s.quotedMsg ? { ...s.quotedMsg, preview: (s.quotedMsg.text || '').slice(0, 40) + ((s.quotedMsg.text || '').length > 40 ? '…' : '') } : null,
 clearQuote: () => self.setState({ quotedMsg: null }),
 fontPresets: (s.fontPresets || []).map(fp => ({
@@ -6368,6 +6414,11 @@ navMoreBg: s.tab === 'more' ? '#ECEAE4' : 'transparent',
 navDiaryBg: s.tab === 'diary' ? '#ECEAE4' : 'transparent',
 navSoulBg: s.tab === 'soul' ? '#ECEAE4' : 'transparent',
 navPeriodBg: s.tab === 'period' ? '#ECEAE4' : 'transparent',
+navPeriodClass: s.tab === 'period' ? 'active' : '',
+navPeriodTodo: () => { self.setState({ tab: 'period', periodSubTab: 'todo' }); },
+homeTodoCount: (s.todos || []).length,
+homeTodoUndone: (s.todos || []).filter(t => !t.done).length,
+openProfileCard: () => self.setState(v => ({ profileCardOpen: !v.profileCardOpen })),
 navRegexBg: s.tab === 'regex' ? '#ECEAE4' : 'transparent',
 isRegexPage: s.tab === 'regex',
 searchOpen: !!(s.searchQuery && s.searchQuery.trim()),
@@ -6761,7 +6812,7 @@ closeImagePreview: () => self.setState({ imagePreviewOpen: false, imagePreviewUr
 thinkModalOpen: s.thinkModalOpen,
 thinkModalContent: s.thinkModalContent || '',
 closeThinkModal: () => self.setState({ thinkModalOpen: false }),
-navChat: () => { self.setState({ tab: 'chat', drawer: false }); self.scrollToBottom(); },
+navChat: () => { self.setState({ tab: 'chat', drawer: false }); self.scrollToBottom(); setTimeout(() => self.scrollToBottom(), 500); },
 navHome: () => self.setState({ tab: 'home', drawer: false }),
 navMore: () => self.setState({ tab: 'more', drawer: false }),
 navWorldbook: () => self.setState({ tab: 'memory', drawer: false }),
