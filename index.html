@@ -43,6 +43,9 @@ body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0
 @keyframes spin { from{transform:rotate(0deg)} to{transform:rotate(360deg)} }
 .quote-block { background:rgba(26,24,21,.04); border-left:2px solid #B8B3A8; border-radius:0 6px 6px 0; padding:4px 10px; margin:4px 0; font-size:13px; color:#9A958B; }
 input, textarea { user-select:text; -webkit-user-select:text; }
+@keyframes heartbeat { 0%,100%{transform:scale(1)} 14%{transform:scale(1.3)} 28%{transform:scale(1)} 42%{transform:scale(1.2)} 56%{transform:scale(1)} }
+.shake { animation: shakeAnim .4s ease; }
+@keyframes shakeAnim { 0%,100%{transform:translateX(0)} 20%{transform:translateX(-8px)} 40%{transform:translateX(8px)} 60%{transform:translateX(-6px)} 80%{transform:translateX(4px)} }
 </style>
 </helmet>
 
@@ -1220,6 +1223,185 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </div>
 
 </div>
+<!-- 做爱日历入口（右上角隐蔽爱心） -->
+<sc-if value="{{ !sexCalendarOpen }}" hint-placeholder-val="{{ true }}">
+<button onClick="{{ openSexPasswordPrompt }}" style="position:absolute;top:20px;right:20px;width:28px;height:28px;border:none;background:transparent;cursor:pointer;padding:0;z-index:15;opacity:0.3;transition:opacity .2s;" onMouseOver="this.style.opacity='0.6'" onMouseOut="this.style.opacity='0.3'">
+<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#F4A7B9" stroke-width="1.5" stroke-linejoin="round"/></svg>
+</button>
+</sc-if>
+
+<!-- 密码输入弹窗 -->
+<sc-if value="{{ sexPasswordPromptOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.92);animation:fadeIn .3s ease both;">
+<div style="text-align:center;padding:40px 30px;max-width:320px;">
+<!-- 跳动爱心 -->
+<div style="font-size:48px;margin-bottom:30px;animation:heartbeat 1.2s ease-in-out infinite;">♡</div>
+<!-- 密码输入 -->
+<input value="{{ sexPasswordInput }}" onInput="{{ sexPasswordChange }}" onKeyDown="{{ sexPasswordKeyDown }}" type="password" placeholder="..." autofocus style="width:200px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:12px;padding:12px 16px;font-size:18px;color:#FFF0F0;text-align:center;outline:none;font-family:inherit;letter-spacing:4px;" class="{{ sexPasswordShake }}">
+<div style="margin-top:20px;">
+<button onClick="{{ closeSexPasswordPrompt }}" style="border:none;background:transparent;color:rgba(255,255,255,0.4);font-size:12px;cursor:pointer;padding:8px 16px;">取消</button>
+</div>
+</div>
+</div>
+</sc-if>
+
+<!-- 做爱日历全屏视图 -->
+<sc-if value="{{ sexCalendarOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:400;background:linear-gradient(135deg, #2D1B2E 0%, #1A0A1C 100%);display:flex;flex-direction:column;animation:fadeIn .4s ease both;overflow:hidden;">
+
+<!-- 顶部：关闭按钮 + 标题 -->
+<div style="flex:none;padding:env(safe-area-inset-top,20px) 20px 16px;display:flex;align-items:center;justify-content:space-between;">
+<button onClick="{{ closeSexCalendar }}" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#FFF0F0" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button>
+<div style="font-size:16px;font-weight:600;color:#FFF0F0;letter-spacing:1px;">♥</div>
+<div style="width:32px;"></div>
+</div>
+
+<!-- 月份切换 -->
+<div style="flex:none;padding:0 20px 16px;display:flex;align-items:center;justify-content:space-between;">
+<button onClick="{{ sexMonthPrev }}" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M14 6l-6 6 6 6" stroke="#FFF0F0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+<div style="font-size:15px;font-weight:600;color:#FFF0F0;">{{ sexCalendarMonth }}</div>
+<button onClick="{{ sexMonthNext }}" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.1);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M10 6l6 6-6 6" stroke="#FFF0F0" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</button>
+</div>
+
+<!-- 日历主体 -->
+<div class="sa" style="flex:1;min-height:0;overflow-y:auto;padding:0 16px 80px;">
+<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px;margin-bottom:16px;">
+<!-- 星期标题 -->
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:8px;">
+<span style="font-size:11px;color:rgba(255,255,255,0.4);text-align:center;">日</span>
+<span style="font-size:11px;color:rgba(255,255,255,0.4);text-align:center;">一</span>
+<span style="font-size:11px;color:rgba(255,255,255,0.4);text-align:center;">二</span>
+<span style="font-size:11px;color:rgba(255,255,255,0.4);text-align:center;">三</span>
+<span style="font-size:11px;color:rgba(255,255,255,0.4);text-align:center;">四</span>
+<span style="font-size:11px;color:rgba(255,255,255,0.4);text-align:center;">五</span>
+<span style="font-size:11px;color:rgba(255,255,255,0.4);text-align:center;">六</span>
+</div>
+<!-- 日期网格 -->
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">
+<sc-for list="{{ sexCalendarCells }}" as="sc" hint-placeholder-count="35">
+<div onClick="{{ sc.tap }}" onContextMenu="{{ sc.longPress }}" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;background:{{ sc.bg }};cursor:{{ sc.cursor }};position:relative;min-height:40px;border:{{ sc.border }};">
+<!-- 底部经期/排卵标记 -->
+<sc-if value="{{ sc.hasPeriodMark }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;bottom:2px;width:80%;height:4px;border-radius:2px;background:{{ sc.periodMarkColor }};opacity:0.6;"></div>
+</sc-if>
+<span style="font-size:13px;font-weight:{{ sc.fw }};color:{{ sc.color }};position:relative;z-index:1;">{{ sc.day }}</span>
+<!-- 爱心标记（右上角） -->
+<sc-if value="{{ sc.hasSex }}" hint-placeholder-val="{{ false }}">
+<span style="position:absolute;top:2px;right:2px;font-size:12px;color:#FF4D6D;filter:drop-shadow(0 0 4px rgba(255,77,109,0.6));z-index:2;">♥</span>
+</sc-if>
+<!-- 彩蛋：排卵日做爱显示小星星 -->
+<sc-if value="{{ sc.hasOvulationSex }}" hint-placeholder-val="{{ false }}">
+<span style="position:absolute;top:2px;left:2px;font-size:10px;opacity:0.7;">✨</span>
+</sc-if>
+</div>
+</sc-for>
+</div>
+
+<!-- 图例 -->
+<div style="display:flex;align-items:center;gap:12px;margin-top:12px;justify-content:center;flex-wrap:wrap;font-size:10px;color:rgba(255,255,255,0.5);">
+<div style="display:flex;align-items:center;gap:4px;"><span style="color:#FF4D6D;font-size:12px;">♥</span> 做爱</div>
+<div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:4px;border-radius:2px;background:#8B0000;"></div> 经期</div>
+<div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:4px;border-radius:2px;background:#BF5FFF;"></div> 排卵</div>
+<div style="display:flex;align-items:center;gap:4px;"><div style="width:10px;height:10px;border-radius:50%;border:1px solid #FFD700;"></div> 今天</div>
+<div style="display:flex;align-items:center;gap:4px;"><span>✨</span> 排卵日中出</div>
+</div>
+</div>
+
+<!-- 月度统计（可折叠） -->
+<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;">
+<div onClick="{{ toggleSexStats }}" style="padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<span style="font-size:13px;font-weight:600;color:#FFF0F0;">本月统计</span>
+<svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="transform:rotate({{ sexStatsRotate }}deg);transition:transform .2s;"><path d="M6 9l6 6 6-6" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<sc-if value="{{ sexStatsOpen }}" hint-placeholder-val="{{ false }}">
+<div style="padding:0 16px 16px;border-top:1px solid rgba(255,255,255,0.06);">
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
+<div style="text-align:center;padding:12px;background:rgba(255,77,109,0.1);border-radius:10px;border:1px solid rgba(255,77,109,0.2);">
+<div style="font-size:24px;font-weight:300;color:#FF4D6D;">{{ sexMonthCount }}</div>
+<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">次数</div>
+</div>
+<div style="text-align:center;padding:12px;background:rgba(255,77,109,0.1);border-radius:10px;border:1px solid rgba(255,77,109,0.2);">
+<div style="font-size:24px;font-weight:300;color:#FF4D6D;">{{ sexMonthRounds }}</div>
+<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">总轮数</div>
+</div>
+<div style="text-align:center;padding:12px;background:rgba(139,0,0,0.15);border-radius:10px;border:1px solid rgba(139,0,0,0.3);">
+<div style="font-size:24px;font-weight:300;color:#FF6B6B;">{{ sexPeriodCount }}</div>
+<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">经期中</div>
+</div>
+<div style="text-align:center;padding:12px;background:rgba(191,95,255,0.12);border-radius:10px;border:1px solid rgba(191,95,255,0.25);">
+<div style="font-size:24px;font-weight:300;color:#BF5FFF;">{{ sexOvulationCount }}</div>
+<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">排卵期</div>
+</div>
+</div>
+</div>
+</sc-if>
+</div>
+</div>
+
+</div>
+</sc-if>
+
+<!-- 做爱记录详情弹窗 -->
+<sc-if value="{{ sexEditOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);animation:fadeIn .2s ease both;">
+<div style="position:relative;background:linear-gradient(135deg, #2D1B2E 0%, #1A0A1C 100%);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:20px;width:calc(100% - 40px);max-width:380px;box-shadow:0 10px 40px rgba(0,0,0,0.5);animation:fadeUp .2s ease both;">
+<div style="font-size:15px;font-weight:600;color:#FFF0F0;margin-bottom:16px;text-align:center;">{{ sexEditDateLabel }}</div>
+
+<!-- 时间段 -->
+<div style="margin-bottom:14px;">
+<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px;">时间段</div>
+<div style="display:flex;gap:6px;">
+<sc-for list="{{ sexTimeOptions }}" as="st" hint-placeholder-count="4">
+<button onClick="{{ st.pick }}" style="flex:1;border:1px solid {{ st.bd }};background:{{ st.bg }};color:{{ st.fg }};border-radius:10px;padding:7px 0;font-size:12px;font-family:inherit;cursor:pointer;">{{ st.label }}</button>
+</sc-for>
+</div>
+</div>
+
+<!-- 轮数 -->
+<div style="margin-bottom:14px;">
+<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:6px;">轮数</div>
+<input value="{{ sexEditRounds }}" onInput="{{ sexEditRoundsChange }}" type="number" min="1" style="width:80px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:8px 12px;font-size:14px;color:#FFF0F0;text-align:center;outline:none;">
+</div>
+
+<!-- 她的感想 -->
+<div style="margin-bottom:14px;">
+<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:6px;">她的感想</div>
+<textarea value="{{ sexEditHerNote }}" onInput="{{ sexEditHerNoteChange }}" placeholder="今晚感觉如何..." rows="2" style="display:block;width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:10px;font-family:inherit;font-size:13px;color:#FFF0F0;resize:vertical;outline:none;"></textarea>
+</div>
+
+<!-- 他的感想 -->
+<div style="margin-bottom:14px;">
+<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:6px;">Kel 的感想</div>
+<textarea value="{{ sexEditHisNote }}" onInput="{{ sexEditHisNoteChange }}" placeholder="我想说..." rows="2" style="display:block;width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:10px;font-family:inherit;font-size:13px;color:#FFF0F0;resize:vertical;outline:none;"></textarea>
+</div>
+
+<!-- 标签 -->
+<div style="margin-bottom:16px;">
+<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px;">标签</div>
+<div style="display:flex;flex-wrap:wrap;gap:6px;">
+<sc-for list="{{ sexTagOptions }}" as="tg" hint-placeholder-count="6">
+<button onClick="{{ tg.toggle }}" style="border:1px solid {{ tg.bd }};background:{{ tg.bg }};color:{{ tg.fg }};border-radius:10px;padding:5px 10px;font-size:11px;font-family:inherit;cursor:pointer;">{{ tg.label }}</button>
+</sc-for>
+</div>
+</div>
+
+<!-- 按钮 -->
+<div style="display:flex;gap:10px;">
+<button onClick="{{ sexEditCancel }}" style="flex:1;padding:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);border-radius:14px;font-size:13px;font-family:inherit;color:rgba(255,255,255,0.6);cursor:pointer;">取消</button>
+<sc-if value="{{ sexEditIsExisting }}" hint-placeholder-val="{{ false }}">
+<button onClick="{{ sexEditDelete }}" style="padding:10px 16px;border:1px solid rgba(255,77,109,0.4);background:rgba(255,77,109,0.1);border-radius:14px;font-size:13px;font-family:inherit;color:#FF4D6D;cursor:pointer;">删除</button>
+</sc-if>
+<button onClick="{{ sexEditSave }}" style="flex:1;padding:10px;border:none;background:#FF4D6D;border-radius:14px;font-size:13px;font-family:inherit;color:#FFF;cursor:pointer;box-shadow:0 0 12px rgba(255,77,109,0.4);">保存</button>
+</div>
+</div>
+</div>
+</sc-if>
 
 <!-- 底部tab栏 -->
 <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 16px calc(env(safe-area-inset-bottom,0px) + 12px);background:rgba(255,248,240,0.9);backdrop-filter:blur(8px);border-top:1px solid rgba(92,64,51,0.06);display:flex;align-items:center;justify-content:space-around;">
@@ -2509,10 +2691,20 @@ periodViewMonth: new Date().getMonth(),
 periodHistoryOpen: false,
 periodSubTab: 'main',
 sexData: JSON.parse(localStorage.getItem('_cl_data') || '{}'),
-sexCalendarOpen: false,
-sexPassword: '',
 todos: saved.todos || [],
 todoEditOpen: false,
+sexCalendarOpen: false,
+sexPasswordPromptOpen: false,
+sexPasswordInput: '',
+sexPasswordShake: false,
+sexStatsOpen: false,
+sexEditOpen: false,
+sexEditDate: '',
+sexEditTime: '晚',
+sexEditRounds: '1',
+sexEditHerNote: '',
+sexEditHisNote: '',
+sexEditTags: [],
 todoEditId: null,
 todoEditBody: '',
 todoEditAt: '',
@@ -5722,6 +5914,76 @@ periodTabTodoColor: (s.periodSubTab||'main')==='todo' ? '#5C4033' : '#8B7355',
 periodTabAnnivColor: '#8B7355',
 periodTabMoneyColor: '#8B7355',
 periodTabMoreColor: '#8B7355',
+periodTabMore: () => self.show('开发中'),
+// ===== 做爱日历 =====
+sexPasswordPromptOpen: s.sexPasswordPromptOpen || false,
+sexPasswordInput: s.sexPasswordInput || '',
+sexPasswordShake: s.sexPasswordShake ? 'shake' : '',
+openSexPasswordPrompt: () => self.setState({ sexPasswordPromptOpen: true, sexPasswordInput: '' }),
+closeSexPasswordPrompt: () => self.setState({ sexPasswordPromptOpen: false, sexPasswordInput: '', sexPasswordShake: false }),
+sexPasswordChange: (e) => self.setState({ sexPasswordInput: e.target.value }),
+sexPasswordKeyDown: (e) => {
+  if (e.key === 'Enter') {
+    const pw = s.sexPasswordInput.trim().toLowerCase();
+    if (pw === 'sexy') {
+      self.setState({ sexCalendarOpen: true, sexPasswordPromptOpen: false, sexPasswordInput: '' });
+    } else {
+      self.setState({ sexPasswordShake: true, sexPasswordInput: '' });
+      setTimeout(() => self.setState({ sexPasswordShake: false }), 500);
+    }
+  }
+},
+sexCalendarOpen: s.sexCalendarOpen || false,
+closeSexCalendar: () => self.setState({ sexCalendarOpen: false }),
+sexCalendarMonth: s.periodViewYear + '年' + (s.periodViewMonth + 1) + '月',
+sexMonthPrev: () => { let y=s.periodViewYear,m=s.periodViewMonth-1; if(m<0){m=11;y--;} self.setState({periodViewYear:y,periodViewMonth:m}); },
+sexMonthNext: () => { let y=s.periodViewYear,m=s.periodViewMonth+1; if(m>11){m=0;y++;} self.setState({periodViewYear:y,periodViewMonth:m}); },
+sexCalendarCells: (() => {
+  const year=s.periodViewYear, month=s.periodViewMonth;
+  const firstDay=new Date(year,month,1).getDay();
+  const daysInMonth=new Date(year,month+1,0).getDate();
+  const today=new Date(); today.setHours(0,0,0,0);
+  const todayStr=today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  const pd=s.periodData||{};
+  const hist=pd.history||[];
+  const cycleLen=pd.cycleLength||28;
+  const ovOffset=pd.ovulationOffset||14;
+  const sexData=s.sexData||{};
+  const periodDays=new Set(), ovulationDays=new Set();
+  for(const h of hist){const start=new Date(h.start);start.setHours(0,0,0,0);const end=h.end?new Date(h.end):new Date(start.getTime()+4*86400000);end.setHours(0,0,0,0);for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){periodDays.add(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));}}
+  if(hist.length>0){const lastStart=new Date(hist[hist.length-1].start);lastStart.setHours(0,0,0,0);const ovDay=new Date(lastStart.getTime()+(cycleLen-ovOffset)*86400000);for(let i=-2;i<=2;i++){const d=new Date(ovDay.getTime()+i*86400000);ovulationDays.add(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));}}
+  const cells=[];
+  for(let i=0;i<firstDay;i++){cells.push({day:'',bg:'transparent',color:'transparent',fw:'400',cursor:'default',border:'none',hasPeriodMark:false,periodMarkColor:'',hasSex:false,hasOvulationSex:false,tap:()=>{},longPress:(e)=>{e.preventDefault();}});}
+  for(let d=1;d<=daysInMonth;d++){
+    const ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+    const isT=ds===todayStr;const isPeriod=periodDays.has(ds);const isOv=ovulationDays.has(ds);const hasSex=!!sexData[ds];
+    cells.push({day:String(d),bg:'rgba(255,255,255,0.03)',color:'#FFF0F0',fw:isT?'700':'400',cursor:'pointer',border:isT?'1px solid #FFD700':'none',hasPeriodMark:isPeriod||isOv,periodMarkColor:isPeriod?'#8B0000':'#BF5FFF',hasSex:hasSex,hasOvulationSex:hasSex&&isOv,
+    tap:()=>{self.setState({sexEditOpen:true,sexEditDate:ds,sexEditTime:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].time:'晚'),sexEditRounds:String((sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].rounds:1)),sexEditHerNote:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].herNote:''),sexEditHisNote:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].hisNote:''),sexEditTags:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].tags||[]:[])});},
+    longPress:(e)=>{e.preventDefault();if(sexData[ds]){if(confirm('删除 '+ds+' 的记录？')){const nd={...sexData};delete nd[ds];self.setState({sexData:nd});localStorage.setItem('_cl_data',JSON.stringify(nd));self.show('已删除');}}else{self.setState({sexEditOpen:true,sexEditDate:ds,sexEditTime:'晚',sexEditRounds:'1',sexEditHerNote:'',sexEditHisNote:'',sexEditTags:[]});}}});
+  }
+  return cells;
+})(),
+sexStatsOpen: s.sexStatsOpen||false,
+sexStatsRotate: s.sexStatsOpen?'180':'0',
+toggleSexStats: ()=>self.setState(v=>({sexStatsOpen:!v.sexStatsOpen})),
+sexMonthCount: (()=>{const sex=s.sexData||{};const y=s.periodViewYear;const m=s.periodViewMonth;let c=0;for(const[date,data] of Object.entries(sex)){const d=new Date(date);if(d.getFullYear()===y&&d.getMonth()===m&&data.sessions)c+=data.sessions.length;}return c;})(),
+sexMonthRounds: (()=>{const sex=s.sexData||{};const y=s.periodViewYear;const m=s.periodViewMonth;let t=0;for(const[date,data] of Object.entries(sex)){const d=new Date(date);if(d.getFullYear()===y&&d.getMonth()===m&&data.sessions){for(const ss of data.sessions)t+=(ss.rounds||1);}}return t;})(),
+sexPeriodCount: (()=>{const sex=s.sexData||{};const pd=s.periodData||{};const hist=pd.history||[];const pDays=new Set();for(const h of hist){const start=new Date(h.start);const end=h.end?new Date(h.end):new Date(start.getTime()+4*86400000);for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){pDays.add(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));}}let c=0;for(const[date] of Object.entries(sex)){if(pDays.has(date))c++;}return c;})(),
+sexOvulationCount: (()=>{const sex=s.sexData||{};const pd=s.periodData||{};const hist=pd.history||[];const cycleLen=(pd.cycleLength||28);const ovOffset=(pd.ovulationOffset||14);const ovDays=new Set();if(hist.length>0){const lastStart=new Date(hist[hist.length-1].start);const ovDay=new Date(lastStart.getTime()+(cycleLen-ovOffset)*86400000);for(let i=-2;i<=2;i++){const d=new Date(ovDay.getTime()+i*86400000);ovDays.add(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));}}let c=0;for(const[date] of Object.entries(sex)){if(ovDays.has(date))c++;}return c;})(),
+sexEditOpen: s.sexEditOpen||false,
+sexEditDateLabel: s.sexEditDate?(s.sexEditDate.replace(/-/g,'.')):'',
+sexEditIsExisting: !!(s.sexEditDate&&s.sexData&&s.sexData[s.sexEditDate]),
+sexEditRounds: s.sexEditRounds||'1',
+sexEditHerNote: s.sexEditHerNote||'',
+sexEditHisNote: s.sexEditHisNote||'',
+sexEditRoundsChange: (e)=>self.setState({sexEditRounds:e.target.value}),
+sexEditHerNoteChange: (e)=>self.setState({sexEditHerNote:e.target.value}),
+sexEditHisNoteChange: (e)=>self.setState({sexEditHisNote:e.target.value}),
+sexTimeOptions: ['凌晨','早','午','晚'].map(t=>({label:t,bg:(s.sexEditTime||'晚')===t?'rgba(255,77,109,0.2)':'rgba(255,255,255,0.05)',bd:(s.sexEditTime||'晚')===t?'rgba(255,77,109,0.5)':'rgba(255,255,255,0.15)',fg:(s.sexEditTime||'晚')===t?'#FF4D6D':'rgba(255,255,255,0.6)',pick:()=>self.setState({sexEditTime:t})})),
+sexTagOptions: (()=>{const allTags=['激烈','温柔','被操到睡着','哭了','新体位','排卵日灌满','多次高潮','口交','后入','骑乘'];const selected=s.sexEditTags||[];return allTags.map(t=>({label:t,bg:selected.includes(t)?'rgba(255,77,109,0.2)':'rgba(255,255,255,0.05)',bd:selected.includes(t)?'rgba(255,77,109,0.5)':'rgba(255,255,255,0.15)',fg:selected.includes(t)?'#FF4D6D':'rgba(255,255,255,0.6)',toggle:()=>{const tags=[...selected];const idx=tags.indexOf(t);if(idx>=0)tags.splice(idx,1);else tags.push(t);self.setState({sexEditTags:tags});}}));})(),
+sexEditCancel: ()=>self.setState({sexEditOpen:false}),
+sexEditDelete: ()=>{const ds=s.sexEditDate;if(!ds)return;const sexData={...s.sexData};delete sexData[ds];self.setState({sexData,sexEditOpen:false});localStorage.setItem('_cl_data',JSON.stringify(sexData));self.show('已删除');},
+sexEditSave: ()=>{const ds=s.sexEditDate;if(!ds)return;const session={time:s.sexEditTime||'晚',rounds:parseInt(s.sexEditRounds)||1,herNote:s.sexEditHerNote||'',hisNote:s.sexEditHisNote||'',tags:s.sexEditTags||[]};const sexData={...s.sexData};sexData[ds]={sessions:[session]};self.setState({sexData,sexEditOpen:false});localStorage.setItem('_cl_data',JSON.stringify(sexData));self.show('♥ 已记录');},
 periodTabTodo: () => self.setState({ periodSubTab: 'todo' }),
 periodTabAnniv: () => self.setState({ sheet: 'anniv' }),
 isTodoSubPage: s.tab === 'period' && s.periodSubTab === 'todo',
