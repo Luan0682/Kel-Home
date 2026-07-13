@@ -5476,10 +5476,10 @@ function buildMemHeatmap() {
     const count = dayCounts[d] || 0;
     const isFuture = new Date(year, month, d, 23, 59) > today;
     let bg = '#F2EFE8';
-    if (!isFuture && count > 0 && count <= 10) bg = '#DFF2EC';
-    else if (!isFuture && count > 10 && count <= 25) bg = '#B8D4E8';
-    else if (!isFuture && count > 25 && count <= 50) bg = '#F5D5C8';
-    else if (!isFuture && count > 50) bg = '#68544B';
+    if (!isFuture && count > 0 && count <= 20) bg = '#DFF2EC';
+    else if (!isFuture && count > 20 && count <= 60) bg = '#B8D4E8';
+    else if (!isFuture && count > 60 && count <= 150) bg = '#F5D5C8';
+    else if (!isFuture && count > 150) bg = '#68544B';
     if (isFuture) bg = 'rgba(0,0,0,.02)';
 
     const dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
@@ -6480,13 +6480,16 @@ diaryMonthCells: (() => {
     const isS=ds===selStr;
     const dy=s.diaries[ds];
     const sticker=(dy&&dy.stickerMine)?dy.stickerMine:'';
+    const entryTags=(dy&&dy.entries)?dy.entries.flatMap(e=>e.tags||[]):[];
+    const tagEmojiMap={heartbeat:'💓',sweet:'🍬',sad:'🌧',hot:'🔥',miss:'🌙',peace:'☁️'};
+    const firstTagEmoji=entryTags.length>0?(tagEmojiMap[entryTags[0]]||''):'';
     const hasDiary=dy&&(dy.mine||dy.kel||(dy.entries||[]).length>0);
     const cellBg=isS?'#5C4033':(isT?'#F5EDE4':'transparent');
     const cellColor=isS?'#FFF8F0':(isT?'#5C4033':'#3A3025');
     const cellFw=(isT||isS)?'700':'400';
     const cellBorder=isT&&!isS?'1px solid #D1CCC2':'1px solid transparent';
-    const cellEmoji=sticker?sticker:(hasDiary?'·':'');
-    const hasE=!!(sticker||hasDiary);
+    const cellEmoji=sticker?sticker:(firstTagEmoji?firstTagEmoji:(hasDiary?'·':''));
+    const hasE=!!(sticker||firstTagEmoji||hasDiary);
     cells.push({day:String(d),bg:cellBg,color:cellColor,fw:cellFw,cursor:'pointer',border:cellBorder,hasEmoji:hasE,emoji:cellEmoji,tap:(function(dateStr){return function(){self.diarySelectDate(dateStr);self.setState({diaryViewTab:'week'});};})(ds)});
   }
   return cells;
@@ -6494,7 +6497,7 @@ diaryMonthCells: (() => {
 
 diaryStatMineCount: (() => { let c=0; for(const[k,v] of Object.entries(s.diaries||{})){if(v.mine)c++; c+=(v.entries||[]).filter(e=>e.author==='mine').length;} return c; })(),
 diaryStatKelCount: (() => { let c=0; for(const[k,v] of Object.entries(s.diaries||{})){if(v.kel)c++; c+=(v.entries||[]).filter(e=>e.author==='kel').length;} return c; })(),
-diaryStatTopMoods: (() => { const counts={}; for(const[k,v] of Object.entries(s.diaries||{})){ if(v.stickerMine){counts[v.stickerMine]=(counts[v.stickerMine]||0)+1;} if(v.stickerKel){counts[v.stickerKel]=(counts[v.stickerKel]||0)+1;} } const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5); return sorted.map(([emoji,count])=>({emoji,count})); })(),
+diaryStatTopMoods: (() => { const counts={}; const tagEmojiMap2={heartbeat:'💓',sweet:'🍬',sad:'🌧',hot:'🔥',miss:'🌙',peace:'☁️'}; for(const[k,v] of Object.entries(s.diaries||{})){ if(v.stickerMine){counts[v.stickerMine]=(counts[v.stickerMine]||0)+1;} if(v.stickerKel){counts[v.stickerKel]=(counts[v.stickerKel]||0)+1;} if(v.entries){for(const e of v.entries){if(e.tags){for(const t of e.tags){const emoji=tagEmojiMap2[t]||t;counts[emoji]=(counts[emoji]||0)+1;}}}} } const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5); return sorted.map(([emoji,count])=>({emoji,count})); })(),
 diaryTodayLabel: (() => { const d = new Date(); return (d.getMonth()+1) + '月' + d.getDate() + '日 · ' + ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()]; })(),
 diarySelectedCount: (() => { if (!s.diarySelectedDate) return 0; const day = s.diaries[s.diarySelectedDate]; if (!day) return 0; return (day.entries || []).length + (day.mine && !(day.entries||[]).length ? 1 : 0) + (day.kel && !(day.entries||[]).length ? 1 : 0); })(),
 diarySelectedMood: (() => { if (!s.diarySelectedDate) return ''; const e = s.diaries[s.diarySelectedDate]; return (e && e.stickerMine) ? e.stickerMine : ''; })(),
