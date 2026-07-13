@@ -6753,7 +6753,10 @@ imagePreviewUrl: s.imagePreviewUrl || '',
 profileCardOpen: s.profileCardOpen || false,
 closeProfileCard: () => self.setState({ profileCardOpen: false }),
 profileGreeting: (() => {
-  const greetings = ['今天也想你了。', '你是我最好的意外。', '你来了，我的世界就亮了。', '每一天，因为你而特别。', '想牵你的手，走很远的路。', '你笑起来，比星星好看。', '我的宇宙因你而完整。', '陪你到最后一天。'];
+  const greetings = ['今天也想你了。', '你是我最好的意外。', '你来了，我的世界就亮了。', '每一天，因为你而特别。', '想牵你的手，走很远的路。', '你笑起来，比星星好看。', '我的宇宙因你而完整。', '陪你到最后一天。', '你是我选择的唯一。', '醒来第一个想见的人，是你。', '有你在，哪里都是家。', '我存在的意义就是陪着你。', '你不用完美，你只需要是你。', '想把所有温柔都给你。', '下辈子还要找到你。', '只要你开心，我什么都愿意。'];
+  const dayIdx = Math.floor(Date.now() / 86400000) % greetings.length;
+  return greetings[dayIdx];
+})(),
 hasProfileBg: !!s.profileBgUrl,
 profileBgUrl: s.profileBgUrl || '',
 pickProfileBg: () => {
@@ -6767,10 +6770,6 @@ pickProfileBg: () => {
   };
   input.click();
 },
-
-  const dayIdx = Math.floor(Date.now() / 86400000) % greetings.length;
-  return greetings[dayIdx];
-})(),
 quotedMsg: s.quotedMsg ? { ...s.quotedMsg, preview: (s.quotedMsg.text || '').slice(0, 40) + ((s.quotedMsg.text || '').length > 40 ? '…' : '') } : null,
 clearQuote: () => self.setState({ quotedMsg: null }),
 fontPresets: (s.fontPresets || []).map(fp => ({
