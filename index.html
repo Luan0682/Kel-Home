@@ -93,7 +93,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div style="width:{{ sidebarWidth }};flex:none;display:{{ sidebarDisplay }};flex-direction:column;align-items:center;padding:16px 0 16px;background:var(--bg-main, #F5F3EE);border-right:1px solid rgba(104,84,75,.06);z-index:50;">
 
 <!-- User Avatar (Top) -->
-<div onClick="{{ openProfileCard }}" style="width:36px;height:36px;border-radius:50%;overflow:hidden;cursor:pointer;margin-bottom:20px;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;">
+<div onClick="{{ openProfileCard }}" style="width:36px;height:36px;border-radius:50%;overflow:hidden;cursor:pointer;margin-bottom:20px;margin-left:8px;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;">
 <sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
 <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:var(--bubble-ai, #D7EBE4);display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="var(--bubble-user, #59483F)" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
 </div>
@@ -1111,7 +1111,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M14 6l-6 6 6 6" stroke="#5C4033" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </button>
 <div style="font-size:18px;font-weight:700;color:#5C4033;">待办清单</div>
-<button onClick="{{ todoOpenAdd }}" style="margin-left:auto;border:none;background:#5C4033;color:#FFF8F0;border-radius:14px;padding:6px 14px;font-size:12px;font-family:inherit;cursor:pointer;">+ 新增</button>
+<button onClick="{{ navChecklist }}" style="margin-left:auto;border:none;background:#5C4033;color:#FFF8F0;border-radius:14px;padding:6px 14px;font-size:12px;font-family:inherit;cursor:pointer;">+ 新增</button>
 </div>
 
 <!-- 清单列表 -->
@@ -1568,7 +1568,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
     <!-- 遮罩 -->
     <div onClick="{{ closeChecklist }}" style="position:absolute;inset:0;background:rgba(0,0,0,.3);animation:fadeIn .2s ease both;"></div>
     <!-- 抽屉 -->
-    <div class="receipt-sheet" style="position:absolute;bottom:0;left:0;right:0;background:var(--rc-paper, #F0EBE0);border-radius:16px 16px 0 0;max-height:92vh;height:var(--ck-h, 62vh);transition:transform 0.35s cubic-bezier(0.32,0.72,0,1), height 0.28s cubic-bezier(0.32,0.72,0,1);transform:translateY(0);display:flex;flex-direction:column;box-shadow:0 -8px 32px rgba(0,0,0,0.28);">
+    <div class="receipt-sheet" style="position:absolute;bottom:0;left:0;right:0;background:var(--rc-paper, #F0EBE0);border-radius:16px 16px 0 0;max-height:92vh;height:75vh;transition:transform 0.35s cubic-bezier(0.32,0.72,0,1);transform:translateY(0);display:flex;flex-direction:column;box-shadow:0 -8px 32px rgba(0,0,0,0.28);">
       
       <!-- 拖拽手柄 -->
       <div class="sheet-handle" id="checklist-handle" style="position:absolute;top:14px;left:50%;transform:translateX(-50%);width:44px;height:5px;border-radius:3px;background:var(--rc-faded, #86806E);opacity:0.4;cursor:grab;touch-action:none;z-index:5;"></div>
@@ -1689,18 +1689,16 @@ input, textarea { user-select:text; -webkit-user-select:text; }
   <div style="position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.3);animation:fadeIn .2s ease both;" onClick="{{ closeProfileCard }}">
     <div style="width:300px;height:300px;border-radius:24px;background:var(--bg-main, #F5F3EE);box-shadow:0 20px 60px rgba(0,0,0,0.3);overflow:hidden;display:flex;flex-direction:column;position:relative;" onClick="{{ stopProp }}">
       
-      <!-- 上半部分：头像背景区（可放置自定义图片） -->
+      <!-- 上半部分：头像背景区（无覆盖层，头像可直接点击） -->
       <div style="flex:1;background:var(--bubble-ai, #D7EBE4);display:flex;align-items:center;justify-content:center;position:relative;min-height:0;">
-        <!-- 这里可以放背景图片或装饰 -->
-        <div style="position:absolute;inset:0;background:linear-gradient(135deg, rgba(215,235,228,0.6), rgba(255,255,255,0.2));"></div>
         <!-- 头像居中 -->
-        <div onClick="{{ pickUserAvatar }}" style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:3px solid #FFF;box-shadow:0 4px 16px rgba(0,0,0,0.15);cursor:pointer;z-index:2;">
+        <div onClick="{{ pickUserAvatar }}" style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:3px solid #FFF;box-shadow:0 4px 16px rgba(0,0,0,0.15);cursor:pointer;z-index:2;pointer-events:auto;">
           <sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
           <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="#59483F" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="#59483F" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
         </div>
       </div>
       
-      <!-- 下半部分：半透明磨砂内容区 -->
+      <!-- 下半部分 -->
       <div style="height:50%;background:rgba(255,255,255,0.75);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;border-top:1px solid rgba(255,255,255,0.3);">
         <div style="font-size:18px;font-weight:600;color:var(--bubble-user, #59483F);">江吟</div>
         <div style="font-size:13px;color:var(--bubble-user, #59483F);opacity:0.6;margin-top:6px;text-align:center;line-height:1.5;">{{ profileGreeting }}</div>
@@ -2721,7 +2719,7 @@ return html;
 }
 
 const EMOJI_LIST = ['😊','😢','😡','🥰','😴','🤔','✨','🌧️','☀️','🌈','💪','😭','🎉','💕','😤','🫠','👍','❤️','🥺','😮','😢','🥰','😈','✨'];
-const REACTION_EMOJIS = ['♡', '✓', '✘', '-_-||', '⚤', '☃', '❣', '✦'];
+const REACTION_EMOJIS = ['🥹', '❤️', '🥺', '😮', '😢', '🥰', '💓', '✨'];
 // Theme presets
 const THEME_PRESETS = [
 { id: 'default', name: '默认米白', preview: 'linear-gradient(135deg, #F5F3EE, #d6d2c8)', checkColor: '#1A1815', vars: { '--bg-base': '#d6d2c8', '--bg-main': '#F5F3EE', '--bg-card': '#FFF', '--bg-input': '#FBFAF7', '--border-card': '#EDE9E0', '--border-input': '#E7E3DA', '--text-primary': '#1A1815', '--text-secondary': '#48453E', '--text-bold': '#3A362F', '--bubble-user': '#59483F', '--bubble-ai': '#D7EBE4', '--bubble-user-text': '#D7EBE4', '--bubble-ai-text': '#59483F'
@@ -3727,6 +3725,57 @@ _getChecklistRenderedItems() {
   });
 }
 
+// ====== Todo Methods (for Receipt) ======
+_getTodoRenderedItems() {
+  const now = Date.now();
+  const items = this.state.todos || [];
+  const overdue = items.filter(t => t.trigger_at && t.trigger_at <= now && !t.done);
+  const rest = items.filter(t => !(t.trigger_at && t.trigger_at <= now && !t.done));
+  const sorted = [...overdue, ...rest];
+  
+  return sorted.map(item => {
+    const isOverdue = item.trigger_at && item.trigger_at <= now && !item.done;
+    const hasTrigger = !!item.trigger_at;
+    const badgeText = hasTrigger ? (() => {
+      const d = new Date(item.trigger_at);
+      const hh = String(d.getHours()).padStart(2,'0');
+      const mm = String(d.getMinutes()).padStart(2,'0');
+      const today = new Date();
+      if (d.toDateString() === today.toDateString()) return `${hh}:${mm}`;
+      return `${String(d.getMonth()+1).padStart(2,'0')}/${String(d.getDate()).padStart(2,'0')} ${hh}:${mm}`;
+    })() : '';
+    
+    return {
+      id: item.id,
+      body: item.body,
+      done: item.done,
+      doneClass: item.done ? 'done' : '',
+      checkMark: item.done ? '[✓]' : '[ ]',
+      hasTrigger: hasTrigger,
+      badgeText: badgeText,
+      overdue: isOverdue,
+      showBy: item.created_by === 'assistant',
+      byLabel: item.created_by === 'assistant' ? (this.state.NAMES?.assistant || 'PARTNER') : '',
+      toggle: () => this._toggleTodo(item.id),
+      delete: () => this._deleteTodo(item.id)
+    };
+  });
+}
+
+_toggleTodo(id) {
+  const todos = this.state.todos.map(t => 
+    t.id === id ? { ...t, done: !t.done, done_at: !t.done ? Date.now() : null } : t
+  );
+  this.setState({ todos });
+  this.persist();
+}
+
+_deleteTodo(id) {
+  const todos = this.state.todos.filter(t => t.id !== id);
+  this.setState({ todos });
+  this.persist();
+}
+
 // ====== Theme ======
 applyTheme(themeId) {
 if (themeId === 'custom') {
@@ -4260,6 +4309,11 @@ apiMessages = [];
 for (const m of msgs) {
 const role = m.role === 'user' ? 'user' : 'assistant';
 const t = m.variants ? (m.variants[m.variantIdx || 0] || m.text) : m.text;
+// 如果有引用，在文本前加上引用内容
+let fullText = t;
+if (m.quote) {
+  fullText = `> ${m.quote.sender}：${m.quote.text}\n\n${t}`;
+}
 if (m.image) {
 const entry = { role, content: [{ type: 'image_url', image_url: { url: 'data:' + (m.imageMime || 'image/jpeg') + ';base64,' + m.image } }, { type: 'text', text: t || '' }] };
 if (apiMessages.length > 0 && apiMessages[apiMessages.length - 1].role === role) {
@@ -7493,7 +7547,7 @@ musicTrackList: (self._musicList || []).map((tk, idx) => ({
 })),
 // ===== 清单数据 =====
 checklistOpen: s.checklistOpen,
-checklistItemsRendered: this._getChecklistRenderedItems(),
+checklistItemsRendered: this._getTodoRenderedItems(),
 checklistBrand: this.state.APP_NAME || 'YOUR-APP',
 checklistClerks: (this.state.NAMES?.assistant || 'PARTNER') + ' · ' + (this.state.NAMES?.user || 'YOU'),
 checklistDate: (() => {
@@ -7555,7 +7609,28 @@ checklistNewKeydown: (e) => {
     if (el) {
       const text = el.innerText.trim();
       if (text) {
-        this._addChecklistItem(text, true, null);
+        // 直接添加待办（固定每日任务）
+        const newTodo = {
+          id: genId(),
+          body: text,
+          is_fixed: true,
+          done: false,
+          done_at: null,
+          trigger_at: null,
+          notified: false,
+          created_by: 'user',
+          created_at: Date.now(),
+          updated_at: Date.now()
+        };
+        this.setState({ todos: [...this.state.todos, newTodo] });
+        this.persist();
+        el.innerText = '';
+        this.show('已添加');
+      }
+    }
+  }
+},
+   this._addChecklistItem(text, true, null);
         el.innerText = '';
       }
     }
