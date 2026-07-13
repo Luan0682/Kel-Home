@@ -1162,34 +1162,6 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <sc-if value="{{ isPeriodPage }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#FFF8F0;">
 
-<!-- 内容 -->
-<div style="flex:1;min-width:0;">
-<div style="display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin-bottom:4px;">
-<sc-if value="{{ td.hasTimeBadge }}" hint-placeholder-val="{{ false }}">
-<span style="font-size:11px;color:{{ td.timeBadgeColor }};background:{{ td.timeBadgeBg }};border:1px solid {{ td.timeBadgeBd }};border-radius:8px;padding:2px 8px;font-weight:500;">{{ td.timeBadge }}</span>
-</sc-if>
-<sc-if value="{{ td.isFixed }}" hint-placeholder-val="{{ false }}">
-<span style="font-size:10px;color:#8B7355;background:#F5EDE4;border-radius:6px;padding:2px 6px;">每日</span>
-</sc-if>
-<sc-if value="{{ td.isOverdue }}" hint-placeholder-val="{{ false }}">
-<span style="font-size:11px;color:#C84A3F;font-weight:700;">!</span>
-</sc-if>
-</div>
-<div style="font-size:14px;color:{{ td.textColor }};text-decoration:{{ td.textDeco }};line-height:1.6;">{{ td.body }}</div>
-</div>
-
-<!-- 删除 -->
-<button onClick="{{ td.del }}" style="border:none;background:transparent;cursor:pointer;opacity:.3;padding:4px;flex:none;">
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#5C4033" stroke-width="2" stroke-linecap="round"/></svg>
-</button>
-</div>
-</div>
-</sc-for>
-
-</div>
-</div>
-</sc-if>
-
 <!-- 顶部状态 -->
 <div style="flex:none;padding:16px 20px 0;">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
@@ -1552,7 +1524,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <!-- Profile Card -->
 <sc-if value="{{ profileCardOpen }}" hint-placeholder-val="{{ false }}">
   <div style="position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);animation:fadeIn .2s ease both;" onClick="{{ closeProfileCard }}">
-    <div style="width:300px;height:360px;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.35);position:relative;" onClick="{{ stopProp }}">
+    <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.35);position:relative;" onClick="{{ stopProp }}">
 
       <!-- 上半部分：背景图区域，点击可换图 -->
       <div onClick="{{ pickProfileBg }}" style="position:absolute;top:0;left:0;right:0;height:55%;background:#FFF;cursor:pointer;display:flex;align-items:center;justify-content:center;">
@@ -1568,17 +1540,18 @@ input, textarea { user-select:text; -webkit-user-select:text; }
       </div>
 
       <!-- 下半部分：磨砂圆角层 -->
-      <div style="position:absolute;bottom:0;left:0;right:0;height:52%;background:rgba(255,255,255,0.75);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:20px 20px 0 0;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;">
+      <div style="position:absolute;bottom:0;left:0;right:0;height:50%;background:rgba(255,255,255,0.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-radius:20px 20px 24px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:20px;">
         <!-- 头像居中（骑在分界线上） -->
-        <div onClick="{{ pickUserAvatar }}" style="width:72px;height:72px;border-radius:50%;overflow:hidden;border:3px solid #FFF;box-shadow:0 4px 16px rgba(0,0,0,0.15);cursor:pointer;position:absolute;top:-36px;">
+        <div onClick="{{ pickUserAvatar }}" style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:3px solid #FFF;box-shadow:0 4px 16px rgba(0,0,0,0.15);cursor:pointer;position:absolute;top:-40px;">
           <sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
           <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:#ECEAE4;display:flex;align-items:center;justify-content:center;"><svg width="28" height="28" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="#9A958B" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
         </div>
         <!-- 名字和问候语 -->
-        <div style="margin-top:28px;text-align:center;">
-          <div style="font-size:18px;font-weight:600;color:var(--bubble-user, #59483F);">江吟</div>
-          <div style="font-size:13px;color:var(--bubble-user, #59483F);opacity:0.55;margin-top:8px;line-height:1.5;">{{ profileGreeting }}</div>
-        </div>
+ <div style="margin-top:30px;text-align:center;">
+  <div style="font-size:20px;font-weight:700;color:var(--bubble-user, #59483F);">江吟</div>
+  <div style="font-size:14px;color:var(--bubble-user, #59483F);opacity:0.6;margin-top:10px;line-height:1.6;">{{ profileGreeting }}</div>
+</div>
+
         <!-- 关闭按钮 -->
         <button onClick="{{ closeProfileCard }}" style="position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.06);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
           <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#68544B" stroke-width="2" stroke-linecap="round"/></svg>
