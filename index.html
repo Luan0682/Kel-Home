@@ -15,8 +15,6 @@
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#1A1815">
 <script src="./support.js"></script>
-<link rel="stylesheet" href="./photo-stack.css">
-<script src="./photo-stack.umd.js"></script>
 </head>
 <body>
 <x-dc>
@@ -86,6 +84,65 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 .checklist-item-new .checklist-del-x, .checklist-item-new .checklist-check { visibility: hidden; }
 .checklist-check::before { content: "[ ]"; }
 #checklist-barcode i { display: block; background: var(--rc-ink); opacity: 0.85; }
+/* PhotoStack 核心样式（内联版） */
+.photostack-container {
+  position: relative;
+  width: 100%;
+  height: 100%;
+  perspective: 1200px;
+  transform-style: preserve-3d;
+}
+.photostack-item {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  backface-visibility: hidden;
+  transform-origin: center center;
+  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.4s ease;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.15);
+  border-radius: 14px;
+  overflow: hidden;
+  cursor: grab;
+}
+.photostack-item:active {
+  cursor: grabbing;
+}
+.photostack-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+  pointer-events: none;
+}
+.photostack-item:first-child {
+  position: relative;
+}
+/* 指示器小点 */
+.photostack-dots {
+  position: absolute;
+  bottom: 8px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 6px;
+  z-index: 5;
+  background: rgba(0,0,0,0.3);
+  padding: 4px 10px;
+  border-radius: 20px;
+  backdrop-filter: blur(4px);
+}
+.photostack-dot {
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.4);
+  transition: background 0.2s;
+}
+.photostack-dot.active {
+  background: #fff;
+}
 </style>
 </helmet>
 
@@ -2599,6 +2656,191 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 </div>
 </x-dc>
+// ===== PhotoStack 轻量实现（内联版） =====
+(function() {
+  // 如果已定义则跳过
+  if (typeof PhotoStack !== 'undefined') return;
+
+  class PhotoStack {
+    constructor(container, options = {}) {
+      if (!container) return;
+      this.container = container;
+      this.items = Array.from(container.querySelectorAll('.photostack-item'));
+      if (this.items.length < 2) return;
+
+      this.options = Object.assign({
+        gap: 8,
+        scale: 0.08,
+        rotation: 6,
+        transition: 'all 0.3s cubic-bezier(0.32, 0.72, 0, 1)'
+      }, options);
+
+      this.currentIndex = 0;
+      this.total = this.items.length;
+      this._init();
+      this._bindEvents();
+    }
+
+    _init() {
+      // 先重置所有样式
+      this.items.forEach((item, idx) => {
+        item.style.position = 'absolute';
+        item.style.top = '0';
+        item.style.left = '0';
+        item.style.width = '100%';
+        item.style.height = '100%';
+        item.style.backfaceVisibility = 'hidden';
+        item.style.transition = this.options.transition;
+        item.style.borderRadius = '14px';
+        item.style.overflow = 'hidden';
+        item.style.boxShadow = '0 4px 16px rgba(0,0,0,0.15)';
+        item.style.cursor = 'grab';
+        item.dataset.index = idx;
+      });
+
+      // 添加指示器
+      this._createDots();
+
+      // 更新堆叠位置
+      this._updateStack();
+    }
+
+    _createDots() {
+      const dotsContainer = document.createElement('div');
+      dotsContainer.className = 'photostack-dots';
+      for (let i = 0; i < this.total; i++) {
+        const dot = document.createElement('span');
+        dot.className = 'photostack-dot' + (i === 0 ? ' active' : '');
+        dot.dataset.index = i;
+        dotsContainer.appendChild(dot);
+      }
+      this.container.appendChild(dotsContainer);
+      this.dots = dotsContainer.querySelectorAll('.photostack-dot');
+    }
+
+    _updateStack() {
+      const total = this.total;
+      const current = this.currentIndex;
+      const { gap, scale, rotation } = this.options;
+
+      this.items.forEach((item, idx) => {
+        let offset = idx - current;
+        // 循环处理（让第一张和最后一张也能衔接）
+        if (offset > total / 2) offset -= total;
+        if (offset < -total / 2) offset += total;
+
+        const absOffset = Math.abs(offset);
+        const isActive = offset === 0;
+
+        // 计算变换
+        const translateY = -absOffset * gap;
+        const scaleVal = 1 - absOffset * scale;
+        const rotateVal = offset * rotation;
+
+        let zIndex = total - absOffset;
+        let opacity = 1 - absOffset * 0.15;
+        if (opacity < 0.3) opacity = 0.3;
+
+        // 应用样式
+        item.style.transform = `translateY(${translateY}px) scale(${scaleVal}) rotate(${rotateVal}deg)`;
+        item.style.zIndex = zIndex;
+        item.style.opacity = opacity;
+        item.style.pointerEvents = isActive ? 'auto' : 'none';
+      });
+
+      // 更新指示器
+      if (this.dots) {
+        this.dots.forEach((dot, idx) => {
+          dot.classList.toggle('active', idx === current);
+        });
+      }
+    }
+
+    _bindEvents() {
+      // 触摸/鼠标拖拽事件
+      let startY = 0;
+      let isDragging = false;
+      let startIndex = 0;
+
+      const onStart = (e) => {
+        if (!e.target.closest('.photostack-item')) return;
+        const touch = e.touches ? e.touches[0] : e;
+        startY = touch.clientY;
+        isDragging = true;
+        startIndex = this.currentIndex;
+        this.container.style.cursor = 'grabbing';
+      };
+
+      const onMove = (e) => {
+        if (!isDragging) return;
+        e.preventDefault();
+        const touch = e.touches ? e.touches[0] : e;
+        const delta = startY - touch.clientY;
+        if (Math.abs(delta) > 40) {
+          const dir = delta > 0 ? -1 : 1; // 上滑上一张，下滑下一张
+          const newIndex = this.currentIndex + dir;
+          if (newIndex >= 0 && newIndex < this.total) {
+            this.currentIndex = newIndex;
+            this._updateStack();
+            // 触发自定义事件
+            this.container.dispatchEvent(new CustomEvent('photostack-change', {
+              detail: { index: newIndex }
+            }));
+          }
+          isDragging = false;
+          this.container.style.cursor = 'grab';
+        }
+      };
+
+      const onEnd = () => {
+        isDragging = false;
+        this.container.style.cursor = 'grab';
+      };
+
+      // 使用 pointer events 统一处理（兼容触控和鼠标）
+      this.container.addEventListener('pointerdown', onStart);
+      this.container.addEventListener('pointermove', onMove);
+      this.container.addEventListener('pointerup', onEnd);
+      this.container.addEventListener('pointercancel', onEnd);
+
+      // 键盘左右键切换
+      this.container.addEventListener('keydown', (e) => {
+        if (e.key === 'ArrowLeft') {
+          e.preventDefault();
+          if (this.currentIndex > 0) {
+            this.currentIndex--;
+            this._updateStack();
+            this.container.dispatchEvent(new CustomEvent('photostack-change', {
+              detail: { index: this.currentIndex }
+            }));
+          }
+        } else if (e.key === 'ArrowRight') {
+          e.preventDefault();
+          if (this.currentIndex < this.total - 1) {
+            this.currentIndex++;
+            this._updateStack();
+            this.container.dispatchEvent(new CustomEvent('photostack-change', {
+              detail: { index: this.currentIndex }
+            }));
+          }
+        }
+      });
+      this.container.setAttribute('tabindex', '0');
+    }
+
+    // 外部方法：跳转到指定索引
+    goTo(index) {
+      if (index >= 0 && index < this.total) {
+        this.currentIndex = index;
+        this._updateStack();
+      }
+    }
+  }
+
+  // 暴露到全局
+  window.PhotoStack = PhotoStack;
+})();
+
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
 const STORAGE_KEY = 'kel-home-data';
 
@@ -4201,6 +4443,18 @@ timestamp: timestamp,
 quote: quotedRef ? { sender: quotedRef.sender, text: (quotedRef.text || '').slice(0, 80) } : null
 };
 
+if (hasImages) {
+  newMsg.images = this.state.attachments.map(att => ({
+    base64: att.base64,
+    mimeType: att.mimeType,
+    preview: att.preview,
+    fileName: att.fileName
+  }));
+  // 兼容单图
+  newMsg.image = this.state.attachments[0].base64;
+  newMsg.imageMime = this.state.attachments[0].mimeType;
+  newMsg.imageUrl = this.state.attachments[0].preview;
+}
 if (this.state.attachments && this.state.attachments.length > 0) {
   newMsg.images = this.state.attachments.map(att => ({
     base64: att.base64,
@@ -7170,24 +7424,29 @@ ctxMultiSelect: () => {
 reactionEmojis: REACTION_EMOJIS.map(emoji => ({
   emoji,
   pick: () => {
-  const idx = s.contextMenuIdx;
-  if (idx < 0) return;
-  // 立即清除菜单，防止重复点击
-  self.setState({ contextMenuIdx: -1 });
-  const chats = { ...s.chats };
-  const c = { ...chats[s.currentChatId] };
-  const newMsgs = [...c.messages];
-  if (idx >= newMsgs.length) return;
-  const msg = { ...newMsgs[idx] };
-  const reactions = [...(msg.reactions || [])];
-  if (!reactions.includes(emoji)) reactions.push(emoji);
-  msg.reactions = reactions;
-  newMsgs[idx] = msg;
-  c.messages = newMsgs;
-  chats[s.currentChatId] = c;
-  self.setState({ chats });
-  self.persist();
-}
+    const idx = s.contextMenuIdx;
+    if (idx < 0) return;
+    self.setState({ contextMenuIdx: -1 });
+    const chats = { ...s.chats };
+    const c = { ...chats[s.currentChatId] };
+    const newMsgs = [...c.messages];
+    if (idx >= newMsgs.length) return;
+    const msg = { ...newMsgs[idx] };
+    const reactions = [...(msg.reactions || [])];
+    // 切换：如果已存在则移除，否则添加
+    const index = reactions.indexOf(emoji);
+    if (index >= 0) {
+      reactions.splice(index, 1);
+    } else {
+      reactions.push(emoji);
+    }
+    msg.reactions = reactions;
+    newMsgs[idx] = msg;
+    c.messages = newMsgs;
+    chats[s.currentChatId] = c;
+    self.setState({ chats });
+    self.persist();
+  }
 })),
 openReactionInput: () => {
   const custom = prompt('输入自定义表情/文字');
