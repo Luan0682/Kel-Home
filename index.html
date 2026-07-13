@@ -16,7 +16,6 @@
 <meta name="theme-color" content="#1A1815">
 <script src="./support.js"></script>
 <link rel="stylesheet" href="./photo-stack.css">
-<script src="./photo-stack.js"></script>
 </head>
 <body>
 <x-dc>
@@ -5637,33 +5636,192 @@ tap: () => self.diarySelectDate(dateStr)
 return cells;
 }
 
-// ====== PhotoStack 初始化 ======
+// ====== PhotoStack 初始化（纯 CSS 实现，不依赖外部库）======
 initPhotoStack() {
-  const containers = document.querySelectorAll('.photostack-container');
+  const containers = document.querySelectorAll('.photostack');
   if (containers.length === 0) {
-    // 如果没找到容器，300ms 后重试一次
-    setTimeout(() => this.initPhotoStack(), 500);
+    setTimeout(() => this.initPhotoStack(), 300);
     return;
   }
+  
   containers.forEach(el => {
     if (el._initialized) return;
-    // 检查容器是否有子元素（图片）
-    if (el.children.length === 0) return;
-    if (typeof PhotoStack !== 'undefined') {
-      try {
-        new PhotoStack(el, {
-          gap: 8,
-          scale: 0.08,
-          rotation: 6,
-          transition: 'all 0.3s cubic-bezier(0.32, 0.72, 0, 1)'
-        });
-        el._initialized = true;
-        console.log('[PhotoStack] 初始化成功:', el);
-      } catch(e) {
-        console.warn('[PhotoStack] 初始化失败:', e);
+    
+    try {
+      // 获取图片列表
+      let images = [];
+      const imagesAttr = el.getAttribute('data-images');
+      if (imagesAttr) {
+        try {
+          images = JSON.parse(imagesAttr);
+        } catch(e) {
+          images = imagesAttr.split(',').map(s => s.trim());
+        }
+      } else {
+        images = Array.from(el.querySelectorAll('img')).map(img => img.src);
       }
-    } else {
-      console.warn('[PhotoStack] 库未加载，请检查 photostack.umd.js 是否引入');
+      
+      if (images.length < 2) {
+        // 单张图直接显示
+        el.innerHTML = `<img src="${images[0]}" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;">`;
+        el._initialized = true;
+        return;
+      }
+      
+      // 清空容器
+      el.innerHTML = '';
+      
+      // 创建堆叠容器
+      const container = document.createElement('div');
+      container.style.cssText = `
+        position: relative;
+        width: 100%;
+        height: 100%;
+        overflow: hidden;
+        border-radius: 14px;
+      `;
+      
+      // 创建每张图片
+      const total = images.length;
+      images.forEach((src, idx) => {
+        const item = document.createElement('div');
+        const offset = idx * 8;
+        const rotation = (idx - (total - 1) / 2) * 2.5;
+        const scale = 1 - idx * 0.035;
+        
+        item.style.cssText = `
+          position: absolute;
+          top: ${offset}px;
+          left: ${idx * 3}px;
+          width: calc(100% - ${idx * 6}px);
+          height: calc(100% - ${idx * 6}px);
+          border-radius: 14px;
+          overflow: hidden;
+          box-shadow: 0 4px 16px rgba(0,0,0,0.12);
+          transform: rotate(${rotation}deg) scale(${Math.max(0.7, scale)});
+          z-index: ${total - idx};
+          transition: all 0.35s cubic-bezier(0.32, 0.72, 0, 1);
+          cursor: pointer;
+          background: #fff;
+        `;
+        
+        const img = document.createElement('img');
+        img.src = src;
+        img.style.cssText = `
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          display: block;
+          pointer-events: none;
+        `;
+        
+        item.appendChild(img);
+        container.appendChild(item);
+      });
+      
+      el.appendChild(container);
+      
+      // 指示器小点
+      const dots = document.createElement('div');
+      dots.style.cssText = `
+        position: absolute;
+        bottom: 10px;
+        left: 50%;
+        transform: translateX(-50%);
+        display: flex;
+        gap: 6px;
+        z-index: 20;
+        background: rgba(0,0,0,0.35);
+        padding: 4px 12px;
+        border-radius: 20px;
+        backdrop-filter: blur(4px);
+      `;
+      
+      let currentIdx = 0;
+      const items = container.querySelectorAll('div');
+      
+      images.forEach((_, idx) => {
+        const dot = document.createElement('div');
+        dot.style.cssText = `
+          width: 6px;
+          height: 6px;
+          border-radius: 50%;
+          background: ${idx === 0 ? '#fff' : 'rgba(255,255,255,0.4)'};
+          transition: background 0.25s;
+          cursor: pointer;
+        `;
+        dot.addEventListener('click', (e) => {
+          e.stopPropagation();
+          goTo(idx);
+        });
+        dots.appendChild(dot);
+      });
+      
+      el.appendChild(dots);
+      
+      // 切换函数
+      const goTo = (idx) => {
+        if (idx < 0) idx = total - 1;
+        if (idx >= total) idx = 0;
+        currentIdx = idx;
+        
+        items.forEach((item, i) => {
+          const dist = i - idx;
+          const offset = dist * 8;
+          const rotation = (i - (total - 1) / 2) * 2.5 - dist * 0.8;
+          const scale = 1 - Math.abs(dist) * 0.035;
+          const opacity = Math.abs(dist) <= 2 ? 1 : 0;
+          
+          item.style.transform = `rotate(${rotation}deg) scale(${Math.max(0.7, scale)})`;
+          item.style.top = (idx * 8 + dist * 6) + 'px';
+          item.style.left = (idx * 3 + dist * 2) + 'px';
+          item.style.width = `calc(100% - ${Math.max(0, idx * 6 + dist * 4)}px)`;
+          item.style.height = `calc(100% - ${Math.max(0, idx * 6 + dist * 4)}px)`;
+          item.style.opacity = opacity;
+          item.style.zIndex = total - Math.abs(dist);
+        });
+        
+        // 更新小点
+        const dotEls = dots.querySelectorAll('div');
+        dotEls.forEach((dot, i) => {
+          dot.style.background = i === idx ? '#fff' : 'rgba(255,255,255,0.4)';
+        });
+      };
+      
+      // 点击切换
+      el.addEventListener('click', (e) => {
+        if (e.target.closest('.photostack-dots')) return;
+        goTo(currentIdx + 1);
+      });
+      
+      // 触摸滑动
+      let startX = 0;
+      let startY = 0;
+      el.addEventListener('touchstart', (e) => {
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      });
+      el.addEventListener('touchend', (e) => {
+        const endX = e.changedTouches[0].clientX;
+        const endY = e.changedTouches[0].clientY;
+        const dx = startX - endX;
+        const dy = startY - endY;
+        if (Math.abs(dx) > Math.abs(dy) && Math.abs(dx) > 30) {
+          goTo(dx > 0 ? currentIdx + 1 : currentIdx - 1);
+        }
+      });
+      
+      el._initialized = true;
+      console.log('[PhotoStack] 内置堆叠已初始化:', el);
+      
+    } catch(e) {
+      console.warn('[PhotoStack] 初始化失败:', e);
+      // 降级：显示第一张图
+      const firstImg = el.querySelector('img');
+      if (firstImg) {
+        el.innerHTML = `<img src="${firstImg.src}" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;">`;
+      }
+      el._initialized = true;
     }
   });
 }
