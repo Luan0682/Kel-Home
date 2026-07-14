@@ -14,9 +14,7 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#1A1815">
-<script src="./photo-stack.js"></script>
 <script src="./support.js"></script>
-<link rel="stylesheet" href="./photo-stack.css">
 </head>
 <body>
 <x-dc>
@@ -163,57 +161,77 @@ input, textarea { user-select:text; -webkit-user-select:text; }
   filter: drop-shadow(0 0 6px rgba(255,77,109,.7));
 }
 
-/*  新增这一行  */
-x-dc { display: block; height: 100%; width: 100%; }
-
 </style>
 
 </helmet>
 
-<div style="position:absolute;inset:0;display:flex;background:var(--bg-main, #F5F3EE);color:var(--text-primary, #1A1815);font-family:-apple-system,'Noto Sans SC','Helvetica Neue',sans-serif;overflow:hidden;letter-spacing:-0.01em;">
+<div style="position:absolute;inset:0;display:flex;background:var(--bg-main, #F5F3EE);color:var(--text-primary, #1A1815);font-family:-apple-system,'Noto Sans SC','Helvetica Neue',sans-serif;overflow:hidden;letter-spacing:-0.01em;flex-direction:column;">
 
-<!-- ===== LEFT NAV BAR (56px) ===== -->
-<div style="width:{{ sidebarWidth }};flex:none;display:{{ sidebarDisplay }};flex-direction:column;align-items:center;padding:16px 0 16px;background:var(--bg-main, #F5F3EE);border-right:1px solid rgba(104,84,75,.06);z-index:50;">
+<!-- ===== LEFT NAV BAR (OVERLAY) ===== -->
+<div style="position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--bg-main, #F5F3EE);border-right:1px solid rgba(104,84,75,.06);z-index:999;transform:translateX({{ sidebarTransform }});transition:transform .25s cubic-bezier(.4,0,.2,1);box-shadow:{{ sidebarShadow }};display:flex;flex-direction:column;align-items:center;padding:16px 0 16px;">
 
-<!-- User Avatar (Top) -->
-<div onClick="{{ openProfileCard }}" style="width:36px;height:36px;border-radius:50%;overflow:hidden;cursor:pointer;margin-bottom:20px;margin-left:8px;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;">
+<!-- Sidebar Header -->
+<div style="width:100%;padding:20px 20px 16px;border-bottom:1px solid rgba(104,84,75,.06);">
+<div style="display:flex;align-items:center;gap:10px;">
+<div onClick="{{ openProfileCard }}" style="width:36px;height:36px;border-radius:50%;overflow:hidden;cursor:pointer;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;">
 <sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
 <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:var(--bubble-ai, #D7EBE4);display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="var(--bubble-user, #59483F)" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
 </div>
+<div>
+<div style="font-size:14px;font-weight:600;color:var(--text-primary, #1A1815);">Kel & Yin</div>
+<div style="font-size:11px;color:#9A958B;">{{ togetherDays }} days</div>
+</div>
+</div>
+</div>
 
-<!-- Nav Icons (Centered) -->
-<div style="flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;">
+<!-- Nav Items -->
+<div style="flex:1;width:100%;padding:12px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto;">
 
-<!-- Home -->
-<div class="nav-icon {{ navHomeClass }}" onClick="{{ navHome }}">
+<div class="nav-icon {{ navHomeClass }}" onClick="{{ navHomeSidebar }}" style="width:100%;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M5 12l7-7 7 7" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M7 10.5V19a1 1 0 001 1h3v-4.5a1 1 0 011-1h0a1 1 0 011 1V20h3a1 1 0 001-1v-8.5" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span style="font-size:14px;color:var(--text-primary, #1A1815);">Home</span>
 </div>
-<!-- Persona/身心 -->
-<div class="nav-icon {{ navSoulClass }}" onClick="{{ navSoul }}">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 12h4l3-9 4 18 3-9h4" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-<!-- Chat -->
-<div class="nav-icon {{ navChatListClass }}" onClick="{{ navChatList }}">
+
+<div class="nav-icon {{ navChatListClass }}" onClick="{{ navChatListSidebar }}" style="width:100%;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.5 6.5h15M4.5 12h10M4.5 17.5h13" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/></svg>
+<span style="font-size:14px;color:var(--text-primary, #1A1815);">Chats</span>
 </div>
-<!-- Diary -->
-<div class="nav-icon {{ navDiaryClass }}" onClick="{{ navDiary }}">
+
+<div class="nav-icon {{ navSoulClass }}" onClick="{{ navSoulSidebar }}" style="width:100%;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 12h4l3-9 4 18 3-9h4" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span style="font-size:14px;color:var(--text-primary, #1A1815);">Persona</span>
+</div>
+
+<div class="nav-icon {{ navDiaryClass }}" onClick="{{ navDiarySidebar }}" style="width:100%;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="var(--text-secondary, #68544B)" stroke-width="1.5"/><path d="M8 7h8M8 11h5" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/><path d="M4 7.5h2M4 16.5h2" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/></svg>
+<span style="font-size:14px;color:var(--text-primary, #1A1815);">Diary</span>
 </div>
-<!-- Calendar -->
-<div class="nav-icon {{ navPeriodClass }}" onClick="{{ navPeriod }}">
+
+<div class="nav-icon {{ navPeriodClass }}" onClick="{{ navPeriodSidebar }}" style="width:100%;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="var(--text-secondary, #68544B)" stroke-width="1.5"/><path d="M3 10h18M8 2v4M16 2v4" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/></svg>
+<span style="font-size:14px;color:var(--text-primary, #1A1815);">Calendar</span>
 </div>
 
-<!-- Memory -->
-<div class="nav-icon {{ navMemClass }}" onClick="{{ navMemory }}">
+<div class="nav-icon {{ navMemClass }}" onClick="{{ navMemorySidebar }}" style="width:100%;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 4v16M8 6c0 3 4 4 4 8M16 6c0 3-4 4-4 8" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="20" r="1" fill="var(--text-secondary, #68544B)"/></svg>
+<span style="font-size:14px;color:var(--text-primary, #1A1815);">Memory</span>
+</div>
+
+<div class="nav-icon" onClick="{{ navSettingsSidebar }}" style="width:100%;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="var(--text-secondary, #68544B)" stroke-width="1.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/></svg>
+<span style="font-size:14px;color:var(--text-primary, #1A1815);">Settings</span>
 </div>
 
 </div>
 </div>
+
+<!-- Sidebar overlay backdrop -->
+<sc-if value="{{ sidebarOpen }}" hint-placeholder-val="{{ false }}">
+<div onClick="{{ closeSidebar }}" style="position:fixed;inset:0;background:rgba(0,0,0,.18);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:998;animation:fadeIn .2s ease both;"></div>
+</sc-if>
+
 <!-- ===== MAIN CONTENT ===== -->
-<div style="flex:1;min-width:0;position:relative;">
+<div style="flex:1;min-width:0;position:relative;width:100%;">
 
 <!-- ========== CHAT ========== -->
 <sc-if value="{{ isChat }}" hint-placeholder-val="{{ true }}">
@@ -231,8 +249,8 @@ x-dc { display: block; height: 100%; width: 100%; }
 <!-- header -->
 <div style="flex:none;padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:9px;">
 <div style="display:flex;align-items:center;gap:8px;">
-<button onClick="{{ chatBack }}" style="width:32px;height:32px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="var(--text-secondary, #48453E)" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<button onClick="{{ openSidebar }}" style="border:none;background:transparent;padding:0;cursor:pointer;display:flex;align-items:center;flex:none;">
+<span style="font-size:13px;font-weight:500;color:var(--text-secondary, #48453E);letter-spacing:0.5px;">Chat</span>
 </button>
 <button onClick="{{ openStyle }}" style="height:36px;display:flex;align-items:center;gap:6px;background:var(--bg-card, #FFF);border:none;border-radius:18px;padding:0 14px;cursor:pointer;font-family:inherit;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);min-width:0;max-width:160px;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -241,7 +259,7 @@ x-dc { display: block; height: 100%; width: 100%; }
 </div>
 
 <div style="display:flex;align-items:center;gap:8px;">
-<button onClick="{{ openChatSettings }}"
+<button onClick="{{ goSettings }}"
  style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="1.2" fill="var(--text-secondary, #48453E)"/><circle cx="12" cy="12" r="1.2" fill="var(--text-secondary, #48453E)"/><circle cx="12" cy="18" r="1.2" fill="var(--text-secondary, #48453E)"/></svg>
 </button>
@@ -250,8 +268,8 @@ x-dc { display: block; height: 100%; width: 100%; }
 
 <!-- messages area -->
 <div style="flex:1;min-height:0;position:relative;">
-<div style="position:absolute;top:0;left:0;right:0;height:20px;background:linear-gradient(var(--bg-main, #F5F3EE),rgba(245,243,238,0));z-index:5;pointer-events:none;"></div>
-<div style="position:absolute;bottom:0;left:0;right:0;height:20px;background:linear-gradient(rgba(245,243,238,0),var(--bg-main, #F5F3EE));z-index:5;pointer-events:none;"></div>
+<div style="position:absolute;top:0;left:0;right:0;height:0px;pointer-events:none;"></div>
+<div style="position:absolute;bottom:0;left:0;right:0;height:0px;pointer-events:none;"></div>
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:10px 20px 10px;">
 
 <div style="position:sticky;top:50%;left:50%;transform:translate(-50%,-50%);width:0;height:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0;">
@@ -305,14 +323,18 @@ x-dc { display: block; height: 100%; width: 100%; }
 <!-- images -->
 <sc-if value="{{ m.hasImages }}" hint-placeholder-val="{{ false }}">
   <div style="margin-bottom:6px;display:flex;justify-content:{{ m.imgJustify }};overflow:visible;">
-    <sc-if value="{{ m.images.length === 1 }}" hint-placeholder-val="{{ true }}">
+    <sc-if value="{{ m.singleImage }}" hint-placeholder-val="{{ true }}">
       <div style="position:relative;width:160px;height:160px;border-radius:14px;overflow:hidden;cursor:pointer;" onClick="{{ m.previewImage }}" onContextMenu="{{ m.longPressImage }}">
         <img src="{{ m.images[0].preview }}" style="width:100%;height:100%;object-fit:cover;" alt="attachment">
       </div>
     </sc-if>
-    <sc-if value="{{ m.images.length > 1 }}" hint-placeholder-val="{{ false }}">
-      <div class="photostack" id="photostack-{{ m.id }}" data-msg-id="{{ m.id }}" style="width:160px;height:200px;border-radius:14px;overflow:visible;cursor:pointer;position:relative;flex:none;">
-        <img src="{{ m.images[0].preview }}" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;" alt="">
+    <sc-if value="{{ m.multiImage }}" hint-placeholder-val="{{ false }}">
+      <div style="display:flex;gap:6px;overflow-x:auto;max-width:280px;padding:4px 0;border-radius:14px;" onContextMenu="{{ m.longPressImage }}">
+        <sc-for list="{{ m.images }}" as="img" hint-placeholder-count="4">
+          <div style="width:120px;height:120px;border-radius:12px;overflow:hidden;cursor:pointer;flex:none;" onClick="{{ img.preview }}">
+            <img src="{{ img.src }}" style="width:100%;height:100%;object-fit:cover;display:block;" alt="attachment">
+          </div>
+        </sc-for>
       </div>
     </sc-if>
   </div>
@@ -436,7 +458,7 @@ x-dc { display: block; height: 100%; width: 100%; }
 </div>
 </sc-if>
 
-<div style="background:var(--bg-input, #FBFAF7);border:1px solid var(--border-input, #E7E3DA);border-radius:24px;padding:12px 16px 8px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
+<div style="background:var(--bg-input, #FBFAF7);border:1px solid var(--border-input, #E7E3DA);border-radius:24px;padding:12px 16px 8px;box-shadow:0 -2px 12px rgba(43,38,30,.06),0 1px 4px rgba(43,38,30,.04);">
 <textarea value="{{ input }}" onInput="{{ inputChange }}" onKeyDown="{{ inputKey }}" placeholder="发送消息..." rows="1" style="display:block;width:100%;min-height:28px;max-height:calc(80vh - 180px);border:none;background:transparent;resize:none;outline:none;font-family:inherit;font-size:15px;line-height:1.6;color:#2B2620;padding:2px 4px 6px;font-weight:300;overflow-y:auto;" ref="{{ textareaRef }}"></textarea>
 <div style="display:flex;align-items:center;justify-content:space-between;">
 <div style="display:flex;align-items:center;gap:8px;">
@@ -571,7 +593,7 @@ x-dc { display: block; height: 100%; width: 100%; }
 <!-- 在一起天数（左对齐，华丽字体，不受自定义字体影响） -->
 <div style="padding:36px 0 6px;">
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-<span style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--bubble-user, #59483F);opacity:.6;letter-spacing:1px;">Kel & Yin</span>
+<span onClick="{{ openSidebar }}" style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--bubble-user, #59483F);opacity:.6;letter-spacing:1px;cursor:pointer;">Kel & Yin</span>
 </div>
 <div style="display:flex;align-items:baseline;gap:6px;">
 <span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:52px;font-weight:300;color:var(--bubble-user, #59483F);letter-spacing:-0.03em;line-height:1;">{{ togetherDays }}</span>
@@ -650,7 +672,7 @@ x-dc { display: block; height: 100%; width: 100%; }
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 20px 24px;">
 
 <div style="padding:20px 0 16px;">
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:26px;font-weight:400;color:var(--text-primary, #1A1815);">Settings</div>
+<div onClick="{{ openSidebar }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:26px;font-weight:400;color:var(--text-primary, #1A1815);cursor:pointer;">Settings</div>
 </div>
 
 <!-- 搜索聊天记录 -->
@@ -1521,7 +1543,7 @@ x-dc { display: block; height: 100%; width: 100%; }
           <button onClick="{{ tg.toggle }}" style="border:1px solid {{ tg.bd }};background:{{ tg.bg }};color:{{ tg.fg }};border-radius:999px;padding:6px 12px;font-size:11px;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
             <span>{{ tg.label }}</span>
             <sc-if value="{{ tg.canDelete }}" hint-placeholder-val="{{ false }}">
-              <span onClick="{{ tg.remove }}" style="opacity:.55;font-size:12px;line-height:1;">×</span>
+              <span onContextMenu="{{ tg.remove }}" style="opacity:.55;font-size:12px;line-height:1;">×</span>
             </sc-if>
           </button>
         </sc-for>
@@ -2692,6 +2714,7 @@ soulSections: {
   other: { expanded: false, content: saved.soulOther || '' }
 },
 tab: 'home',
+sidebarOpen: false,
 sub: null,
 memory: false,
 drawer: false,
@@ -2985,6 +3008,8 @@ const userAv = await new Promise(r => { const req = avStore.get('user'); req.ons
 const aiAv = await new Promise(r => { const req = avStore.get('ai'); req.onsuccess = () => r(req.result); req.onerror = () => r(null); });
 if (userAv && userAv.data) this.setState({ userAvatar: userAv.data });
 if (aiAv && aiAv.data) this.setState({ aiAvatar: aiAv.data });
+const profBg = await new Promise(r => { const req = avStore.get('profileBg'); req.onsuccess = () => r(req.result); req.onerror = () => r(null); });
+if (profBg && profBg.data) this.setState({ profileBgUrl: profBg.data });
 } catch(e) { console.warn('[Kel] 头像加载失败', e); }
 // 一次性迁移：如果 localStorage 主数据里还有 base64 头像，迁移到 IndexedDB
 const rawCheck = localStorage.getItem(STORAGE_KEY);
@@ -3359,23 +3384,19 @@ this._textareaEl.style.overflowY = 'hidden';
 }
 
 scrollToBottom() {
-setTimeout(() => {
+const doScroll = () => {
 const containers = document.querySelectorAll('.sa');
 for (const c of containers) {
-if (c.scrollHeight > c.clientHeight + 100) {
-c.scrollTop = c.scrollHeight + 9999;
+if (c.scrollHeight > c.clientHeight + 50) {
+c.scrollTop = c.scrollHeight;
 }
 }
-}, 80);
-setTimeout(() => {
-const containers = document.querySelectorAll('.sa');
-for (const c of containers) {
-if (c.scrollHeight > c.clientHeight + 100) {
-c.scrollTop = c.scrollHeight + 9999;
-}
-}
-this.initPhotoStack && this.initPhotoStack();
-}, 300);
+};
+doScroll();
+requestAnimationFrame(doScroll);
+setTimeout(doScroll, 50);
+setTimeout(doScroll, 150);
+setTimeout(() => { doScroll(); this.initPhotoStack && this.initPhotoStack(); }, 350);
 }
 
 get currentChat() {
@@ -4548,11 +4569,12 @@ this.persist();
 }
 
 openChat(id) {
-this.setState({ currentChatId: id, drawer: false, tab: 'chat', pendingLines: [] });
+this.setState({ currentChatId: id, drawer: false, tab: 'chat', sidebarOpen: false, pendingLines: [] });
 this.persist();
 this.scrollToBottom();
-setTimeout(() => this.scrollToBottom(), 400);
-setTimeout(() => this.scrollToBottom(), 800);
+setTimeout(() => this.scrollToBottom(), 200);
+setTimeout(() => this.scrollToBottom(), 500);
+setTimeout(() => this.scrollToBottom(), 1000);
 }
 
 deleteChat(id) {
@@ -5665,8 +5687,12 @@ showUserAvatar: isUser && !!s.userAvatar && isFirstInGroup(i),
 showTimestampOnly: isFirstInGroup(i) && ((!isUser && !s.aiAvatar) || (isUser && !s.userAvatar)),
 tsAlign: isUser ? 'flex-end' : 'flex-start',
 hasImages: !!(m.images && m.images.length > 0),
-images: m.images || [],
-// 可以删掉 imagesJson，不再需要
+singleImage: !!(m.images && m.images.length === 1),
+multiImage: !!(m.images && m.images.length > 1),
+images: (m.images || []).map((img, imgIdx) => ({
+  src: img.preview || img,
+  preview: () => self.setState({ imagePreviewOpen: true, imagePreviewUrl: img.preview || img })
+})),
 imageUrl: m.imageUrl || '',
 imgJustify: isUser ? 'flex-end' : 'flex-start',
 previewImage: () => {
@@ -6189,8 +6215,20 @@ true: true, false: false,
 // ===== 侧栏导航高亮 =====
 navHomeClass: s.tab === 'home' ? 'active' : '',
 
-sidebarWidth: s.tab === 'chat' ? '0px' : '56px',
-sidebarDisplay: s.tab === 'chat' ? 'none' : 'flex',
+sidebarOpen: s.sidebarOpen || false,
+sidebarTransform: s.sidebarOpen ? '0%' : '-100%',
+sidebarShadow: s.sidebarOpen ? '4px 0 24px rgba(0,0,0,.12)' : 'none',
+openSidebar: () => self.setState({ sidebarOpen: true }),
+closeSidebar: () => self.setState({ sidebarOpen: false }),
+navHomeSidebar: () => { self.setState({ tab: 'home', sidebarOpen: false }); },
+navChatListSidebar: () => { self.setState({ tab: 'chatlist', sidebarOpen: false }); },
+navSoulSidebar: () => { self.setState({ tab: 'soul', sidebarOpen: false }); },
+navDiarySidebar: () => { const d=new Date(); const todayStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); self.setState({ tab:'diary', sidebarOpen:false, diarySelectedDate:todayStr, diaryWeekBase:null }); },
+navPeriodSidebar: () => { self.setState({ tab: 'period', sidebarOpen: false }); },
+navMemorySidebar: () => { self.setState({ tab: 'memory', sidebarOpen: false, memSubPage: '' }); },
+navSettingsSidebar: () => { self.setState({ tab: 'settings', sidebarOpen: false }); },
+sidebarWidth: '0px',
+sidebarDisplay: 'none',
 chatBack: () => self.setState({ tab: 'home' }),
 navSoulClass: s.tab === 'soul' ? 'active' : '',
 navChatListClass: s.tab === 'chatlist' ? 'active' : '',
@@ -6614,6 +6652,7 @@ sexTagOptions: (() => {
       },
       remove: (e) => {
         if (e && e.stopPropagation) e.stopPropagation();
+        if (!confirm('删除标签「' + t + '」？')) return;
         const pool2 = (self.state.sexCustomTags || []).filter(x => x !== t);
         const tags2 = (self.state.sexEditTags || []).filter(x => x !== t);
         self.setState({ sexCustomTags: pool2, sexEditTags: tags2 });
@@ -7023,7 +7062,17 @@ pickProfileBg: () => {
   input.onchange = async (e) => {
     const file = e.target.files[0]; if (!file) return;
     const reader = new FileReader();
-    reader.onload = () => { self.setState({ profileBgUrl: reader.result }); self.persist(); };
+    reader.onload = async () => {
+      const dataUrl = reader.result;
+      self.setState({ profileBgUrl: dataUrl });
+      self.persist();
+      try {
+        const db = await self._openAvatarDB();
+        const tx = db.transaction('avatars', 'readwrite');
+        const store = tx.objectStore('avatars');
+        store.put({ id: 'profileBg', data: dataUrl });
+      } catch(err) {}
+    };
     reader.readAsDataURL(file);
   };
   input.click();
@@ -7444,13 +7493,14 @@ self.setState({ deleteConfirmType: '', deleteConfirmId: null });
 
 // ======== ACTIONS ========
 openChatSettings: () => self.setState({ tab: 'settings', plus: false, drawer: false }),
+goSettings: () => self.setState({ tab: 'settings' }),
 clearQuote: () => self.setState({ quotedMsg: null }),
 toggleProfile: () => self.setState(v => ({ profile: !v.profile, drawer: false })),
 closeImagePreview: () => self.setState({ imagePreviewOpen: false, imagePreviewUrl: '' }),
 thinkModalOpen: s.thinkModalOpen,
 thinkModalContent: s.thinkModalContent || '',
 closeThinkModal: () => self.setState({ thinkModalOpen: false }),
-navChat: () => { self.setState({ tab: 'chat', drawer: false }); self.scrollToBottom(); setTimeout(() => self.scrollToBottom(), 500); },
+navChat: () => { self.setState({ tab: 'chat', sidebarOpen: false }); self.scrollToBottom(); setTimeout(() => self.scrollToBottom(), 200); setTimeout(() => self.scrollToBottom(), 600); },
 navHome: () => self.setState({ tab: 'home', drawer: false }),
 navMore: () => self.setState({ tab: 'more', drawer: false }),
 navWorldbook: () => self.setState({ tab: 'memory', drawer: false }),
