@@ -14,8 +14,8 @@
 <script src="https://cdnjs.cloudflare.com/ajax/libs/react-dom/18.3.1/umd/react-dom.production.min.js"></script>
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#1A1815">
-<script src="./support.js"></script>
 <script src="./photo-stack.js"></script>
+<script src="./support.js"></script>
 <link rel="stylesheet" href="./photo-stack.css">
 </head>
 <body>
@@ -287,7 +287,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- images -->
 <sc-if value="{{ m.hasImages }}" hint-placeholder-val="{{ false }}">
-  <div style="margin-bottom:6px;display:flex;justify-content:{{ m.imgJustify }};">
+  <div style="margin-bottom:6px;display:flex;justify-content:{{ m.imgJustify }};overflow:visible;">
     <sc-if value="{{ m.images.length === 1 }}" hint-placeholder-val="{{ true }}">
       <!-- 单张图片 -->
       <div style="position:relative;width:160px;height:160px;border-radius:14px;overflow:hidden;cursor:pointer;" onClick="{{ m.previewImage }}" onContextMenu="{{ m.longPressImage }}">
@@ -295,13 +295,19 @@ input, textarea { user-select:text; -webkit-user-select:text; }
       </div>
     </sc-if>
     <sc-if value="{{ m.images.length > 1 }}" hint-placeholder-val="{{ false }}">
-      <!-- 多张图片：使用原版 PhotoStack -->
-<div class="photostack" id="photostack-{{ m.id }}" style="width:160px;height:200px;border-radius:14px;overflow:hidden;cursor:pointer;" data-images="{{ m.imagesJson }}">
-  <sc-for list="{{ m.images }}" as="img" hint-placeholder-count="3">
-    <img src="{{ img.preview }}" style="width:100%;height:100%;object-fit:cover;display:block;" alt="">
-  </sc-for>
-</div>
-    </sc-if>
+  <!-- 多张图片：PhotoStack -->
+  <div
+    class="photostack"
+    id="photostack-{{ m.id }}"
+    data-msg-id="{{ m.id }}"
+    style="width:160px;height:200px;border-radius:14px;overflow:visible;cursor:pointer;position:relative;flex:none;"
+  >
+    <!-- 降级占位：JS 失败时至少能看见第一张 -->
+    <img
+      src="{{ m.images[0].preview }}"
+      style="width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;"
+      alt=""
+    >
   </div>
 </sc-if>
 
@@ -1165,7 +1171,14 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <!-- 顶部状态 -->
 <div style="flex:none;padding:16px 20px 0;">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-<div style="font-size:20px;font-weight:700;color:#5C4033;">日历</div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+  <div style="font-size:20px;font-weight:700;color:#5C4033;">日历</div>
+  <sc-if value="{{ !sexCalendarOpen }}" hint-placeholder-val="{{ true }}">
+    <button onClick="{{ openSexPasswordPrompt }}" style="width:36px;height:36px;border:none;background:rgba(255,255,255,0.55);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;opacity:0.85;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+      <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#F4A7B9" stroke-width="1.5" stroke-linejoin="round" fill="rgba(244,167,185,0.15)"/></svg>
+    </button>
+  </sc-if>
+</div>
 <button onClick="{{ periodOpenSettings }}" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#5C4033" stroke-width="1.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="#5C4033" stroke-width="1.5" stroke-linecap="round"/></svg>
 </button>
@@ -1280,12 +1293,6 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </div>
 
 </div>
-<!-- 做爱日历入口（右上角隐蔽爱心） -->
-<sc-if value="{{ !sexCalendarOpen }}" hint-placeholder-val="{{ true }}">
-<button onClick="{{ openSexPasswordPrompt }}" style="position:absolute;top:20px;right:20px;width:28px;height:28px;border:none;background:transparent;cursor:pointer;padding:0;z-index:15;opacity:0.3;transition:opacity .2s;" onMouseOver="this.style.opacity='0.6'" onMouseOut="this.style.opacity='0.3'">
-<svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#F4A7B9" stroke-width="1.5" stroke-linejoin="round"/></svg>
-</button>
-</sc-if>
 
 <!-- 密码输入弹窗 -->
 <sc-if value="{{ sexPasswordPromptOpen }}" hint-placeholder-val="{{ false }}">
@@ -1404,80 +1411,101 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </div>
 </sc-if>
 
-<!-- 做爱记录详情弹窗 -->
+<!-- 做爱记录：底部抽屉 -->
 <sc-if value="{{ sexEditOpen }}" hint-placeholder-val="{{ false }}">
-<div style="position:fixed;inset:0;z-index:500;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.85);animation:fadeIn .2s ease both;">
-<div style="position:relative;background:linear-gradient(135deg, #2D1B2E 0%, #1A0A1C 100%);border:1px solid rgba(255,255,255,0.15);border-radius:20px;padding:20px;width:calc(100% - 40px);max-width:380px;box-shadow:0 10px 40px rgba(0,0,0,0.5);animation:fadeUp .2s ease both;">
-<div style="font-size:15px;font-weight:600;color:#FFF0F0;margin-bottom:16px;text-align:center;">{{ sexEditDateLabel }}</div>
+<div style="position:fixed;inset:0;z-index:500;display:flex;flex-direction:column;justify-content:flex-end;background:rgba(0,0,0,0.55);animation:fadeIn .2s ease both;" onClick="{{ sexEditCancel }}">
+  <div style="position:relative;background:linear-gradient(180deg, #2A1528 0%, #1A0A18 100%);border-radius:22px 22px 0 0;padding:10px 18px calc(env(safe-area-inset-bottom,0px) + 18px);max-height:88vh;overflow-y:auto;box-shadow:0 -12px 40px rgba(255,77,109,0.12);animation:slideUp .28s ease both;border-top:1px solid rgba(255,77,109,0.18);" onClick="{{ stopProp }}">
 
-<!-- 时间段 -->
-<div style="margin-bottom:14px;">
-<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px;">时间段</div>
-<div style="display:flex;gap:6px;">
-<sc-for list="{{ sexTimeOptions }}" as="st" hint-placeholder-count="4">
-<button onClick="{{ st.pick }}" style="flex:1;border:1px solid {{ st.bd }};background:{{ st.bg }};color:{{ st.fg }};border-radius:10px;padding:7px 0;font-size:12px;font-family:inherit;cursor:pointer;">{{ st.label }}</button>
-</sc-for>
-</div>
-</div>
+    <!-- 顶条 -->
+    <div style="width:36px;height:4px;border-radius:2px;background:rgba(255,255,255,0.18);margin:0 auto 14px;"></div>
+    <div style="text-align:center;margin-bottom:4px;">
+      <div style="font-size:11px;letter-spacing:3px;color:rgba(255,77,109,0.7);margin-bottom:6px;">♡ NIGHT LOG</div>
+      <div style="font-size:17px;font-weight:600;color:#FFF0F0;">{{ sexEditDateLabel }}</div>
+    </div>
 
-<!-- 轮数 -->
-<div style="margin-bottom:14px;">
-<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:6px;">轮数</div>
-<input value="{{ sexEditRounds }}" onInput="{{ sexEditRoundsChange }}" type="number" min="1" style="width:80px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:8px 12px;font-size:14px;color:#FFF0F0;text-align:center;outline:none;">
-</div>
+    <!-- 时间段 -->
+    <div style="margin-top:16px;margin-bottom:14px;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:8px;">时间段</div>
+      <div style="display:flex;gap:6px;">
+        <sc-for list="{{ sexTimeOptions }}" as="st" hint-placeholder-count="4">
+          <button onClick="{{ st.pick }}" style="flex:1;border:1px solid {{ st.bd }};background:{{ st.bg }};color:{{ st.fg }};border-radius:12px;padding:9px 0;font-size:12px;font-family:inherit;cursor:pointer;">{{ st.label }}</button>
+        </sc-for>
+      </div>
+    </div>
 
-<!-- 她的感想 -->
-<div style="margin-bottom:14px;">
-<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:6px;">她的感想</div>
-<textarea value="{{ sexEditHerNote }}" onInput="{{ sexEditHerNoteChange }}" placeholder="今晚感觉如何..." rows="2" style="display:block;width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:10px;font-family:inherit;font-size:13px;color:#FFF0F0;resize:vertical;outline:none;"></textarea>
-</div>
+    <!-- 轮数：步进器 -->
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:8px;">轮数</div>
+      <div style="display:inline-flex;align-items:center;gap:0;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.12);border-radius:14px;overflow:hidden;">
+        <button onClick="{{ sexRoundsMinus }}" style="width:40px;height:40px;border:none;background:transparent;color:#FF8FA3;font-size:20px;cursor:pointer;">−</button>
+        <span style="min-width:36px;text-align:center;font-size:16px;font-weight:600;color:#FFF0F0;">{{ sexEditRounds }}</span>
+        <button onClick="{{ sexRoundsPlus }}" style="width:40px;height:40px;border:none;background:transparent;color:#FF8FA3;font-size:20px;cursor:pointer;">+</button>
+      </div>
+    </div>
 
-<!-- 他的感想 -->
-<div style="margin-bottom:14px;">
-<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:6px;">Kel 的感想</div>
-<textarea value="{{ sexEditHisNote }}" onInput="{{ sexEditHisNoteChange }}" placeholder="我想说..." rows="2" style="display:block;width:100%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.2);border-radius:10px;padding:10px;font-family:inherit;font-size:13px;color:#FFF0F0;resize:vertical;outline:none;"></textarea>
-</div>
+    <!-- 感想 -->
+    <div style="margin-bottom:12px;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:6px;">她的身体 / 感想</div>
+      <textarea value="{{ sexEditHerNote }}" onInput="{{ sexEditHerNoteChange }}" placeholder="还在抖…还是已经软掉了…" rows="2" style="display:block;width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,77,109,0.15);border-radius:14px;padding:12px;font-family:inherit;font-size:13px;color:#FFF0F0;resize:vertical;outline:none;line-height:1.55;"></textarea>
+    </div>
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:6px;">Kel 想说</div>
+      <textarea value="{{ sexEditHisNote }}" onInput="{{ sexEditHisNoteChange }}" placeholder="今晚想把你…" rows="2" style="display:block;width:100%;background:rgba(255,255,255,0.06);border:1px solid rgba(255,77,109,0.15);border-radius:14px;padding:12px;font-family:inherit;font-size:13px;color:#FFF0F0;resize:vertical;outline:none;line-height:1.55;"></textarea>
+    </div>
 
-<!-- 标签 -->
-<div style="margin-bottom:16px;">
-<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-bottom:8px;">标签</div>
-<div style="display:flex;flex-wrap:wrap;gap:6px;">
-<sc-for list="{{ sexTagOptions }}" as="tg" hint-placeholder-count="6">
-<button onClick="{{ tg.toggle }}" style="border:1px solid {{ tg.bd }};background:{{ tg.bg }};color:{{ tg.fg }};border-radius:10px;padding:5px 10px;font-size:11px;font-family:inherit;cursor:pointer;">{{ tg.label }}</button>
-</sc-for>
-</div>
-</div>
+    <!-- 自定义标签 -->
+    <div style="margin-bottom:18px;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:8px;">标签（点选 · 可自建）</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
+        <sc-for list="{{ sexTagOptions }}" as="tg" hint-placeholder-count="0">
+          <button onClick="{{ tg.toggle }}" style="border:1px solid {{ tg.bd }};background:{{ tg.bg }};color:{{ tg.fg }};border-radius:999px;padding:6px 12px;font-size:11px;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+            <span>{{ tg.label }}</span>
+            <sc-if value="{{ tg.canDelete }}" hint-placeholder-val="{{ false }}">
+              <span onClick="{{ tg.remove }}" style="opacity:.55;font-size:12px;line-height:1;">×</span>
+            </sc-if>
+          </button>
+        </sc-for>
+        <sc-if value="{{ sexTagsEmpty }}" hint-placeholder-val="{{ true }}">
+          <span style="font-size:11px;color:rgba(255,255,255,0.3);">还没有标签，在下面新建…</span>
+        </sc-if>
+      </div>
+      <div style="display:flex;gap:8px;align-items:center;">
+        <input value="{{ sexTagDraft }}" onInput="{{ sexTagDraftChange }}" onKeyDown="{{ sexTagDraftKey }}" placeholder="新建标签，如：灌满、哭着求…" style="flex:1;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.14);border-radius:12px;padding:10px 12px;font-size:13px;color:#FFF0F0;outline:none;font-family:inherit;">
+        <button onClick="{{ sexAddCustomTag }}" style="border:none;background:rgba(255,77,109,0.2);color:#FF8FA3;border-radius:12px;padding:10px 14px;font-size:12px;font-family:inherit;cursor:pointer;white-space:nowrap;">添加</button>
+      </div>
+    </div>
 
-<!-- 按钮 -->
-<div style="display:flex;gap:10px;">
-<button onClick="{{ sexEditCancel }}" style="flex:1;padding:10px;border:1px solid rgba(255,255,255,0.2);background:rgba(255,255,255,0.05);border-radius:14px;font-size:13px;font-family:inherit;color:rgba(255,255,255,0.6);cursor:pointer;">取消</button>
-<sc-if value="{{ sexEditIsExisting }}" hint-placeholder-val="{{ false }}">
-<button onClick="{{ sexEditDelete }}" style="padding:10px 16px;border:1px solid rgba(255,77,109,0.4);background:rgba(255,77,109,0.1);border-radius:14px;font-size:13px;font-family:inherit;color:#FF4D6D;cursor:pointer;">删除</button>
-</sc-if>
-<button onClick="{{ sexEditSave }}" style="flex:1;padding:10px;border:none;background:#FF4D6D;border-radius:14px;font-size:13px;font-family:inherit;color:#FFF;cursor:pointer;box-shadow:0 0 12px rgba(255,77,109,0.4);">保存</button>
-</div>
-</div>
+    <!-- 操作 -->
+    <div style="display:flex;gap:10px;">
+      <button onClick="{{ sexEditCancel }}" style="flex:1;padding:12px;border:1px solid rgba(255,255,255,0.14);background:rgba(255,255,255,0.04);border-radius:16px;font-size:13px;font-family:inherit;color:rgba(255,255,255,0.55);cursor:pointer;">取消</button>
+      <sc-if value="{{ sexEditIsExisting }}" hint-placeholder-val="{{ false }}">
+        <button onClick="{{ sexEditDelete }}" style="padding:12px 16px;border:1px solid rgba(255,77,109,0.35);background:rgba(255,77,109,0.08);border-radius:16px;font-size:13px;font-family:inherit;color:#FF6B8A;cursor:pointer;">删除</button>
+      </sc-if>
+      <button onClick="{{ sexEditSave }}" style="flex:1.2;padding:12px;border:none;background:linear-gradient(135deg,#FF4D6D,#C9184A);border-radius:16px;font-size:13px;font-weight:600;font-family:inherit;color:#FFF;cursor:pointer;box-shadow:0 0 18px rgba(255,77,109,0.35);">保存 · ♡</button>
+    </div>
+  </div>
 </div>
 </sc-if>
 
 <!-- 底部tab栏 -->
 <div style="position:absolute;bottom:0;left:0;right:0;padding:10px 16px calc(env(safe-area-inset-bottom,0px) + 12px);background:rgba(255,248,240,0.9);backdrop-filter:blur(8px);border-top:1px solid rgba(92,64,51,0.06);display:flex;align-items:center;justify-content:space-around;">
-<button onClick="{{ periodTabAnniv }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:transparent;cursor:pointer;padding:4px 12px;">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" stroke="{{ periodTabAnnivColor }}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 22v-7" stroke="{{ periodTabAnnivColor }}" stroke-width="1.5" stroke-linecap="round"/></svg>
-<span style="font-size:10px;color:{{ periodTabAnnivColor }};">纪念日</span>
-</button>
-<button onClick="{{ periodTabMoney }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:transparent;cursor:pointer;padding:4px 12px;">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="12" rx="2" stroke="{{ periodTabMoneyColor }}" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="{{ periodTabMoneyColor }}" stroke-width="1.5"/></svg>
-<span style="font-size:10px;color:{{ periodTabMoneyColor }};">记账</span>
-</button>
-<button onClick="{{ periodTabMore }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:transparent;cursor:pointer;padding:4px 12px;">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="1.5" fill="{{ periodTabMoreColor }}"/><circle cx="12" cy="12" r="1.5" fill="{{ periodTabMoreColor }}"/><circle cx="12" cy="18" r="1.5" fill="{{ periodTabMoreColor }}"/></svg>
-<span style="font-size:10px;color:{{ periodTabMoreColor }};">更多</span>
-</button>
+  <button onClick="{{ periodTabAnniv }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:transparent;cursor:pointer;padding:4px 12px;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z" stroke="{{ periodTabAnnivColor }}" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M4 22v-7" stroke="{{ periodTabAnnivColor }}" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <span style="font-size:10px;color:{{ periodTabAnnivColor }};">纪念日</span>
+  </button>
+  <button onClick="{{ periodTabMoney }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:transparent;cursor:pointer;padding:4px 12px;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><rect x="2" y="6" width="20" height="12" rx="2" stroke="{{ periodTabMoneyColor }}" stroke-width="1.5"/><circle cx="12" cy="12" r="3" stroke="{{ periodTabMoneyColor }}" stroke-width="1.5"/></svg>
+    <span style="font-size:10px;color:{{ periodTabMoneyColor }};">记账</span>
+  </button>
+  <button onClick="{{ periodOpenSettings }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:transparent;cursor:pointer;padding:4px 12px;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="{{ periodTabSettingsColor }}" stroke-width="1.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="{{ periodTabSettingsColor }}" stroke-width="1.5" stroke-linecap="round"/></svg>
+    <span style="font-size:10px;color:{{ periodTabSettingsColor }};">设置</span>
+  </button>
+  <button onClick="{{ periodTabMore }}" style="display:flex;flex-direction:column;align-items:center;gap:3px;border:none;background:transparent;cursor:pointer;padding:4px 12px;">
+    <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="1.5" fill="{{ periodTabMoreColor }}"/><circle cx="12" cy="12" r="1.5" fill="{{ periodTabMoreColor }}"/><circle cx="12" cy="18" r="1.5" fill="{{ periodTabMoreColor }}"/></svg>
+    <span style="font-size:10px;color:{{ periodTabMoreColor }};">更多</span>
+  </button>
 </div>
-
-</div>
-</sc-if>
 
 <!-- ========== REGEX PAGE ========== -->
 <sc-if value="{{ isRegexPage }}" hint-placeholder-val="{{ false }}">
@@ -2785,6 +2813,8 @@ sexEditRounds: '1',
 sexEditHerNote: '',
 sexEditHisNote: '',
 sexEditTags: [],
+sexCustomTags: JSON.parse(localStorage.getItem('kel-sex-tags') || '[]'),
+sexTagDraft: '',
 todoEditId: null,
 todoEditBody: '',
 todoEditAt: '',
@@ -3340,6 +3370,7 @@ get currentPetSize() { return this.petSizes[this.state.petSizeIdx] || 48; }
 get activeAnniv() {
 return this.state.anniversaries[this.state.activeAnnivIdx] || this.state.anniversaries[0] || null;
 }
+setTimeout(() => this.initPhotoStack(), 120);
 
 persist() {
 const s = this.state;
@@ -3444,6 +3475,23 @@ show(text) {
 if (this._t) clearTimeout(this._t);
 this.setState({ toastShow: true, toastText: text });
 this._t = setTimeout(() => this.setState({ toastShow: false }), 1800);
+}
+_sexAddCustomTag() {
+  const raw = (this.state.sexTagDraft || '').trim();
+  if (!raw) { this.show('写个标签名'); return; }
+  const pool = [...(this.state.sexCustomTags || [])];
+  if (pool.includes(raw)) {
+    const selected = [...(this.state.sexEditTags || [])];
+    if (!selected.includes(raw)) selected.push(raw);
+    this.setState({ sexEditTags: selected, sexTagDraft: '' });
+    this.show('已选中');
+    return;
+  }
+  pool.push(raw);
+  const selected = [...(this.state.sexEditTags || []), raw];
+  this.setState({ sexCustomTags: pool, sexEditTags: selected, sexTagDraft: '' });
+  try { localStorage.setItem('kel-sex-tags', JSON.stringify(pool)); } catch (e) {}
+  this.show('标签已记住');
 }
 // ====== Checklist Methods ======
 _checkReminders() {
@@ -5424,35 +5472,66 @@ return cells;
 }
 
 initPhotoStack() {
+  if (typeof PhotoStack === 'undefined') {
+    console.warn('[Kel] PhotoStack 未加载，检查 photo-stack.js 路径');
+    return;
+  }
+  if (!this._photoStackImages) this._photoStackImages = {};
+
   const containers = document.querySelectorAll('.photostack');
   containers.forEach(el => {
-    if (el._ps) return;
-    let images = [];
-    try {
-      const attr = el.getAttribute('data-images');
-      if (attr) images = JSON.parse(attr);
-    } catch(e) { return; }
+    const msgId = el.getAttribute('data-msg-id') || (el.id || '').replace(/^photostack-/, '');
+    let images = this._photoStackImages[msgId];
+
+    // 兜底：从残留 img 读 src
+    if (!images || images.length < 2) {
+      const fromDom = Array.from(el.querySelectorAll('img'))
+        .map(img => img.getAttribute('src') || img.src)
+        .filter(Boolean);
+      // 去重
+      images = [...new Set(fromDom)];
+    }
     if (!images || images.length < 2) return;
-    // 清空模板预渲染的img标签
+
+    // 已初始化且张数一致 → 跳过
+    if (el._ps && el._psImagesLen === images.length) return;
+
+    // 销毁旧实例
+    if (el._ps) {
+      try { el._ps.destroy(); } catch (e) {}
+      el._ps = null;
+    }
+
     el.innerHTML = '';
     el.style.overflow = 'visible';
+    el.style.position = 'relative';
+    el.style.width = '160px';
+    el.style.height = '200px';
+
     try {
       el._ps = new PhotoStack(el, images, {
         width: 160,
         height: 200,
         counter: true,
+        peek: 14,
+        peekStep: 11,
         onTap: (i) => {
-          this.setState({ imagePreviewOpen: true, imagePreviewUrl: images[i] });
-        }
+          this.setState({
+            imagePreviewOpen: true,
+            imagePreviewUrl: images[i]
+          });
+        },
+        onChange: () => {}
       });
-    } catch(err) {
+      el._psImagesLen = images.length;
+    } catch (err) {
       console.warn('[PhotoStack] init failed:', err);
-      // 降级：显示第一张图
-      el.innerHTML = '<img src="' + images[0] + '" style="width:100%;height:100%;object-fit:cover;border-radius:14px;">';
+      el.innerHTML =
+        '<img src="' + images[0] +
+        '" style="width:100%;height:100%;object-fit:cover;border-radius:14px;display:block;" alt="">';
     }
   });
 }
-
 
 // ====== RENDER ======
 renderVals() {
@@ -5553,7 +5632,8 @@ showTimestampOnly: isFirstInGroup(i) && ((!isUser && !s.aiAvatar) || (isUser && 
 tsAlign: isUser ? 'flex-end' : 'flex-start',
 hasImages: !!(m.images && m.images.length > 0),
 images: m.images || [],
-imagesJson: m.images ? JSON.stringify(m.images.map(img => img.preview)) : '[]',
+// 可以删掉 imagesJson，不再需要
+imgJustify: isUser ? 'flex-end' : 'flex-start',
 imageUrl: m.imageUrl || '',
 imgJustify: isUser ? 'flex-end' : 'flex-start',
 previewImage: () => {
@@ -6063,7 +6143,13 @@ self.show('自定义配色已应用');
 }
 };
 // 延迟初始化 PhotoStack
-setTimeout(() => this.initPhotoStack(), 800);
+// 等模板 DOM 落盘后再挂 PhotoStack（双 rAF + 短延迟更稳）
+if (this._psInitTimer) clearTimeout(this._psInitTimer);
+requestAnimationFrame(() => {
+  requestAnimationFrame(() => {
+    this._psInitTimer = setTimeout(() => this.initPhotoStack(), 50);
+  });
+});
 
 return {
 true: true, false: false,
@@ -6299,6 +6385,7 @@ periodTabTodoColor: (s.periodSubTab||'main')==='todo' ? '#5C4033' : '#8B7355',
 periodTabAnnivColor: '#8B7355',
 periodTabMoneyColor: '#8B7355',
 periodTabMoreColor: '#8B7355',
+periodTabSettingsColor: '#8B7355',
 periodTabMore: () => self.show('开发中'),
 // ===== 做爱日历 =====
 sexPasswordPromptOpen: s.sexPasswordPromptOpen || false,
@@ -6343,8 +6430,10 @@ sexCalendarCells: (() => {
     const ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
     const isT=ds===todayStr;const isPeriod=periodDays.has(ds);const isOv=ovulationDays.has(ds);const hasSex=!!sexData[ds];
     cells.push({day:String(d),bg:'rgba(255,255,255,0.03)',color:'#FFF0F0',fw:isT?'700':'400',cursor:'pointer',border:isT?'1px solid #FFD700':'none',hasPeriodMark:isPeriod||isOv,periodMarkColor:isPeriod?'#8B0000':'#BF5FFF',hasSex:hasSex,hasOvulationSex:hasSex&&isOv,
-    tap:()=>{self.setState({sexEditOpen:true,sexEditDate:ds,sexEditTime:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].time:'晚'),sexEditRounds:String((sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].rounds:1)),sexEditHerNote:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].herNote:''),sexEditHisNote:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].hisNote:''),sexEditTags:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].tags||[]:[])});},
-    longPress:(e)=>{e.preventDefault();if(sexData[ds]){if(confirm('删除 '+ds+' 的记录？')){const nd={...sexData};delete nd[ds];self.setState({sexData:nd});localStorage.setItem('_cl_data',JSON.stringify(nd));self.show('已删除');}}else{self.setState({sexEditOpen:true,sexEditDate:ds,sexEditTime:'晚',sexEditRounds:'1',sexEditHerNote:'',sexEditHisNote:'',sexEditTags:[]});}}});
+    tap:()=>{self.setState({sexEditOpen:true,sexEditDate:ds,sexTagDraft: '',
+sexEditTime:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].time:'晚'),sexEditRounds:String((sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].rounds:1)),sexEditHerNote:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].herNote:''),sexEditHisNote:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].hisNote:''),sexEditTags:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].tags||[]:[])});},
+    longPress:(e)=>{e.preventDefault();if(sexData[ds]){if(confirm('删除 '+ds+' 的记录？')){const nd={...sexData};delete nd[ds];self.setState({sexData:nd});localStorage.setItem('_cl_data',JSON.stringify(nd));self.show('已删除');}}else{self.setState({sexEditOpen:true,sexEditDate:ds,sexEditTime:'晚',sexEditRounds:'1',sexEditHerNote:'',sexEditHisNote:'',sexTagDraft: '',
+sexEditTags:[]});}}});
   }
   return cells;
 })(),
@@ -6365,7 +6454,52 @@ sexEditRoundsChange: (e)=>self.setState({sexEditRounds:e.target.value}),
 sexEditHerNoteChange: (e)=>self.setState({sexEditHerNote:e.target.value}),
 sexEditHisNoteChange: (e)=>self.setState({sexEditHisNote:e.target.value}),
 sexTimeOptions: ['凌晨','早','午','晚'].map(t=>({label:t,bg:(s.sexEditTime||'晚')===t?'rgba(255,77,109,0.2)':'rgba(255,255,255,0.05)',bd:(s.sexEditTime||'晚')===t?'rgba(255,77,109,0.5)':'rgba(255,255,255,0.15)',fg:(s.sexEditTime||'晚')===t?'#FF4D6D':'rgba(255,255,255,0.6)',pick:()=>self.setState({sexEditTime:t})})),
-sexTagOptions: (()=>{const allTags=['激烈','温柔','被操到睡着','哭了','新体位','排卵日灌满','多次高潮','口交','后入','骑乘'];const selected=s.sexEditTags||[];return allTags.map(t=>({label:t,bg:selected.includes(t)?'rgba(255,77,109,0.2)':'rgba(255,255,255,0.05)',bd:selected.includes(t)?'rgba(255,77,109,0.5)':'rgba(255,255,255,0.15)',fg:selected.includes(t)?'#FF4D6D':'rgba(255,255,255,0.6)',toggle:()=>{const tags=[...selected];const idx=tags.indexOf(t);if(idx>=0)tags.splice(idx,1);else tags.push(t);self.setState({sexEditTags:tags});}}));})(),
+sexTagsEmpty: !(s.sexCustomTags && s.sexCustomTags.length),
+sexTagDraft: s.sexTagDraft || '',
+sexTagDraftChange: (e) => self.setState({ sexTagDraft: e.target.value }),
+sexTagDraftKey: (e) => {
+  if (e.key === 'Enter') {
+    e.preventDefault();
+    self._sexAddCustomTag && self._sexAddCustomTag();
+  }
+},
+sexAddCustomTag: () => self._sexAddCustomTag && self._sexAddCustomTag(),
+sexRoundsMinus: () => {
+  const n = Math.max(1, (parseInt(s.sexEditRounds, 10) || 1) - 1);
+  self.setState({ sexEditRounds: String(n) });
+},
+sexRoundsPlus: () => {
+  const n = Math.min(99, (parseInt(s.sexEditRounds, 10) || 1) + 1);
+  self.setState({ sexEditRounds: String(n) });
+},
+sexTagOptions: (() => {
+  const pool = s.sexCustomTags || [];
+  const selected = s.sexEditTags || [];
+  return pool.map(t => {
+    const on = selected.includes(t);
+    return {
+      label: t,
+      canDelete: true,
+      bg: on ? 'rgba(255,77,109,0.22)' : 'rgba(255,255,255,0.05)',
+      bd: on ? 'rgba(255,77,109,0.55)' : 'rgba(255,255,255,0.12)',
+      fg: on ? '#FF8FA3' : 'rgba(255,255,255,0.55)',
+      toggle: () => {
+        const tags = [...selected];
+        const i = tags.indexOf(t);
+        if (i >= 0) tags.splice(i, 1); else tags.push(t);
+        self.setState({ sexEditTags: tags });
+      },
+      remove: (e) => {
+        if (e && e.stopPropagation) e.stopPropagation();
+        const pool2 = (self.state.sexCustomTags || []).filter(x => x !== t);
+        const tags2 = (self.state.sexEditTags || []).filter(x => x !== t);
+        self.setState({ sexCustomTags: pool2, sexEditTags: tags2 });
+        try { localStorage.setItem('kel-sex-tags', JSON.stringify(pool2)); } catch (err) {}
+      }
+    };
+  });
+})(),
+
 sexEditCancel: ()=>self.setState({sexEditOpen:false}),
 sexEditDelete: ()=>{const ds=s.sexEditDate;if(!ds)return;const sexData={...s.sexData};delete sexData[ds];self.setState({sexData,sexEditOpen:false});localStorage.setItem('_cl_data',JSON.stringify(sexData));self.show('已删除');},
 sexEditSave: ()=>{const ds=s.sexEditDate;if(!ds)return;const session={time:s.sexEditTime||'晚',rounds:parseInt(s.sexEditRounds)||1,herNote:s.sexEditHerNote||'',hisNote:s.sexEditHisNote||'',tags:s.sexEditTags||[]};const sexData={...s.sexData};sexData[ds]={sessions:[session]};self.setState({sexData,sexEditOpen:false});localStorage.setItem('_cl_data',JSON.stringify(sexData));self.show('♥ 已记录');},
