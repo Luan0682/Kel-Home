@@ -165,23 +165,19 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 </helmet>
 
-<div style="position:absolute;inset:0;display:flex;background:var(--bg-main, #F5F3EE);color:var(--text-primary, #1A1815);font-family:-apple-system,'Noto Sans SC','Helvetica Neue',sans-serif;overflow:hidden;letter-spacing:-0.01em;flex-direction:column;">
+<div style="position:absolute;inset:0;display:flex;background:var(--bg-main, #F5F3EE);color:var(--text-primary, #1A1815);font-family:-apple-system,'Noto Sans SC','Helvetica Neue',sans-serif;overflow:hidden;letter-spacing:-0.01em;">
 
 <!-- ===== LEFT NAV BAR (OVERLAY) ===== -->
-<div style="position:fixed;top:0;left:0;bottom:0;width:220px;background:var(--bg-main, #F5F3EE);border-right:1px solid rgba(104,84,75,.06);z-index:999;transform:translateX({{ sidebarTransform }});transition:transform .25s cubic-bezier(.4,0,.2,1);box-shadow:{{ sidebarShadow }};display:flex;flex-direction:column;align-items:center;padding:16px 0 16px;">
+<div style="position:absolute;top:0;left:0;bottom:0;width:220px;background:var(--bg-main, #F5F3EE);border-right:1px solid rgba(104,84,75,.06);z-index:999;transform:translateX({{ sidebarTransform }});transition:transform .25s cubic-bezier(.4,0,.2,1);box-shadow:{{ sidebarShadow }};display:flex;flex-direction:column;align-items:center;padding:16px 0 16px;">
 
 <!-- Sidebar Header -->
-<div style="width:100%;padding:20px 20px 16px;border-bottom:1px solid rgba(104,84,75,.06);">
-<div style="display:flex;align-items:center;gap:10px;">
-<div onClick="{{ openProfileCard }}" style="width:36px;height:36px;border-radius:50%;overflow:hidden;cursor:pointer;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;">
+<div style="width:100%;padding:24px 20px 20px;border-bottom:1px solid rgba(104,84,75,.06);display:flex;flex-direction:column;align-items:center;">
+<div onClick="{{ openProfileCardAndClose }}" style="width:56px;height:56px;border-radius:50%;overflow:hidden;cursor:pointer;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;margin-bottom:10px;">
 <sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
-<sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:var(--bubble-ai, #D7EBE4);display:flex;align-items:center;justify-content:center;"><svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="var(--bubble-user, #59483F)" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
+<sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:var(--bubble-ai, #D7EBE4);display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="var(--bubble-user, #59483F)" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
 </div>
-<div>
-<div style="font-size:14px;font-weight:600;color:var(--text-primary, #1A1815);">Kel & Yin</div>
-<div style="font-size:11px;color:#9A958B;">{{ togetherDays }} days</div>
-</div>
-</div>
+<div style="font-size:15px;font-weight:600;color:var(--text-primary, #1A1815);">Kel & Yin</div>
+<div style="font-size:11px;color:#9A958B;margin-top:2px;">{{ togetherDays }} days together</div>
 </div>
 
 <!-- Nav Items -->
@@ -227,11 +223,11 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- Sidebar overlay backdrop -->
 <sc-if value="{{ sidebarOpen }}" hint-placeholder-val="{{ false }}">
-<div onClick="{{ closeSidebar }}" style="position:fixed;inset:0;background:rgba(0,0,0,.18);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:998;animation:fadeIn .2s ease both;"></div>
+<div onClick="{{ closeSidebar }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px);z-index:998;animation:fadeIn .2s ease both;"></div>
 </sc-if>
 
 <!-- ===== MAIN CONTENT ===== -->
-<div style="flex:1;min-width:0;position:relative;width:100%;">
+<div style="flex:1;min-width:0;position:relative;">
 
 <!-- ========== CHAT ========== -->
 <sc-if value="{{ isChat }}" hint-placeholder-val="{{ true }}">
@@ -249,9 +245,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <!-- header -->
 <div style="flex:none;padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:9px;">
 <div style="display:flex;align-items:center;gap:8px;">
-<button onClick="{{ openSidebar }}" style="border:none;background:transparent;padding:0;cursor:pointer;display:flex;align-items:center;flex:none;">
-<span style="font-size:13px;font-weight:500;color:var(--text-secondary, #48453E);letter-spacing:0.5px;">Chat</span>
-</button>
+<div onClick="{{ openSidebar }}" style="font-size:15px;font-weight:600;color:var(--text-primary, #1A1815);cursor:pointer;letter-spacing:0.5px;margin-right:4px;white-space:nowrap;">Chat</div>
 <button onClick="{{ openStyle }}" style="height:36px;display:flex;align-items:center;gap:6px;background:var(--bg-card, #FFF);border:none;border-radius:18px;padding:0 14px;cursor:pointer;font-family:inherit;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);min-width:0;max-width:160px;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
 <span style="font-size:13px;font-weight:600;color:var(--text-bold, #3A362F);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ activeStyle }}</span>
@@ -323,20 +317,21 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <!-- images -->
 <sc-if value="{{ m.hasImages }}" hint-placeholder-val="{{ false }}">
   <div style="margin-bottom:6px;display:flex;justify-content:{{ m.imgJustify }};overflow:visible;">
-    <sc-if value="{{ m.singleImage }}" hint-placeholder-val="{{ true }}">
+    <sc-if value="{{ m.images.length === 1 }}" hint-placeholder-val="{{ true }}">
       <div style="position:relative;width:160px;height:160px;border-radius:14px;overflow:hidden;cursor:pointer;" onClick="{{ m.previewImage }}" onContextMenu="{{ m.longPressImage }}">
         <img src="{{ m.images[0].preview }}" style="width:100%;height:100%;object-fit:cover;" alt="attachment">
       </div>
     </sc-if>
-    <sc-if value="{{ m.multiImage }}" hint-placeholder-val="{{ false }}">
-      <div style="display:flex;gap:6px;overflow-x:auto;max-width:280px;padding:4px 0;border-radius:14px;" onContextMenu="{{ m.longPressImage }}">
-        <sc-for list="{{ m.images }}" as="img" hint-placeholder-count="4">
-          <div style="width:120px;height:120px;border-radius:12px;overflow:hidden;cursor:pointer;flex:none;" onClick="{{ img.preview }}">
-            <img src="{{ img.src }}" style="width:100%;height:100%;object-fit:cover;display:block;" alt="attachment">
-          </div>
-        </sc-for>
+    <sc-if value="{{ m.images.length > 1 }}" hint-placeholder-val="{{ false }}">
+  <div style="display:flex;gap:6px;overflow-x:auto;max-width:280px;padding:4px 0;border-radius:14px;" onContextMenu="{{ m.longPressImage }}">
+    <sc-for list="{{ m.images }}" as="img" hint-placeholder-count="4">
+      <div style="width:120px;height:120px;border-radius:12px;overflow:hidden;cursor:pointer;flex:none;" onClick="{{ img.openPreview }}">
+        <img src="{{ img.src }}" style="width:100%;height:100%;object-fit:cover;display:block;" alt="attachment">
       </div>
-    </sc-if>
+    </sc-for>
+  </div>
+</sc-if>
+
   </div>
 </sc-if>
 
@@ -499,6 +494,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- 顶部用户信息 -->
 <div style="padding:20px 0 16px;display:flex;align-items:center;gap:12px;">
+<div onClick="{{ openSidebar }}" style="font-size:20px;font-weight:600;color:var(--text-primary, #1A1815);cursor:pointer;letter-spacing:0.5px;margin-right:4px;">Chats</div>
 <div onClick="{{ pickUserAvatar }}" style="width:44px;height:44px;border-radius:50%;overflow:hidden;background:#ECEAE4;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #E7E3DA;">
 <sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
 <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="#9A958B" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg></sc-if>
@@ -828,8 +824,10 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <sc-if value="{{ isSoulPage }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;inset:0;display:flex;flex-direction:column;">
 
-<!-- 顶部头像 + 名字 + 保存按钮 -->
-<div style="flex:none;padding:20px 20px 16px;display:flex;align-items:center;gap:12px;">
+<!-- 顶部标题 + 头像 + 保存按钮 -->
+<div style="flex:none;padding:20px 20px 16px;display:flex;flex-direction:column;gap:12px;">
+<div onClick="{{ openSidebar }}" style="font-size:20px;font-weight:600;color:var(--text-primary, #1A1815);cursor:pointer;letter-spacing:0.5px;">Persona</div>
+<div style="display:flex;align-items:center;gap:12px;">
 <div onClick="{{ uploadAiAvatar }}" style="width:48px;height:48px;border-radius:50%;overflow:hidden;background:#DFF2EC;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #E7E3DA;">
 <sc-if value="{{ hasAiAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ aiAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
 <sc-if value="{{ !hasAiAvatar }}" hint-placeholder-val="{{ true }}"><svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="4" stroke="#9A958B" stroke-width="1.5"/><path d="M5 19.5c0-3.5 3.5-6.5 7-6.5s7 3 7 6.5" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg></sc-if>
@@ -839,6 +837,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div style="font-size:11px;color:#9A958B;margin-top:2px;">{{ soulCharCount }} 字</div>
 </div>
 <button onClick="{{ saveSoulPage }}" style="border:none;background:#68544B;color:#FFF;border-radius:18px;padding:8px 16px;font-size:13px;font-family:inherit;cursor:pointer;">保存</button>
+</div>
 </div>
 
 <!-- Tab 切换 -->
@@ -866,7 +865,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <!-- 顶部标题 + tab栏 -->
 <div style="flex:none;padding:16px 20px 0;">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-<div style="font-size:20px;font-weight:700;color:#5C4033;">日记</div>
+<div onClick="{{ openSidebar }}" style="font-size:20px;font-weight:700;color:#5C4033;cursor:pointer;">Diary</div>
 <span style="font-size:12px;color:#8B7355;">{{ diaryTodayLabel }}</span>
 </div>
 <!-- 季度/月/周 tab -->
@@ -1080,7 +1079,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 20px 24px;">
 
 <div style="padding:20px 0 16px;display:flex;align-items:center;justify-content:space-between;">
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:var(--text-primary, #1A1815);">记忆</div>
+<div onClick="{{ openSidebar }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:var(--text-primary, #1A1815);cursor:pointer;">Memory</div>
 <div style="display:flex;gap:8px;">
 <button onClick="{{ openMemorySettings }}" style="width:34px;height:34px;border-radius:50%;background:var(--bg-card, #FFF);border:1px solid #EDE9E0;display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#68544B" stroke-width="1.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="#68544B" stroke-width="1.5" stroke-linecap="round"/></svg>
@@ -1225,7 +1224,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <!-- 顶部状态 -->
 <div style="flex:none;padding:16px 20px 0;">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-  <div style="font-size:20px;font-weight:700;color:#5C4033;">日历</div>
+  <div onClick="{{ openSidebar }}" style="font-size:20px;font-weight:700;color:#5C4033;cursor:pointer;">Calendar</div>
   <sc-if value="{{ !sexCalendarOpen }}" hint-placeholder-val="{{ true }}">
     <button onClick="{{ openSexPasswordPrompt }}" style="width:36px;height:36px;border:none;background:rgba(255,255,255,0.55);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;opacity:0.85;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#F4A7B9" stroke-width="1.5" stroke-linejoin="round" fill="rgba(244,167,185,0.15)"/></svg>
@@ -1635,8 +1634,8 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- Profile Card -->
 <sc-if value="{{ profileCardOpen }}" hint-placeholder-val="{{ false }}">
-  <div style="position:fixed;inset:0;z-index:300;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);animation:fadeIn .2s ease both;" onClick="{{ closeProfileCard }}">
-    <div style="width:300px;height:300px;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.35);position:relative;" onClick="{{ stopProp }}">
+  <div style="position:fixed;inset:0;z-index:9999;display:flex;align-items:center;justify-content:center;background:rgba(0,0,0,0.4);animation:fadeIn .2s ease both;" onClick="{{ closeProfileCard }}">
+    <div style="width:340px;height:400px;border-radius:24px;overflow:hidden;box-shadow:0 20px 60px rgba(0,0,0,0.35);position:relative;" onClick="{{ stopProp }}">
 
       <!-- 整个正方形的背景图（全覆盖） -->
       <div onClick="{{ pickProfileBg }}" style="position:absolute;inset:0;background:#222;cursor:pointer;">
@@ -1652,21 +1651,17 @@ input, textarea { user-select:text; -webkit-user-select:text; }
       </div>
 
       <!-- 下半部分：磨砂圆角，透出背景图 -->
-      <div style="position:absolute;bottom:0;left:0;right:0;height:50%;background:rgba(255,255,255,0.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:20px 20px 24px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px;">
+      <div style="position:absolute;bottom:0;left:0;right:0;height:45%;background:rgba(255,255,255,0.55);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:20px 20px 24px 24px;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:16px 20px;">
         <!-- 头像（骑在分界线上） -->
-        <div onClick="{{ pickUserAvatar }}" style="width:80px;height:80px;border-radius:50%;overflow:hidden;border:3px solid #FFF;box-shadow:0 4px 20px rgba(0,0,0,0.25);cursor:pointer;position:absolute;top:-40px;">
+        <div onClick="{{ pickUserAvatar }}" style="width:90px;height:90px;border-radius:50%;overflow:hidden;border:3px solid #FFF;box-shadow:0 4px 20px rgba(0,0,0,0.25);cursor:pointer;position:absolute;top:-45px;">
           <sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
-          <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:#ECEAE4;display:flex;align-items:center;justify-content:center;"><svg width="32" height="32" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="#9A958B" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
+          <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:#ECEAE4;display:flex;align-items:center;justify-content:center;"><svg width="36" height="36" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="#9A958B" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
         </div>
         <!-- 名字 + 问候语 -->
-        <div style="margin-top:32px;text-align:center;">
-          <div style="font-size:20px;font-weight:700;color:#2B2620;text-shadow:0 1px 8px rgba(255,255,255,0.6);">江吟</div>
+        <div style="margin-top:40px;text-align:center;">
+          <div style="font-size:22px;font-weight:700;color:#2B2620;text-shadow:0 1px 8px rgba(255,255,255,0.6);">江吟</div>
           <div style="font-size:14px;color:#3A362F;opacity:0.75;margin-top:10px;line-height:1.6;text-shadow:0 1px 6px rgba(255,255,255,0.5);">{{ profileGreeting }}</div>
         </div>
-        <!-- 关闭 × -->
-        <button onClick="{{ closeProfileCard }}" style="position:absolute;top:12px;right:12px;width:28px;height:28px;border-radius:50%;background:rgba(0,0,0,0.08);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#3A362F" stroke-width="2" stroke-linecap="round"/></svg>
-        </button>
       </div>
 
     </div>
@@ -5687,11 +5682,10 @@ showUserAvatar: isUser && !!s.userAvatar && isFirstInGroup(i),
 showTimestampOnly: isFirstInGroup(i) && ((!isUser && !s.aiAvatar) || (isUser && !s.userAvatar)),
 tsAlign: isUser ? 'flex-end' : 'flex-start',
 hasImages: !!(m.images && m.images.length > 0),
-singleImage: !!(m.images && m.images.length === 1),
-multiImage: !!(m.images && m.images.length > 1),
 images: (m.images || []).map((img, imgIdx) => ({
+  preview: img.preview || img,
   src: img.preview || img,
-  preview: () => self.setState({ imagePreviewOpen: true, imagePreviewUrl: img.preview || img })
+  openPreview: () => self.setState({ imagePreviewOpen: true, imagePreviewUrl: img.preview || img })
 })),
 imageUrl: m.imageUrl || '',
 imgJustify: isUser ? 'flex-end' : 'flex-start',
@@ -7100,6 +7094,7 @@ navPeriodTodo: () => { self.setState({ tab: 'period', periodSubTab: 'todo' }); }
 homeTodoCount: (s.todos || []).length,
 homeTodoUndone: (s.todos || []).filter(t => !t.done).length,
 openProfileCard: () => self.setState(v => ({ profileCardOpen: !v.profileCardOpen })),
+openProfileCardAndClose: () => self.setState({ profileCardOpen: true, sidebarOpen: false }),
 navRegexBg: s.tab === 'regex' ? '#ECEAE4' : 'transparent',
 isRegexPage: s.tab === 'regex',
 searchOpen: !!(s.searchQuery && s.searchQuery.trim()),
