@@ -213,6 +213,11 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <span style="font-size:14px;color:var(--text-primary, #1A1815);">Memory</span>
 </div>
 
+<div class="nav-icon {{ navRegexClass }}" onClick="{{ navRegexSidebar }}" style="width:100%;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 7h16M4 12h10M4 17h13" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/><circle cx="19" cy="12" r="2.5" stroke="var(--text-secondary, #68544B)" stroke-width="1.5"/></svg>
+<span style="font-size:14px;color:var(--text-primary, #1A1815);">Regex</span>
+</div>
+
 <div class="nav-icon" onClick="{{ navSettingsSidebar }}" style="width:100%;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="var(--text-secondary, #68544B)" stroke-width="1.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/></svg>
 <span style="font-size:14px;color:var(--text-primary, #1A1815);">Settings</span>
@@ -5705,15 +5710,15 @@ radius: (() => {
 const first = isFirstInGroup(i);
 const last = isLastInGroup(i);
 if (isUser) {
-if (first && last) return '22px 22px 4px 22px';
-if (first) return '22px 22px 4px 22px';
-if (last) return '22px 4px 4px 22px';
-return '22px 4px 4px 22px';
+if (first && last) return '18px 18px 4px 18px';
+if (first) return '18px 18px 4px 18px';
+if (last) return '18px 4px 4px 18px';
+return '18px 4px 4px 18px';
 } else {
-if (first && last) return '22px 22px 22px 4px';
-if (first) return '22px 22px 22px 4px';
-if (last) return '4px 22px 22px 4px';
-return '4px 22px 22px 4px';
+if (first && last) return '18px 18px 18px 4px';
+if (first) return '18px 18px 18px 4px';
+if (last) return '4px 18px 18px 4px';
+return '4px 18px 18px 4px';
 }
 })(),
 gap: (() => {
@@ -5757,7 +5762,7 @@ self.deleteImageFromMessage(m.id);
 showNormal: s.editIdx !== i && !!rendered,
 hasQuote: !!(m.quote || (displayText.match(/^> .+/m) && !isUser)),
 quoteText: m.quote ? (m.quote.sender + '：' + m.quote.text) : (displayText.match(/^> (.+)/m) ? displayText.match(/^> (.+)/m)[1].slice(0, 40) : ''),
-bubblePadding: !rendered ? '0' : '6px 15px',
+bubblePadding: !rendered ? '0' : '6px 11px',
 bubbleDisplay: !rendered ? 'none' : 'block',
 showEdit: s.editIdx === i,
 showActions: !isUser && isLast && !s.isBusy && isLastInGroup(i),
@@ -7156,6 +7161,8 @@ navPeriodClass: s.tab === 'period' ? 'active' : '',
 navPeriodTodo: () => { self.setState({ tab: 'period', periodSubTab: 'todo' }); },
 openProfileCard: () => self.setState(v => ({ profileCardOpen: !v.profileCardOpen })),
 openProfileCardAndClose: () => self.setState({ profileCardOpen: true, sidebarOpen: false }),
+navRegexClass: s.tab === 'regex' ? 'active' : '',
+navRegexSidebar: () => { self.setState({ tab: 'regex', sidebarOpen: false }); },
 navRegexBg: s.tab === 'regex' ? '#ECEAE4' : 'transparent',
 isRegexPage: s.tab === 'regex',
 searchOpen: !!(s.searchQuery && s.searchQuery.trim()),
