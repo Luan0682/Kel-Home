@@ -172,7 +172,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- Sidebar Header -->
 <div style="width:100%;padding:24px 20px 20px;border-bottom:1px solid rgba(104,84,75,.06);display:flex;flex-direction:column;align-items:center;">
-<div onClick="{{ openProfileCardAndClose }}" style="width:64px;height:64px;border-radius:50%;overflow:hidden;cursor:pointer;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;margin-bottom:10px;">
+<div onClick="{{ openProfileCardAndClose }}" style="width:64px;height:64px;border-radius:50%;overflow:hidden;cursor:pointer;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;margin:0 auto 10px;">
 <sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
 <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:var(--bubble-ai, #D7EBE4);display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="var(--bubble-user, #59483F)" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
 </div>
@@ -509,10 +509,6 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </button>
 </div>
 </div>
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#F5F3EE" stroke-width="2" stroke-linecap="round"/></svg>
-</button>
-</div>
-
 <!-- 搜索 -->
 <div style="margin-bottom:16px;">
 <div style="background:var(--bg-card, #FFF);border:1px solid #E7E3DA;border-radius:14px;padding:9px 12px;display:flex;align-items:center;gap:8px;">
@@ -770,7 +766,15 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div onClick="{{ exportData }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
 <div style="display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3v12M8 7l4-4 4 4" stroke="#68544B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 15v3a3 3 0 003 3h8a3 3 0 003-3v-3" stroke="#68544B" stroke-width="1.5" stroke-linecap="round"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">导出备份</div><div style="font-size:11px;color:#B8B3A8;margin-top:2px;">JSON 下载</div></div>
+<div><div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">完整导出</div><div style="font-size:11px;color:#B8B3A8;margin-top:2px;">全部数据 JSON</div></div>
+</div>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ openSelectiveExport }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:14px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 11l3 3L22 4" stroke="#68544B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11" stroke="#68544B" stroke-width="1.5" stroke-linecap="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">选择性导出</div><div style="font-size:11px;color:#B8B3A8;margin-top:2px;">勾选要导出的部分</div></div>
 </div>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
@@ -779,6 +783,14 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div style="display:flex;align-items:center;gap:14px;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 15V3M8 11l4 4 4-4" stroke="#68544B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 15v3a3 3 0 003 3h8a3 3 0 003-3v-3" stroke="#68544B" stroke-width="1.5" stroke-linecap="round"/></svg>
 <div><div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">导入备份</div><div style="font-size:11px;color:#B8B3A8;margin-top:2px;">从 JSON 恢复</div></div>
+</div>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+<div onClick="{{ clearAllData }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:14px;">
+<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M3 6h18M8 6V4h8v2M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6" stroke="#C84A3F" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M10 11v6M14 11v6" stroke="#C84A3F" stroke-width="1.5" stroke-linecap="round"/></svg>
+<div><div style="font-size:15px;font-weight:500;color:#C84A3F;">清空所有数据</div><div style="font-size:11px;color:#B8B3A8;margin-top:2px;">重置为初始状态</div></div>
 </div>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
@@ -1341,16 +1353,30 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- 做爱日历全屏视图 -->
 <sc-if value="{{ sexCalendarOpen }}" hint-placeholder-val="{{ false }}">
-<div style="position:fixed;inset:0;z-index:400;background:radial-gradient(ellipse at top, #3A1A32 0%, #1A0A18 55%, #12060F 100%)
-;display:flex;flex-direction:column;animation:fadeIn .4s ease both;overflow:hidden;">
+<div style="position:fixed;inset:0;z-index:400;background:radial-gradient(ellipse at top, #3A1A32 0%, #1A0A18 55%, #12060F 100%);display:flex;flex-direction:column;animation:fadeIn .4s ease both;overflow:hidden;">
 
-<!-- 顶部：关闭按钮 + 标题 -->
+<!-- 顶部：返回 + 标题 -->
 <div style="flex:none;padding:env(safe-area-inset-top,20px) 20px 16px;display:flex;align-items:center;justify-content:space-between;">
-<button onClick="{{ closeSexCalendar }}" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#FFF0F0" stroke-width="1.8" stroke-linecap="round"/></svg>
+<button onClick="{{ closeSexCalendar }}" style="display:flex;align-items:center;gap:4px;border:none;background:transparent;cursor:pointer;padding:6px 0;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#FFF0F0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span style="font-size:14px;color:#FFF0F0;font-weight:500;">Nights</span>
 </button>
-<div style="font-size:12px;font-weight:500;color:rgba(255,240,240,0.75);letter-spacing:2px;">本月被标记的夜晚 · {{ sexMonthCount }}</div>
-<div style="width:32px;"></div>
+<div style="font-size:12px;color:rgba(255,240,240,0.55);">{{ sexMonthCount }} nights this month</div>
+</div>
+
+<!-- 连续天数状态条 -->
+<div style="flex:none;padding:0 20px 14px;">
+<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:14px;padding:12px 16px;display:flex;align-items:center;justify-content:space-between;">
+<div>
+<span style="font-size:12px;color:rgba(255,240,240,0.5);">本月连续最长</span>
+<span style="font-size:20px;font-weight:700;color:#FF8FA3;margin:0 6px;">{{ sexStreakDays }}</span>
+<span style="font-size:12px;color:rgba(255,240,240,0.5);">nights</span>
+</div>
+<div style="text-align:right;">
+<div style="font-size:11px;color:rgba(255,240,240,0.4);">本月总计</div>
+<div style="font-size:15px;font-weight:600;color:#FFF0F0;">{{ sexMonthRounds }} 轮</div>
+</div>
+</div>
 </div>
 
 <!-- 月份切换 -->
@@ -1405,23 +1431,37 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </div>
 </div>
 
-<!-- 月度统计（不折叠） -->
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;">
-<div style="text-align:center;padding:14px;background:rgba(255,77,109,0.1);border-radius:12px;border:1px solid rgba(255,77,109,0.2);">
-<div style="font-size:28px;font-weight:300;color:#FF4D6D;">{{ sexMonthCount }}</div>
-<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;">次数</div>
+<!-- 本月标签排行 -->
+<div style="margin-top:16px;background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px 16px;">
+<div style="font-size:12px;color:rgba(255,240,240,0.5);margin-bottom:10px;letter-spacing:1px;">本月标签 TOP</div>
+<sc-for list="{{ sexTopTags }}" as="tt" hint-placeholder-count="5">
+<div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+<span style="font-size:12px;color:rgba(255,255,255,0.35);width:16px;">{{ tt.rank }}</span>
+<div style="flex:1;height:24px;background:rgba(255,77,109,0.08);border-radius:8px;overflow:hidden;position:relative;">
+<div style="height:100%;background:linear-gradient(90deg,rgba(255,77,109,{{ tt.opacity }}),rgba(255,77,109,0.1));border-radius:8px;width:{{ tt.percent }}%;"></div>
+<span style="position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:11px;color:#FFF0F0;font-weight:500;">{{ tt.label }}</span>
 </div>
-<div style="text-align:center;padding:14px;background:rgba(255,77,109,0.1);border-radius:12px;border:1px solid rgba(255,77,109,0.2);">
-<div style="font-size:28px;font-weight:300;color:#FF4D6D;">{{ sexMonthRounds }}</div>
-<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;">总轮数</div>
+<span style="font-size:11px;color:rgba(255,255,255,0.45);width:28px;text-align:right;">{{ tt.count }}</span>
 </div>
-<div style="text-align:center;padding:14px;background:rgba(139,0,0,0.15);border-radius:12px;border:1px solid rgba(139,0,0,0.3);">
-<div style="font-size:28px;font-weight:300;color:#FF6B6B;">{{ sexPeriodCount }}</div>
-<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;">经期中</div>
+</sc-for>
+<sc-if value="{{ sexTopTagsEmpty }}" hint-placeholder-val="{{ false }}">
+<div style="text-align:center;padding:14px 0;font-size:12px;color:rgba(255,255,255,0.3);">还没有标签记录</div>
+</sc-if>
 </div>
-<div style="text-align:center;padding:14px;background:rgba(191,95,255,0.12);border-radius:12px;border:1px solid rgba(191,95,255,0.25);">
-<div style="font-size:28px;font-weight:300;color:#BF5FFF;">{{ sexOvulationCount }}</div>
-<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;">排卵期</div>
+
+<!-- 快速统计 -->
+<div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-top:12px;">
+<div style="text-align:center;padding:12px 8px;background:rgba(255,77,109,0.08);border-radius:12px;border:1px solid rgba(255,77,109,0.15);">
+<div style="font-size:22px;font-weight:300;color:#FF4D6D;">{{ sexMonthCount }}</div>
+<div style="font-size:10px;color:rgba(255,255,255,0.45);margin-top:2px;">次</div>
+</div>
+<div style="text-align:center;padding:12px 8px;background:rgba(139,0,0,0.1);border-radius:12px;border:1px solid rgba(139,0,0,0.2);">
+<div style="font-size:22px;font-weight:300;color:#FF6B6B;">{{ sexPeriodCount }}</div>
+<div style="font-size:10px;color:rgba(255,255,255,0.45);margin-top:2px;">经期中</div>
+</div>
+<div style="text-align:center;padding:12px 8px;background:rgba(191,95,255,0.08);border-radius:12px;border:1px solid rgba(191,95,255,0.18);">
+<div style="font-size:22px;font-weight:300;color:#BF5FFF;">{{ sexOvulationCount }}</div>
+<div style="font-size:10px;color:rgba(255,255,255,0.45);margin-top:2px;">排卵期</div>
 </div>
 </div>
 </div>
@@ -2376,6 +2416,39 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </div>
 </sc-if>
 
+<!-- Selective Export Sheet -->
+<sc-if value="{{ selectiveExportOpen }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:270;">
+<div onClick="{{ closeSelectiveExport }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+<div class="sa" style="position:absolute;bottom:0;left:0;right:0;background:var(--bg-main, #F5F3EE);border-radius:16px 16px 0 0;padding:12px 16px 30px;animation:slideUp .25s ease both;max-height:85%;overflow-y:auto;">
+<div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
+<button onClick="{{ closeSelectiveExport }}" style="width:34px;height:34px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button>
+<span style="font-size:15px;font-weight:600;color:var(--text-primary, #1A1815);">选择导出内容</span>
+<button onClick="{{ doSelectiveExport }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 13px;font-size:12px;font-family:inherit;cursor:pointer;">导出</button>
+</div>
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;overflow:hidden;">
+<sc-for list="{{ exportSections }}" as="sec" hint-placeholder-count="10">
+<div style="padding:14px 16px;border-bottom:1px solid #ECE8DF;display:flex;align-items:center;justify-content:space-between;">
+<div style="display:flex;align-items:center;gap:10px;">
+<input type="checkbox" checked="{{ sec.checked }}" onChange="{{ sec.toggle }}" style="width:18px;height:18px;accent-color:#1A1815;cursor:pointer;">
+<div>
+<div style="font-size:14px;color:var(--text-primary, #1A1815);">{{ sec.label }}</div>
+<div style="font-size:11px;color:#B8B3A8;margin-top:2px;">{{ sec.desc }}</div>
+</div>
+</div>
+</div>
+</sc-for>
+</div>
+<div style="margin-top:12px;padding:10px 14px;background:#F7F5F0;border-radius:12px;">
+<div style="font-size:11px;color:#9A958B;line-height:1.6;">💡 排查建议：先只勾选一项导出+导入，看主页是否变形。逐项排查找到导致问题的数据。</div>
+</div>
+</div>
+</div>
+</sc-if>
+
 <!-- toast -->
 <sc-if value="{{ toastShow }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;bottom:50px;left:50%;transform:translateX(-50%);background:#1A1815;color:#F5F3EE;font-size:12px;padding:9px 18px;border-radius:20px;box-shadow:0 6px 20px rgba(0,0,0,.18);animation:fadeUp .25s ease both;white-space:nowrap;">{{ toastText }}</div>
@@ -2801,6 +2874,8 @@ musicPlayerOpen: false,
 musicLoop: false,
 musicCount: JSON.parse(localStorage.getItem('kel-music-list') || '[]').length,
 musicVolume: parseFloat(localStorage.getItem('kel-music-volume') || '0.5'),
+selectiveExportOpen: false,
+exportChecks: { chats:true, memories:true, personas:true, styles:true, prompts:true, apiPresets:true, diaries:true, anniversaries:true, pledges:true, periodData:true, sexData:true, customCss:true, regexRules:true, avatars:true },
 errorLogs: JSON.parse(localStorage.getItem('kel-error-logs') || '[]'),
 errorLogOpen: false,
 periodData: saved.periodData || {
@@ -3393,9 +3468,9 @@ for (const [chatId, chat] of Object.entries(s.chats)) {
   };
 }
 const data = {
+chats: chats,
 profileBgUrl: s.profileBgUrl,
 periodData: s.periodData,
-chats: chats,
 activePresetId: s.activePresetId,
 personas: s.personas,
 activePersonaId: s.activePersonaId,
@@ -4541,6 +4616,49 @@ this.setState({ chats });
 this.persist();
 this.show('图片已删除');
 }
+_doSelectiveExport() {
+  const s = this.state;
+  const checks = s.exportChecks || {};
+  const exportObj = { exportDate: new Date().toISOString(), version: '4.4-selective', selectedParts: Object.keys(checks).filter(k => checks[k]) };
+  if (checks.chats) exportObj.chats = s.chats;
+  if (checks.memories) exportObj.memories = s.memories;
+  if (checks.personas) exportObj.personas = s.personas;
+  if (checks.styles) exportObj.styles = s.styles;
+  if (checks.prompts) exportObj.prompts = s.prompts;
+  if (checks.apiPresets) exportObj.apiPresets = s.apiPresets;
+  if (checks.diaries) exportObj.diaries = s.diaries;
+  if (checks.anniversaries) exportObj.anniversaries = s.anniversaries;
+  if (checks.pledges) exportObj.pledges = s.pledges;
+  if (checks.periodData) exportObj.periodData = s.periodData;
+  if (checks.sexData) exportObj.sexData = s.sexData || JSON.parse(localStorage.getItem('_cl_data') || '{}');
+  if (checks.customCss) {
+    exportObj.customCss = s.customCss;
+    exportObj.customFont = s.customFont;
+    exportObj.activeThemeId = s.activeThemeId;
+    exportObj.customTheme = s.customTheme;
+    exportObj.msgFontSize = s.msgFontSize;
+    exportObj.localFontName = s.localFontName;
+    exportObj.fontPresets = s.fontPresets;
+  }
+  if (checks.regexRules) exportObj.regexRules = s.regexRules;
+  if (checks.avatars) {
+    exportObj.userAvatar = s.userAvatar;
+    exportObj.aiAvatar = s.aiAvatar;
+  }
+  const parts = Object.keys(checks).filter(k => checks[k]).length;
+  const blob = new Blob([JSON.stringify(exportObj, null, 2)], { type: 'application/json' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = 'kel-selective-' + parts + 'parts-' + new Date().toISOString().slice(0,10) + '.json';
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+  this.setState({ selectiveExportOpen: false });
+  this.show('已导出 ' + parts + ' 项数据');
+},
+
 
 // ====== Export / Import ======
 async exportData() {
@@ -6485,6 +6603,9 @@ longPress:(e)=>{
   }
   return cells;
 })(),
+sexStreakDays: (()=>{const sex=s.sexData||{};const y=s.periodViewYear;const m=s.periodViewMonth;const daysInMonth=new Date(y,m+1,0).getDate();let maxStreak=0,cur=0;for(let d=1;d<=daysInMonth;d++){const ds=y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');if(sex[ds]){cur++;if(cur>maxStreak)maxStreak=cur;}else{cur=0;}}return maxStreak;})(),
+sexTopTags: (()=>{const sex=s.sexData||{};const y=s.periodViewYear;const m=s.periodViewMonth;const counts={};for(const[date,data] of Object.entries(sex)){const d=new Date(date);if(d.getFullYear()===y&&d.getMonth()===m&&data.sessions){for(const ss of data.sessions){for(const tag of (ss.tags||[])){counts[tag]=(counts[tag]||0)+1;}}}}const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5);const max=sorted.length>0?sorted[0][1]:1;return sorted.map((pair,i)=>({rank:String(i+1),label:pair[0],count:pair[1],percent:Math.round(pair[1]/max*100),opacity:(0.3+0.14*(5-i)).toFixed(2)}));})(),
+sexTopTagsEmpty: (()=>{const sex=s.sexData||{};const y=s.periodViewYear;const m=s.periodViewMonth;let hasTags=false;for(const[date,data] of Object.entries(sex)){const d=new Date(date);if(d.getFullYear()===y&&d.getMonth()===m&&data.sessions){for(const ss of data.sessions){if(ss.tags&&ss.tags.length>0)hasTags=true;}}}return !hasTags;})(),
 sexStatsOpen: true,
 sexStatsRotate: '0',
 toggleSexStats: ()=>self.setState(v=>({sexStatsOpen:true})),
@@ -7703,6 +7824,49 @@ self.setState({ memoryCount: next }); self.persist(); self.show('记忆读取: '
 },
 exportData: () => self.exportData(),
 importData: () => self.importData(),
+selectiveExportOpen: s.selectiveExportOpen || false,
+openSelectiveExport: () => self.setState({ selectiveExportOpen: true }),
+closeSelectiveExport: () => self.setState({ selectiveExportOpen: false }),
+doSelectiveExport: () => self._doSelectiveExport(),
+clearAllData: () => {
+  if (!confirm('⚠️ 确定要清空所有数据吗？\n\n这将删除所有聊天记录、记忆、日记等。\n建议先完整导出备份。')) return;
+  if (!confirm('再次确认：真的要清空吗？此操作不可撤销！')) return;
+  localStorage.removeItem(STORAGE_KEY);
+  localStorage.removeItem('kel-error-logs');
+  localStorage.removeItem('kel-music-meta');
+  localStorage.removeItem('_cl_data');
+  try { indexedDB.deleteDatabase('KelHomeData'); } catch(e){}
+  self.show('数据已清空，即将刷新...');
+  setTimeout(() => location.reload(), 1500);
+},
+exportSections: (() => {
+  const checks = s.exportChecks || {};
+  const sections = [
+    { key:'chats', label:'聊天记录', desc: Object.values(s.chats).filter(c=>c.messages&&c.messages.length>0).length + ' 段对话' },
+    { key:'memories', label:'记忆', desc: s.memories.length + ' 条' },
+    { key:'personas', label:'Persona', desc: s.personas.length + ' 个' },
+    { key:'styles', label:'Style', desc: s.styles.length + ' 个' },
+    { key:'prompts', label:'Prompt 模板', desc: (s.prompts||[]).length + ' 个' },
+    { key:'apiPresets', label:'API 设置', desc: s.apiPresets.length + ' 个' },
+    { key:'diaries', label:'日记', desc: Object.keys(s.diaries||{}).length + ' 天' },
+    { key:'anniversaries', label:'纪念日', desc: (s.anniversaries||[]).length + ' 个' },
+    { key:'pledges', label:'约定', desc: (s.pledges||[]).length + ' 个' },
+    { key:'periodData', label:'经期数据', desc: ((s.periodData||{}).history||[]).length + ' 条记录' },
+    { key:'sexData', label:'亲密日历', desc: Object.keys(s.sexData||{}).length + ' 天' },
+    { key:'customCss', label:'界面美化', desc: '配色·字体·CSS' },
+    { key:'regexRules', label:'正则规则', desc: (s.regexRules||[]).length + ' 条' },
+    { key:'avatars', label:'头像', desc: '用户+AI头像' }
+  ];
+  return sections.map(sec => ({
+    ...sec,
+    checked: checks[sec.key] !== false,
+    toggle: () => {
+      const newChecks = { ...(self.state.exportChecks || {}) };
+      newChecks[sec.key] = !newChecks[sec.key];
+      self.setState({ exportChecks: newChecks });
+    }
+  }));
+})(),
 pickUserAvatar: () => self.pickUserAvatar(),
 pickAiAvatar: () => self.pickAiAvatar(),
 avatarSizeChange: (e) => { self.setState({ avatarSize: parseInt(e.target.value) || 36 }); self.persist(); },
