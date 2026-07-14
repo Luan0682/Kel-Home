@@ -188,7 +188,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <span style="font-size:14px;color:var(--text-primary, #1A1815);">Home</span>
 </div>
 
-<div class="nav-icon {{ navChatListClass }}" onClick="{{ navChatListSidebar }}" style="width:100%;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;">
+<div class="nav-icon" onClick="{{ navChatListSidebar }}" style="width:100%;border-radius:12px;padding:12px 16px;display:flex;align-items:center;gap:12px;cursor:pointer;">
 <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4.5 6.5h15M4.5 12h10M4.5 17.5h13" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/></svg>
 <span style="font-size:14px;color:var(--text-primary, #1A1815);">Chats</span>
 </div>
@@ -625,13 +625,13 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </div>
 </div>
 
-<!-- 待办 -->
-<div onClick="{{ navPeriodTodo }}" style="background:rgba(255,255,255,0.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.5);border-radius:22px;padding:20px 16px;cursor:pointer;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,0.04);">
-<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="var(--bubble-user, #59483F)" stroke-width="1.5"/><path d="M9 12l2 2 4-4" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:32px;font-weight:500;color:var(--bubble-user, #59483F);line-height:1;">{{ homeTodoCount }}</span>
+<!-- 空白卡片（预留） -->
+<div style="background:rgba(255,255,255,0.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.5);border-radius:22px;padding:20px 16px;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,0.04);">
+<div style="height:22px;"></div>
+<div style="height:32px;"></div>
 <div>
-<div style="font-size:13px;font-weight:600;color:var(--bubble-user, #59483F);">待办</div>
-<div style="font-size:11px;color:var(--bubble-user, #59483F);opacity:.5;margin-top:2px;">{{ homeTodoUndone }} 未完成</div>
+<div style="font-size:13px;font-weight:600;color:var(--bubble-user, #59483F);">&nbsp;</div>
+<div style="font-size:11px;color:var(--bubble-user, #59483F);opacity:.5;margin-top:2px;">&nbsp;</div>
 </div>
 </div>
 
@@ -2840,13 +2840,6 @@ todoEditAt: '',
 todoEditIn: '',
 todoEditIsFixed: true,
 accounts: saved.accounts || [],
-// ===== 清单新状态 =====
-checklistOpen: false,
-checklistItems: saved.checklistItems || [],
-checklistSnap: 0.62,
-checklistDragStart: null,
-checklistDragStartSnap: 0.62,
-checklistNewText: '',
 };
 
 // 迁移：为所有消息补全 id
@@ -3433,7 +3426,6 @@ regexRules: s.regexRules,
 fontPresets: s.fontPresets,
 keepAliveEnabled: s.keepAliveEnabled,
 periodData: s.periodData,
-todos: s.todos,
 memSummaryPrompt: s.memSummaryPrompt,
 soulPersonality: s.soulSections.personality.content,
 soulRules: s.soulSections.rules.content,
@@ -4046,38 +4038,6 @@ if (userTimeline) {
 
 const memorySummary = buildMemorySummary(this.state.chats, this.state.currentChatId, this.state.memoryCount);
 if (memorySummary) sys += '## Context Memory\n' + memorySummary + '\n\n';
-// ---- 待办清单 ----
-const todos = this.state.todos || [];
-if (todos.length > 0) {
-  sys += '## 待办清单（用户可能会问你）\n';
-  const now = Date.now();
-  const undone = todos.filter(t => !t.done);
-  const overdue = undone.filter(t => t.trigger_at && t.trigger_at <= now);
-  
-  if (overdue.length > 0) {
-    sys += '**逾期未完成** (' + overdue.length + '项):\n';
-    for (const t of overdue) {
-      const time = new Date(t.trigger_at).toLocaleString().slice(5, 16);
-      sys += '- [!] ' + t.body + ' (原定: ' + time + ')\n';
-    }
-    sys += '\n';
-  }
-  
-  const upcoming = undone.filter(t => !t.trigger_at || t.trigger_at > now);
-  if (upcoming.length > 0) {
-    sys += '**待完成** (' + upcoming.length + '项):\n';
-    for (const t of upcoming) {
-      if (t.trigger_at) {
-        const time = new Date(t.trigger_at).toLocaleString().slice(5, 16);
-        sys += '- ' + t.body + ' (' + time + ')' + (t.is_fixed ? ' [每日]' : '') + '\n';
-      } else {
-        sys += '- ' + t.body + (t.is_fixed ? ' [每日]' : '') + '\n';
-      }
-    }
-  }
-  sys += '\n';
-}
-
 return sys.trim();
 }
 
@@ -6227,7 +6187,15 @@ soundLeft: s.soundEnabled ? '22px' : '2px',
 soulTabs: [ { label:'人格', switch:()=>self.setState({soulActiveTab:'personality'}), activeClass:(s.soulActiveTab||'personality')==='personality'?'active':'inactive' }, { label:'规则', switch:()=>self.setState({soulActiveTab:'rules'}), activeClass:(s.soulActiveTab||'personality')==='rules'?'active':'inactive' }, { label:'关于江吟', switch:()=>self.setState({soulActiveTab:'about'}), activeClass:(s.soulActiveTab||'personality')==='about'?'active':'inactive' }, { label:'其他', switch:()=>self.setState({soulActiveTab:'other'}), activeClass:(s.soulActiveTab||'personality')==='other'?'active':'inactive' } ],
 soulActiveContent: (s.soulSections[(s.soulActiveTab||'personality')]||{}).content||'',
 soulContentChange: (e) => { const key=s.soulActiveTab||'personality'; const ss={...s.soulSections}; ss[key]={...ss[key],content:e.target.value}; self.setState({soulSections:ss}); },
-soulActivePlaceholder: ({personality:'描述性格、说话方式、身份定义...',rules:'对话规则、行为准则、底线...',about:'用户的信息、偏好、习惯...',other:'自定义补充内容...'})[s.soulActiveTab||'personality'],
+soulActivePlaceholder: (() => {
+  const map = {
+    personality: '描述性格、说话方式、身份定义...',
+    rules: '对话规则、行为准则、底线...',
+    about: '用户的信息、偏好、习惯...',
+    other: '自定义补充内容...'
+  };
+  return map[s.soulActiveTab || 'personality'] || '';
+})(),
 soulActiveCharCount: ((s.soulSections[(s.soulActiveTab||'personality')]||{}).content||'').length,
 // ===== 导航函数 =====
 navChatList: () => self.setState({ tab: 'chatlist' }),
@@ -7063,8 +7031,6 @@ navSoulBg: s.tab === 'soul' ? '#ECEAE4' : 'transparent',
 navPeriodBg: s.tab === 'period' ? '#ECEAE4' : 'transparent',
 navPeriodClass: s.tab === 'period' ? 'active' : '',
 navPeriodTodo: () => { self.setState({ tab: 'period', periodSubTab: 'todo' }); },
-homeTodoCount: (s.todos || []).length,
-homeTodoUndone: (s.todos || []).filter(t => !t.done).length,
 openProfileCard: () => self.setState(v => ({ profileCardOpen: !v.profileCardOpen })),
 openProfileCardAndClose: () => self.setState({ profileCardOpen: true, sidebarOpen: false }),
 navRegexBg: s.tab === 'regex' ? '#ECEAE4' : 'transparent',
@@ -7196,7 +7162,22 @@ diaryMonthCells: (() => {
 
 diaryStatMineCount: (() => { let c=0; for(const[k,v] of Object.entries(s.diaries||{})){if(v.mine)c++; c+=(v.entries||[]).filter(e=>e.author==='mine').length;} return c; })(),
 diaryStatKelCount: (() => { let c=0; for(const[k,v] of Object.entries(s.diaries||{})){if(v.kel)c++; c+=(v.entries||[]).filter(e=>e.author==='kel').length;} return c; })(),
-diaryStatTopMoods: (() => { const counts={}; const tagEmojiMap2={heartbeat:'💓',sweet:'🍬',sad:'🌧',hot:'🔥',miss:'🌙',peace:'☁️'}; for(const[k,v] of Object.entries(s.diaries||{})){ if(v.stickerMine){counts[v.stickerMine]=(counts[v.stickerMine]||0)+1;} if(v.stickerKel){counts[v.stickerKel]=(counts[v.stickerKel]||0)+1;} if(v.entries){for(const e of v.entries){if(e.tags){for(const t of e.tags){const emoji=tagEmojiMap2[t]||t;counts[emoji]=(counts[emoji]||0)+1;}}}} } const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5); return sorted.map(([emoji,count])=>({emoji,count})); })(),
+diaryStatTopMoods: (() => { 
+  const counts={}; 
+  const tagMap = ['heartbeat','sweet','sad','hot','miss','peace'];
+  const tagEmojis = ['💓','🍬','🌧','🔥','🌙','☁️'];
+  for(const[k,v] of Object.entries(s.diaries||{})){ 
+    if(v.stickerMine){counts[v.stickerMine]=(counts[v.stickerMine]||0)+1;} 
+    if(v.stickerKel){counts[v.stickerKel]=(counts[v.stickerKel]||0)+1;} 
+    if(v.entries){for(const e of v.entries){if(e.tags){for(const t of e.tags){
+      const idx = tagMap.indexOf(t);
+      const emoji = idx >= 0 ? tagEmojis[idx] : t;
+      counts[emoji]=(counts[emoji]||0)+1;
+    }}}} 
+  } 
+  const sorted=Object.entries(counts).sort((a,b)=>b[1]-a[1]).slice(0,5); 
+  return sorted.map(function(pair){ return {emoji:pair[0], count:pair[1]}; });
+})(),
 diaryTodayLabel: (() => { const d = new Date(); return (d.getMonth()+1) + '月' + d.getDate() + '日 · ' + ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()]; })(),
 diarySelectedCount: (() => { if (!s.diarySelectedDate) return 0; const day = s.diaries[s.diarySelectedDate]; if (!day) return 0; return (day.entries || []).length + (day.mine && !(day.entries||[]).length ? 1 : 0) + (day.kel && !(day.entries||[]).length ? 1 : 0); })(),
 diarySelectedMood: (() => { if (!s.diarySelectedDate) return ''; const e = s.diaries[s.diarySelectedDate]; return (e && e.stickerMine) ? e.stickerMine : ''; })(),
@@ -7228,7 +7209,13 @@ diaryDayEntries: (() => {
   if (!dateStr) { const d=new Date(); dateStr=d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
   const day = s.diaries[dateStr || ''];
   if (!day) return [];
-  const tagDefs = {heartbeat:{icon:'💓',label:'心动',color:'#D4536A',bg:'#FEF0F3'},sweet:{icon:'🍬',label:'甜',color:'#E8A04C',bg:'#FFF8ED'},sad:{icon:'🌧',label:'难过',color:'#6B8CAE',bg:'#F0F5FA'},hot:{icon:'🔥',label:'激烈',color:'#C75030',bg:'#FFF0ED'},miss:{icon:'🌙',label:'想你',color:'#8B6EB5',bg:'#F5F0FA'},peace:{icon:'☁️',label:'平静',color:'#7BA88E',bg:'#F0F8F3'}};
+  var tagDefs = {};
+tagDefs['heartbeat'] = {icon:'💓',label:'心动',color:'#D4536A',bg:'#FEF0F3'};
+tagDefs['sweet'] = {icon:'🍬',label:'甜',color:'#E8A04C',bg:'#FFF8ED'};
+tagDefs['sad'] = {icon:'🌧',label:'难过',color:'#6B8CAE',bg:'#F0F5FA'};
+tagDefs['hot'] = {icon:'🔥',label:'激烈',color:'#C75030',bg:'#FFF0ED'};
+tagDefs['miss'] = {icon:'🌙',label:'想你',color:'#8B6EB5',bg:'#F5F0FA'};
+tagDefs['peace'] = {icon:'☁️',label:'平静',color:'#7BA88E',bg:'#F0F8F3'};
 let entries = [];
 if (day.entries && day.entries.length > 0) {
   entries = day.entries.map(e => {
@@ -7269,16 +7256,72 @@ diaryWriteKelBd: s.diaryWriteAuthor==='kel' ? '#5C4033' : '#E0E0E0',
 diaryWriteKelFg: s.diaryWriteAuthor==='kel' ? '#FFF8F0' : '#5C4033',
 diaryWriteSave: () => self.diaryWriteSave(),
 diaryTagOptions: (() => {
-  const allTags = [{id:'heartbeat',icon:'💓',label:'心动'},{id:'sweet',icon:'🍬',label:'甜'},{id:'sad',icon:'🌧',label:'难过'},{id:'hot',icon:'🔥',label:'激烈'},{id:'miss',icon:'🌙',label:'想你'},{id:'peace',icon:'☁️',label:'平静'}];
+  function makeTag(id, icon, label) { return {id:id, icon:icon, label:label}; }
+  const allTags = [
+    makeTag('heartbeat','💓','心动'),
+    makeTag('sweet','🍬','甜'),
+    makeTag('sad','🌧','难过'),
+    makeTag('hot','🔥','激烈'),
+    makeTag('miss','🌙','想你'),
+    makeTag('peace','☁️','平静')
+  ];
   const selected = s.diaryWriteTags || [];
-  return allTags.map(t => ({ icon:t.icon, label:t.label, bg:selected.includes(t.id)?'#5C4033':'#FFF', bd:selected.includes(t.id)?'#5C4033':'#E0E0E0', fg:selected.includes(t.id)?'#FFF8F0':'#5C4033', toggle:()=>{ const tags=[...selected]; const idx=tags.indexOf(t.id); if(idx>=0)tags.splice(idx,1); else tags.push(t.id); self.setState({diaryWriteTags:tags}); } }));
+  return allTags.map(function(t) { 
+    return { 
+      icon:t.icon, label:t.label, 
+      bg:selected.includes(t.id)?'#5C4033':'#FFF', 
+      bd:selected.includes(t.id)?'#5C4033':'#E0E0E0', 
+      fg:selected.includes(t.id)?'#FFF8F0':'#5C4033', 
+      toggle:function(){ 
+        const tags=[].concat(selected); 
+        const idx=tags.indexOf(t.id); 
+        if(idx>=0)tags.splice(idx,1); 
+        else tags.push(t.id); 
+        self.setState({diaryWriteTags:tags}); 
+      } 
+    };
+  });
 })(),
-diaryLockOptions: [{label:'不锁',val:'',},{label:'1h',val:'3600000'},{label:'24h',val:'86400000'},{label:'7天',val:'604800000'}].map(o => ({ label:o.label, bg:(s.diaryWriteLock||'')===o.val?'#5C4033':'#FFF', bd:(s.diaryWriteLock||'')===o.val?'#5C4033':'#E0E0E0', fg:(s.diaryWriteLock||'')===o.val?'#FFF8F0':'#5C4033', pick:()=>self.setState({diaryWriteLock:o.val}) })),
+diaryLockOptions: (function(){
+  var raw = [
+    {label:'不锁',val:''},
+    {label:'1h',val:'3600000'},
+    {label:'24h',val:'86400000'},
+    {label:'7天',val:'604800000'}
+  ];
+  return raw.map(function(o){ 
+    return {
+      label:o.label, 
+      bg:(s.diaryWriteLock||'')===o.val?'#5C4033':'#FFF', 
+      bd:(s.diaryWriteLock||'')===o.val?'#5C4033':'#E0E0E0', 
+      fg:(s.diaryWriteLock||'')===o.val?'#FFF8F0':'#5C4033', 
+      pick:function(){self.setState({diaryWriteLock:o.val});}
+    };
+  });
+})(),
 isDiaryDetailSheet: s.diaryDetailOpen || false,
 closeDiaryDetail: () => self.setState({ diaryDetailOpen: false, diaryDetailId: null }),
 diaryDetailTime: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return ''; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return ''; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e ? (s.diarySelectedDate.replace(/-/g,'.')+' '+e.time) : ''; })(),
 diaryDetailHasTags: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return false; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return false; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e && e.tags && e.tags.length>0; })(),
-diaryDetailTags: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return []; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return []; const e=day.entries.find(x=>x.id===s.diaryDetailId); if(!e||!e.tags) return []; const defs={heartbeat:{icon:'💓',label:'心动',color:'#D4536A',bg:'#FEF0F3'},sweet:{icon:'🍬',label:'甜',color:'#E8A04C',bg:'#FFF8ED'},sad:{icon:'🌧',label:'难过',color:'#6B8CAE',bg:'#F0F5FA'},hot:{icon:'🔥',label:'激烈',color:'#C75030',bg:'#FFF0ED'},miss:{icon:'🌙',label:'想你',color:'#8B6EB5',bg:'#F5F0FA'},peace:{icon:'☁️',label:'平静',color:'#7BA88E',bg:'#F0F8F3'}}; return e.tags.map(t=>defs[t]||{icon:'✨',label:t,color:'#8B7355',bg:'#F5EDE4'}); })(),
+diaryDetailTags: (() => { 
+  if (!s.diaryDetailId || !s.diarySelectedDate) return []; 
+  const day=s.diaries[s.diarySelectedDate]; 
+  if(!day||!day.entries) return []; 
+  const e=day.entries.find(function(x){return x.id===s.diaryDetailId;}); 
+  if(!e||!e.tags) return []; 
+  function def(icon,label,color,bg){return {icon:icon,label:label,color:color,bg:bg};}
+  var defs = {};
+  defs['heartbeat'] = def('💓','心动','#D4536A','#FEF0F3');
+  defs['sweet'] = def('🍬','甜','#E8A04C','#FFF8ED');
+  defs['sad'] = def('🌧','难过','#6B8CAE','#F0F5FA');
+  defs['hot'] = def('🔥','激烈','#C75030','#FFF0ED');
+  defs['miss'] = def('🌙','想你','#8B6EB5','#F5F0FA');
+  defs['peace'] = def('☁️','平静','#7BA88E','#F0F8F3');
+  return e.tags.map(function(t){ 
+    var found = defs[t];
+    return found || def('✨',t,'#8B7355','#F5EDE4');
+  }); 
+})(),
 diaryDetailAuthor: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return ''; if(s.diaryDetailId==='old-mine') return '我'; if(s.diaryDetailId==='old-kel') return 'Kel'; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return ''; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e ? (e.author==='kel'?'Kel':'我') : ''; })(),
 diaryDetailAvatar: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return ''; if(s.diaryDetailId==='old-mine') return s.userAvatar; if(s.diaryDetailId==='old-kel') return s.aiAvatar; const day=s.diaries[s.diarySelectedDate]; if(!day||!day.entries) return ''; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e ? (e.author==='kel'? s.aiAvatar : s.userAvatar) : ''; })(),
 diaryDetailText: (() => { if (!s.diaryDetailId || !s.diarySelectedDate) return ''; const day=s.diaries[s.diarySelectedDate]; if(!day) return ''; if(s.diaryDetailId==='old-mine') return day.mine||''; if(s.diaryDetailId==='old-kel') return day.kel||''; if(!day.entries) return ''; const e=day.entries.find(x=>x.id===s.diaryDetailId); return e ? e.text : ''; })(),
@@ -7784,96 +7827,6 @@ musicTrackList: (self._musicList || []).map((tk, idx) => ({
   del: (e) => { e.stopPropagation(); self._removeMusicTrack(idx); }
 })),
 
-// ===== 清单数据 =====
-checklistOpen: s.checklistOpen,
-checklistItemsRendered: this._getTodoRenderedItems(),
-checklistBrand: this.state.APP_NAME || 'YOUR-APP',
-checklistClerks: (this.state.NAMES?.assistant || 'PARTNER') + ' · ' + (this.state.NAMES?.user || 'YOU'),
-checklistDate: (() => {
-  const d = new Date();
-  const y = d.getFullYear();
-  const m = String(d.getMonth()+1).padStart(2,'0');
-  const day = String(d.getDate()).padStart(2,'0');
-  const wd = ['周日','周一','周二','周三','周四','周五','周六'][d.getDay()];
-  return `${y} / ${m} / ${day} · ${wd}`;
-})(),
-checklistNow: (() => {
-  const d = new Date();
-  return String(d.getHours()).padStart(2,'0') + ':' + String(d.getMinutes()).padStart(2,'0');
-})(),
-checklistSerial: (() => {
-  const d = new Date();
-  const y = String(d.getFullYear()).slice(2);
-  const m = String(d.getMonth()+1).padStart(2,'0');
-  const day = String(d.getDate()).padStart(2,'0');
-  const total = (s.todos || []).length;
-  return `#${y}-${m}-${day}-${String(total).padStart(3,'0')}`;
-})(),
-checklistTotal: (s.todos || []).length,
-checklistDash: '─ '.repeat(18).trim(),
-checklistSubtotal: (s.todos || []).length + ' 项',
-checklistDone: (s.todos || []).filter(t => t.done).length + ' 项',
-checklistUndone: (s.todos || []).filter(t => !t.done).length + ' 项',
-checklistProgressBar: (() => {
-  const total = (s.todos || []).length;
-  const done = (s.todos || []).filter(t => t.done).length;
-  const pct = total ? done/total : 0;
-  const w = 18;
-  const filled = Math.round(pct * w);
-  return '█'.repeat(filled) + '░'.repeat(w - filled);
-})(),
-checklistProgressPct: (() => {
-  const total = (s.todos || []).length;
-  const done = (s.todos || []).filter(t => t.done).length;
-  return total ? Math.round(done/total * 100) + '%' : '0%';
-})(),
-checklistMidnight: (() => {
-  const d = new Date();
-  const minsLeft = (24 - d.getHours()) * 60 - d.getMinutes();
-  return String(Math.floor(minsLeft/60)).padStart(2,'0') + ':' + String(minsLeft%60).padStart(2,'0') + ' 后';
-})(),
-checklistFoot: `今天也辛苦了，${this.state.NAMES?.user || 'YOU'}。\n零点之后，未结清的会自动清零。`,
-checklistBarcodeSerial: (() => {
-  const d = new Date();
-  const y = String(d.getFullYear()).slice(2);
-  const m = String(d.getMonth()+1).padStart(2,'0');
-  const day = String(d.getDate()).padStart(2,'0');
-  const total = (s.todos || []).length;
-  return `${y} ${m} ${day} ${String(total).padStart(3,'0')}`;
-})(),
-checklistNewKeydown: (e) => {
-  if (e.key === 'Enter' && !e.shiftKey) {
-    e.preventDefault();
-    const el = document.getElementById('checklist-new-input');
-    if (el) {
-      const text = el.innerText.trim();
-      if (text) {
-        const newTodo = {
-          id: genId(),
-          body: text,
-          is_fixed: true,
-          done: false,
-          done_at: null,
-          trigger_at: null,
-          notified: false,
-          created_by: 'user',
-          created_at: Date.now(),
-          updated_at: Date.now()
-        };
-        this.setState({ todos: [...this.state.todos, newTodo] });
-        this.persist();
-        el.innerText = '';
-        this.show('已添加');
-      }
-    }
-  }
-},
-navChecklist: () => {
-  this.setState({ checklistOpen: true, plus: false, profile: false, drawer: false });
-},
-closeChecklist: () => {
-  this.setState({ checklistOpen: false });
-},
 };
 }
 }
