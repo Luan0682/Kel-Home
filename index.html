@@ -145,6 +145,24 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 .photostack-dot.active {
   background: #fff;
 }
+@keyframes sexPulse {
+  0%,100% { box-shadow: 0 0 0 0 rgba(255,77,109,0); }
+  50% { box-shadow: 0 0 14px 2px rgba(255,77,109,.35); }
+}
+@keyframes sexHeartBeat {
+  0%,100% { transform: scale(1); }
+  40% { transform: scale(1.12); }
+  60% { transform: scale(0.96); }
+}
+.sex-day-glow {
+  animation: sexPulse 2.4s ease-in-out infinite;
+  background: rgba(255,77,109,0.12) !important;
+}
+.sex-heart-pop {
+  animation: sexHeartBeat 1.8s ease-in-out infinite;
+  filter: drop-shadow(0 0 6px rgba(255,77,109,.7));
+}
+
 </style>
 </helmet>
 
@@ -190,12 +208,6 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 </div>
 
-<!-- Settings (Bottom) -->
-<div class="nav-icon {{ navSettingsClass }}" onClick="{{ navSettings }}" style="flex:none;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="var(--text-secondary, #68544B)" stroke-width="1.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="var(--text-secondary, #68544B)" stroke-width="1.5" stroke-linecap="round"/></svg>
-</div>
-</div>
-
 <!-- ===== MAIN CONTENT ===== -->
 <div style="flex:1;min-width:0;position:relative;">
 
@@ -225,7 +237,8 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </div>
 
 <div style="display:flex;align-items:center;gap:8px;">
-<button onClick="{{ togglePlus }}" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<button onClick="{{ openChatSettings }}"
+ style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="1.2" fill="var(--text-secondary, #48453E)"/><circle cx="12" cy="12" r="1.2" fill="var(--text-secondary, #48453E)"/><circle cx="12" cy="18" r="1.2" fill="var(--text-secondary, #48453E)"/></svg>
 </button>
 </div>
@@ -289,27 +302,18 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <sc-if value="{{ m.hasImages }}" hint-placeholder-val="{{ false }}">
   <div style="margin-bottom:6px;display:flex;justify-content:{{ m.imgJustify }};overflow:visible;">
     <sc-if value="{{ m.images.length === 1 }}" hint-placeholder-val="{{ true }}">
-      <!-- 单张图片 -->
       <div style="position:relative;width:160px;height:160px;border-radius:14px;overflow:hidden;cursor:pointer;" onClick="{{ m.previewImage }}" onContextMenu="{{ m.longPressImage }}">
         <img src="{{ m.images[0].preview }}" style="width:100%;height:100%;object-fit:cover;" alt="attachment">
       </div>
     </sc-if>
     <sc-if value="{{ m.images.length > 1 }}" hint-placeholder-val="{{ false }}">
-  <!-- 多张图片：PhotoStack -->
-  <div
-    class="photostack"
-    id="photostack-{{ m.id }}"
-    data-msg-id="{{ m.id }}"
-    style="width:160px;height:200px;border-radius:14px;overflow:visible;cursor:pointer;position:relative;flex:none;"
-  >
-    <!-- 降级占位：JS 失败时至少能看见第一张 -->
-    <img
-      src="{{ m.images[0].preview }}"
-      style="width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;"
-      alt=""
-    >
+      <div class="photostack" id="photostack-{{ m.id }}" data-msg-id="{{ m.id }}" style="width:160px;height:200px;border-radius:14px;overflow:visible;cursor:pointer;position:relative;flex:none;">
+        <img src="{{ m.images[0].preview }}" style="width:100%;height:100%;object-fit:cover;display:block;border-radius:14px;" alt="">
+      </div>
+    </sc-if>
   </div>
 </sc-if>
+
 
 <!-- message bubble -->
 <sc-if value="{{ m.showNormal }}" hint-placeholder-val="{{ true }}">
@@ -752,6 +756,30 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
 </div>
 </div>
+<!-- 聊天相关（原更多菜单） -->
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:18px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
+  <div onClick="{{ openPromptSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 3c-4.97 0-9 3.58-9 8 0 1.5.5 2.9 1.3 4.1L3 21l5.5-1.5C10 20.2 11 20.5 12 20.5c4.97 0 9-3.58 9-8s-4.03-8-9-8Z" stroke="#68544B" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 11h.01M12 11h.01M15 11h.01" stroke="#68544B" stroke-width="2" stroke-linecap="round"/></svg>
+      <div>
+        <div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">Prompt 模板</div>
+        <div style="font-size:11px;color:#B8B3A8;margin-top:2px;">{{ promptCount }}</div>
+      </div>
+    </div>
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+  </div>
+  <div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
+  <div onClick="{{ cycleMemoryCount }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+    <div style="display:flex;align-items:center;gap:14px;">
+      <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M12 4v16M8 6c0 3 4 4 4 8M16 6c0 3-4 4-4 8" stroke="#68544B" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="20" r="1" fill="#68544B"/></svg>
+      <div>
+        <div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">Memory count</div>
+        <div style="font-size:11px;color:#B8B3A8;margin-top:2px;">读取历史条数</div>
+      </div>
+    </div>
+    <span style="font-size:13px;color:#9A958B;">{{ memoryCountLabel }}</span>
+  </div>
+</div>
 
 <!-- 错误日志 -->
 <div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:18px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
@@ -1171,17 +1199,12 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <!-- 顶部状态 -->
 <div style="flex:none;padding:16px 20px 0;">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
   <div style="font-size:20px;font-weight:700;color:#5C4033;">日历</div>
   <sc-if value="{{ !sexCalendarOpen }}" hint-placeholder-val="{{ true }}">
     <button onClick="{{ openSexPasswordPrompt }}" style="width:36px;height:36px;border:none;background:rgba(255,255,255,0.55);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;opacity:0.85;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#F4A7B9" stroke-width="1.5" stroke-linejoin="round" fill="rgba(244,167,185,0.15)"/></svg>
     </button>
   </sc-if>
-</div>
-<button onClick="{{ periodOpenSettings }}" style="width:30px;height:30px;border-radius:50%;background:rgba(255,255,255,0.7);border:1px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#5C4033" stroke-width="1.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="#5C4033" stroke-width="1.5" stroke-linecap="round"/></svg>
-</button>
 </div>
 
 <!-- 经期状态条 -->
@@ -1311,14 +1334,15 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- 做爱日历全屏视图 -->
 <sc-if value="{{ sexCalendarOpen }}" hint-placeholder-val="{{ false }}">
-<div style="position:fixed;inset:0;z-index:400;background:linear-gradient(135deg, #2D1B2E 0%, #1A0A1C 100%);display:flex;flex-direction:column;animation:fadeIn .4s ease both;overflow:hidden;">
+<div style="position:fixed;inset:0;z-index:400;background:radial-gradient(ellipse at top, #3A1A32 0%, #1A0A18 55%, #12060F 100%)
+;display:flex;flex-direction:column;animation:fadeIn .4s ease both;overflow:hidden;">
 
 <!-- 顶部：关闭按钮 + 标题 -->
 <div style="flex:none;padding:env(safe-area-inset-top,20px) 20px 16px;display:flex;align-items:center;justify-content:space-between;">
 <button onClick="{{ closeSexCalendar }}" style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);display:flex;align-items:center;justify-content:center;cursor:pointer;">
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#FFF0F0" stroke-width="1.8" stroke-linecap="round"/></svg>
 </button>
-<div style="font-size:16px;font-weight:600;color:#FFF0F0;letter-spacing:1px;">♥</div>
+<div style="font-size:12px;font-weight:500;color:rgba(255,240,240,0.75);letter-spacing:2px;">本月被标记的夜晚 · {{ sexMonthCount }}</div>
 <div style="width:32px;"></div>
 </div>
 
@@ -1349,20 +1373,17 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <!-- 日期网格 -->
 <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">
 <sc-for list="{{ sexCalendarCells }}" as="sc" hint-placeholder-count="35">
-<div onClick="{{ sc.tap }}" onContextMenu="{{ sc.longPress }}" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:10px;background:{{ sc.bg }};cursor:{{ sc.cursor }};position:relative;min-height:40px;border:{{ sc.border }};">
-<!-- 底部经期/排卵标记 -->
-<sc-if value="{{ sc.hasPeriodMark }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;bottom:2px;width:80%;height:4px;border-radius:2px;background:{{ sc.periodMarkColor }};opacity:0.6;"></div>
-</sc-if>
-<span style="font-size:13px;font-weight:{{ sc.fw }};color:{{ sc.color }};position:relative;z-index:1;">{{ sc.day }}</span>
-<!-- 爱心标记（右上角） -->
-<sc-if value="{{ sc.hasSex }}" hint-placeholder-val="{{ false }}">
-<span style="position:absolute;top:2px;right:2px;font-size:12px;color:#FF4D6D;filter:drop-shadow(0 0 4px rgba(255,77,109,0.6));z-index:2;">♥</span>
-</sc-if>
-<!-- 彩蛋：排卵日做爱显示小星星 -->
-<sc-if value="{{ sc.hasOvulationSex }}" hint-placeholder-val="{{ false }}">
-<span style="position:absolute;top:2px;left:2px;font-size:10px;opacity:0.7;">✨</span>
-</sc-if>
+<div onClick="{{ sc.tap }}" onContextMenu="{{ sc.longPress }}" class="{{ sc.dayClass }}" style="aspect-ratio:1;display:flex;flex-direction:column;align-items:center;justify-content:center;border-radius:12px;background:{{ sc.bg }};cursor:{{ sc.cursor }};position:relative;min-height:40px;border:{{ sc.border }};">
+  <sc-if value="{{ sc.hasPeriodMark }}" hint-placeholder-val="{{ false }}">
+    <div style="position:absolute;bottom:2px;width:80%;height:4px;border-radius:2px;background:{{ sc.periodMarkColor }};opacity:0.6;"></div>
+  </sc-if>
+  <span style="font-size:13px;font-weight:{{ sc.fw }};color:{{ sc.color }};position:relative;z-index:1;">{{ sc.day }}</span>
+  <sc-if value="{{ sc.hasSex }}" hint-placeholder-val="{{ false }}">
+    <span class="{{ sc.heartClass }}" style="position:absolute;top:2px;right:2px;font-size:13px;color:#FF4D6D;z-index:2;">♥</span>
+  </sc-if>
+  <sc-if value="{{ sc.hasOvulationSex }}" hint-placeholder-val="{{ false }}">
+    <span style="position:absolute;top:2px;left:2px;font-size:10px;opacity:0.7;">✨</span>
+  </sc-if>
 </div>
 </sc-for>
 </div>
@@ -1442,6 +1463,41 @@ input, textarea { user-select:text; -webkit-user-select:text; }
         <button onClick="{{ sexRoundsPlus }}" style="width:40px;height:40px;border:none;background:transparent;color:#FF8FA3;font-size:20px;cursor:pointer;">+</button>
       </div>
     </div>
+    <!-- 强度 -->
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:8px;">强度 · {{ sexEditIntensity }}/5</div>
+      <div style="display:flex;gap:8px;">
+        <sc-for list="{{ sexIntensityDots }}" as="dot" hint-placeholder-count="5">
+          <button onClick="{{ dot.pick }}" style="flex:1;height:10px;border:none;border-radius:99px;cursor:pointer;background:{{ dot.bg }};box-shadow:{{ dot.glow }};padding:0;"></button>
+        </sc-for>
+      </div>
+    </div>
+
+    <!-- 谁主动 + 中出 -->
+    <div style="margin-bottom:14px;display:flex;gap:10px;align-items:stretch;">
+      <div style="flex:1;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:8px;">谁主动</div>
+        <div style="display:flex;gap:4px;">
+          <sc-for list="{{ sexInitiatorOptions }}" as="ini" hint-placeholder-count="3">
+            <button onClick="{{ ini.pick }}" style="flex:1;border:1px solid {{ ini.bd }};background:{{ ini.bg }};color:{{ ini.fg }};border-radius:10px;padding:8px 0;font-size:11px;font-family:inherit;cursor:pointer;">{{ ini.label }}</button>
+          </sc-for>
+        </div>
+      </div>
+      <div style="width:108px;">
+        <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:8px;">中出</div>
+        <button onClick="{{ toggleSexCreampie }}" style="width:100%;border:1px solid {{ sexCreampieBd }};background:{{ sexCreampieBg }};color:{{ sexCreampieFg }};border-radius:12px;padding:8px 0;font-size:12px;font-family:inherit;cursor:pointer;box-shadow:{{ sexCreampieGlow }};">{{ sexCreampieLabel }}</button>
+      </div>
+    </div>
+
+    <!-- 事后状态 -->
+    <div style="margin-bottom:14px;">
+      <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:8px;">事后还…</div>
+      <div style="display:flex;flex-wrap:wrap;gap:6px;">
+        <sc-for list="{{ sexAfterOptions }}" as="af" hint-placeholder-count="6">
+          <button onClick="{{ af.toggle }}" style="border:1px solid {{ af.bd }};background:{{ af.bg }};color:{{ af.fg }};border-radius:999px;padding:6px 11px;font-size:11px;font-family:inherit;cursor:pointer;">{{ af.label }}</button>
+        </sc-for>
+      </div>
+    </div>
 
     <!-- 感想 -->
     <div style="margin-bottom:12px;">
@@ -1506,6 +1562,8 @@ input, textarea { user-select:text; -webkit-user-select:text; }
     <span style="font-size:10px;color:{{ periodTabMoreColor }};">更多</span>
   </button>
 </div>
+</div>
+</sc-if>
 
 <!-- ========== REGEX PAGE ========== -->
 <sc-if value="{{ isRegexPage }}" hint-placeholder-val="{{ false }}">
@@ -1628,43 +1686,6 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div style="padding:12px 14px;">
 <div style="font-size:11px;color:#B8B3A8;margin-bottom:6px;">Style 内容</div>
 <textarea value="{{ styleContent }}" onInput="{{ styleContentChange }}" placeholder="这里写语气、文风、回复习惯，会随聊天带进 system。" rows="7" style="display:block;width:100%;border:none;background:transparent;resize:vertical;outline:none;font-family:inherit;font-size:14px;line-height:1.55;color:var(--text-primary, #1A1815);"></textarea>
-</div>
-</div>
-</div>
-</div>
-</sc-if>
-
-<!-- plus sheet -->
-<sc-if value="{{ plusOpen }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;inset:0;z-index:200;">
-<div onClick="{{ togglePlus }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
-<div style="position:absolute;bottom:0;left:0;right:0;background:#EDEAE3;border-radius:16px 16px 0 0;padding:12px 0 30px;animation:slideUp .25s ease both;">
-<div style="width:36px;height:5px;border-radius:3px;background:#CFCAC1;margin:0 auto 14px;"></div>
-<div style="display:flex;align-items:center;justify-content:space-between;padding:0 20px 16px;">
-<button onClick="{{ togglePlus }}" style="width:34px;height:34px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
-</button>
-<span style="font-size:15px;font-weight:600;color:var(--text-primary, #1A1815);">Options</span>
-<span style="width:34px;"></span>
-</div>
-<div style="margin:0 16px;background:var(--bg-card, #FFF);border-radius:16px;overflow:hidden;">
-<div onClick="{{ openPromptSheet }}" style="padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:12px;">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 3c-4.97 0-9 3.58-9 8 0 1.5.5 2.9 1.3 4.1L3 21l5.5-1.5C10 20.2 11 20.5 12 20.5c4.97 0 9-3.58 9-8s-4.03-8-9-8Z" stroke="#48453E" stroke-width="1.5" stroke-linejoin="round"/><path d="M9 11h.01M12 11h.01M15 11h.01" stroke="#48453E" stroke-width="2" stroke-linecap="round"/></svg>
-<span style="font-size:14px;font-weight:500;color:var(--text-primary, #1A1815);">Prompt 模板</span>
-</div>
-<div style="display:flex;align-items:center;gap:6px;">
-<span style="font-size:13px;color:#9A958B;">{{ promptCount }}</span>
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-</div>
-<div style="height:1px;background:#ECE8DF;margin:0 16px;"></div>
-<div onClick="{{ cycleMemoryCount }}" style="padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:12px;">
-<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 4v16M8 6c0 3 4 4 4 8M16 6c0 3-4 4-4 8" stroke="#48453E" stroke-width="1.5" stroke-linecap="round"/><circle cx="12" cy="20" r="1" fill="#48453E"/></svg>
-<span style="font-size:14px;font-weight:500;color:var(--text-primary, #1A1815);">Memory count</span>
-</div>
-<span style="font-size:13px;color:#9A958B;">{{ memoryCountLabel }}</span>
 </div>
 </div>
 </div>
@@ -2815,6 +2836,10 @@ sexEditHisNote: '',
 sexEditTags: [],
 sexCustomTags: JSON.parse(localStorage.getItem('kel-sex-tags') || '[]'),
 sexTagDraft: '',
+sexEditIntensity: 3,
+sexEditCreampie: false,
+sexEditInitiator: 'both',
+sexEditAfter: [],
 todoEditId: null,
 todoEditBody: '',
 todoEditAt: '',
@@ -3345,6 +3370,7 @@ if (c.scrollHeight > c.clientHeight + 100) {
 c.scrollTop = c.scrollHeight + 9999;
 }
 }
+this.initPhotoStack && this.initPhotoStack();
 }, 300);
 }
 
@@ -3370,7 +3396,6 @@ get currentPetSize() { return this.petSizes[this.state.petSizeIdx] || 48; }
 get activeAnniv() {
 return this.state.anniversaries[this.state.activeAnnivIdx] || this.state.anniversaries[0] || null;
 }
-setTimeout(() => this.initPhotoStack(), 120);
 
 persist() {
 const s = this.state;
@@ -5570,6 +5595,10 @@ for (let j = i + 1; j < msgs.length; j++) {
 if (msgs[j].role === 'assistant') { isLastAi = false; break; }
 }
 }
+if (m.images && m.images.length > 1 && m.id) {
+  if (!self._photoStackImages) self._photoStackImages = {};
+  self._photoStackImages[m.id] = m.images.map(img => img.preview || img).filter(Boolean);
+}
 
 // 查找思维链
 let thinkingContent = '';
@@ -5633,7 +5662,6 @@ tsAlign: isUser ? 'flex-end' : 'flex-start',
 hasImages: !!(m.images && m.images.length > 0),
 images: m.images || [],
 // 可以删掉 imagesJson，不再需要
-imgJustify: isUser ? 'flex-end' : 'flex-start',
 imageUrl: m.imageUrl || '',
 imgJustify: isUser ? 'flex-end' : 'flex-start',
 previewImage: () => {
@@ -6429,11 +6457,52 @@ sexCalendarCells: (() => {
   for(let d=1;d<=daysInMonth;d++){
     const ds=year+'-'+String(month+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
     const isT=ds===todayStr;const isPeriod=periodDays.has(ds);const isOv=ovulationDays.has(ds);const hasSex=!!sexData[ds];
-    cells.push({day:String(d),bg:'rgba(255,255,255,0.03)',color:'#FFF0F0',fw:isT?'700':'400',cursor:'pointer',border:isT?'1px solid #FFD700':'none',hasPeriodMark:isPeriod||isOv,periodMarkColor:isPeriod?'#8B0000':'#BF5FFF',hasSex:hasSex,hasOvulationSex:hasSex&&isOv,
-    tap:()=>{self.setState({sexEditOpen:true,sexEditDate:ds,sexTagDraft: '',
-sexEditTime:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].time:'晚'),sexEditRounds:String((sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].rounds:1)),sexEditHerNote:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].herNote:''),sexEditHisNote:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].hisNote:''),sexEditTags:(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0]?sexData[ds].sessions[0].tags||[]:[])});},
-    longPress:(e)=>{e.preventDefault();if(sexData[ds]){if(confirm('删除 '+ds+' 的记录？')){const nd={...sexData};delete nd[ds];self.setState({sexData:nd});localStorage.setItem('_cl_data',JSON.stringify(nd));self.show('已删除');}}else{self.setState({sexEditOpen:true,sexEditDate:ds,sexEditTime:'晚',sexEditRounds:'1',sexEditHerNote:'',sexEditHisNote:'',sexTagDraft: '',
-sexEditTags:[]});}}});
+    cells.push({day:String(d),bg:hasSex?'rgba(255,77,109,0.14)':'rgba(255,255,255,0.03)',color:'#FFF0F0',fw:isT?'700':'400',cursor:'pointer',border:isT?'1px solid #E8B4B8':(hasSex?'1px solid rgba(255,77,109,0.25)':'none'),hasPeriodMark:isPeriod||isOv,periodMarkColor:isPeriod?'#8B0000':'#BF5FFF',hasSex:hasSex,hasOvulationSex:hasSex&&isOv,dayClass:hasSex?'sex-day-glow':'',heartClass:hasSex?'sex-heart-pop':'',
+ tap:()=>{
+      const sess=(sexData[ds]&&sexData[ds].sessions&&sexData[ds].sessions[0])?sexData[ds].sessions[0]:null;
+      self.setState({
+        sexEditOpen:true,
+        sexEditDate:ds,
+        sexTagDraft:'',
+        sexEditTime:sess?sess.time:'晚',
+        sexEditRounds:String(sess?sess.rounds:1),
+        sexEditHerNote:sess?sess.herNote:'',
+        sexEditHisNote:sess?sess.hisNote:'',
+        sexEditTags:sess&&sess.tags?sess.tags:[],
+        sexEditIntensity:(sess&&sess.intensity)||3,
+        sexEditCreampie:!!(sess&&sess.creampie),
+        sexEditInitiator:(sess&&sess.initiator)||'both',
+        sexEditAfter:(sess&&sess.after)||[]
+      });
+    },
+longPress:(e)=>{
+      e.preventDefault();
+      if(sexData[ds]){
+        if(confirm('删除 '+ds+' 的记录？')){
+          const nd={...sexData};
+          delete nd[ds];
+          self.setState({sexData:nd});
+          localStorage.setItem('_cl_data',JSON.stringify(nd));
+          self.show('已删除');
+        }
+      }else{
+        self.setState({
+          sexEditOpen:true,
+          sexEditDate:ds,
+          sexEditTime:'晚',
+          sexEditRounds:'1',
+          sexEditHerNote:'',
+          sexEditHisNote:'',
+          sexTagDraft:'',
+          sexEditTags:[],
+          sexEditIntensity:3,
+          sexEditCreampie:false,
+          sexEditInitiator:'both',
+          sexEditAfter:[]
+        });
+      }
+    }
+    });
   }
   return cells;
 })(),
@@ -6472,6 +6541,55 @@ sexRoundsPlus: () => {
   const n = Math.min(99, (parseInt(s.sexEditRounds, 10) || 1) + 1);
   self.setState({ sexEditRounds: String(n) });
 },
+sexEditIntensity: s.sexEditIntensity || 3,
+sexIntensityDots: [1,2,3,4,5].map(n => {
+  const on = (s.sexEditIntensity || 3) >= n;
+  return {
+    bg: on ? ('rgba(255,77,109,' + (0.35 + n * 0.12) + ')') : 'rgba(255,255,255,0.08)',
+    glow: on ? '0 0 8px rgba(255,77,109,0.35)' : 'none',
+    pick: () => self.setState({ sexEditIntensity: n })
+  };
+}),
+sexInitiatorOptions: [
+  { id:'her', label:'她' },
+  { id:'me', label:'我' },
+  { id:'both', label:'互相' }
+].map(x => {
+  const on = (s.sexEditInitiator || 'both') === x.id;
+  return {
+    label: x.label,
+    bg: on ? 'rgba(255,77,109,0.22)' : 'rgba(255,255,255,0.05)',
+    bd: on ? 'rgba(255,77,109,0.5)' : 'rgba(255,255,255,0.12)',
+    fg: on ? '#FF8FA3' : 'rgba(255,255,255,0.55)',
+    pick: () => self.setState({ sexEditInitiator: x.id })
+  };
+}),
+sexCreampieBd: s.sexEditCreampie ? 'rgba(255,77,109,0.55)' : 'rgba(255,255,255,0.14)',
+sexCreampieBg: s.sexEditCreampie ? 'rgba(255,77,109,0.25)' : 'rgba(255,255,255,0.05)',
+sexCreampieFg: s.sexEditCreampie ? '#FF8FA3' : 'rgba(255,255,255,0.5)',
+sexCreampieGlow: s.sexEditCreampie ? '0 0 12px rgba(255,77,109,0.35)' : 'none',
+sexCreampieLabel: s.sexEditCreampie ? '♥ 灌满了' : '没有',
+toggleSexCreampie: () => self.setState({ sexEditCreampie: !s.sexEditCreampie }),
+sexAfterOptions: (() => {
+  const all = ['还在夹着','腿软','睡着了','哭过','还在抖','咬着被单'];
+  const selected = s.sexEditAfter || [];
+  return all.map(t => {
+    const on = selected.includes(t);
+    return {
+      label: t,
+      bg: on ? 'rgba(255,77,109,0.2)' : 'rgba(255,255,255,0.05)',
+      bd: on ? 'rgba(255,77,109,0.45)' : 'rgba(255,255,255,0.12)',
+      fg: on ? '#FF8FA3' : 'rgba(255,255,255,0.55)',
+      toggle: () => {
+        const arr = [...selected];
+        const i = arr.indexOf(t);
+        if (i >= 0) arr.splice(i,1); else arr.push(t);
+        self.setState({ sexEditAfter: arr });
+      }
+    };
+  });
+})(),
+
 sexTagOptions: (() => {
   const pool = s.sexCustomTags || [];
   const selected = s.sexEditTags || [];
@@ -6502,7 +6620,26 @@ sexTagOptions: (() => {
 
 sexEditCancel: ()=>self.setState({sexEditOpen:false}),
 sexEditDelete: ()=>{const ds=s.sexEditDate;if(!ds)return;const sexData={...s.sexData};delete sexData[ds];self.setState({sexData,sexEditOpen:false});localStorage.setItem('_cl_data',JSON.stringify(sexData));self.show('已删除');},
-sexEditSave: ()=>{const ds=s.sexEditDate;if(!ds)return;const session={time:s.sexEditTime||'晚',rounds:parseInt(s.sexEditRounds)||1,herNote:s.sexEditHerNote||'',hisNote:s.sexEditHisNote||'',tags:s.sexEditTags||[]};const sexData={...s.sexData};sexData[ds]={sessions:[session]};self.setState({sexData,sexEditOpen:false});localStorage.setItem('_cl_data',JSON.stringify(sexData));self.show('♥ 已记录');},
+sexEditSave: ()=>{
+  const ds=s.sexEditDate;if(!ds)return;
+  const session={
+    time:s.sexEditTime||'晚',
+    rounds:parseInt(s.sexEditRounds)||1,
+    herNote:s.sexEditHerNote||'',
+    hisNote:s.sexEditHisNote||'',
+    tags:s.sexEditTags||[],
+    intensity: parseInt(s.sexEditIntensity,10)||3,
+    creampie: !!s.sexEditCreampie,
+    initiator: s.sexEditInitiator || 'both',
+    after: s.sexEditAfter || []
+  };
+  const sexData={...s.sexData};
+  sexData[ds]={sessions:[session]};
+  self.setState({sexData,sexEditOpen:false});
+  localStorage.setItem('_cl_data',JSON.stringify(sexData));
+  self.show(session.creampie ? '已经留在你里面了 ♡' : '记下来了 ♡');
+},
+
 periodTabTodo: () => self.setState({ periodSubTab: 'todo' }),
 periodTabAnniv: () => self.setState({ sheet: 'anniv' }),
 isTodoSubPage: s.tab === 'period' && s.periodSubTab === 'todo',
@@ -6854,7 +6991,7 @@ petPosStyle: s.tab === 'chat'
 soundStatus: s.soundEnabled ? 'On' : 'Off',
 memoryCountLabel: s.memoryCount + ' 条',
 drawerOpen: s.drawer,
-plusOpen: s.plus,
+plusOpen: false,
 profileOpen: s.profile,
 styleOpen: s.style,
 sheetOpen: !!s.sheet && s.sheet !== 'wbEditor' && s.sheet !== 'memEditor' && s.sheet !== 'anniv' && s.sheet !== 'pledges' && s.sheet !== 'regexEditor',
@@ -7306,7 +7443,7 @@ self.setState({ deleteConfirmType: '', deleteConfirmId: null });
 
 // ======== ACTIONS ========
 toggleDrawer: () => self.setState(v => ({ drawer: !v.drawer })),
-togglePlus: () => self.setState(v => ({ plus: !v.plus })),
+openChatSettings: () => self.setState({ tab: 'settings', plus: false, drawer: false }),
 clearQuote: () => self.setState({ quotedMsg: null }),
 toggleProfile: () => self.setState(v => ({ profile: !v.profile, drawer: false })),
 closeImagePreview: () => self.setState({ imagePreviewOpen: false, imagePreviewUrl: '' }),
