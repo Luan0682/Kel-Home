@@ -172,7 +172,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- Sidebar Header -->
 <div style="width:100%;padding:24px 20px 20px;border-bottom:1px solid rgba(104,84,75,.06);display:flex;flex-direction:column;align-items:center;">
-<div onClick="{{ openProfileCardAndClose }}" style="width:56px;height:56px;border-radius:50%;overflow:hidden;cursor:pointer;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;margin-bottom:10px;">
+<div onClick="{{ openProfileCardAndClose }}" style="width:64px;height:64px;border-radius:50%;overflow:hidden;cursor:pointer;border:2px solid var(--bubble-ai, #D7EBE4);flex:none;margin-bottom:10px;">
 <sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
 <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><div style="width:100%;height:100%;background:var(--bubble-ai, #D7EBE4);display:flex;align-items:center;justify-content:center;"><svg width="24" height="24" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="var(--bubble-user, #59483F)" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round"/></svg></div></sc-if>
 </div>
@@ -231,7 +231,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- ========== CHAT ========== -->
 <sc-if value="{{ isChat }}" hint-placeholder-val="{{ true }}">
-<div style="position:absolute;inset:0;display:flex;flex-direction:column;">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;width:100%;">
 
 <!-- multi-select header -->
 <sc-if value="{{ multiSelectMode }}" hint-placeholder-val="{{ false }}">
@@ -245,7 +245,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <!-- header -->
 <div style="flex:none;padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:9px;">
 <div style="display:flex;align-items:center;gap:8px;">
-<div onClick="{{ openSidebar }}" style="font-size:15px;font-weight:600;color:var(--text-primary, #1A1815);cursor:pointer;letter-spacing:0.5px;margin-right:4px;white-space:nowrap;">Chat</div>
+<div onClick="{{ openSidebar }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:var(--text-primary, #1A1815);cursor:pointer;white-space:nowrap;">Chat</div>
 <button onClick="{{ openStyle }}" style="height:36px;display:flex;align-items:center;gap:6px;background:var(--bg-card, #FFF);border:none;border-radius:18px;padding:0 14px;cursor:pointer;font-family:inherit;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);min-width:0;max-width:160px;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
 <span style="font-size:13px;font-weight:600;color:var(--text-bold, #3A362F);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ activeStyle }}</span>
@@ -490,11 +490,12 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- ========== CHAT LIST PAGE ========== -->
 <sc-if value="{{ isChatList }}" hint-placeholder-val="{{ false }}">
-<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 20px 24px;">
+<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 20px 24px;width:100%;">
 
 <!-- 顶部用户信息 -->
-<div style="padding:20px 0 16px;display:flex;align-items:center;gap:12px;">
-<div onClick="{{ openSidebar }}" style="font-size:20px;font-weight:600;color:var(--text-primary, #1A1815);cursor:pointer;letter-spacing:0.5px;margin-right:4px;">Chats</div>
+<div style="padding:20px 0 16px;display:flex;flex-direction:column;gap:12px;">
+<div onClick="{{ openSidebar }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:var(--text-primary, #1A1815);cursor:pointer;">Chats</div>
+<div style="display:flex;align-items:center;gap:12px;">
 <div onClick="{{ pickUserAvatar }}" style="width:44px;height:44px;border-radius:50%;overflow:hidden;background:#ECEAE4;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #E7E3DA;">
 <sc-if value="{{ hasUserAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ userAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
 <sc-if value="{{ !hasUserAvatar }}" hint-placeholder-val="{{ true }}"><svg width="20" height="20" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="9" r="3.5" stroke="#9A958B" stroke-width="1.5"/><path d="M5.5 19.5c0-3.5 3-6 6.5-6s6.5 2.5 6.5 6" stroke="#9A958B" stroke-width="1.5" stroke-linecap="round"/></svg></sc-if>
@@ -504,6 +505,10 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div style="font-size:11px;color:#B8B3A8;margin-top:2px;">{{ chatListCount }} 段对话</div>
 </div>
 <button onClick="{{ newChat }}" style="width:36px;height:36px;border-radius:50%;background:#1A1815;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#F5F3EE" stroke-width="2" stroke-linecap="round"/></svg>
+</button>
+</div>
+</div>
 <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M12 5v14M5 12h14" stroke="#F5F3EE" stroke-width="2" stroke-linecap="round"/></svg>
 </button>
 </div>
@@ -584,27 +589,27 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- ========== HOME ========== -->
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
-<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 24px 24px;background:var(--bg-main, #F5F3EE);">
+<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 24px 24px;background:var(--bg-main, #F5F3EE);width:100%;">
 
 <!-- 在一起天数（左对齐，华丽字体，不受自定义字体影响） -->
 <div style="padding:36px 0 6px;">
 <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-<span onClick="{{ openSidebar }}" style="font-family:-apple-system,sans-serif;font-size:12px;color:var(--bubble-user, #59483F);opacity:.6;letter-spacing:1px;cursor:pointer;">Kel & Yin</span>
+<span onClick="{{ openSidebar }}" style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:13px;color:var(--bubble-user, #59483F);letter-spacing:2px;cursor:pointer;font-weight:400;">Kel & Yin</span>
 </div>
 <div style="display:flex;align-items:baseline;gap:6px;">
-<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:52px;font-weight:300;color:var(--bubble-user, #59483F);letter-spacing:-0.03em;line-height:1;">{{ togetherDays }}</span>
-<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:15px;font-weight:400;color:var(--bubble-user, #59483F);opacity:.55;">days together</span>
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:60px;font-weight:400;color:var(--bubble-user, #59483F);letter-spacing:-0.03em;line-height:1;">{{ togetherDays }}</span>
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:16px;font-weight:400;color:var(--bubble-user, #59483F);opacity:.65;">days together</span>
 </div>
-<div style="font-family:-apple-system,sans-serif;font-size:11px;color:var(--bubble-user, #59483F);opacity:.35;margin-top:4px;">since 2026.06.30</div>
+<div style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:12px;color:var(--bubble-user, #59483F);opacity:.45;margin-top:4px;">since 2026.06.30</div>
 </div>
 
 <!-- 总消息数 -->
 <div style="padding:0 0 28px;">
 <div style="display:flex;align-items:baseline;gap:6px;">
-<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:36px;font-weight:300;color:var(--bubble-user, #59483F);letter-spacing:-0.02em;">{{ homeTotalMsgs }}</span>
-<span style="font-family:-apple-system,sans-serif;font-size:13px;color:var(--bubble-user, #59483F);opacity:.5;">条消息</span>
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:42px;font-weight:400;color:var(--bubble-user, #59483F);letter-spacing:-0.02em;">{{ homeTotalMsgs }}</span>
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:14px;color:var(--bubble-user, #59483F);opacity:.6;">messages</span>
 </div>
-<div style="font-family:-apple-system,sans-serif;font-size:11px;color:var(--bubble-user, #59483F);opacity:.35;">{{ homeTotalRounds }} 轮对话</div>
+<div style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:12px;color:var(--bubble-user, #59483F);opacity:.4;">{{ homeTotalRounds }} conversations</div>
 </div>
 
 <!-- 功能入口卡片 2x2 -->
@@ -613,7 +618,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <!-- 纪念日 -->
 <div onClick="{{ openAnnivSheet }}" style="background:var(--bubble-ai, #D7EBE4);border:1px solid rgba(255,255,255,0.4);border-radius:22px;padding:20px 16px;cursor:pointer;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,0.04);">
 <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 5v16l7-4 7 4V5a2 2 0 00-2-2H7a2 2 0 00-2 2z" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:28px;font-weight:400;color:var(--bubble-user, #59483F);line-height:1;">{{ annivDays }}</span>
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:32px;font-weight:500;color:var(--bubble-user, #59483F);line-height:1;">{{ annivDays }}</span>
 <div>
 <div style="font-size:13px;font-weight:600;color:var(--bubble-user, #59483F);">纪念日</div>
 <div style="font-size:11px;color:var(--bubble-user, #59483F);opacity:.5;margin-top:2px;">{{ annivDisplayName }}</div>
@@ -623,7 +628,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <!-- 待办 -->
 <div onClick="{{ navPeriodTodo }}" style="background:rgba(255,255,255,0.65);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.5);border-radius:22px;padding:20px 16px;cursor:pointer;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,0.04);">
 <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="4" y="4" width="16" height="16" rx="2" stroke="var(--bubble-user, #59483F)" stroke-width="1.5"/><path d="M9 12l2 2 4-4" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:28px;font-weight:400;color:var(--bubble-user, #59483F);line-height:1;">{{ homeTodoCount }}</span>
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:32px;font-weight:500;color:var(--bubble-user, #59483F);line-height:1;">{{ homeTodoCount }}</span>
 <div>
 <div style="font-size:13px;font-weight:600;color:var(--bubble-user, #59483F);">待办</div>
 <div style="font-size:11px;color:var(--bubble-user, #59483F);opacity:.5;margin-top:2px;">{{ homeTodoUndone }} 未完成</div>
@@ -665,7 +670,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- ========== SETTINGS PAGE ========== -->
 <sc-if value="{{ isSettings }}" hint-placeholder-val="{{ false }}">
-<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 20px 24px;">
+<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 20px 24px;width:100%;">
 
 <div style="padding:20px 0 16px;">
 <div onClick="{{ openSidebar }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:26px;font-weight:400;color:var(--text-primary, #1A1815);cursor:pointer;">Settings</div>
@@ -822,11 +827,11 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- ========== SOUL/PERSONA PAGE (身心) ========== -->
 <sc-if value="{{ isSoulPage }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;inset:0;display:flex;flex-direction:column;">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;width:100%;">
 
 <!-- 顶部标题 + 头像 + 保存按钮 -->
 <div style="flex:none;padding:20px 20px 16px;display:flex;flex-direction:column;gap:12px;">
-<div onClick="{{ openSidebar }}" style="font-size:20px;font-weight:600;color:var(--text-primary, #1A1815);cursor:pointer;letter-spacing:0.5px;">Persona</div>
+<div onClick="{{ openSidebar }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:var(--text-primary, #1A1815);cursor:pointer;padding:20px 0 16px;">Persona</div>
 <div style="display:flex;align-items:center;gap:12px;">
 <div onClick="{{ uploadAiAvatar }}" style="width:48px;height:48px;border-radius:50%;overflow:hidden;background:#DFF2EC;display:flex;align-items:center;justify-content:center;cursor:pointer;border:2px solid #E7E3DA;">
 <sc-if value="{{ hasAiAvatar }}" hint-placeholder-val="{{ false }}"><img src="{{ aiAvatar }}" style="width:100%;height:100%;object-fit:cover;"></sc-if>
@@ -860,12 +865,12 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- ========== DIARY PAGE ========== -->
 <sc-if value="{{ isDiaryPage }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#FFF8F0;">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#FFF8F0;width:100%;">
 
 <!-- 顶部标题 + tab栏 -->
 <div style="flex:none;padding:16px 20px 0;">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:14px;">
-<div onClick="{{ openSidebar }}" style="font-size:20px;font-weight:700;color:#5C4033;cursor:pointer;">Diary</div>
+<div onClick="{{ openSidebar }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:var(--text-primary, #1A1815);cursor:pointer;padding:20px 0 16px;">Diary</div>
 <span style="font-size:12px;color:#8B7355;">{{ diaryTodayLabel }}</span>
 </div>
 <!-- 季度/月/周 tab -->
@@ -1076,7 +1081,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 
 <!-- ========== MEMORY PAGE ========== -->
 <sc-if value="{{ isMemoryPage }}" hint-placeholder-val="{{ false }}">
-<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 20px 24px;">
+<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 20px 24px;width:100%;">
 
 <div style="padding:20px 0 16px;display:flex;align-items:center;justify-content:space-between;">
 <div onClick="{{ openSidebar }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:var(--text-primary, #1A1815);cursor:pointer;">Memory</div>
@@ -1219,12 +1224,12 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </sc-if>
 <!-- ========== PERIOD/CALENDAR PAGE ========== -->
 <sc-if value="{{ isPeriodPage }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#FFF8F0;">
+<div style="position:absolute;inset:0;display:flex;flex-direction:column;background:#FFF8F0;width:100%;">
 
 <!-- 顶部状态 -->
 <div style="flex:none;padding:16px 20px 0;">
 <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
-  <div onClick="{{ openSidebar }}" style="font-size:20px;font-weight:700;color:#5C4033;cursor:pointer;">Calendar</div>
+  <div onClick="{{ openSidebar }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:var(--text-primary, #1A1815);cursor:pointer;padding:20px 0 16px;">Calendar</div>
   <sc-if value="{{ !sexCalendarOpen }}" hint-placeholder-val="{{ true }}">
     <button onClick="{{ openSexPasswordPrompt }}" style="width:36px;height:36px;border:none;background:rgba(255,255,255,0.55);border-radius:50%;display:flex;align-items:center;justify-content:center;cursor:pointer;padding:0;opacity:0.85;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
       <svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M12 21.35l-1.45-1.32C5.4 15.36 2 12.28 2 8.5 2 5.42 4.42 3 7.5 3c1.74 0 3.41.81 4.5 2.09C13.09 3.81 14.76 3 16.5 3 19.58 3 22 5.42 22 8.5c0 3.78-3.4 6.86-8.55 11.54L12 21.35z" stroke="#F4A7B9" stroke-width="1.5" stroke-linejoin="round" fill="rgba(244,167,185,0.15)"/></svg>
@@ -1317,29 +1322,6 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </div>
 </div>
 
-<!-- 历史记录 -->
-<div style="background:rgba(255,255,255,0.7);backdrop-filter:blur(12px);border:1px solid rgba(255,255,255,0.3);border-radius:14px;padding:14px;margin-bottom:16px;">
-<div onClick="{{ togglePeriodHistory }}" style="display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<span style="font-size:13px;font-weight:600;color:#5C4033;">历史记录</span>
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="transform:rotate({{ periodHistoryRotate }}deg);transition:transform .2s;"><path d="M6 9l6 6 6-6" stroke="#8B7355" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-<sc-if value="{{ periodHistoryOpen }}" hint-placeholder-val="{{ false }}">
-<div style="margin-top:10px;">
-<sc-for list="{{ periodHistory }}" as="ph" hint-placeholder-count="3">
-<div style="display:flex;align-items:center;justify-content:space-between;padding:8px 0;border-bottom:1px solid rgba(92,64,51,0.06);">
-<div>
-<div style="font-size:13px;color:#5C4033;">{{ ph.startDate }} — {{ ph.endDate }}</div>
-<div style="font-size:11px;color:#8B7355;margin-top:2px;">{{ ph.duration }}天 · 周期{{ ph.cycle }}天</div>
-</div>
-<button onClick="{{ ph.del }}" style="border:none;background:transparent;cursor:pointer;opacity:.4;padding:4px;">
-<svg width="11" height="11" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#5C4033" stroke-width="2" stroke-linecap="round"/></svg>
-</button>
-</div>
-</sc-for>
-</div>
-</sc-if>
-</div>
-
 </div>
 
 <!-- 密码输入弹窗 -->
@@ -1383,7 +1365,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </div>
 
 <!-- 日历主体 -->
-<div class="sa" style="flex:1;min-height:0;overflow-y:auto;padding:0 16px 80px;">
+<div class="sa" style="flex:1;min-height:0;overflow-y:auto;padding:0 16px 24px;">
 <div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;padding:14px;margin-bottom:16px;">
 <!-- 星期标题 -->
 <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:2px;margin-bottom:8px;">
@@ -1423,34 +1405,24 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 </div>
 </div>
 
-<!-- 月度统计（可折叠） -->
-<div style="background:rgba(255,255,255,0.04);border:1px solid rgba(255,255,255,0.08);border-radius:16px;overflow:hidden;">
-<div onClick="{{ toggleSexStats }}" style="padding:14px 16px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<span style="font-size:13px;font-weight:600;color:#FFF0F0;">本月统计</span>
-<svg width="12" height="12" viewBox="0 0 24 24" fill="none" style="transform:rotate({{ sexStatsRotate }}deg);transition:transform .2s;"><path d="M6 9l6 6 6-6" stroke="rgba(255,255,255,0.5)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<!-- 月度统计（不折叠） -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:16px;">
+<div style="text-align:center;padding:14px;background:rgba(255,77,109,0.1);border-radius:12px;border:1px solid rgba(255,77,109,0.2);">
+<div style="font-size:28px;font-weight:300;color:#FF4D6D;">{{ sexMonthCount }}</div>
+<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;">次数</div>
 </div>
-<sc-if value="{{ sexStatsOpen }}" hint-placeholder-val="{{ false }}">
-<div style="padding:0 16px 16px;border-top:1px solid rgba(255,255,255,0.06);">
-<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-top:12px;">
-<div style="text-align:center;padding:12px;background:rgba(255,77,109,0.1);border-radius:10px;border:1px solid rgba(255,77,109,0.2);">
-<div style="font-size:24px;font-weight:300;color:#FF4D6D;">{{ sexMonthCount }}</div>
-<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">次数</div>
+<div style="text-align:center;padding:14px;background:rgba(255,77,109,0.1);border-radius:12px;border:1px solid rgba(255,77,109,0.2);">
+<div style="font-size:28px;font-weight:300;color:#FF4D6D;">{{ sexMonthRounds }}</div>
+<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;">总轮数</div>
 </div>
-<div style="text-align:center;padding:12px;background:rgba(255,77,109,0.1);border-radius:10px;border:1px solid rgba(255,77,109,0.2);">
-<div style="font-size:24px;font-weight:300;color:#FF4D6D;">{{ sexMonthRounds }}</div>
-<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">总轮数</div>
+<div style="text-align:center;padding:14px;background:rgba(139,0,0,0.15);border-radius:12px;border:1px solid rgba(139,0,0,0.3);">
+<div style="font-size:28px;font-weight:300;color:#FF6B6B;">{{ sexPeriodCount }}</div>
+<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;">经期中</div>
 </div>
-<div style="text-align:center;padding:12px;background:rgba(139,0,0,0.15);border-radius:10px;border:1px solid rgba(139,0,0,0.3);">
-<div style="font-size:24px;font-weight:300;color:#FF6B6B;">{{ sexPeriodCount }}</div>
-<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">经期中</div>
+<div style="text-align:center;padding:14px;background:rgba(191,95,255,0.12);border-radius:12px;border:1px solid rgba(191,95,255,0.25);">
+<div style="font-size:28px;font-weight:300;color:#BF5FFF;">{{ sexOvulationCount }}</div>
+<div style="font-size:12px;color:rgba(255,255,255,0.5);margin-top:2px;">排卵期</div>
 </div>
-<div style="text-align:center;padding:12px;background:rgba(191,95,255,0.12);border-radius:10px;border:1px solid rgba(191,95,255,0.25);">
-<div style="font-size:24px;font-weight:300;color:#BF5FFF;">{{ sexOvulationCount }}</div>
-<div style="font-size:11px;color:rgba(255,255,255,0.5);margin-top:2px;">排卵期</div>
-</div>
-</div>
-</div>
-</sc-if>
 </div>
 </div>
 
@@ -3427,8 +3399,8 @@ for (const [chatId, chat] of Object.entries(s.chats)) {
     messages: (chat.messages || []).map(m => m.id ? m : { ...m, id: genId() })
   };
 }
-const data = {
-apiPresets: s.apiPresets,
+profileBgUrl: s.profileBgUrl,
+periodData: s.periodData,
 activePresetId: s.activePresetId,
 personas: s.personas,
 activePersonaId: s.activePersonaId,
@@ -6543,9 +6515,9 @@ longPress:(e)=>{
   }
   return cells;
 })(),
-sexStatsOpen: s.sexStatsOpen||false,
-sexStatsRotate: s.sexStatsOpen?'180':'0',
-toggleSexStats: ()=>self.setState(v=>({sexStatsOpen:!v.sexStatsOpen})),
+sexStatsOpen: true,
+sexStatsRotate: '0',
+toggleSexStats: ()=>self.setState(v=>({sexStatsOpen:true})),
 sexMonthCount: (()=>{const sex=s.sexData||{};const y=s.periodViewYear;const m=s.periodViewMonth;let c=0;for(const[date,data] of Object.entries(sex)){const d=new Date(date);if(d.getFullYear()===y&&d.getMonth()===m&&data.sessions)c+=data.sessions.length;}return c;})(),
 sexMonthRounds: (()=>{const sex=s.sexData||{};const y=s.periodViewYear;const m=s.periodViewMonth;let t=0;for(const[date,data] of Object.entries(sex)){const d=new Date(date);if(d.getFullYear()===y&&d.getMonth()===m&&data.sessions){for(const ss of data.sessions)t+=(ss.rounds||1);}}return t;})(),
 sexPeriodCount: (()=>{const sex=s.sexData||{};const pd=s.periodData||{};const hist=pd.history||[];const pDays=new Set();for(const h of hist){const start=new Date(h.start);const end=h.end?new Date(h.end):new Date(start.getTime()+4*86400000);for(let d=new Date(start);d<=end;d.setDate(d.getDate()+1)){pDays.add(d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'));}}let c=0;for(const[date] of Object.entries(sex)){if(pDays.has(date))c++;}return c;})(),
