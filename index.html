@@ -3485,22 +3485,7 @@ for (const [chatId, chat] of Object.entries(s.chats)) {
     messages: (chat.messages || []).map(m => m.id ? m : { ...m, id: genId() })
   };
 }
-periodLogToday: () => {
-  const today = new Date();
-  const todayStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
-  const pd = { ...s.periodData };
-  const hist = [...(pd.history||[])];
-  const last = hist.length > 0 ? hist[hist.length-1] : null;
-  if (last && !last.end) {
-    last.end = todayStr;
-    self.show('经期结束：' + todayStr);
-  } else {
-    hist.push({ start: todayStr, end: null });
-    self.show('经期开始：' + todayStr);
-  }
-  pd.history = hist;
-  self.setState({ periodData: pd }); self.persist();
-},
+const data = {
 activePresetId: s.activePresetId,
 personas: s.personas,
 activePersonaId: s.activePersonaId,
