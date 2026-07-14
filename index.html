@@ -3392,8 +3392,10 @@ for (const [chatId, chat] of Object.entries(s.chats)) {
     messages: (chat.messages || []).map(m => m.id ? m : { ...m, id: genId() })
   };
 }
+const data = {
 profileBgUrl: s.profileBgUrl,
 periodData: s.periodData,
+chats: chats,
 activePresetId: s.activePresetId,
 personas: s.personas,
 activePersonaId: s.activePersonaId,
