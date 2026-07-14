@@ -4106,6 +4106,7 @@ const timestamp = getFixedTimestamp();
 let fullText = text || '';
 const quotedRef = this.state.quotedMsg ? this.state.quotedMsg : null;
 if (quotedRef) {
+  fullText = `> ${quotedRef.sender}：${quotedRef.text}\n\n${fullText}`;
   this.setState({ quotedMsg: null });
 }
 const newMsg = {
@@ -4262,7 +4263,7 @@ if (m.quote) {
   fullText = `> ${m.quote.sender}：${m.quote.text}\n\n${t}`;
 }
 if (m.image) {
-const entry = { role, content: [{ type: 'image_url', image_url: { url: 'data:' + (m.imageMime || 'image/jpeg') + ';base64,' + m.image } }, { type: 'text', text: t || '' }] };
+const entry = { role, content: [{ type: 'image_url', image_url: { url: 'data:' + (m.imageMime || 'image/jpeg') + ';base64,' + m.image } }, { type: 'text', text: fullText || '' }] };
 if (apiMessages.length > 0 && apiMessages[apiMessages.length - 1].role === role) {
 const prev = apiMessages[apiMessages.length - 1];
 if (typeof prev.content === 'string') prev.content = [{ type: 'text', text: prev.content }];
@@ -5666,7 +5667,7 @@ imageUrl: m.imageUrl || '',
 imgJustify: isUser ? 'flex-end' : 'flex-start',
 previewImage: () => {
   if (m.images && m.images.length > 0) {
-    self.setState({ imagePreviewOpen: true, imagePreviewUrl: m.images[0].preview });
+    self.setState({ imagePreviewOpen: true, imagePreviewUrl: (m.images[0].preview || m.images[0]) });
   } else if (m.imageUrl) {
     self.setState({ imagePreviewOpen: true, imagePreviewUrl: m.imageUrl });
   }
@@ -7430,19 +7431,14 @@ self.persist();
 self.show('记忆已删除');
 } else if (type === 'diaryEntry') {
 self.diaryDeleteEntry(id);
-const chats = { ...s.chats };
-const c = { ...chats[s.currentChatId] };
-c.messages = c.messages.filter(m => !s.multiSelectedIds.includes(m.id));
-chats[s.currentChatId] = c;
-self.setState({ chats, deleteConfirmOpen: false, multiSelectMode: false, multiSelectedIds: [] });
+self.setState({ deleteConfirmOpen: false, deleteConfirmType: '', deleteConfirmId: null });
 self.persist();
-self.show('已删除 ' + s.multiSelectedIds.length + ' 条');
+return;
 }
 self.setState({ deleteConfirmType: '', deleteConfirmId: null });
 },
 
 // ======== ACTIONS ========
-toggleDrawer: () => self.setState(v => ({ drawer: !v.drawer })),
 openChatSettings: () => self.setState({ tab: 'settings', plus: false, drawer: false }),
 clearQuote: () => self.setState({ quotedMsg: null }),
 toggleProfile: () => self.setState(v => ({ profile: !v.profile, drawer: false })),
