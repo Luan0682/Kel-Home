@@ -5197,44 +5197,6 @@ if (data.personas) {
     other: { expanded: false, content: data.soulOther || '' }
   };
 }
-  // 同时解析persona内容到soulSections
-  const activeP = data.personas.find(p => p.id === (data.activePersonaId || data.personas[0]?.id));
-  if (activeP && activeP.content) {
-    const content = activeP.content;
-    const sections = { personality: '', rules: '', about: '', other: '' };
-    const parts = content.split(/^## /m).filter(Boolean);
-    for (const part of parts) {
-      if (part.startsWith('人格')) sections.personality = part.replace(/^人格\n?/, '').trim();
-      else if (part.startsWith('规则')) sections.rules = part.replace(/^规则\n?/, '').trim();
-      else if (part.startsWith('关于江吟')) sections.about = part.replace(/^关于江吟\n?/, '').trim();
-      else if (part.startsWith('其他')) sections.other = part.replace(/^其他\n?/, '').trim();
-      else sections.other += (sections.other ? '\n\n' : '') + part.trim();
-    }
-    updates.soulSections = {
-      personality: { expanded: false, content: sections.personality },
-      rules: { expanded: false, content: sections.rules },
-      about: { expanded: false, content: sections.about },
-      other: { expanded: false, content: sections.other }
-    };
-  }
-} else if (data.soulPersonality || data.soulRules || data.soulAbout || data.soulOther) {
-  const oldContent = [
-    data.soulPersonality ? '## 人格\n' + data.soulPersonality : '',
-    data.soulRules ? '## 规则\n' + data.soulRules : '',
-    data.soulAbout ? '## 关于江吟\n' + data.soulAbout : '',
-    data.soulOther ? '## 其他\n' + data.soulOther : ''
-  ].filter(Boolean).join('\n\n');
-  const personas = this.state.personas.map(p => 
-    p.id === this.state.activePersonaId ? { ...p, content: oldContent } : p
-  );
-  updates.personas = personas;
-  updates.soulSections = {
-    personality: { expanded: false, content: data.soulPersonality || '' },
-    rules: { expanded: false, content: data.soulRules || '' },
-    about: { expanded: false, content: data.soulAbout || '' },
-    other: { expanded: false, content: data.soulOther || '' }
-  };
-}
 if (data.styles) updates.styles = data.styles; // 全替换
 if (data.prompts) updates.prompts = data.prompts; // 全替换
 if (data.apiPresets) updates.apiPresets = data.apiPresets; // 全替换
