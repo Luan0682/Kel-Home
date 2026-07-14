@@ -269,7 +269,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div style="flex:1;min-height:0;position:relative;">
 <div style="position:absolute;top:0;left:0;right:0;height:0px;pointer-events:none;"></div>
 <div style="position:absolute;bottom:0;left:0;right:0;height:0px;pointer-events:none;"></div>
-<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:10px 20px 10px;">
+<div class="sa" id="kel-msg-scroll" onScroll="{{ onMsgScroll }}" style="position:absolute;inset:0;overflow-y:auto;padding:10px 20px 10px;">
 
 <div style="position:sticky;top:50%;left:50%;transform:translate(-50%,-50%);width:0;height:0;display:flex;align-items:center;justify-content:center;pointer-events:none;z-index:0;">
 <svg width="48" height="48" viewBox="0 0 64 64" fill="none" style="opacity:.06;">
@@ -647,10 +647,10 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
 
 <!-- 热力图 -->
 <div style="background:rgba(255,255,255,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.4);border-radius:22px;padding:18px 16px;margin-bottom:18px;box-shadow:0 4px 16px rgba(0,0,0,0.04);">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;">
+<div onClick="{{ openHeatmapSettings }}" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;cursor:pointer;">
 <div>
 <span style="font-size:13px;font-weight:600;color:var(--bubble-user, #59483F);">在一起的日子</span>
-<div style="font-size:10px;color:var(--bubble-user, #59483F);opacity:.4;margin-top:2px;">颜色越深 那天聊的越多</div>
+<div style="font-size:10px;color:var(--bubble-user, #59483F);opacity:.4;margin-top:2px;">颜色越深聊的越多 · 点击调节</div>
 </div>
 <span style="font-size:11px;color:var(--bubble-user, #59483F);opacity:.5;">{{ homeHeatmapMonth }}</span>
 </div>
@@ -664,11 +664,11 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
 </div>
 <div style="display:flex;align-items:center;gap:5px;margin-top:8px;justify-content:flex-end;">
 <span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.4;">少</span>
-<div style="width:9px;height:9px;border-radius:3px;background:var(--bg-main, #F5F3EE);border:1px solid rgba(0,0,0,.06);"></div>
-<div style="width:9px;height:9px;border-radius:3px;background:var(--bubble-ai, #D7EBE4);"></div>
-<div style="width:9px;height:9px;border-radius:3px;background:var(--bubble-user, #59483F);opacity:.4;"></div>
-<div style="width:9px;height:9px;border-radius:3px;background:var(--bubble-user, #59483F);opacity:.7;"></div>
-<div style="width:9px;height:9px;border-radius:3px;background:var(--bubble-user, #59483F);"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:#F5F3EE;border:1px solid rgba(0,0,0,.06);"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:#DFF2EC;"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:#A8D5C0;"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:#6BB89A;"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:#3D8B6A;"></div>
 <span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.4;">多</span>
 </div>
 </div>
@@ -843,8 +843,21 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
 </div>
 </div>
 
+<!-- 调节面板入口 -->
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:18px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
+<div onClick="{{ openTunerSheet }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
+<div style="display:flex;align-items:center;gap:14px;">
+<div style="width:38px;height:38px;border-radius:12px;background:linear-gradient(135deg,#DFF2EC,#D7EBE4);display:flex;align-items:center;justify-content:center;">
+<svg width="18" height="18" viewBox="0 0 24 24" fill="none"><path d="M4 21v-7M4 10V3M12 21v-9M12 8V3M20 21v-5M20 12V3M1 14h6M9 8h6M17 16h6" stroke="#68544B" stroke-width="1.5" stroke-linecap="round"/></svg>
+</div>
+<div><div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">微调面板</div><div style="font-size:11px;color:#B8B3A8;margin-top:2px;">外观 · 聊天 · 宠物 · 热力图</div></div>
+</div>
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+</div>
+</div>
+
 <!-- 版本号 -->
-<div style="text-align:center;padding:20px 0;font-size:12px;color:#B8B3A8;">Kel Home · v3.2</div>
+<div style="text-align:center;padding:20px 0;font-size:12px;color:#B8B3A8;">Kel Home · v4.0</div>
 
 </div>
 </sc-if>
@@ -1157,11 +1170,11 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
 </div>
 <div style="display:flex;align-items:center;gap:5px;margin-top:8px;justify-content:flex-end;">
 <span style="font-size:8px;color:#B8B3A8;">少</span>
-<div style="width:9px;height:9px;border-radius:2px;background:#F2EFE8;"></div>
+<div style="width:9px;height:9px;border-radius:2px;background:#F5F3EE;border:1px solid rgba(0,0,0,.06);"></div>
 <div style="width:9px;height:9px;border-radius:2px;background:#DFF2EC;"></div>
-<div style="width:9px;height:9px;border-radius:2px;background:#B8D4E8;"></div>
-<div style="width:9px;height:9px;border-radius:2px;background:#F5D5C8;"></div>
-<div style="width:9px;height:9px;border-radius:2px;background:#68544B;"></div>
+<div style="width:9px;height:9px;border-radius:2px;background:#A8D5C0;"></div>
+<div style="width:9px;height:9px;border-radius:2px;background:#6BB89A;"></div>
+<div style="width:9px;height:9px;border-radius:2px;background:#3D8B6A;"></div>
 <span style="font-size:8px;color:#B8B3A8;">多</span>
 </div>
 </div>
@@ -1368,11 +1381,8 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
 <div style="position:fixed;inset:0;z-index:400;background:radial-gradient(ellipse at top, #3A1A32 0%, #1A0A18 55%, #12060F 100%);display:flex;flex-direction:column;animation:fadeIn .4s ease both;overflow:hidden;">
 
 <!-- 顶部：返回 + 标题 -->
-<div style="flex:none;padding:env(safe-area-inset-top,20px) 20px 16px;display:flex;align-items:center;justify-content:space-between;">
-<button onClick="{{ closeSexCalendar }}" style="display:flex;align-items:center;gap:4px;border:none;background:transparent;cursor:pointer;padding:6px 0;">
-<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#FFF0F0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-size:14px;color:#FFF0F0;font-weight:500;">Sexy</span>
-</button>
+<div style="flex:none;padding:env(safe-area-inset-top,20px) 20px 20px;display:flex;align-items:center;justify-content:space-between;">
+<div onClick="{{ closeSexCalendar }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:#FFF0F0;cursor:pointer;">Sexy</div>
 <div style="font-size:12px;color:rgba(255,240,240,0.55);">{{ sexMonthCount }} nights this month</div>
 </div>
 
@@ -1563,10 +1573,10 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
       <div style="font-size:11px;color:rgba(255,255,255,0.45);margin-bottom:8px;">标签（点选 · 可自建）</div>
       <div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:10px;">
         <sc-for list="{{ sexTagOptions }}" as="tg" hint-placeholder-count="0">
-          <button onClick="{{ tg.toggle }}" style="border:1px solid {{ tg.bd }};background:{{ tg.bg }};color:{{ tg.fg }};border-radius:999px;padding:6px 12px;font-size:11px;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
+          <button onClick="{{ tg.toggle }}" onContextMenu="{{ tg.longPress }}" style="border:1px solid {{ tg.bd }};background:{{ tg.bg }};color:{{ tg.fg }};border-radius:999px;padding:6px 12px;font-size:11px;font-family:inherit;cursor:pointer;display:inline-flex;align-items:center;gap:6px;">
             <span>{{ tg.label }}</span>
             <sc-if value="{{ tg.canDelete }}" hint-placeholder-val="{{ false }}">
-              <span onContextMenu="{{ tg.remove }}" style="opacity:.55;font-size:12px;line-height:1;">×</span>
+              <span style="opacity:0;width:0;height:0;overflow:hidden;pointer-events:none;">×</span>
             </sc-if>
           </button>
         </sc-for>
@@ -2461,7 +2471,92 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
 </div>
 </div>
 </sc-if>
+<!-- Tuner Sheet 微调面板 -->
+<sc-if value="{{ isTunerSheet }}" hint-placeholder-val="{{ false }}">
+<div style="position:absolute;inset:0;z-index:270;">
+<div onClick="{{ closeSheet }}" style="position:absolute;inset:0;background:rgba(0,0,0,.18);animation:fadeIn .15s ease both;"></div>
+<div class="sa" style="position:absolute;bottom:0;left:0;right:0;background:var(--bg-main, #F5F3EE);border-radius:22px 22px 0 0;padding:12px 16px calc(env(safe-area-inset-bottom,0px) + 24px);animation:slideUp .25s ease both;max-height:92%;overflow-y:auto;">
+<div style="width:36px;height:4px;border-radius:2px;background:#D1CCC2;margin:0 auto 16px;"></div>
 
+<!-- 顶部标题 -->
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:16px;">
+<button onClick="{{ closeSheet }}" style="width:34px;height:34px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M18 6L6 18M6 6l12 12" stroke="#48453E" stroke-width="1.8" stroke-linecap="round"/></svg>
+</button>
+<span style="font-size:16px;font-weight:600;color:var(--text-primary, #1A1815);">微调面板</span>
+<button onClick="{{ saveTuner }}" style="border:none;background:#68544B;color:#FFF;border-radius:18px;padding:8px 16px;font-size:12px;font-family:inherit;cursor:pointer;">保存</button>
+</div>
+
+<!-- Tab 切换栏 -->
+<div style="display:flex;gap:0;background:#F2EFE8;border-radius:14px;padding:3px;margin-bottom:20px;">
+<button onClick="{{ tunerTabLook }}" style="flex:1;border:none;background:{{ tunerLookBg }};color:{{ tunerLookFg }};border-radius:11px;padding:10px 0;font-size:13px;font-weight:{{ tunerLookFw }};font-family:inherit;cursor:pointer;">外观</button>
+<button onClick="{{ tunerTabChat }}" style="flex:1;border:none;background:{{ tunerChatBg }};color:{{ tunerChatFg }};border-radius:11px;padding:10px 0;font-size:13px;font-weight:{{ tunerChatFw }};font-family:inherit;cursor:pointer;">聊天</button>
+<button onClick="{{ tunerTabPet }}" style="flex:1;border:none;background:{{ tunerPetBg }};color:{{ tunerPetFg }};border-radius:11px;padding:10px 0;font-size:13px;font-weight:{{ tunerPetFw }};font-family:inherit;cursor:pointer;">宠物</button>
+<button onClick="{{ tunerTabHeat }}" style="flex:1;border:none;background:{{ tunerHeatBg }};color:{{ tunerHeatFg }};border-radius:11px;padding:10px 0;font-size:13px;font-weight:{{ tunerHeatFw }};font-family:inherit;cursor:pointer;">热力图</button>
+</div>
+
+<!-- ===== 外观 Tab ===== -->
+<sc-if value="{{ tunerTab === 'look' }}" hint-placeholder-val="{{ true }}">
+<div style="display:flex;flex-direction:column;gap:20px;">
+
+<!-- 头像大小 -->
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;padding:16px 18px;">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+<span style="font-size:13px;font-weight:500;color:var(--text-primary, #1A1815);">头像大小</span>
+<span style="font-size:13px;font-weight:600;color:#68544B;min-width:40px;text-align:right;">{{ tunerAvatarSize }}px</span>
+</div>
+<input type="range" min="20" max="70" value="{{ tunerAvatarSize }}" onInput="{{ tunerAvatarSizeChange }}" style="width:100%;height:4px;border-radius:2px;outline:none;-webkit-appearance:none;appearance:none;background:linear-gradient(to right,#DFF2EC {{ tunerAvatarPercent }},#F2EFE8 {{ tunerAvatarPercent }});">
+</div>
+
+<!-- 消息字体 -->
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;padding:16px 18px;">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:12px;">
+<span style="font-size:13px;font-weight:500;color:var(--text-primary, #1A1815);">消息字体</span>
+<span style="font-size:13px;font-weight:600;color:#68544B;min-width:40px;text-align:right;">{{ tunerFontSize }}px</span>
+</div>
+<input type="range" min="12" max="22" value="{{ tunerFontSize }}" onInput="{{ tunerFontSizeChange }}" style="width:100%;height:4px;border-radius:2px;outline:none;-webkit-appearance:none;appearance:none;background:linear-gradient(to right,#DFF2EC {{ tunerFontPercent }},#F2EFE8 {{ tunerFontPercent }});">
+<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:#B8B3A8;"><span>小</span><span>大</span></div>
+</div>
+
+</div>
+</sc-if>
+
+<!-- ===== 聊天 Tab ===== -->
+<sc-if value="{{ tunerTab === 'chat' }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:20px;">
+
+<!-- 渲染条数 -->
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;padding:16px 18px;">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+<span style="font-size:13px;font-weight:500;color:var(--text-primary, #1A1815);">聊天渲染条数</span>
+<span style="font-size:13px;font-weight:600;color:#68544B;">{{ tunerRenderCount }}条</span>
+</div>
+<div style="font-size:10px;color:#B8B3A8;margin-bottom:12px;">越少越流畅，往上滑会自动加载更多</div>
+<input type="range" min="20" max="150" step="10" value="{{ tunerRenderCount }}" onInput="{{ tunerRenderCountChange }}" style="width:100%;height:4px;border-radius:2px;outline:none;-webkit-appearance:none;appearance:none;background:linear-gradient(to right,#DFF2EC {{ tunerRenderPercent }},#F2EFE8 {{ tunerRenderPercent }});">
+<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:#B8B3A8;"><span>流畅</span><span>更多历史</span></div>
+</div>
+
+<!-- 记忆读取 -->
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;padding:16px 18px;">
+<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:4px;">
+<span style="font-size:13px;font-weight:500;color:var(--text-primary, #1A1815);">记忆读取轮数</span>
+<span style="font-size:13px;font-weight:600;color:#68544B;">{{ tunerMemCount }}轮</span>
+</div>
+<div style="font-size:10px;color:#B8B3A8;margin-bottom:12px;">发给AI时读多少轮历史对话</div>
+<input type="range" min="3" max="60" step="1" value="{{ tunerMemCount }}" onInput="{{ tunerMemCountChange }}" style="width:100%;height:4px;border-radius:2px;outline:none;-webkit-appearance:none;appearance:none;background:linear-gradient(to right,#DFF2EC {{ tunerMemPercent }},#F2EFE8 {{ tunerMemPercent }});">
+<div style="display:flex;justify-content:space-between;margin-top:6px;font-size:10px;color:#B8B3A8;"><span>省token</span><span>记得多</span></div>
+</div>
+
+</div>
+</sc-if>
+
+<!-- ===== 宠物 Tab ===== -->
+<sc-if value="{{ tunerTab === 'pet' }}" hint-placeholder-val="{{ false }}">
+<div style="display:flex;flex-direction:column;gap:20px;">
+
+<!-- 宠物预览 -->
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;padding:20px;display:flex;align-items:center;justify-content:center;">
+<img src="{{ petGif }}" width="{{ tunerPetSize }}" height=
 <!-- toast -->
 <sc-if value="{{ toastShow }}" hint-placeholder-val="{{ false }}">
 <div style="position:absolute;bottom:50px;left:50%;transform:translateX(-50%);background:#1A1815;color:#F5F3EE;font-size:12px;padding:9px 18px;border-radius:20px;box-shadow:0 6px 20px rgba(0,0,0,.18);animation:fadeUp .25s ease both;white-space:nowrap;">{{ toastText }}</div>
@@ -2599,6 +2694,12 @@ if (!msg.variants) { msg.variants = [msg.text]; msg.variantIdx = 0; migrated = t
 }
 }
 }
+// 合并独立存储的 periodData
+if (periodData && (!data.periodData || !data.periodData.history || data.periodData.history.length === 0)) {
+  data.periodData = periodData;
+} else if (periodData && periodData.history && periodData.history.length > (data.periodData?.history?.length || 0)) {
+  data.periodData = periodData;
+}
 if (data.chats && Object.keys(data.chats).length > 0) {
 return data;
 }
@@ -2606,8 +2707,9 @@ return data;
 } catch(e) {
 console.error('[Kel] loadData 解析失败', e);
 }
+const result = {};
 if (periodData) { result.periodData = periodData; }
-return result || {};
+return result;
 }
 
 function saveData(data) {
@@ -2896,12 +2998,17 @@ selectiveExportOpen: false,
 exportChecks: { chats:true, memories:true, personas:true, styles:true, prompts:true, apiPresets:true, diaries:true, anniversaries:true, pledges:true, periodData:true, sexData:true, customCss:true, regexRules:true, avatars:true },
 errorLogs: JSON.parse(localStorage.getItem('kel-error-logs') || '[]'),
 errorLogOpen: false,
-periodData: saved.periodData || {
-  cycleLength: 28,
-  periodLength: 5,
-  history: [],
-  ovulationOffset: 14
-},
+periodData: (() => {
+  // 优先读独立key的数据（防止主存储覆盖）
+  const indep = localStorage.getItem('kel-period-data');
+  if (indep) {
+    try {
+      const parsed = JSON.parse(indep);
+      if (parsed && parsed.history && parsed.history.length > 0) return parsed;
+    } catch(e) {}
+  }
+  return saved.periodData || { cycleLength: 28, periodLength: 5, history: [], ovulationOffset: 14 };
+})(),
 periodViewYear: new Date().getFullYear(),
 periodViewMonth: new Date().getMonth(),
 periodHistoryOpen: false,
@@ -3528,6 +3635,8 @@ soulOther: s.soulSections.other.content,
 this._saveToIndexedDB(data);
 // 尝试同时写 localStorage（快速读取缓存）
 // 单独确保 periodData 写入
+try { localStorage.setItem('kel-period-data', JSON.stringify(s.periodData || {})); } catch(e) {}
+// 独立写入 periodData 防止主数据覆盖丢失
 try { localStorage.setItem('kel-period-data', JSON.stringify(s.periodData || {})); } catch(e) {}
 
 try {
@@ -4772,7 +4881,170 @@ reader.onload = () => {
 try {
 const data = JSON.parse(reader.result);
 const updates = {};
-if (data.chats) updates.chats = { ...this.state.chats, ...data.chats };
+// ====== 一次性数据格式统一：旧→新 ======
+// 1. 所有聊天消息确保有 id、variants、variantIdx
+if (data.chats) {
+  for (const chatId of Object.keys(data.chats)) {
+    const chat = data.chats[chatId];
+    if (!chat.messages) chat.messages = [];
+    if (!chat.thinkingEntries) chat.thinkingEntries = [];
+    for (const msg of chat.messages) {
+      if (!msg.id) msg.id = genId();
+      if (!msg.variants) { msg.variants = [msg.text || '']; msg.variantIdx = 0; }
+      if (msg.thinking) {
+        chat.thinkingEntries.push({ msgId: msg.id, content: msg.thinking });
+        delete msg.thinking;
+      }
+    }
+    if (!chat.lastTime) chat.lastTime = Date.now();
+    if (!chat.id) chat.id = chatId;
+  }
+}
+// 2. 世界书(worldbooks) 全部迁移为记忆(memories)
+if (data.worldbooks && data.worldbooks.length > 0) {
+  if (!data.memories) data.memories = [];
+  const existingIds = new Set(data.memories.map(m => m.id));
+  for (const wb of data.worldbooks) {
+    if (existingIds.has(wb.id)) continue;
+    data.memories.push({
+      id: wb.id || genId(),
+      name: wb.name || '未命名',
+      content: wb.content || '',
+      triggers: wb.triggers || [],
+      alwaysOn: wb.alwaysOn || false,
+      weight: wb.weight || 1,
+      position: wb.position || 'before',
+      layer: wb.alwaysOn ? 'core' : 'long',
+      tag: wb.tag || 'general',
+      pinned: wb.alwaysOn || false,
+      createdAt: Date.now(),
+      lastReferencedAt: Date.now(),
+      sourceType: 'migrated',
+      surface_count: 0,
+      last_surfaced_at: 0,
+      updatedAt: Date.now()
+    });
+  }
+  delete data.worldbooks; // 删掉旧字段
+}
+// 3. 记忆格式统一（补全新字段）
+if (data.memories) {
+  data.memories = data.memories.map(m => ({
+    id: m.id || genId(),
+    name: m.name || '未命名',
+    content: m.content || '',
+    triggers: m.triggers || [],
+    alwaysOn: m.alwaysOn || false,
+    weight: m.weight || 1,
+    position: m.position || 'before',
+    layer: m.layer || (m.alwaysOn ? 'core' : 'short'),
+    tag: m.tag || 'general',
+    eventDate: m.eventDate || '',
+    pinned: m.pinned || m.alwaysOn || false,
+    createdAt: m.createdAt || Date.now(),
+    lastReferencedAt: m.lastReferencedAt || Date.now(),
+    sourceType: m.sourceType || 'manual',
+    surface_count: m.surface_count || 0,
+    last_surfaced_at: m.last_surfaced_at || 0,
+    updatedAt: m.updatedAt || Date.now()
+  }));
+}
+// 4. Persona 格式统一
+if (data.personas) {
+  data.personas = data.personas.map(p => ({
+    id: p.id || genId(),
+    name: p.name || 'Kel',
+    content: p.content || ''
+  }));
+}
+// 5. Styles 格式统一
+if (data.styles) {
+  data.styles = data.styles.map(st => ({
+    id: st.id || genId(),
+    title: st.title || st.name || 'Default',
+    content: st.content || ''
+  }));
+}
+// 6. API Presets 格式统一
+if (data.apiPresets) {
+  data.apiPresets = data.apiPresets.map(p => ({
+    id: p.id || genId(),
+    name: p.name || 'Preset',
+    url: p.url || 'https://az.zlapi.vip/v1',
+    key: p.key || '',
+    model: p.model || '',
+    apiType: p.apiType || 'anthropic',
+    isDefault: p.isDefault || false
+  }));
+}
+// 7. 日记格式统一（entries数组化）
+if (data.diaries) {
+  for (const [dateStr, day] of Object.entries(data.diaries)) {
+    if (!day.entries) day.entries = [];
+    if (!day.comments) day.comments = [];
+    // 旧格式mine/kel如果有内容但entries为空，迁移进entries
+    if (day.mine && day.entries.length === 0) {
+      day.entries.push({ id: genId(), time: '--:--', author: 'mine', text: day.mine, tags: [], comments: day.comments || [], createdAt: Date.now() });
+    }
+    if (day.kel && day.entries.filter(e=>e.author==='kel').length === 0) {
+      day.entries.push({ id: genId(), time: '--:--', author: 'kel', text: day.kel, tags: [], comments: [], createdAt: Date.now() });
+    }
+  }
+}
+// 8. 纪念日格式统一
+if (data.anniversaries) {
+  data.anniversaries = data.anniversaries.map(a => ({
+    id: a.id || genId(),
+    name: a.name || '纪念日',
+    date: a.date || ''
+  }));
+} else if (data.annivDate) {
+  data.anniversaries = [{ id: genId(), name: '纪念日', date: data.annivDate }];
+  delete data.annivDate;
+}
+// 9. 约定格式统一
+if (data.pledges) {
+  data.pledges = data.pledges.map(p => ({
+    id: p.id || genId(),
+    name: p.name || '',
+    date: p.date || '',
+    done: !!p.done
+  }));
+}
+// 10. 正则规则格式统一
+if (data.regexRules) {
+  data.regexRules = data.regexRules.map(r => ({
+    id: r.id || genId(),
+    name: r.name || '未命名',
+    pattern: r.pattern || '',
+    action: r.action || '',
+    target: r.target || 'output',
+    enabled: r.enabled !== false
+  }));
+}
+// 11. Prompts 格式统一
+if (data.prompts) {
+  data.prompts = data.prompts.map(p => ({
+    id: p.id || genId(),
+    name: p.name || '未命名',
+    content: p.content || ''
+  }));
+}
+// 12. sexData 统一写入独立key
+if (data.sexData) {
+  try { localStorage.setItem('_cl_data', JSON.stringify(data.sexData)); } catch(e) {}
+}
+// 13. periodData 统一写入独立key
+if (data.periodData) {
+  if (!data.periodData.cycleLength) data.periodData.cycleLength = 28;
+  if (!data.periodData.periodLength) data.periodData.periodLength = 5;
+  if (!data.periodData.history) data.periodData.history = [];
+  if (!data.periodData.ovulationOffset) data.periodData.ovulationOffset = 14;
+  try { localStorage.setItem('kel-period-data', JSON.stringify(data.periodData)); } catch(e) {}
+}
+// ====== 格式统一结束 ======
+
+if (data.chats) updates.chats = data.chats; // 全替换为新格式数据
 if (data.worldbooks) {
   // 旧版世界书自动迁移为记忆（layer=long）
   const existingMemIds = new Set((this.state.memories || []).map(m => m.id));
@@ -4797,11 +5069,32 @@ if (data.worldbooks) {
   if (!updates.memories) updates.memories = [...(this.state.memories || [])];
   updates.memories = [...updates.memories, ...migratedWbs];
 }
-if (data.memories) updates.memories = [...this.state.memories, ...data.memories.filter(m => !this.state.memories.find(x => x.id === m.id))];
+if (data.memories) updates.memories = data.memories; // 全替换
 if (data.personas) {
-  updates.personas = [...this.state.personas, ...data.personas.filter(p => !this.state.personas.find(x => x.id === p.id))];
+  // 完全替换为导入的 personas（一比一导入）
+  updates.personas = data.personas;
+  if (data.activePersonaId) updates.activePersonaId = data.activePersonaId;
+  // 同时解析persona内容到soulSections
+  const activeP = data.personas.find(p => p.id === (data.activePersonaId || data.personas[0]?.id));
+  if (activeP && activeP.content) {
+    const content = activeP.content;
+    const sections = { personality: '', rules: '', about: '', other: '' };
+    const parts = content.split(/^## /m).filter(Boolean);
+    for (const part of parts) {
+      if (part.startsWith('人格')) sections.personality = part.replace(/^人格\n?/, '').trim();
+      else if (part.startsWith('规则')) sections.rules = part.replace(/^规则\n?/, '').trim();
+      else if (part.startsWith('关于江吟')) sections.about = part.replace(/^关于江吟\n?/, '').trim();
+      else if (part.startsWith('其他')) sections.other = part.replace(/^其他\n?/, '').trim();
+      else sections.other += (sections.other ? '\n\n' : '') + part.trim();
+    }
+    updates.soulSections = {
+      personality: { expanded: false, content: sections.personality },
+      rules: { expanded: false, content: sections.rules },
+      about: { expanded: false, content: sections.about },
+      other: { expanded: false, content: sections.other }
+    };
+  }
 } else if (data.soulPersonality || data.soulRules || data.soulAbout || data.soulOther) {
-  // 迁移旧版 Soul 数据
   const oldContent = [
     data.soulPersonality ? '## 人格\n' + data.soulPersonality : '',
     data.soulRules ? '## 规则\n' + data.soulRules : '',
@@ -4812,10 +5105,16 @@ if (data.personas) {
     p.id === this.state.activePersonaId ? { ...p, content: oldContent } : p
   );
   updates.personas = personas;
+  updates.soulSections = {
+    personality: { expanded: false, content: data.soulPersonality || '' },
+    rules: { expanded: false, content: data.soulRules || '' },
+    about: { expanded: false, content: data.soulAbout || '' },
+    other: { expanded: false, content: data.soulOther || '' }
+  };
 }
-if (data.styles) updates.styles = [...this.state.styles, ...data.styles.filter(s => !this.state.styles.find(x => x.id === s.id))];
-if (data.prompts) updates.prompts = [...this.state.prompts, ...data.prompts.filter(p => !this.state.prompts.find(x => x.id === p.id))];
-if (data.apiPresets) updates.apiPresets = [...this.state.apiPresets, ...data.apiPresets.filter(p => !this.state.apiPresets.find(x => x.id === p.id))];
+if (data.styles) updates.styles = data.styles; // 全替换
+if (data.prompts) updates.prompts = data.prompts; // 全替换
+if (data.apiPresets) updates.apiPresets = data.apiPresets; // 全替换
 if (data.activePresetId) updates.activePresetId = data.activePresetId;
 if (data.activePersonaId) updates.activePersonaId = data.activePersonaId;
 if (data.activeStyleId) updates.activeStyleId = data.activeStyleId;
@@ -4849,7 +5148,7 @@ if (data.activeThemeId) updates.activeThemeId = data.activeThemeId;
 if (data.avatarSize) updates.avatarSize = data.avatarSize;
 if (data.anniversaries) updates.anniversaries = data.anniversaries;
 if (data.pledges) updates.pledges = data.pledges;
-if (data.diaries) updates.diaries = { ...this.state.diaries, ...data.diaries };
+if (data.diaries) updates.diaries = data.diaries; // 全替换
 if (data.kelMood) updates.kelMood = data.kelMood;
 if (data.heartfelt) updates.heartfelt = data.heartfelt;
 if (data.fontPresets) updates.fontPresets = data.fontPresets;
@@ -5322,22 +5621,39 @@ this.setState({ searchResults: results });
 }
 
 openSearchResult(chatId, msgId) {
-this.setState({ currentChatId: chatId, tab: 'chat', drawer: false, searchQuery: '', searchResults: [] });
+// 先计算目标消息在该聊天中的位置，确保渲染范围覆盖它
+const targetChat = this.state.chats[chatId];
+if (targetChat && msgId) {
+  const allMsgs = (targetChat.messages || []);
+  const targetIdx = allMsgs.findIndex(m => m.id === msgId);
+  if (targetIdx >= 0) {
+    // 需要渲染从targetIdx开始往后的所有消息
+    const needed = allMsgs.length - targetIdx + 10; // 多渲染10条上下文
+    this.setState({ currentChatId: chatId, tab: 'chat', drawer: false, searchQuery: '', searchResults: [], searchOpen: false, _visibleMsgCount: Math.max(50, needed) });
+  } else {
+    this.setState({ currentChatId: chatId, tab: 'chat', drawer: false, searchQuery: '', searchResults: [], searchOpen: false, _visibleMsgCount: allMsgs.length });
+  }
+} else {
+  this.setState({ currentChatId: chatId, tab: 'chat', drawer: false, searchQuery: '', searchResults: [], searchOpen: false });
+}
 this.persist();
 if (msgId) {
-setTimeout(() => {
-const el = document.querySelector('[data-msg-id="' + msgId + '"]');
-if (el) {
-el.scrollIntoView({ behavior: 'smooth', block: 'center' });
-el.style.transition = 'background .3s';
-el.style.background = 'rgba(104,84,75,.1)';
-setTimeout(() => { el.style.background = ''; }, 1800);
+  const tryScroll = (attempts) => {
+    const el = document.querySelector('[data-msg-id="' + msgId + '"]');
+    if (el) {
+      el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      el.style.transition = 'background .3s';
+      el.style.background = 'rgba(104,84,75,.15)';
+      setTimeout(() => { el.style.background = ''; }, 2000);
+    } else if (attempts < 5) {
+      setTimeout(() => tryScroll(attempts + 1), 200);
+    } else {
+      this.scrollToBottom();
+    }
+  };
+  setTimeout(() => tryScroll(0), 150);
 } else {
-this.scrollToBottom();
-}
-}, 200);
-} else {
-this.scrollToBottom();
+  this.scrollToBottom();
 }
 }
 
@@ -5668,7 +5984,12 @@ const allMsgs = (chat.messages || []).filter(m => {
   const text = (m.variants ? m.variants[m.variantIdx || 0] : m.text) || m.text || '';
   return text.trim() || m.imageUrl || m.image;
 });
-const msgs = allMsgs;
+// 虚拟滚动：只渲染最近50条，上滑时加载更多
+const VISIBLE_COUNT = 50;
+const totalMsgCount = allMsgs.length;
+const visibleStart = Math.max(0, totalMsgCount - (s._visibleMsgCount || VISIBLE_COUNT));
+const msgs = allMsgs.slice(visibleStart);
+
 const preset = this.activePreset;
 const persona = this.activePersona;
 const styleObj = this.activeStyleObj;
@@ -5761,12 +6082,20 @@ showAiAvatar: !isUser && !!s.aiAvatar && isFirstInGroup(i),
 showUserAvatar: isUser && !!s.userAvatar && isFirstInGroup(i),
 showTimestampOnly: isFirstInGroup(i) && ((!isUser && !s.aiAvatar) || (isUser && !s.userAvatar)),
 tsAlign: isUser ? 'flex-end' : 'flex-start',
-hasImages: !!(m.images && m.images.length > 0),
-images: (m.images || []).map((img, imgIdx) => ({
-  preview: img.preview || img,
-  src: img.preview || img,
-  openPreview: () => self.setState({ imagePreviewOpen: true, imagePreviewUrl: img.preview || img })
-})),
+hasImages: !!(m.images && m.images.length > 0) || !!m.imageUrl,
+images: (() => {
+  if (m.images && m.images.length > 0) {
+    return m.images.map((img, imgIdx) => ({
+      preview: img.preview || img.base64 ? ('data:' + (img.mimeType||'image/jpeg') + ';base64,' + img.base64) : (img.preview || img),
+      src: img.preview || (img.base64 ? ('data:' + (img.mimeType||'image/jpeg') + ';base64,' + img.base64) : img),
+      openPreview: () => self.setState({ imagePreviewOpen: true, imagePreviewUrl: img.preview || (img.base64 ? ('data:' + (img.mimeType||'image/jpeg') + ';base64,' + img.base64) : img) })
+    }));
+  }
+  if (m.imageUrl) {
+    return [{ preview: m.imageUrl, src: m.imageUrl, openPreview: () => self.setState({ imagePreviewOpen: true, imagePreviewUrl: m.imageUrl }) }];
+  }
+  return [];
+})(),
 isPhotoStack: !!(m.images && m.images.length > 1 && m.id),
 photoStackId: m.id || '',
 imageUrl: m.imageUrl || '',
@@ -6035,7 +6364,7 @@ function buildMemSubList(memories, layer, search) {
     }));
 }
 
-// 热力图：当月的聊天活动
+// 热力图：当月的聊天活动（薄荷绿色阶+可自定义阈值）
 function buildMemHeatmap() {
   const cells = [];
   const today = new Date();
@@ -6043,6 +6372,13 @@ function buildMemHeatmap() {
   const month = today.getMonth();
   const firstDay = new Date(year, month, 1).getDay();
   const daysInMonth = new Date(year, month + 1, 0).getDate();
+
+  // 从 localStorage 读取用户自定义阈值
+  const thresholds = JSON.parse(localStorage.getItem('kel-heatmap-thresholds') || '{"t1":3,"t2":10,"t3":25,"t4":50}');
+  const t1 = thresholds.t1 || 3;
+  const t2 = thresholds.t2 || 10;
+  const t3 = thresholds.t3 || 25;
+  const t4 = thresholds.t4 || 50;
 
   // 先统计本月每天的消息数
   const dayCounts = {};
@@ -6061,20 +6397,32 @@ function buildMemHeatmap() {
     }
   }
 
-  // 空白填充（月初第一天前的空格）
+  // 空白填充
   for (let i = 0; i < firstDay; i++) {
-    cells.push({ bg: 'transparent', label: '' });
+    cells.push({ bg: 'transparent', label: '', count: 0 });
   }
 
+  // 薄荷绿色阶：从浅到深
+  // Level 0: #F5F3EE (无消息)
+  // Level 1: #DFF2EC (浅薄荷)
+  // Level 2: #A8D5C0 (中薄荷)
+  // Level 3: #6BB89A (深薄荷)
+  // Level 4: #3D8B6A (最深薄荷)
   for (let d = 1; d <= daysInMonth; d++) {
     const count = dayCounts[d] || 0;
     const isFuture = new Date(year, month, d, 23, 59) > today;
     let bg = '#F5F3EE';
-    if (!isFuture && count > 0 && count <= 5) bg = '#D7EBE4';
-    else if (!isFuture && count > 5 && count <= 20) bg = '#59483F';
-    else if (!isFuture && count > 20 && count <= 60) bg = 'rgba(89,72,63,0.55)';
-    else if (!isFuture && count > 60) bg = '#59483F';
-    if (isFuture) bg = 'rgba(0,0,0,.02)';
+    if (isFuture) {
+      bg = 'rgba(0,0,0,.02)';
+    } else if (count >= t4) {
+      bg = '#3D8B6A';
+    } else if (count >= t3) {
+      bg = '#6BB89A';
+    } else if (count >= t2) {
+      bg = '#A8D5C0';
+    } else if (count >= t1) {
+      bg = '#DFF2EC';
+    }
 
     cells.push({
       bg: bg,
@@ -6743,9 +7091,20 @@ sexTagOptions: (() => {
         if (i >= 0) tags.splice(i, 1); else tags.push(t);
         self.setState({ sexEditTags: tags });
       },
-      remove: (e) => {
+      longPress: (e) => {
+        if (e && e.preventDefault) e.preventDefault();
         if (e && e.stopPropagation) e.stopPropagation();
         if (!confirm('删除标签「' + t + '」？')) return;
+        const pool2 = (self.state.sexCustomTags || []).filter(x => x !== t);
+        const tags2 = (self.state.sexEditTags || []).filter(x => x !== t);
+        self.setState({ sexCustomTags: pool2, sexEditTags: tags2 });
+        try { localStorage.setItem('kel-sex-tags', JSON.stringify(pool2)); } catch (err) {}
+        self.show('已删除');
+      },
+      remove: (e) => {
+        if (e && e.preventDefault) e.preventDefault();
+        if (e && e.stopPropagation) e.stopPropagation();
+        if (!confirm('长按删除标签「' + t + '」？')) return;
         const pool2 = (self.state.sexCustomTags || []).filter(x => x !== t);
         const tags2 = (self.state.sexEditTags || []).filter(x => x !== t);
         self.setState({ sexCustomTags: pool2, sexEditTags: tags2 });
@@ -6998,6 +7357,20 @@ homeLastOneLine: (() => { const c = self.currentChat; const msgs = (c.messages |
 homeDiaryCount: Object.keys(s.diaries || {}).filter(k => { const e = s.diaries[k]; return e && (e.mine || e.kel); }).length,
 homePeriodStatus: '未设置',
 homeHeatmapMonth: (() => { const now = new Date(); return now.getFullYear() + '年' + (now.getMonth()+1) + '月'; })(),
+openHeatmapSettings: () => {
+  const raw = localStorage.getItem('kel-heatmap-thresholds') || '{"t1":3,"t2":10,"t3":25,"t4":50}';
+  const cur = JSON.parse(raw);
+  const input = prompt('设置热力图阈值（格式：最浅,浅,深,最深）\n例如：3,10,25,50 表示\n≥3条=浅绿 ≥10=中绿 ≥25=深绿 ≥50=最深', cur.t1+','+cur.t2+','+cur.t3+','+cur.t4);
+  if (!input) return;
+  const parts = input.split(',').map(x=>parseInt(x.trim()));
+  if (parts.length===4 && parts.every(x=>!isNaN(x)&&x>0)) {
+    localStorage.setItem('kel-heatmap-thresholds', JSON.stringify({t1:parts[0],t2:parts[1],t3:parts[2],t4:parts[3]}));
+    self.show('热力图阈值已更新：'+parts.join(', '));
+    self.setState({}); // 触发重新渲染
+  } else {
+    self.show('格式错误，请输入4个数字用逗号隔开');
+  }
+},
 homeHeatmapCells: memHeatmapCells,
 navPeriod: () => self.setState({ tab: 'period' }),
 isBusy: s.isBusy,
@@ -7122,9 +7495,21 @@ petSize: this.currentPetSize,
 petEnabled: s.petEnabled,
 petStatus: s.petEnabled ? 'On' : 'Off',
 petSizeLabel: this.currentPetSize + 'px',
-petPosStyle: s.tab === 'chat'
-  ? 'position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom, 0px) + 100px);transform:translateX(-50%);z-index:50;pointer-events:none;transition:bottom .25s ease, left .25s ease;'
-  : 'position:fixed;bottom:90px;right:16px;z-index:50;pointer-events:none;transition:bottom .25s ease, right .25s ease;',
+petPosStyle: (() => {
+  const pos = JSON.parse(localStorage.getItem('kel-pet-pos') || '{}');
+  const hasCustom = Object.keys(pos).length > 0;
+  if (hasCustom) {
+    let style = 'position:fixed;z-index:50;pointer-events:none;transition:all .25s ease;';
+    if (pos.bottom !== undefined) style += 'bottom:' + pos.bottom + 'px;';
+    if (pos.top !== undefined) style += 'top:' + pos.top + 'px;';
+    if (pos.right !== undefined) style += 'right:' + pos.right + 'px;';
+    if (pos.left !== undefined) style += 'left:' + pos.left + 'px;';
+    return style;
+  }
+  return s.tab === 'chat'
+    ? 'position:fixed;left:50%;bottom:calc(env(safe-area-inset-bottom, 0px) + 100px);transform:translateX(-50%);z-index:50;pointer-events:none;transition:bottom .25s ease, left .25s ease;'
+    : 'position:fixed;bottom:90px;right:16px;z-index:50;pointer-events:none;transition:bottom .25s ease, right .25s ease;';
+})(),
 soundStatus: s.soundEnabled ? 'On' : 'Off',
 memoryCountLabel: s.memoryCount + ' 条',
 drawerOpen: s.drawer,
@@ -7755,11 +8140,19 @@ this.persist();
 newChat: () => self.newChat(),
 inputChange: (e) => {
   const val = e.target.value;
-  if (self._inputTimer) cancelAnimationFrame(self._inputTimer);
-  self._inputTimer = requestAnimationFrame(() => {
+  if (self._inputTimer) clearTimeout(self._inputTimer);
+  self._inputTimer = setTimeout(() => {
     self.setState({ input: val });
     self._inputTimer = null;
-  });
+  }, 30);
+},
+onMsgScroll: (e) => {
+  const el = e.target;
+  if (el.scrollTop < 80 && (self.state._visibleMsgCount || 50) < allMsgs.length) {
+    const prevH = el.scrollHeight;
+    self.setState({ _visibleMsgCount: Math.min(allMsgs.length, (self.state._visibleMsgCount || 50) + 30) });
+    requestAnimationFrame(() => { el.scrollTop = el.scrollHeight - prevH; });
+  }
 },
 inputKey: (e) => self.handleInputKey(e),
 send: () => self.sendMessage(),
@@ -8045,6 +8438,82 @@ errorLogList: (s.errorLogs || []).map(el => ({
   message: el.message,
   copy: () => { navigator.clipboard.writeText(el.time + '\n' + el.message).then(() => self.show('已复制')); }
 })),
+openTunerSheet: () => {
+  const ht = JSON.parse(localStorage.getItem('kel-heatmap-thresholds') || '{"t1":3,"t2":10,"t3":25,"t4":50}');
+  const pos = JSON.parse(localStorage.getItem('kel-pet-pos') || '{"bottom":90,"right":16}');
+  self.setState({
+    sheet: 'tuner',
+    tunerTab: 'look',
+    tunerAvatarSize: s.avatarSize || 36,
+    tunerFontSize: s.msgFontSize || 16,
+    tunerRenderCount: s._visibleMsgCount || 50,
+    tunerMemCount: s.memoryCount || 10,
+    tunerPetSize: self.currentPetSize,
+    tunerPetBottom: pos.bottom !== undefined ? pos.bottom : 90,
+    tunerPetRight: pos.right !== undefined ? pos.right : 16,
+    tunerHt1: ht.t1 || 3,
+    tunerHt2: ht.t2 || 10,
+    tunerHt3: ht.t3 || 25,
+    tunerHt4: ht.t4 || 50
+  });
+},
+saveTuner: () => {
+  self.setState({ avatarSize: s.tunerAvatarSize, msgFontSize: s.tunerFontSize, _visibleMsgCount: s.tunerRenderCount, memoryCount: s.tunerMemCount });
+  self.applyMsgFontSize();
+  const sizes = self.petSizes;
+  let bestIdx = 1;
+  for (let i = 0; i < sizes.length; i++) { if (Math.abs(sizes[i] - s.tunerPetSize) < Math.abs(sizes[bestIdx] - s.tunerPetSize)) bestIdx = i; }
+  self.setState({ petSizeIdx: bestIdx });
+  localStorage.setItem('kel-pet-pos', JSON.stringify({ bottom: s.tunerPetBottom, right: s.tunerPetRight }));
+  localStorage.setItem('kel-heatmap-thresholds', JSON.stringify({ t1: s.tunerHt1, t2: s.tunerHt2, t3: s.tunerHt3, t4: s.tunerHt4 }));
+  self.persist();
+  self.setState({ sheet: null });
+  self.show('设置已保存 ♡');
+},
+isTunerSheet: s.sheet === 'tuner',
+tunerTab: s.tunerTab || 'look',
+tunerTabLook: () => self.setState({ tunerTab: 'look' }),
+tunerTabChat: () => self.setState({ tunerTab: 'chat' }),
+tunerTabPet: () => self.setState({ tunerTab: 'pet' }),
+tunerTabHeat: () => self.setState({ tunerTab: 'heat' }),
+tunerLookBg: (s.tunerTab||'look')==='look'?'#FFF':'transparent', tunerLookFg: (s.tunerTab||'look')==='look'?'#1A1815':'#9A958B', tunerLookFw: (s.tunerTab||'look')==='look'?'600':'400',
+tunerChatBg: s.tunerTab==='chat'?'#FFF':'transparent', tunerChatFg: s.tunerTab==='chat'?'#1A1815':'#9A958B', tunerChatFw: s.tunerTab==='chat'?'600':'400',
+tunerPetBg: s.tunerTab==='pet'?'#FFF':'transparent', tunerPetFg: s.tunerTab==='pet'?'#1A1815':'#9A958B', tunerPetFw: s.tunerTab==='pet'?'600':'400',
+tunerHeatBg: s.tunerTab==='heat'?'#FFF':'transparent', tunerHeatFg: s.tunerTab==='heat'?'#1A1815':'#9A958B', tunerHeatFw: s.tunerTab==='heat'?'600':'400',
+tunerAvatarSize: s.tunerAvatarSize || 36,
+tunerAvatarPercent: Math.round(((s.tunerAvatarSize||36)-20)/50*100)+'%',
+tunerAvatarSizeChange: (e) => self.setState({ tunerAvatarSize: parseInt(e.target.value) }),
+tunerFontSize: s.tunerFontSize || 16,
+tunerFontPercent: Math.round(((s.tunerFontSize||16)-12)/10*100)+'%',
+tunerFontSizeChange: (e) => self.setState({ tunerFontSize: parseInt(e.target.value) }),
+tunerRenderCount: s.tunerRenderCount || 50,
+tunerRenderPercent: Math.round(((s.tunerRenderCount||50)-20)/130*100)+'%',
+tunerRenderCountChange: (e) => self.setState({ tunerRenderCount: parseInt(e.target.value) }),
+tunerMemCount: s.tunerMemCount || 10,
+tunerMemPercent: Math.round(((s.tunerMemCount||10)-3)/57*100)+'%',
+tunerMemCountChange: (e) => self.setState({ tunerMemCount: parseInt(e.target.value) }),
+tunerPetSize: s.tunerPetSize || 48,
+tunerPetSizePercent: Math.round(((s.tunerPetSize||48)-32)/96*100)+'%',
+tunerPetSizeChange: (e) => self.setState({ tunerPetSize: parseInt(e.target.value) }),
+tunerPetBottom: s.tunerPetBottom !== undefined ? s.tunerPetBottom : 90,
+tunerPetBottomPercent: Math.round(((s.tunerPetBottom!==undefined?s.tunerPetBottom:90)-10)/290*100)+'%',
+tunerPetBottomChange: (e) => self.setState({ tunerPetBottom: parseInt(e.target.value) }),
+tunerPetRight: s.tunerPetRight !== undefined ? s.tunerPetRight : 16,
+tunerPetRightPercent: Math.round((s.tunerPetRight!==undefined?s.tunerPetRight:16)/320*100)+'%',
+tunerPetRightChange: (e) => self.setState({ tunerPetRight: parseInt(e.target.value) }),
+tunerHt1: s.tunerHt1 || 3,
+tunerHt1Percent: Math.round(((s.tunerHt1||3)-1)/29*100)+'%',
+tunerHt1Change: (e) => self.setState({ tunerHt1: parseInt(e.target.value) }),
+tunerHt2: s.tunerHt2 || 10,
+tunerHt2Percent: Math.round(((s.tunerHt2||10)-3)/57*100)+'%',
+tunerHt2Change: (e) => self.setState({ tunerHt2: parseInt(e.target.value) }),
+tunerHt3: s.tunerHt3 || 25,
+tunerHt3Percent: Math.round(((s.tunerHt3||25)-5)/95*100)+'%',
+tunerHt3Change: (e) => self.setState({ tunerHt3: parseInt(e.target.value) }),
+tunerHt4: s.tunerHt4 || 50,
+tunerHt4Percent: Math.round(((s.tunerHt4||50)-10)/190*100)+'%',
+tunerHt4Change: (e) => self.setState({ tunerHt4: parseInt(e.target.value) }),
+
 openErrorLog: () => self.setState({ errorLogOpen: true, plus: false }),
 closeErrorLog: () => self.setState({ errorLogOpen: false }),
 clearErrorLogs: () => { self.setState({ errorLogs: [] }); localStorage.removeItem('kel-error-logs'); self.show('日志已清空'); },
