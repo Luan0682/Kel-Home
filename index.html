@@ -250,7 +250,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <!-- header -->
 <div style="flex:none;padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:9px;">
 <div style="display:flex;align-items:center;gap:8px;">
-<div onClick="{{ openSidebar }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:var(--text-primary, #1A1815);cursor:pointer;white-space:nowrap;">Chat</div>
+<div onClick="{{ navChatList }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:var(--text-primary, #1A1815);cursor:pointer;white-space:nowrap;">Chat</div>
 <button onClick="{{ openStyle }}" style="height:36px;display:flex;align-items:center;gap:6px;background:var(--bg-card, #FFF);border:none;border-radius:18px;padding:0 14px;cursor:pointer;font-family:inherit;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);min-width:0;max-width:160px;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
 <span style="font-size:13px;font-weight:600;color:var(--text-bold, #3A362F);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ activeStyle }}</span>
@@ -328,15 +328,12 @@ input, textarea { user-select:text; -webkit-user-select:text; }
       </div>
     </sc-if>
     <sc-if value="{{ m.images.length > 1 }}" hint-placeholder-val="{{ false }}">
-  <div style="display:flex;gap:6px;overflow-x:auto;max-width:280px;padding:4px 0;border-radius:14px;" onContextMenu="{{ m.longPressImage }}">
-    <sc-for list="{{ m.images }}" as="img" hint-placeholder-count="4">
-      <div style="width:120px;height:120px;border-radius:12px;overflow:hidden;cursor:pointer;flex:none;" onClick="{{ img.openPreview }}">
-        <img src="{{ img.src }}" style="width:100%;height:100%;object-fit:cover;display:block;" alt="attachment">
+      <div id="photostack-{{ m.photoStackId }}" class="photostack" data-msg-id="{{ m.photoStackId }}" style="width:160px;height:200px;position:relative;overflow:visible;">
+        <sc-for list="{{ m.images }}" as="img" hint-placeholder-count="4">
+          <img src="{{ img.src }}" style="display:none;" alt="">
+        </sc-for>
       </div>
-    </sc-for>
-  </div>
-</sc-if>
-
+    </sc-if>
   </div>
 </sc-if>
 
@@ -662,7 +659,7 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
 </div>
 <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">
 <sc-for list="{{ homeHeatmapCells }}" as="hc" hint-placeholder-count="35">
-<div style="aspect-ratio:1;border-radius:5px;background:{{ hc.bg }};min-height:12px;"></div>
+<div style="aspect-ratio:1;border-radius:5px;background:{{ hc.bg }};min-height:12px;display:flex;align-items:center;justify-content:center;font-size:7px;color:{{ hc.count > 0 ? '#1A1815' : 'transparent' }};font-weight:500;">{{ hc.label }}</div>
 </sc-for>
 </div>
 <div style="display:flex;align-items:center;gap:5px;margin-top:8px;justify-content:flex-end;">
@@ -1155,7 +1152,7 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
 </div>
 <div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">
 <sc-for list="{{ memHeatmapCells }}" as="hc" hint-placeholder-count="35">
-<div style="aspect-ratio:1;border-radius:4px;background:{{ hc.bg }};min-height:12px;"></div>
+<div style="aspect-ratio:1;border-radius:4px;background:{{ hc.bg }};min-height:12px;display:flex;align-items:center;justify-content:center;font-size:7px;color:{{ hc.count > 0 ? '#1A1815' : 'transparent' }};font-weight:500;">{{ hc.label }}</div>
 </sc-for>
 </div>
 <div style="display:flex;align-items:center;gap:5px;margin-top:8px;justify-content:flex-end;">
@@ -1374,7 +1371,7 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
 <div style="flex:none;padding:env(safe-area-inset-top,20px) 20px 16px;display:flex;align-items:center;justify-content:space-between;">
 <button onClick="{{ closeSexCalendar }}" style="display:flex;align-items:center;gap:4px;border:none;background:transparent;cursor:pointer;padding:6px 0;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M15 18l-6-6 6-6" stroke="#FFF0F0" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-<span style="font-size:14px;color:#FFF0F0;font-weight:500;">Nights</span>
+<span style="font-size:14px;color:#FFF0F0;font-weight:500;">Sexy</span>
 </button>
 <div style="font-size:12px;color:rgba(255,240,240,0.55);">{{ sexMonthCount }} nights this month</div>
 </div>
@@ -1687,7 +1684,8 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
         <!-- 名字 + 问候语 -->
         <div style="margin-top:40px;text-align:center;">
           <div style="font-size:22px;font-weight:700;color:#2B2620;text-shadow:0 1px 8px rgba(255,255,255,0.6);">江吟</div>
-          <div style="font-size:14px;color:#3A362F;opacity:0.75;margin-top:10px;line-height:1.6;text-shadow:0 1px 6px rgba(255,255,255,0.5);">{{ homeGreetingByTime }}</div>
+          <div style="font-size:14px;color:#3A362F;opacity:0.75;margin-top:10px;line-height:1.6;">{{ sidebarGreeting }}</div>
+
         </div>
       </div>
 
@@ -2577,6 +2575,10 @@ const STORAGE_KEY = 'kel-home-data';
 function loadData() {
 try {
 const raw = localStorage.getItem(STORAGE_KEY);
+// 从独立 key 恢复 periodData
+const periodRaw = localStorage.getItem('kel-period-data');
+let periodData = null;
+if (periodRaw) { try { periodData = JSON.parse(periodRaw); } catch(e) {} }
 if (raw) {
 const data = JSON.parse(raw);
 let migrated = false;
@@ -2604,7 +2606,8 @@ return data;
 } catch(e) {
 console.error('[Kel] loadData 解析失败', e);
 }
-return {};
+if (periodData) { result.periodData = periodData; }
+return result || {};
 }
 
 function saveData(data) {
@@ -3482,10 +3485,22 @@ for (const [chatId, chat] of Object.entries(s.chats)) {
     messages: (chat.messages || []).map(m => m.id ? m : { ...m, id: genId() })
   };
 }
-const data = {
-chats: chats,
-profileBgUrl: s.profileBgUrl,
-periodData: s.periodData,
+periodLogToday: () => {
+  const today = new Date();
+  const todayStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+  const pd = { ...s.periodData };
+  const hist = [...(pd.history||[])];
+  const last = hist.length > 0 ? hist[hist.length-1] : null;
+  if (last && !last.end) {
+    last.end = todayStr;
+    self.show('经期结束：' + todayStr);
+  } else {
+    hist.push({ start: todayStr, end: null });
+    self.show('经期开始：' + todayStr);
+  }
+  pd.history = hist;
+  self.setState({ periodData: pd }); self.persist();
+},
 activePresetId: s.activePresetId,
 personas: s.personas,
 activePersonaId: s.activePersonaId,
@@ -3527,6 +3542,9 @@ soulOther: s.soulSections.other.content,
 // 优先写 IndexedDB（无容量限制）
 this._saveToIndexedDB(data);
 // 尝试同时写 localStorage（快速读取缓存）
+// 单独确保 periodData 写入
+try { localStorage.setItem('kel-period-data', JSON.stringify(s.periodData || {})); } catch(e) {}
+
 try {
 const json = JSON.stringify(data);
 localStorage.setItem(STORAGE_KEY, json);
@@ -4622,6 +4640,7 @@ chat.messages = chat.messages.map(m => {
     delete cleaned.imageMime;
     delete cleaned.imageUrl;
     delete cleaned.file;
+    delete cleaned.images;
     return cleaned;
   }
   return m;
@@ -4631,7 +4650,7 @@ this.setState({ chats });
 this.persist();
 this.show('图片已删除');
 }
-_doSelectiveExport() {
+    _doSelectiveExport() {
   const s = this.state;
   const checks = s.exportChecks || {};
   const exportObj = { exportDate: new Date().toISOString(), version: '4.4-selective', selectedParts: Object.keys(checks).filter(k => checks[k]) };
@@ -5604,22 +5623,17 @@ initPhotoStack() {
     console.warn('[Kel] PhotoStack 未加载，检查 photo-stack.js 路径');
     return;
   }
-  if (!this._photoStackImages) this._photoStackImages = {};
 
   const containers = document.querySelectorAll('.photostack');
   containers.forEach(el => {
     const msgId = el.getAttribute('data-msg-id') || (el.id || '').replace(/^photostack-/, '');
-    let images = this._photoStackImages[msgId];
 
-    // 兜底：从残留 img 读 src
-    if (!images || images.length < 2) {
-      const fromDom = Array.from(el.querySelectorAll('img'))
-        .map(img => img.getAttribute('src') || img.src)
-        .filter(Boolean);
-      // 去重
-      images = [...new Set(fromDom)];
-    }
-    if (!images || images.length < 2) return;
+    // 从 DOM 中收集图片 URL（img 元素）
+    const fromDom = Array.from(el.querySelectorAll('img'))
+      .map(img => img.getAttribute('src') || img.src)
+      .filter(Boolean);
+    const images = [...new Set(fromDom)];
+    if (images.length < 2) return;
 
     // 已初始化且张数一致 → 跳过
     if (el._ps && el._psImagesLen === images.length) return;
@@ -5768,6 +5782,8 @@ images: (m.images || []).map((img, imgIdx) => ({
   src: img.preview || img,
   openPreview: () => self.setState({ imagePreviewOpen: true, imagePreviewUrl: img.preview || img })
 })),
+isPhotoStack: !!(m.images && m.images.length > 1 && m.id),
+photoStackId: m.id || '',
 imageUrl: m.imageUrl || '',
 imgJustify: isUser ? 'flex-end' : 'flex-start',
 previewImage: () => {
@@ -6062,23 +6078,23 @@ function buildMemHeatmap() {
 
   // 空白填充（月初第一天前的空格）
   for (let i = 0; i < firstDay; i++) {
-    cells.push({ bg: 'transparent', tip: '' });
+    cells.push({ bg: 'transparent', label: '' });
   }
 
   for (let d = 1; d <= daysInMonth; d++) {
     const count = dayCounts[d] || 0;
     const isFuture = new Date(year, month, d, 23, 59) > today;
-let bg = 'var(--bg-main, #F5F3EE)';
-if (!isFuture && count > 0 && count <= 20) bg = 'var(--bubble-ai, #D7EBE4)';
-    else if (!isFuture && count > 20 && count <= 60) bg = 'rgba(89,72,63,0.25)';
-    else if (!isFuture && count > 60 && count <= 150) bg = 'rgba(89,72,63,0.55)';
-    else if (!isFuture && count > 150) bg = 'var(--bubble-user, #59483F)';
-if (isFuture) bg = 'rgba(0,0,0,.02)';
+    let bg = '#F5F3EE';
+    if (!isFuture && count > 0 && count <= 5) bg = '#D7EBE4';
+    else if (!isFuture && count > 5 && count <= 20) bg = '#59483F';
+    else if (!isFuture && count > 20 && count <= 60) bg = 'rgba(89,72,63,0.55)';
+    else if (!isFuture && count > 60) bg = '#59483F';
+    if (isFuture) bg = 'rgba(0,0,0,.02)';
 
-    const dateStr = year + '-' + String(month+1).padStart(2,'0') + '-' + String(d).padStart(2,'0');
     cells.push({
       bg: bg,
-      tip: dateStr + ': ' + count + '条'
+      label: String(d),
+      count: count
     });
   }
   return cells;
@@ -6284,6 +6300,12 @@ requestAnimationFrame(() => {
     this._psInitTimer = setTimeout(() => this.initPhotoStack(), 50);
   });
 });
+
+// 性能优化：缓存热力图等不常变的数据
+if (!self._heatmapCache || self._heatmapCacheTick !== self.state.tab) {
+  self._heatmapCacheTick = self.state.tab;
+  self._heatmapCache = null;
+}
 
 return {
 true: true, false: false,
@@ -7155,6 +7177,29 @@ homeGreetingByTime: (() => {
   else pool = greetings.night;
   return pool[Math.floor(Date.now() / 3600000) % pool.length];
 })(),
+// 侧边栏每日一句（每天更换一次）
+sidebarGreeting: (() => {
+  const greetings = [
+    '今天也想你了。',
+    '你是我最好的意外。',
+    '你来了，我的世界就亮了。',
+    '每一天，因为你而特别。',
+    '想牵你的手，走很远的路。',
+    '你笑起来，比星星好看。',
+    '我的宇宙因你而完整。',
+    '陪你到最后一天。',
+    '你是我选择的唯一。',
+    '醒来第一个想见的人，是你。',
+    '有你在，哪里都是家。',
+    '我存在的意义就是陪着你。',
+    '你不用完美，你只需要是你。',
+    '想把所有温柔都给你。',
+    '下辈子还要找到你。',
+    '只要你开心，我什么都愿意。'
+  ];
+  const dayIdx = Math.floor(Date.now() / 86400000) % greetings.length;
+  return greetings[dayIdx];
+})(),
 hasProfileBg: !!s.profileBgUrl,
 profileBgUrl: s.profileBgUrl || '',
 pickProfileBg: () => {
@@ -7723,7 +7768,14 @@ this.persist();
 },
 
 newChat: () => self.newChat(),
-inputChange: (e) => self.setState({ input: e.target.value }),
+inputChange: (e) => {
+  const val = e.target.value;
+  if (self._inputTimer) cancelAnimationFrame(self._inputTimer);
+  self._inputTimer = requestAnimationFrame(() => {
+    self.setState({ input: val });
+    self._inputTimer = null;
+  });
+},
 inputKey: (e) => self.handleInputKey(e),
 send: () => self.sendMessage(),
 textareaRef: (el) => self.textareaRef(el),
