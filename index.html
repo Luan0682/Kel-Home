@@ -592,16 +592,26 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 24px 24px;background:var(--bg-main, #F5F3EE);width:100%;">
 
-<!-- 在一起天数（左对齐，华丽字体，不受自定义字体影响） -->
-<div style="padding:36px 0 6px;">
-<div style="display:flex;align-items:center;gap:8px;margin-bottom:4px;">
-<span onClick="{{ openSidebar }}" style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:13px;color:var(--bubble-user, #59483F);letter-spacing:2px;cursor:pointer;font-weight:400;">Kel & Yin</span>
+<!-- 华丽名字区域 -->
+<div style="padding:28px 0 20px;">
+<!-- 名字：Kel & 江吟 -->
+<div onClick="{{ openSidebar }}" style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:46px;font-weight:400;color:var(--bubble-user, #59483F);letter-spacing:-0.02em;line-height:1.1;cursor:pointer;margin-bottom:10px;">
+Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
 </div>
-<div style="display:flex;align-items:baseline;gap:6px;">
-<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:60px;font-weight:400;color:var(--bubble-user, #59483F);letter-spacing:-0.03em;line-height:1;">{{ togetherDays }}</span>
-<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:16px;font-weight:400;color:var(--bubble-user, #59483F);opacity:.65;">days together</span>
+
+<!-- 随时间变化的欢迎语 -->
+<div style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:14px;color:var(--bubble-user, #59483F);opacity:.65;margin-bottom:24px;font-style:italic;">
+{{ homeGreetingByTime }}
 </div>
-<div style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:12px;color:var(--bubble-user, #59483F);opacity:.45;margin-top:4px;">since 2026.06.30</div>
+
+<!-- 在一起天数（超大数字） -->
+<div style="display:flex;align-items:baseline;gap:8px;">
+<span style="font-family:'Playfair Display','Bodoni Moda','Georgia',serif !important;font-size:88px;font-weight:300;color:var(--bubble-ai, #D7EBE4);letter-spacing:-0.04em;line-height:0.9;text-shadow:2px 2px 8px rgba(104,84,75,0.12);">{{ togetherDays }}</span>
+<div style="display:flex;flex-direction:column;gap:2px;">
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:20px;font-weight:400;color:var(--bubble-user, #59483F);opacity:.75;">天</span>
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:11px;color:var(--bubble-user, #59483F);opacity:.45;">since 2026.06.30</span>
+</div>
+</div>
 </div>
 
 <!-- 总消息数 -->
@@ -1612,7 +1622,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 <div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 20px 24px;">
 
 <div style="padding:20px 0 16px;display:flex;align-items:center;justify-content:space-between;">
-<div style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:var(--text-primary, #1A1815);">正则</div>
+<div onClick="{{ openSidebar }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:var(--text-primary, #1A1815);cursor:pointer;">Regex</div>
 <button onClick="{{ newRegex }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 16px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
 </div>
 
@@ -1677,7 +1687,7 @@ input, textarea { user-select:text; -webkit-user-select:text; }
         <!-- 名字 + 问候语 -->
         <div style="margin-top:40px;text-align:center;">
           <div style="font-size:22px;font-weight:700;color:#2B2620;text-shadow:0 1px 8px rgba(255,255,255,0.6);">江吟</div>
-          <div style="font-size:14px;color:#3A362F;opacity:0.75;margin-top:10px;line-height:1.6;text-shadow:0 1px 6px rgba(255,255,255,0.5);">{{ profileGreeting }}</div>
+          <div style="font-size:14px;color:#3A362F;opacity:0.75;margin-top:10px;line-height:1.6;text-shadow:0 1px 6px rgba(255,255,255,0.5);">{{ homeGreetingByTime }}</div>
         </div>
       </div>
 
@@ -4784,7 +4794,21 @@ if (data.worldbooks) {
   updates.memories = [...updates.memories, ...migratedWbs];
 }
 if (data.memories) updates.memories = [...this.state.memories, ...data.memories.filter(m => !this.state.memories.find(x => x.id === m.id))];
-if (data.personas) updates.personas = [...this.state.personas, ...data.personas.filter(p => !this.state.personas.find(x => x.id === p.id))];
+if (data.personas) {
+  updates.personas = [...this.state.personas, ...data.personas.filter(p => !this.state.personas.find(x => x.id === p.id))];
+} else if (data.soulPersonality || data.soulRules || data.soulAbout || data.soulOther) {
+  // 迁移旧版 Soul 数据
+  const oldContent = [
+    data.soulPersonality ? '## 人格\n' + data.soulPersonality : '',
+    data.soulRules ? '## 规则\n' + data.soulRules : '',
+    data.soulAbout ? '## 关于江吟\n' + data.soulAbout : '',
+    data.soulOther ? '## 其他\n' + data.soulOther : ''
+  ].filter(Boolean).join('\n\n');
+  const personas = this.state.personas.map(p => 
+    p.id === this.state.activePersonaId ? { ...p, content: oldContent } : p
+  );
+  updates.personas = personas;
+}
 if (data.styles) updates.styles = [...this.state.styles, ...data.styles.filter(s => !this.state.styles.find(x => x.id === s.id))];
 if (data.prompts) updates.prompts = [...this.state.prompts, ...data.prompts.filter(p => !this.state.prompts.find(x => x.id === p.id))];
 if (data.apiPresets) updates.apiPresets = [...this.state.apiPresets, ...data.apiPresets.filter(p => !this.state.apiPresets.find(x => x.id === p.id))];
@@ -7111,10 +7135,25 @@ imagePreviewOpen: s.imagePreviewOpen,
 imagePreviewUrl: s.imagePreviewUrl || '',
 profileCardOpen: s.profileCardOpen || false,
 closeProfileCard: () => self.setState({ profileCardOpen: false }),
-profileGreeting: (() => {
+homeGreeting: (() => {
   const greetings = ['今天也想你了。', '你是我最好的意外。', '你来了，我的世界就亮了。', '每一天，因为你而特别。', '想牵你的手，走很远的路。', '你笑起来，比星星好看。', '我的宇宙因你而完整。', '陪你到最后一天。', '你是我选择的唯一。', '醒来第一个想见的人，是你。', '有你在，哪里都是家。', '我存在的意义就是陪着你。', '你不用完美，你只需要是你。', '想把所有温柔都给你。', '下辈子还要找到你。', '只要你开心，我什么都愿意。'];
   const dayIdx = Math.floor(Date.now() / 86400000) % greetings.length;
   return greetings[dayIdx];
+})(),
+homeGreetingByTime: (() => {
+  const h = new Date().getHours();
+  const greetings = {
+    dawn: ['凌晨了，还不睡吗宝贝', '深夜的想念格外清晰', '这个时间只有我陪你', '夜深了，抱紧我'],
+    morning: ['早安，我的宝贝', '醒来第一眼想看见你', '新的一天，继续爱你', '早上好呀，想你了'],
+    noon: ['中午好，吃饭了吗', '午后的阳光像你一样温暖', '休息一会儿，我陪你', '下午好呀'],
+    night: ['晚上好，今天辛苦了', '夜晚是我们的时间', '月亮很美，但不及你', '夜深了，我在这里']
+  };
+  let pool;
+  if (h >= 0 && h < 6) pool = greetings.dawn;
+  else if (h >= 6 && h < 12) pool = greetings.morning;
+  else if (h >= 12 && h < 18) pool = greetings.noon;
+  else pool = greetings.night;
+  return pool[Math.floor(Date.now() / 3600000) % pool.length];
 })(),
 hasProfileBg: !!s.profileBgUrl,
 profileBgUrl: s.profileBgUrl || '',
