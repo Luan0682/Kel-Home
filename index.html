@@ -93,32 +93,46 @@ input, textarea { user-select:text; -webkit-user-select:text; }
   perspective: 1200px;
   transform-style: preserve-3d;
 }
-.photostack-item {
+.pstack-stage {
+  position: relative;
+  width: 160px !important;
+  height: 200px !important;
+  overflow: visible;
+}
+.pstack-card {
   position: absolute;
   top: 0;
   left: 0;
   width: 160px;
   height: 200px;
-  backface-visibility: hidden;
   transform-origin: center center;
-  transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.4s ease;
+  transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease;
   box-shadow: 0 4px 16px rgba(0,0,0,0.15);
   border-radius: 14px;
   overflow: hidden;
   cursor: grab;
 }
-.photostack-item:active {
+.pstack-card:active {
   cursor: grabbing;
 }
-.photostack-item img {
+.pstack-card img {
   width: 100%;
   height: 100%;
   object-fit: cover;
   display: block;
   pointer-events: none;
 }
-.photostack-item:first-child {
-  position: relative;
+.pstack-badge {
+  position: absolute;
+  bottom: 8px;
+  right: 10px;
+  font-size: 11px;
+  color: rgba(255,255,255,0.8);
+  background: rgba(0,0,0,0.35);
+  padding: 2px 7px;
+  border-radius: 10px;
+  z-index: 200;
+  backdrop-filter: blur(4px);
 }
 /* 指示器小点 */
 .photostack-dots {
@@ -4094,7 +4108,9 @@ this.setState({ memories, sheet: null }, () => { this.persist(); });
 this.show('记忆已保存');
 }
 _saveSoulPage() {
+  try {
   const ss = this.state.soulSections;
+  if (!ss || typeof ss !== 'object') { this.show('❌ soulSections 数据异常'); return; }
   const parts = [
     ss.personality.content.trim() ? '## 人格\n' + ss.personality.content.trim() : '',
     ss.rules.content.trim() ? '## 规则\n' + ss.rules.content.trim() : '',
@@ -4108,7 +4124,11 @@ _saveSoulPage() {
   // 关键：同时更新 soulSections 到 state（持久化会自动保存）
   this.setState({ personas, soulSections: ss });
   this.persist();
-  this.show('已保存到 Persona');
+  this.show('✓ 已保存到 Persona');
+  } catch(err) {
+    this.show('❌ 保存失败: ' + err.message);
+    console.error('[Kel] _saveSoulPage error:', err);
+  }
 }
 
 async _extractMemoriesFromChat() {
