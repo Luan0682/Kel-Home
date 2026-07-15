@@ -2728,80 +2728,37 @@ try {
   const periodRaw = localStorage.getItem('kel-period-data');
   if (periodRaw) { try { periodData = JSON.parse(periodRaw); } catch(e) {} }
 } catch(e) {}
-
 try {
-const raw = localStorage.getItem(STORAGE_KEY);
-if (raw) {
-const data = JSON.parse(raw);
-let migrated = false;
-if (data.chats) {
-for (const chatId of Object.keys(data.chats)) {
-const chat = data.chats[chatId];
-if (chat.messages && !chat.thinkingEntries) {
-chat.thinkingEntries = [];
-for (const msg of chat.messages) {
-if (!msg.id) { msg.id = genId(); migrated = true; }
-if (msg.thinking) {
-chat.thinkingEntries.push({ msgId: msg.id, content: msg.thinking });
-delete msg.thinking;
-migrated = true;
-}
-if (!msg.variants) { msg.variants = [msg.text]; msg.variantIdx = 0; migrated = true; }
-}
-}
-}
-}
-if (periodData && (!data.periodData || !data.periodData.history || data.periodData.history.length === 0)) {
-  data.periodData = periodData;
-} else if (periodData && periodData.history && periodData.history.length > (data.periodData?.history?.length || 0)) {
-  data.periodData = periodData;
-}
-if (data.chats && Object.keys(data.chats).length > 0) {
-return data;
-}
-}
+  const raw = localStorage.getItem(STORAGE_KEY);
+  if (raw) {
+    const data = JSON.parse(raw);
+    if (data.chats) {
+      for (const chatId of Object.keys(data.chats)) {
+        const chat = data.chats[chatId];
+        if (chat.messages && !chat.thinkingEntries) {
+          chat.thinkingEntries = [];
+          for (const msg of chat.messages) {
+            if (!msg.id) { msg.id = genId(); }
+            if (msg.thinking) {
+              chat.thinkingEntries.push({ msgId: msg.id, content: msg.thinking });
+              delete msg.thinking;
+            }
+            if (!msg.variants) { msg.variants = [msg.text]; msg.variantIdx = 0; }
+          }
+        }
+      }
+    }
+    if (periodData && (!data.periodData || !data.periodData.history || data.periodData.history.length === 0)) {
+      data.periodData = periodData;
+    } else if (periodData && periodData.history && periodData.history.length > (data.periodData?.history?.length || 0)) {
+      data.periodData = periodData;
+    }
+    if (data.chats && Object.keys(data.chats).length > 0) {
+      return data;
+    }
+  }
 } catch(e) {
-console.error('[Kel] loadData 解析失败', e);
-}
-const result = {};
-if (periodData) { result.periodData = periodData; }
-return result;
-}
-// 从独立 key 恢复 periodData
-const periodRaw = localStorage.getItem('kel-period-data');
-if (periodRaw) { try { periodData = JSON.parse(periodRaw); } catch(e) {} }
-if (raw) {
-const data = JSON.parse(raw);
-let migrated = false;
-if (data.chats) {
-for (const chatId of Object.keys(data.chats)) {
-const chat = data.chats[chatId];
-if (chat.messages && !chat.thinkingEntries) {
-chat.thinkingEntries = [];
-for (const msg of chat.messages) {
-if (!msg.id) { msg.id = genId(); migrated = true; }
-if (msg.thinking) {
-chat.thinkingEntries.push({ msgId: msg.id, content: msg.thinking });
-delete msg.thinking;
-migrated = true;
-}
-if (!msg.variants) { msg.variants = [msg.text]; msg.variantIdx = 0; migrated = true; }
-}
-}
-}
-}
-// 合并独立存储的 periodData
-if (periodData && (!data.periodData || !data.periodData.history || data.periodData.history.length === 0)) {
-  data.periodData = periodData;
-} else if (periodData && periodData.history && periodData.history.length > (data.periodData?.history?.length || 0)) {
-  data.periodData = periodData;
-}
-if (data.chats && Object.keys(data.chats).length > 0) {
-return data;
-}
-}
-} catch(e) {
-console.error('[Kel] loadData 解析失败', e);
+  console.error('[Kel] loadData 解析失败', e);
 }
 const result = {};
 if (periodData) { result.periodData = periodData; }
@@ -2809,6 +2766,7 @@ return result;
 }
 
 function saveData(data) {
+
 try {
 localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
 } catch(e) {}
