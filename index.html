@@ -8532,8 +8532,17 @@ self.persist();
 fetchApiModels: () => self.fetchModels(),
 saveApiDraft: () => {
 const draft = s.apiDraft || {};
-const presets = s.apiPresets.map(p => p.id === (draft.id || s.activePresetId) ? { ...p, name: draft.name || p.name, url: draft.url || p.url, key: draft.key || p.key, model: draft.model || p.model, apiType: draft.apiType || p.apiType } : p);
-self.setState({ apiPresets: presets, sheet: null }); self.persist(); self.show('已保存');
+const targetId = draft.id || s.activePresetId;
+const presets = s.apiPresets.map(p => {
+  if (p.id === targetId) {
+    return { ...p, name: draft.name || p.name, url: draft.url || p.url, key: draft.key !== undefined ? draft.key : p.key, model: draft.model || p.model, apiType: draft.apiType || p.apiType };
+  }
+  return p;
+});
+self.setState({ apiPresets: presets, activePresetId: targetId, sheet: null }, () => {
+  self.persist();
+  setTimeout(() => self.show('✓ API 已保存'), 50);
+});
 },
 deleteApiDraft: () => {
 if (s.apiPresets.length <= 1) { self.show('不能删除最后一个'); return; }
