@@ -3220,40 +3220,37 @@ const idbMsgCount = Object.values(idbData.chats || {}).reduce((sum, c) => sum + 
 const lsMsgCount = Object.values(lsData.chats || {}).reduce((sum, c) => sum + (c.messages ? c.messages.length : 0), 0);
 if (idbMsgCount >= lsMsgCount) {
 console.log('[Kel] 使用 IndexedDB 数据 (msgs:', idbMsgCount, 'vs ls:', lsMsgCount, ')');
-// 只用 IndexedDB 恢复聊天和日记等大数据
-// 配置类数据（personas/api/styles）不覆盖，因为 persist() 已经同时写入了两处
-// 只有在 localStorage 完全为空时（清空后首次加载），才从 IndexedDB 恢复配置
-const lsCheck = localStorage.getItem(STORAGE_KEY);
-const lsEmpty = !lsCheck || lsCheck === '{}' || lsCheck.length < 50;
-const updates = {
+// IndexedDB 的 _savedAt 比 localStorage 更新 = IndexedDB 是真正的最新数据
+// 始终用 IndexedDB 的数据（因为 persist() 总是先写 IndexedDB）
+this.setState({
   chats: idbData.chats || this.state.chats,
   memories: idbData.memories || this.state.memories,
   currentChatId: idbData.currentChatId || this.state.currentChatId,
   diaries: idbData.diaries || this.state.diaries,
   pledges: idbData.pledges || this.state.pledges,
   anniversaries: idbData.anniversaries || this.state.anniversaries,
-};
-// 只有 localStorage 为空时才从 IndexedDB 恢复配置
-if (lsEmpty) {
-  updates.personas = idbData.personas || this.state.personas;
-  updates.activePersonaId = idbData.activePersonaId || this.state.activePersonaId;
-  updates.apiPresets = idbData.apiPresets || this.state.apiPresets;
-  updates.activePresetId = idbData.activePresetId || this.state.activePresetId;
-  updates.styles = idbData.styles || this.state.styles;
-  updates.activeStyleId = idbData.activeStyleId || this.state.activeStyleId;
-  updates.prompts = idbData.prompts || this.state.prompts;
-  updates.customCss = idbData.customCss || this.state.customCss;
-  updates.customFont = idbData.customFont || this.state.customFont;
-  updates.localFontName = idbData.localFontName || this.state.localFontName;
-  updates.msgFontSize = idbData.msgFontSize || this.state.msgFontSize;
-  updates.activeThemeId = idbData.activeThemeId || this.state.activeThemeId;
-  updates.customTheme = idbData.customTheme || this.state.customTheme;
-  updates.regexRules = idbData.regexRules || this.state.regexRules;
-  updates.fontPresets = idbData.fontPresets || this.state.fontPresets;
-  updates.avatarSize = idbData.avatarSize || this.state.avatarSize;
-  updates.memoryCount = idbData.memoryCount || this.state.memoryCount;
-}
-this.setState(updates);
+  personas: idbData.personas || this.state.personas,
+  activePersonaId: idbData.activePersonaId || this.state.activePersonaId,
+  apiPresets: idbData.apiPresets || this.state.apiPresets,
+  activePresetId: idbData.activePresetId || this.state.activePresetId,
+  styles: idbData.styles || this.state.styles,
+  activeStyleId: idbData.activeStyleId || this.state.activeStyleId,
+  prompts: idbData.prompts || this.state.prompts,
+  customCss: idbData.customCss || this.state.customCss,
+  customFont: idbData.customFont || this.state.customFont,
+  localFontName: idbData.localFontName || this.state.localFontName,
+  msgFontSize: idbData.msgFontSize || this.state.msgFontSize,
+  activeThemeId: idbData.activeThemeId || this.state.activeThemeId,
+  customTheme: idbData.customTheme || this.state.customTheme,
+  regexRules: idbData.regexRules || this.state.regexRules,
+  fontPresets: idbData.fontPresets || this.state.fontPresets,
+  avatarSize: idbData.avatarSize || this.state.avatarSize,
+  petEnabled: idbData.petEnabled !== undefined ? idbData.petEnabled : this.state.petEnabled,
+  petSizeIdx: idbData.petSizeIdx !== undefined ? idbData.petSizeIdx : this.state.petSizeIdx,
+  soundEnabled: idbData.soundEnabled !== undefined ? idbData.soundEnabled : this.state.soundEnabled,
+  memoryCount: idbData.memoryCount || this.state.memoryCount,
+  keepAliveEnabled: idbData.keepAliveEnabled !== undefined ? idbData.keepAliveEnabled : this.state.keepAliveEnabled,
+});
 }
 }
 } catch(e) { console.warn('[Kel] IndexedDB 主数据读取失败', e); }
