@@ -97,8 +97,8 @@ input, textarea { user-select:text; -webkit-user-select:text; }
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 160px;
+  height: 200px;
   backface-visibility: hidden;
   transform-origin: center center;
   transition: transform 0.4s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.4s ease;
@@ -3228,6 +3228,9 @@ const idbMsgCount = Object.values(idbData.chats || {}).reduce((sum, c) => sum + 
 const lsMsgCount = Object.values(lsData.chats || {}).reduce((sum, c) => sum + (c.messages ? c.messages.length : 0), 0);
 if (idbMsgCount >= lsMsgCount) {
 console.log('[Kel] 使用 IndexedDB 数据 (msgs:', idbMsgCount, 'vs ls:', lsMsgCount, ')');
+// 只覆盖聊天数据，不覆盖用户正在编辑的 personas/styles 等配置
+// 因为 persist() 已经同时写入了 IndexedDB 和 localStorage
+// 这里只用 IndexedDB 恢复可能丢失的聊天记录
 this.setState({
 chats: idbData.chats || this.state.chats,
 memories: idbData.memories || this.state.memories,
@@ -3235,28 +3238,6 @@ currentChatId: idbData.currentChatId || this.state.currentChatId,
 diaries: idbData.diaries || this.state.diaries,
 pledges: idbData.pledges || this.state.pledges,
 anniversaries: idbData.anniversaries || this.state.anniversaries,
-styles: idbData.styles || this.state.styles,
-activeStyleId: idbData.activeStyleId || this.state.activeStyleId,
-prompts: idbData.prompts || this.state.prompts,
-personas: idbData.personas || this.state.personas,
-activePersonaId: idbData.activePersonaId || this.state.activePersonaId,
-apiPresets: idbData.apiPresets || this.state.apiPresets,
-activePresetId: idbData.activePresetId || this.state.activePresetId,
-customCss: idbData.customCss || this.state.customCss,
-customFont: idbData.customFont || this.state.customFont,
-localFontName: idbData.localFontName || this.state.localFontName,
-msgFontSize: idbData.msgFontSize || this.state.msgFontSize,
-activeThemeId: idbData.activeThemeId || this.state.activeThemeId,
-customTheme: idbData.customTheme || this.state.customTheme,
-regexRules: idbData.regexRules || this.state.regexRules,
-fontPresets: idbData.fontPresets || this.state.fontPresets,
-kelMood: idbData.kelMood || this.state.kelMood,
-avatarSize: idbData.avatarSize || this.state.avatarSize,
-petEnabled: idbData.petEnabled !== undefined ? idbData.petEnabled : this.state.petEnabled,
-petSizeIdx: idbData.petSizeIdx !== undefined ? idbData.petSizeIdx : this.state.petSizeIdx,
-soundEnabled: idbData.soundEnabled !== undefined ? idbData.soundEnabled : this.state.soundEnabled,
-memoryCount: idbData.memoryCount || this.state.memoryCount,
-keepAliveEnabled: idbData.keepAliveEnabled !== undefined ? idbData.keepAliveEnabled : this.state.keepAliveEnabled,
 });
 }
 }
@@ -6094,10 +6075,11 @@ initPhotoStack() {
     const onAllLoaded = () => {
       console.log('[Kel] 容器 ' + msgId + ' 图片加载完成，开始初始化 PhotoStack');
       el.innerHTML = '';
-      el.style.overflow = 'visible';
+      el.style.overflow = 'hidden';
       el.style.position = 'relative';
       el.style.width = '160px';
       el.style.height = '200px';
+      el.style.borderRadius = '14px';
 
       try {
         el._ps = new PhotoStack(el, images, {
