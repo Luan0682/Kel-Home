@@ -2723,11 +2723,52 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
 const STORAGE_KEY = 'kel-home-data';
 
 function loadData() {
+let periodData = null;
+try {
+  const periodRaw = localStorage.getItem('kel-period-data');
+  if (periodRaw) { try { periodData = JSON.parse(periodRaw); } catch(e) {} }
+} catch(e) {}
+
 try {
 const raw = localStorage.getItem(STORAGE_KEY);
+if (raw) {
+const data = JSON.parse(raw);
+let migrated = false;
+if (data.chats) {
+for (const chatId of Object.keys(data.chats)) {
+const chat = data.chats[chatId];
+if (chat.messages && !chat.thinkingEntries) {
+chat.thinkingEntries = [];
+for (const msg of chat.messages) {
+if (!msg.id) { msg.id = genId(); migrated = true; }
+if (msg.thinking) {
+chat.thinkingEntries.push({ msgId: msg.id, content: msg.thinking });
+delete msg.thinking;
+migrated = true;
+}
+if (!msg.variants) { msg.variants = [msg.text]; msg.variantIdx = 0; migrated = true; }
+}
+}
+}
+}
+if (periodData && (!data.periodData || !data.periodData.history || data.periodData.history.length === 0)) {
+  data.periodData = periodData;
+} else if (periodData && periodData.history && periodData.history.length > (data.periodData?.history?.length || 0)) {
+  data.periodData = periodData;
+}
+if (data.chats && Object.keys(data.chats).length > 0) {
+return data;
+}
+}
+} catch(e) {
+console.error('[Kel] loadData 解析失败', e);
+}
+const result = {};
+if (periodData) { result.periodData = periodData; }
+return result;
+}
 // 从独立 key 恢复 periodData
 const periodRaw = localStorage.getItem('kel-period-data');
-let periodData = null;
 if (periodRaw) { try { periodData = JSON.parse(periodRaw); } catch(e) {} }
 if (raw) {
 const data = JSON.parse(raw);
@@ -3221,9 +3262,7 @@ const idbMsgCount = Object.values(idbData.chats || {}).reduce((sum, c) => sum + 
 const lsMsgCount = Object.values(lsData.chats || {}).reduce((sum, c) => sum + (c.messages ? c.messages.length : 0), 0);
 if (idbMsgCount >= lsMsgCount) {
 console.log('[Kel] 使用 IndexedDB 数据 (msgs:', idbMsgCount, 'vs ls:', lsMsgCount, ')');
-// 只覆盖聊天数据，不覆盖用户正在编辑的 personas/styles 等配置
-// 因为 persist() 已经同时写入了 IndexedDB 和 localStorage
-// 这里只用 IndexedDB 恢复可能丢失的聊天记录
+// 从 IndexedDB 恢复全部数据（IndexedDB 是唯一可靠的数据源）
 this.setState({
 chats: idbData.chats || this.state.chats,
 memories: idbData.memories || this.state.memories,
@@ -3231,6 +3270,28 @@ currentChatId: idbData.currentChatId || this.state.currentChatId,
 diaries: idbData.diaries || this.state.diaries,
 pledges: idbData.pledges || this.state.pledges,
 anniversaries: idbData.anniversaries || this.state.anniversaries,
+personas: idbData.personas || this.state.personas,
+activePersonaId: idbData.activePersonaId || this.state.activePersonaId,
+apiPresets: idbData.apiPresets || this.state.apiPresets,
+activePresetId: idbData.activePresetId || this.state.activePresetId,
+styles: idbData.styles || this.state.styles,
+activeStyleId: idbData.activeStyleId || this.state.activeStyleId,
+prompts: idbData.prompts || this.state.prompts,
+customCss: idbData.customCss || this.state.customCss,
+customFont: idbData.customFont || this.state.customFont,
+localFontName: idbData.localFontName || this.state.localFontName,
+msgFontSize: idbData.msgFontSize || this.state.msgFontSize,
+activeThemeId: idbData.activeThemeId || this.state.activeThemeId,
+customTheme: idbData.customTheme || this.state.customTheme,
+regexRules: idbData.regexRules || this.state.regexRules,
+fontPresets: idbData.fontPresets || this.state.fontPresets,
+kelMood: idbData.kelMood || this.state.kelMood,
+avatarSize: idbData.avatarSize || this.state.avatarSize,
+petEnabled: idbData.petEnabled !== undefined ? idbData.petEnabled : this.state.petEnabled,
+petSizeIdx: idbData.petSizeIdx !== undefined ? idbData.petSizeIdx : this.state.petSizeIdx,
+soundEnabled: idbData.soundEnabled !== undefined ? idbData.soundEnabled : this.state.soundEnabled,
+memoryCount: idbData.memoryCount || this.state.memoryCount,
+keepAliveEnabled: idbData.keepAliveEnabled !== undefined ? idbData.keepAliveEnabled : this.state.keepAliveEnabled,
 });
 }
 }
@@ -3763,6 +3824,7 @@ const json = JSON.stringify(data);
 localStorage.setItem(STORAGE_KEY, json);
 } catch(e) {
 console.warn('[Kel] localStorage 写入失败，数据已存 IndexedDB', e.message);
+this.show('⚠️ 存储空间不足，数据仅存入后台');
 }
 }
 
