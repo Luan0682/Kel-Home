@@ -3138,7 +3138,7 @@ if (saved.worldbooks && saved.worldbooks.length > 0) {
   }
 }
 
-// ===== 启动时确保 soulSections 结构完整 =====
+// ===== 启动时确保 soulSections 结构完整 + 首次从 persona 同步 =====
 if (!this.state.soulSections || typeof this.state.soulSections !== 'object') {
   this.state.soulSections = {
     personality: { expanded: false, content: '' },
@@ -3147,12 +3147,39 @@ if (!this.state.soulSections || typeof this.state.soulSections !== 'object') {
     other: { expanded: false, content: '' }
   };
 }
-// 确保每个 key 都是正确的对象结构
 ['personality', 'rules', 'about', 'other'].forEach(key => {
   if (!this.state.soulSections[key] || typeof this.state.soulSections[key] !== 'object') {
     this.state.soulSections[key] = { expanded: false, content: '' };
   }
 });
+// 如果 soulSections 全空但 personas 有内容，从 personas 同步
+const _initPer = this.state.personas.find(p => p.id === this.state.activePersonaId) || this.state.personas[0];
+if (_initPer && _initPer.content && _initPer.content.trim()) {
+  const _ss = this.state.soulSections;
+  const _allEmpty = !_ss.personality.content && !_ss.rules.content && !_ss.about.content && !_ss.other.content;
+  if (_allEmpty) {
+    const _content = _initPer.content;
+    const _sections = { personality: '', rules: '', about: '', other: '' };
+    const _blocks = _content.split(/^##\s*/m).filter(Boolean);
+    for (const _block of _blocks) {
+      const _lower = _block.trim().toLowerCase();
+      if (_lower.startsWith('人格') || _lower.startsWith('personality')) _sections.personality = _block.replace(/^[^\n]*\n?/, '').trim();
+      else if (_lower.startsWith('规则') || _lower.startsWith('rules')) _sections.rules = _block.replace(/^[^\n]*\n?/, '').trim();
+      else if (_lower.startsWith('关于江吟') || _lower.startsWith('about')) _sections.about = _block.replace(/^[^\n]*\n?/, '').trim();
+      else if (_lower.startsWith('其他') || _lower.startsWith('other')) _sections.other = _block.replace(/^[^\n]*\n?/, '').trim();
+      else _sections.other += (_sections.other ? '\n\n' : '') + _block.trim();
+    }
+    if (!_sections.personality && !_sections.rules && !_sections.about && !_sections.other) {
+      _sections.personality = _content.trim();
+    }
+    this.state.soulSections = {
+      personality: { expanded: false, content: _sections.personality },
+      rules: { expanded: false, content: _sections.rules },
+      about: { expanded: false, content: _sections.about },
+      other: { expanded: false, content: _sections.other }
+    };
+  }
+}
 
 if (saved.annivDate && (!saved.anniversaries || saved.anniversaries.length === 0)) {
 this.state.anniversaries = [{ id: genId(), name: '纪念日', date: saved.annivDate }];
@@ -3208,6 +3235,39 @@ anniversaries: idbData.anniversaries || this.state.anniversaries,
 }
 }
 } catch(e) { console.warn('[Kel] IndexedDB 主数据读取失败', e); }
+
+// 启动时：如果 soulSections 全空但 persona 有内容，从 persona 同步一次
+const activePer = this.state.personas.find(p => p.id === this.state.activePersonaId) || this.state.personas[0];
+if (activePer && activePer.content && activePer.content.trim()) {
+  const ss = this.state.soulSections;
+  const allEmpty = !ss.personality.content && !ss.rules.content && !ss.about.content && !ss.other.content;
+  if (allEmpty) {
+    const content = activePer.content;
+    const sections = { personality: '', rules: '', about: '', other: '' };
+    const blocks = content.split(/^##\s*/m).filter(Boolean);
+    for (const block of blocks) {
+      const lower = block.trim().toLowerCase();
+      if (lower.startsWith('人格') || lower.startsWith('personality')) sections.personality = block.replace(/^[^\n]*\n?/, '').trim();
+      else if (lower.startsWith('规则') || lower.startsWith('rules')) sections.rules = block.replace(/^[^\n]*\n?/, '').trim();
+      else if (lower.startsWith('关于江吟') || lower.startsWith('about')) sections.about = block.replace(/^[^\n]*\n?/, '').trim();
+      else if (lower.startsWith('其他') || lower.startsWith('other')) sections.other = block.replace(/^[^\n]*\n?/, '').trim();
+      else sections.other += (sections.other ? '\n\n' : '') + block.trim();
+    }
+    if (!sections.personality && !sections.rules && !sections.about && !sections.other) {
+      sections.personality = content.trim();
+    }
+    this.setState({
+      soulSections: {
+        personality: { expanded: false, content: sections.personality },
+        rules: { expanded: false, content: sections.rules },
+        about: { expanded: false, content: sections.about },
+        other: { expanded: false, content: sections.other }
+      }
+    });
+    setTimeout(() => this.persist(), 200);
+  }
+}
+
 // 应用样式（在最新数据加载完之后）
 this.applyTheme(this.state.activeThemeId);
 this.applyCustomCss();
