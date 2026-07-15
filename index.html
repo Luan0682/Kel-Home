@@ -15,6 +15,7 @@
 <link rel="manifest" href="./manifest.json">
 <meta name="theme-color" content="#1A1815">
 <script src="./support.js"></script>
+<script src="https://cdn.jsdelivr.net/gh/Luan0682/Kel-Home@main/photo-stack.js"></script>
 </head>
 <body>
 <x-dc>
@@ -679,10 +680,10 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
 <div style="display:flex;align-items:center;gap:5px;margin-top:8px;justify-content:flex-end;">
 <span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.4;">少</span>
 <div style="width:9px;height:9px;border-radius:3px;background:#F5F3EE;border:1px solid rgba(0,0,0,.06);"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:#E8F6F1;"></div>
 <div style="width:9px;height:9px;border-radius:3px;background:#DFF2EC;"></div>
-<div style="width:9px;height:9px;border-radius:3px;background:#A8D5C0;"></div>
-<div style="width:9px;height:9px;border-radius:3px;background:#6BB89A;"></div>
-<div style="width:9px;height:9px;border-radius:3px;background:#3D8B6A;"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:#B8DFD2;"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:#8ECBB8;"></div>
 <span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.4;">多</span>
 </div>
 </div>
@@ -955,28 +956,31 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
 <div style="font-size:10px;color:#B8B3A8;margin-bottom:12px;">根据每天聊天条数决定格子颜色深浅</div>
 <div style="display:flex;align-items:center;gap:5px;margin-bottom:14px;">
 <div style="width:16px;height:16px;border-radius:5px;background:#F5F3EE;border:1px solid rgba(0,0,0,.06);"></div>
+<div style="width:16px;height:16px;border-radius:5px;background:#E8F6F1;"></div>
 <div style="width:16px;height:16px;border-radius:5px;background:#DFF2EC;"></div>
-<div style="width:16px;height:16px;border-radius:5px;background:#A8D5C0;"></div>
-<div style="width:16px;height:16px;border-radius:5px;background:#6BB89A;"></div>
-<div style="width:16px;height:16px;border-radius:5px;background:#3D8B6A;"></div>
+<div style="width:16px;height:16px;border-radius:5px;background:#B8DFD2;"></div>
+<div style="width:16px;height:16px;border-radius:5px;background:#8ECBB8;"></div>
 </div>
-<!-- 四档滑动条 -->
-<div style="margin-bottom:12px;">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:3px;background:#DFF2EC;"></div><span style="font-size:12px;color:#3A362F;">浅绿 ≥</span></div><span style="font-size:12px;font-weight:600;color:#68544B;">{{ tunerHt1 }}条</span></div>
-<input type="range" min="1" max="30" value="{{ tunerHt1 }}" onInput="{{ tunerHt1Change }}" style="width:100%;height:4px;border-radius:2px;outline:none;-webkit-appearance:none;appearance:none;background:linear-gradient(to right,#DFF2EC {{ tunerHt1Percent }},#F2EFE8 {{ tunerHt1Percent }});">
-</div>
-<div style="margin-bottom:12px;">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:3px;background:#A8D5C0;"></div><span style="font-size:12px;color:#3A362F;">中绿 ≥</span></div><span style="font-size:12px;font-weight:600;color:#68544B;">{{ tunerHt2 }}条</span></div>
-<input type="range" min="3" max="60" value="{{ tunerHt2 }}" onInput="{{ tunerHt2Change }}" style="width:100%;height:4px;border-radius:2px;outline:none;-webkit-appearance:none;appearance:none;background:linear-gradient(to right,#A8D5C0 {{ tunerHt2Percent }},#F2EFE8 {{ tunerHt2Percent }});">
-</div>
-<div style="margin-bottom:12px;">
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:3px;background:#6BB89A;"></div><span style="font-size:12px;color:#3A362F;">深绿 ≥</span></div><span style="font-size:12px;font-weight:600;color:#68544B;">{{ tunerHt3 }}条</span></div>
-<input type="range" min="5" max="100" value="{{ tunerHt3 }}" onInput="{{ tunerHt3Change }}" style="width:100%;height:4px;border-radius:2px;outline:none;-webkit-appearance:none;appearance:none;background:linear-gradient(to right,#6BB89A {{ tunerHt3Percent }},#F2EFE8 {{ tunerHt3Percent }});">
+<!-- 四档输入框 -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:14px;">
+<div>
+<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><div style="width:10px;height:10px;border-radius:3px;background:#E8F6F1;"></div><span style="font-size:11px;color:#3A362F;">浅 ≥</span></div>
+<input type="number" min="1" value="{{ tunerHt1 }}" onInput="{{ tunerHt1Change }}" style="width:100%;border:1px solid #E7E3DA;border-radius:10px;padding:8px 10px;font-family:inherit;font-size:13px;color:#1A1815;text-align:center;">
 </div>
 <div>
-<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px;"><div style="display:flex;align-items:center;gap:6px;"><div style="width:10px;height:10px;border-radius:3px;background:#3D8B6A;"></div><span style="font-size:12px;color:#3A362F;">最深 ≥</span></div><span style="font-size:12px;font-weight:600;color:#68544B;">{{ tunerHt4 }}条</span></div>
-<input type="range" min="10" max="200" value="{{ tunerHt4 }}" onInput="{{ tunerHt4Change }}" style="width:100%;height:4px;border-radius:2px;outline:none;-webkit-appearance:none;appearance:none;background:linear-gradient(to right,#3D8B6A {{ tunerHt4Percent }},#F2EFE8 {{ tunerHt4Percent }});">
+<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><div style="width:10px;height:10px;border-radius:3px;background:#DFF2EC;"></div><span style="font-size:11px;color:#3A362F;">中 ≥</span></div>
+<input type="number" min="1" value="{{ tunerHt2 }}" onInput="{{ tunerHt2Change }}" style="width:100%;border:1px solid #E7E3DA;border-radius:10px;padding:8px 10px;font-family:inherit;font-size:13px;color:#1A1815;text-align:center;">
 </div>
+<div>
+<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><div style="width:10px;height:10px;border-radius:3px;background:#B8DFD2;"></div><span style="font-size:11px;color:#3A362F;">深 ≥</span></div>
+<input type="number" min="1" value="{{ tunerHt3 }}" onInput="{{ tunerHt3Change }}" style="width:100%;border:1px solid #E7E3DA;border-radius:10px;padding:8px 10px;font-family:inherit;font-size:13px;color:#1A1815;text-align:center;">
+</div>
+<div>
+<div style="display:flex;align-items:center;gap:6px;margin-bottom:6px;"><div style="width:10px;height:10px;border-radius:3px;background:#8ECBB8;"></div><span style="font-size:11px;color:#3A362F;">最深 ≥</span></div>
+<input type="number" min="1" value="{{ tunerHt4 }}" onInput="{{ tunerHt4Change }}" style="width:100%;border:1px solid #E7E3DA;border-radius:10px;padding:8px 10px;font-family:inherit;font-size:13px;color:#1A1815;text-align:center;">
+</div>
+</div>
+<button onClick="{{ saveHeatmapThresholds }}" style="width:100%;border:none;background:#68544B;color:#FFF;border-radius:14px;padding:10px;font-size:13px;font-family:inherit;cursor:pointer;">保存热力图设置</button>
 </div>
 </div>
 </sc-if>
@@ -1297,10 +1301,10 @@ Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
 <div style="display:flex;align-items:center;gap:5px;margin-top:8px;justify-content:flex-end;">
 <span style="font-size:8px;color:#B8B3A8;">少</span>
 <div style="width:9px;height:9px;border-radius:2px;background:#F5F3EE;border:1px solid rgba(0,0,0,.06);"></div>
+<div style="width:9px;height:9px;border-radius:2px;background:#E8F6F1;"></div>
 <div style="width:9px;height:9px;border-radius:2px;background:#DFF2EC;"></div>
-<div style="width:9px;height:9px;border-radius:2px;background:#A8D5C0;"></div>
-<div style="width:9px;height:9px;border-radius:2px;background:#6BB89A;"></div>
-<div style="width:9px;height:9px;border-radius:2px;background:#3D8B6A;"></div>
+<div style="width:9px;height:9px;border-radius:2px;background:#B8DFD2;"></div>
+<div style="width:9px;height:9px;border-radius:2px;background:#8ECBB8;"></div>
 <span style="font-size:8px;color:#B8B3A8;">多</span>
 </div>
 </div>
@@ -3078,6 +3082,7 @@ todoEditAt: '',
 todoEditIn: '',
 todoEditIsFixed: true,
 accounts: saved.accounts || [],
+checklistItems: saved.checklistItems || JSON.parse(localStorage.getItem('kel-checklist-data') || '{}').checklistItems || [],
 };
 
 // 迁移：为所有消息补全 id
@@ -3115,6 +3120,40 @@ if (saved.worldbooks && saved.worldbooks.length > 0) {
         pinned: wb.alwaysOn || false
       });
     }
+  }
+}
+
+// ===== 启动时修复 soulSections =====
+if (!this.state.soulSections || typeof this.state.soulSections !== 'object') {
+  const activePer = this.state.personas.find(p => p.id === this.state.activePersonaId) || this.state.personas[0];
+  if (activePer && activePer.content) {
+    const content = activePer.content;
+    const sections = { personality: '', rules: '', about: '', other: '' };
+    const blocks = content.split(/^##\s*/m).filter(Boolean);
+    for (const block of blocks) {
+      const lower = block.trim().toLowerCase();
+      if (lower.startsWith('人格') || lower.startsWith('personality')) sections.personality = block.replace(/^[^\n]*\n?/, '').trim();
+      else if (lower.startsWith('规则') || lower.startsWith('rules')) sections.rules = block.replace(/^[^\n]*\n?/, '').trim();
+      else if (lower.startsWith('关于江吟') || lower.startsWith('about')) sections.about = block.replace(/^[^\n]*\n?/, '').trim();
+      else if (lower.startsWith('其他') || lower.startsWith('other')) sections.other = block.replace(/^[^\n]*\n?/, '').trim();
+      else sections.other += (sections.other ? '\n\n' : '') + block.trim();
+    }
+    if (!sections.personality && !sections.rules && !sections.about && !sections.other) {
+      sections.personality = content.trim();
+    }
+    this.state.soulSections = {
+      personality: { expanded: false, content: sections.personality },
+      rules: { expanded: false, content: sections.rules },
+      about: { expanded: false, content: sections.about },
+      other: { expanded: false, content: sections.other }
+    };
+  } else {
+    this.state.soulSections = {
+      personality: { expanded: false, content: '' },
+      rules: { expanded: false, content: '' },
+      about: { expanded: false, content: '' },
+      other: { expanded: false, content: '' }
+    };
   }
 }
 
@@ -3509,7 +3548,8 @@ _checkTodoReminders() {
   this.persist();
   
   if (s.soundEnabled) {
-    try { new Audio('./notification.mp3').play(); } catch(e) {}
+    try { new Audio('https://cdn.jsdelivr.net/gh/Luan0682/Kel-Home@main/notification.mp3')
+.play(); } catch(e) {}
   }
   
   for (const todo of due) {
@@ -3698,10 +3738,10 @@ fontPresets: s.fontPresets,
 keepAliveEnabled: s.keepAliveEnabled,
 periodData: s.periodData,
 memSummaryPrompt: s.memSummaryPrompt,
-soulPersonality: s.soulSections.personality.content,
-soulRules: s.soulSections.rules.content,
-soulAbout: s.soulSections.about.content,
-soulOther: s.soulSections.other.content,
+soulPersonality: (s.soulSections && s.soulSections.personality) ? s.soulSections.personality.content || '' : '',
+soulRules: (s.soulSections && s.soulSections.rules) ? s.soulSections.rules.content || '' : '',
+soulAbout: (s.soulSections && s.soulSections.about) ? s.soulSections.about.content || '' : '',
+soulOther: (s.soulSections && s.soulSections.other) ? s.soulSections.other.content || '' : '',
 };
 // 优先写 IndexedDB（无容量限制）
 this._saveToIndexedDB(data);
@@ -3781,7 +3821,7 @@ _sexAddCustomTag() {
 // ====== Checklist Methods ======
 _checkReminders() {
   const now = Date.now();
-  const items = this.state.checklistItems;
+  const items = this.state.checklistItems || [];
   const due = items.filter(t => 
     t.trigger_at && 
     t.trigger_at <= now && 
@@ -3798,7 +3838,8 @@ _checkReminders() {
   this._persistChecklist();
   
   if (this.state.soundEnabled) {
-    try { new Audio('./notification.mp3').play(); } catch(e) {}
+    try { new Audio('https://cdn.jsdelivr.net/gh/Luan0682/Kel-Home@main/notification.mp3')
+.play(); } catch(e) {}
   }
   
   for (const todo of due) {
@@ -3823,6 +3864,7 @@ _resetChecklistAtMidnight() {
   const today = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
   const lastReset = localStorage.getItem('kel-checklist-last-reset');
   if (lastReset === today) return;
+  if (!this.state.checklistItems || this.state.checklistItems.length === 0) return;
   
   const items = this.state.checklistItems.map(t => {
     if (t.is_fixed) {
@@ -4079,11 +4121,11 @@ _saveSoulPage() {
     ss.other.content.trim() ? '## 其他\n' + ss.other.content.trim() : ''
   ].filter(p => p);
   const merged = parts.join('\n\n');
-  // 写入当前 persona
   const personas = this.state.personas.map(p =>
     p.id === this.state.activePersonaId ? { ...p, content: merged } : p
   );
-  this.setState({ personas });
+  // 关键：同时更新 soulSections 到 state（持久化会自动保存）
+  this.setState({ personas, soulSections: ss });
   this.persist();
   this.show('已保存到 Persona');
 }
@@ -4688,7 +4730,8 @@ for (let i = 0; i < finalParagraphs.length; i++) {
 
   // ---------- 先播放音效（每条都播放） ----------
   if (this.state.soundEnabled) {
-    try { new Audio('./notification.mp3').play(); } catch(e) {}
+    try { new Audio('https://cdn.jsdelivr.net/gh/Luan0682/Kel-Home@main/notification.mp3')
+.play(); } catch(e) {}
   }
 
   // 从当前最新状态中读取消息列表，避免覆盖之前推送的内容
@@ -6007,10 +6050,19 @@ return cells;
 initPhotoStack() {
   if (typeof PhotoStack === 'undefined') {
     console.warn('[Kel] PhotoStack 未加载，检查 photo-stack.js 路径');
+    // 1秒后重试一次（可能文件还在加载）
+    setTimeout(() => {
+      if (typeof PhotoStack !== 'undefined') {
+        console.log('[Kel] PhotoStack 延迟加载成功，重新初始化');
+        this.initPhotoStack();
+      }
+    }, 1000);
     return;
   }
 
   const containers = document.querySelectorAll('.photostack');
+  console.log('[Kel] 找到 ' + containers.length + ' 个 photostack 容器');
+  
   containers.forEach(el => {
     const msgId = el.getAttribute('data-msg-id') || (el.id || '').replace(/^photostack-/, '');
 
@@ -6019,10 +6071,15 @@ initPhotoStack() {
       .map(img => img.getAttribute('src') || img.src)
       .filter(Boolean);
     const images = [...new Set(fromDom)];
+    console.log('[Kel] 容器 ' + msgId + ' 有 ' + images.length + ' 张图');
+    
     if (images.length < 2) return;
 
     // 已初始化且张数一致 → 跳过
-    if (el._ps && el._psImagesLen === images.length) return;
+    if (el._ps && el._psImagesLen === images.length) {
+      console.log('[Kel] 容器 ' + msgId + ' 已初始化，跳过');
+      return;
+    }
 
     // 销毁旧实例
     if (el._ps) {
@@ -6035,6 +6092,7 @@ initPhotoStack() {
     let loaded = 0;
     const total = images.length;
     const onAllLoaded = () => {
+      console.log('[Kel] 容器 ' + msgId + ' 图片加载完成，开始初始化 PhotoStack');
       el.innerHTML = '';
       el.style.overflow = 'visible';
       el.style.position = 'relative';
@@ -6057,35 +6115,46 @@ initPhotoStack() {
           onChange: () => {}
         });
         el._psImagesLen = images.length;
+        console.log('[Kel] PhotoStack 初始化成功');
       } catch (err) {
-        console.warn('[PhotoStack] init failed:', err);
+        console.error('[PhotoStack] init failed:', err);
         // fallback：显示网格
         el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;width:160px;">' +
-          images.map(src => '<div style="aspect-ratio:1;border-radius:10px;overflow:hidden;"><img src="' + src + '" style="width:100%;height:100%;object-fit:cover;" alt=""></div>').join('') +
+          images.map(src => '<div style="aspect-ratio:1;border-radius:10px;overflow:hidden;cursor:pointer;" onclick="window.dispatchEvent(new CustomEvent(\'preview-image\',{detail:\'' + src + '\'}))"><img src="' + src + '" style="width:100%;height:100%;object-fit:cover;" alt=""></div>').join('') +
           '</div>';
       }
     };
 
     // 预加载所有图片
-    images.forEach(src => {
+    images.forEach((src, idx) => {
       const img = new Image();
-      img.onload = () => { loaded++; if (loaded >= total) onAllLoaded(); };
-      img.onerror = () => { loaded++; if (loaded >= total) onAllLoaded(); };
+      img.onload = () => { 
+        loaded++; 
+        console.log('[Kel] 图片 ' + (idx+1) + '/' + total + ' 加载完成');
+        if (loaded >= total) onAllLoaded(); 
+      };
+      img.onerror = () => { 
+        loaded++; 
+        console.warn('[Kel] 图片 ' + (idx+1) + ' 加载失败');
+        if (loaded >= total) onAllLoaded(); 
+      };
       img.src = src;
     });
 
-    // 超时保底：3秒后强制初始化
+    // 超时保底：5秒后强制初始化
     setTimeout(() => {
       if (!el._ps && !el._psFailed) {
+        console.warn('[Kel] PhotoStack 超时，强制初始化');
         el._psFailed = true;
         onAllLoaded();
       }
-    }, 3000);
+    }, 5000);
   });
 }
 
 // ====== RENDER ======
 renderVals() {
+try {
 const s = this.state;
 const chat = this.currentChat;
 const allMsgs = (chat.messages || []).filter(m => {
@@ -6491,7 +6560,7 @@ function buildMemHeatmap() {
   const daysInMonth = new Date(year, month + 1, 0).getDate();
 
   // 从 localStorage 读取用户自定义阈值
-  const thresholds = JSON.parse(localStorage.getItem('kel-heatmap-thresholds') || '{"t1":3,"t2":10,"t3":25,"t4":50}');
+  const thresholds = JSON.parse(localStorage.getItem('kel-heatmap-thresholds') || '{"t1":5,"t2":20,"t3":60,"t4":120}');
   const t1 = thresholds.t1 || 3;
   const t2 = thresholds.t2 || 10;
   const t3 = thresholds.t3 || 25;
@@ -6532,13 +6601,13 @@ function buildMemHeatmap() {
     if (isFuture) {
       bg = 'rgba(0,0,0,.02)';
     } else if (count >= t4) {
-      bg = '#3D8B6A';
+      bg = '#8ECBB8';
     } else if (count >= t3) {
-      bg = '#6BB89A';
+      bg = '#B8DFD2';
     } else if (count >= t2) {
-      bg = '#A8D5C0';
-    } else if (count >= t1) {
       bg = '#DFF2EC';
+    } else if (count >= t1) {
+      bg = '#E8F6F1';
     }
 
     cells.push({
@@ -6594,24 +6663,25 @@ pick: () => self.setState({ memEditTag: tag })
 }));
 
 // Pet
+const CDN = 'https://cdn.jsdelivr.net/gh/Luan0682/Kel-Home@main/sprites/';
 const petGifMap = {
-idle: './sprites/clawd-idle.gif',
-happy: './sprites/clawd-happy.gif',
-thinking: './sprites/clawd-thinking.gif',
-love: './sprites/clawd-notification.gif',
-sad: './sprites/clawd-sleeping.gif',
-error: './sprites/clawd-error.gif',
-annoyed: './sprites/clawd-react-annoyed.gif',
-reading: './sprites/clawd-idle-reading.gif',
-building: './sprites/clawd-building.gif',
-conducting: './sprites/clawd-conducting.gif',
-juggling: './sprites/clawd-juggling.gif',
-sweeping: './sprites/clawd-sweeping.gif',
-typing: './sprites/clawd-bubble.gif',
-jump: './sprites/clawd-react-double-jump.gif',
-headphones: './sprites/clawd-headphones-groove.gif',
-carrying: './sprites/clawd-carrying.gif',
-debugger: './sprites/clawd-debugger.gif'
+idle: CDN + 'clawd-idle.gif',
+happy: CDN + 'clawd-happy.gif',
+thinking: CDN + 'clawd-thinking.gif',
+love: CDN + 'clawd-notification.gif',
+sad: CDN + 'clawd-sleeping.gif',
+error: CDN + 'clawd-error.gif',
+annoyed: CDN + 'clawd-react-annoyed.gif',
+reading: CDN + 'clawd-idle-reading.gif',
+building: CDN + 'clawd-building.gif',
+conducting: CDN + 'clawd-conducting.gif',
+juggling: CDN + 'clawd-juggling.gif',
+sweeping: CDN + 'clawd-sweeping.gif',
+typing: CDN + 'clawd-bubble.gif',
+jump: CDN + 'clawd-react-double-jump.gif',
+headphones: CDN + 'clawd-headphones-groove.gif',
+carrying: CDN + 'clawd-carrying.gif',
+debugger: CDN + 'clawd-debugger.gif'
 };
 const petGif = s.isBusy ? petGifMap.thinking : (petGifMap[s.petState] || petGifMap.idle);
 
@@ -6742,12 +6812,14 @@ self.persist();
 self.show('自定义配色已应用');
 }
 };
-// 延迟初始化 PhotoStack
-// 等模板 DOM 落盘后再挂 PhotoStack（双 rAF + 短延迟更稳）
+// 延迟初始化 PhotoStack（等 DOM 完全渲染 + 图片元素加载）
 if (this._psInitTimer) clearTimeout(this._psInitTimer);
 requestAnimationFrame(() => {
   requestAnimationFrame(() => {
-    this._psInitTimer = setTimeout(() => this.initPhotoStack(), 50);
+    this._psInitTimer = setTimeout(() => {
+      console.log('[Kel] 开始初始化 PhotoStack');
+      this.initPhotoStack();
+    }, 300); // 从 50ms 改成 300ms，给 DOM 更多时间
   });
 });
 
@@ -6806,8 +6878,8 @@ soundBg: s.soundEnabled ? '#68544B' : '#E7E3DA',
 soundLeft: s.soundEnabled ? '22px' : '2px',
 // ===== Soul/Persona Tab =====
 soulTabs: [ { label:'人格', switch:()=>self.setState({soulActiveTab:'personality'}), activeClass:(s.soulActiveTab||'personality')==='personality'?'active':'inactive' }, { label:'规则', switch:()=>self.setState({soulActiveTab:'rules'}), activeClass:(s.soulActiveTab||'personality')==='rules'?'active':'inactive' }, { label:'关于江吟', switch:()=>self.setState({soulActiveTab:'about'}), activeClass:(s.soulActiveTab||'personality')==='about'?'active':'inactive' }, { label:'其他', switch:()=>self.setState({soulActiveTab:'other'}), activeClass:(s.soulActiveTab||'personality')==='other'?'active':'inactive' } ],
-soulActiveContent: (s.soulSections[(s.soulActiveTab||'personality')]||{}).content||'',
-soulContentChange: (e) => { const key=s.soulActiveTab||'personality'; const ss={...s.soulSections}; ss[key]={...ss[key],content:e.target.value}; self.setState({soulSections:ss}); },
+soulActiveContent: (() => { try { const sec = s.soulSections[(s.soulActiveTab||'personality')]; return (sec && typeof sec === 'object') ? (sec.content || '') : ''; } catch(e) { return ''; } })(),
+soulContentChange: (e) => { const key=s.soulActiveTab||'personality'; const ss={...s.soulSections}; if (!ss[key] || typeof ss[key] !== 'object') ss[key] = { expanded: false, content: '' }; ss[key]={...ss[key],content:e.target.value}; self.setState({soulSections:ss}); },
 soulActivePlaceholder: (() => {
   const map = {
     personality: '描述性格、说话方式、身份定义...',
@@ -6817,7 +6889,7 @@ soulActivePlaceholder: (() => {
   };
   return map[s.soulActiveTab || 'personality'] || '';
 })(),
-soulActiveCharCount: ((s.soulSections[(s.soulActiveTab||'personality')]||{}).content||'').length,
+soulActiveCharCount: (() => { try { const sec = s.soulSections[(s.soulActiveTab||'personality')]; return ((sec && typeof sec === 'object') ? (sec.content || '') : '').length; } catch(e) { return 0; } })(),
 // ===== 导航函数 =====
 navChatList: () => self.setState({ tab: 'chatlist' }),
 navSettings: () => self.setState({ tab: 'settings' }),
@@ -7371,8 +7443,9 @@ periodTabSex: () => {
 soulName: persona.name || 'Kel',
 uploadAiAvatar: () => self.pickAiAvatar(),
 soulCharCount: (() => {
-  const ss = s.soulSections;
-  return (ss.personality.content + ss.rules.content + ss.about.content + ss.other.content).length;
+  const ss = s.soulSections || {};
+  const get = (k) => (ss[k] && typeof ss[k] === 'object') ? (ss[k].content || '') : '';
+  return (get('personality') + get('rules') + get('about') + get('other')).length;
 })(),
 soulSections: [
   {
@@ -7830,6 +7903,44 @@ diaryTabWFw: (s.diaryViewTab||'week')==='week' ? '600' : '400',
 isDiaryQuarter: (s.diaryViewTab||'week')==='quarter',
 isDiaryMonth: (s.diaryViewTab||'week')==='month',
 isDiaryWeek: (s.diaryViewTab||'week')==='week',
+isDiaryQuarter: (s.diaryViewTab||'week')==='quarter',
+isDiaryMonth: (s.diaryViewTab||'week')==='month',
+isDiaryWeek: (s.diaryViewTab||'week')==='week',
+diaryQuarterMonths: (() => {
+  const today = new Date();
+  const currentMonth = today.getMonth();
+  const quarterStart = Math.floor(currentMonth / 3) * 3;
+  const months = [];
+  for (let offset = 0; offset < 3; offset++) {
+    const m = quarterStart + offset;
+    const y = s.diaryViewYear || today.getFullYear();
+    const label = y + '年' + (m+1) + '月';
+    const firstDay = new Date(y, m, 1).getDay();
+    const daysInMonth = new Date(y, m+1, 0).getDate();
+    const todayStr = today.getFullYear()+'-'+String(today.getMonth()+1).padStart(2,'0')+'-'+String(today.getDate()).padStart(2,'0');
+    const cells = [];
+    for (let i = 0; i < firstDay; i++) cells.push({ day:'', bg:'transparent', color:'transparent', cursor:'default', hasEmoji:false, emoji:'', tap:()=>{} });
+    for (let d = 1; d <= daysInMonth; d++) {
+      const ds = y+'-'+String(m+1).padStart(2,'0')+'-'+String(d).padStart(2,'0');
+      const isT = ds === todayStr;
+      const dy = s.diaries[ds];
+      const hasDiary = dy && (dy.mine || dy.kel || (dy.entries||[]).length > 0);
+      const sticker = (dy && dy.stickerMine) ? dy.stickerMine : '';
+      cells.push({
+        day: String(d),
+        bg: isT ? '#5C4033' : (hasDiary ? '#F5EDE4' : 'transparent'),
+        color: isT ? '#FFF8F0' : '#3A3025',
+        cursor: 'pointer',
+        hasEmoji: !!sticker,
+        emoji: sticker,
+        tap: () => { self.diarySelectDate(ds); self.setState({ diaryViewTab: 'week' }); }
+      });
+    }
+    months.push({ label, cells });
+  }
+  return months;
+})(),
+
 diaryMonthTitle: s.diaryViewYear + '年' + (s.diaryViewMonth+1) + '月',
 diaryMonthPrev: () => { let y=s.diaryViewYear,m=s.diaryViewMonth-1; if(m<0){m=11;y--;} self.setState({diaryViewYear:y,diaryViewMonth:m}); },
 diaryMonthNext: () => { let y=s.diaryViewYear,m=s.diaryViewMonth+1; if(m>11){m=0;y++;} self.setState({diaryViewYear:y,diaryViewMonth:m}); },
@@ -8197,6 +8308,14 @@ const memories = s.memories.filter(m => m.id !== id);
 self.setState({ memories, deleteConfirmOpen: false });
 self.persist();
 self.show('记忆已删除');
+} else if (type === 'multiMessage') {
+const chats = { ...s.chats };
+const c = { ...chats[s.currentChatId] };
+c.messages = c.messages.filter(m => !s.multiSelectedIds.includes(m.id));
+chats[s.currentChatId] = c;
+self.setState({ chats, deleteConfirmOpen: false, multiSelectMode: false, multiSelectedIds: [] });
+self.persist();
+self.show('已删除 ' + s.multiSelectedIds.length + ' 条');
 } else if (type === 'diaryEntry') {
 self.diaryDeleteEntry(id);
 self.setState({ deleteConfirmOpen: false, deleteConfirmType: '', deleteConfirmId: null });
@@ -8261,12 +8380,14 @@ this.persist();
 newChat: () => self.newChat(),
 inputChange: (e) => {
   const val = e.target.value;
+  // 缩短节流时间，避免卡语音输入
   if (self._inputTimer) clearTimeout(self._inputTimer);
   self._inputTimer = setTimeout(() => {
     self.setState({ input: val });
     self._inputTimer = null;
-  }, 30);
+  }, 10); // 从 30ms 改成 10ms
 },
+
 onMsgScroll: (e) => {
   const el = e.target;
   if (el.scrollTop < 80 && (self.state._visibleMsgCount || 50) < allMsgs.length) {
@@ -8586,6 +8707,12 @@ tunerHt3Change: (e) => { const ht=JSON.parse(localStorage.getItem('kel-heatmap-t
 tunerHt4: (() => { const ht=JSON.parse(localStorage.getItem('kel-heatmap-thresholds')||'{"t1":3,"t2":10,"t3":25,"t4":50}'); return ht.t4; })(),
 tunerHt4Percent: (() => { const ht=JSON.parse(localStorage.getItem('kel-heatmap-thresholds')||'{"t1":3,"t2":10,"t3":25,"t4":50}'); return Math.round((ht.t4-10)/190*100)+'%'; })(),
 tunerHt4Change: (e) => { const ht=JSON.parse(localStorage.getItem('kel-heatmap-thresholds')||'{"t1":3,"t2":10,"t3":25,"t4":50}'); ht.t4=parseInt(e.target.value); localStorage.setItem('kel-heatmap-thresholds',JSON.stringify(ht)); self.setState({}); },
+saveHeatmapThresholds: () => {
+  const ht = JSON.parse(localStorage.getItem('kel-heatmap-thresholds') || '{"t1":5,"t2":20,"t3":60,"t4":120}');
+  localStorage.setItem('kel-heatmap-thresholds', JSON.stringify(ht));
+  self.setState({});
+  self.show('热力图阈值已保存');
+},
 petSizeSliderLabel: self.currentPetSize,
 petSizeSliderVal: self.currentPetSize,
 petSizeSliderPercent: Math.round((self.currentPetSize-32)/96*100)+'%',
@@ -8628,6 +8755,11 @@ musicTrackList: (self._musicList || []).map((tk, idx) => ({
 })),
 
 };
+} catch(err) {
+  console.error('[Kel] renderVals 崩溃:', err);
+  this.logError('renderVals: ' + err.message);
+  return { true: true, false: false, isChat: true, isBusy: false, messages: [], input: '', toastShow: true, toastText: '页面渲染出错: ' + err.message };
+}
 }
 }
 </script>
