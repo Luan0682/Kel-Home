@@ -653,60 +653,101 @@ button:active {
 </div>
 </sc-if>
 
-<!-- ========== HOME（新设计） ========== -->
+<!-- ========== HOME ========== -->
 <sc-if value="{{ isHome }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;inset:0;background:#F5F3EE;display:flex;flex-direction:column;">
+<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 24px 24px;background:var(--bg-main, #F5F3EE);width:100%;">
 
-  <!-- 顶部：名字 + 计时 -->
-  <div style="padding:48px 24px 0;text-align:center;">
-    <!-- 可编辑名字（点击在侧边栏修改） -->
-    <div onClick="{{ openSidebar }}" style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:34px;font-weight:400;color:#68544B;letter-spacing:-0.02em;cursor:pointer;margin-bottom:4px;">
-      {{ homeTitleName }}
-    </div>
-    <div style="font-size:13px;color:#9A958B;margin-bottom:20px;">点击名字编辑</div>
-    <!-- 大数字计时 -->
-    <div style="display:flex;align-items:baseline;justify-content:center;gap:6px;">
-      <span style="font-family:'Playfair Display','Bodoni Moda','Georgia',serif !important;font-size:72px;font-weight:300;color:#DFF2EC;letter-spacing:-0.04em;line-height:1;text-shadow:2px 2px 12px rgba(104,84,75,0.1);">{{ togetherDays }}</span>
-      <div style="display:flex;flex-direction:column;align-items:flex-start;gap:1px;">
-        <span style="font-size:16px;font-weight:400;color:#68544B;opacity:.7;">天</span>
-        <span style="font-size:10px;color:#9A958B;">since 2026.06.30</span>
-      </div>
-    </div>
-  </div>
+<!-- 华丽名字区域 -->
+<div style="padding:28px 0 20px;">
+<!-- 名字：Kel & 江吟 -->
+<div onClick="{{ openSidebar }}" style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:46px;font-weight:400;color:var(--bubble-user, #59483F);letter-spacing:-0.02em;line-height:1.1;cursor:pointer;margin-bottom:10px;">
+Kel <span style="font-size:36px;opacity:.55;margin:0 4px;">&</span> 江吟
+</div>
 
-  <!-- 中间留白 -->
-  <div style="flex:1;"></div>
+<!-- 随时间变化的欢迎语 -->
+<div style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:14px;color:var(--bubble-user, #59483F);opacity:.65;margin-bottom:24px;font-style:italic;">
+{{ homeGreetingByTime }}
+</div>
 
-  <!-- 底部：5个App卡片（苹果风格） -->
-  <div style="padding:0 24px 100px;">
-    <div style="display:flex;gap:8px;justify-content:center;">
-      <!-- 聊天 -->
-      <div onClick="{{ navChatList }}" style="width:60px;height:60px;border-radius:16px;background:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#68544B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span style="font-size:9px;color:#68544B;font-weight:500;">聊天</span>
-      </div>
-      <!-- 纪念日 -->
-      <div onClick="{{ openAnnivSheet }}" style="width:60px;height:60px;border-radius:16px;background:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 5v16l7-4 7 4V5a2 2 0 00-2-2H7a2 2 0 00-2 2z" stroke="#68544B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-        <span style="font-size:9px;color:#68544B;font-weight:500;">纪念日</span>
-      </div>
-      <!-- 日历 -->
-      <div onClick="{{ navPeriod }}" style="width:60px;height:60px;border-radius:16px;background:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="4" width="18" height="18" rx="2" stroke="#68544B" stroke-width="1.5"/><path d="M3 10h18M8 2v4M16 2v4" stroke="#68544B" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <span style="font-size:9px;color:#68544B;font-weight:500;">日历</span>
-      </div>
-      <!-- 日记 -->
-      <div onClick="{{ navDiary }}" style="width:60px;height:60px;border-radius:16px;background:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="#68544B" stroke-width="1.5"/><path d="M8 7h8M8 11h5" stroke="#68544B" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <span style="font-size:9px;color:#68544B;font-weight:500;">日记</span>
-      </div>
-      <!-- 设置 -->
-      <div onClick="{{ navSettings }}" style="width:60px;height:60px;border-radius:16px;background:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
-        <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#68544B" stroke-width="1.5"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="#68544B" stroke-width="1.5" stroke-linecap="round"/></svg>
-        <span style="font-size:9px;color:#68544B;font-weight:500;">设置</span>
-      </div>
-    </div>
-  </div>
+<!-- 在一起天数（超大数字） -->
+<div style="display:flex;align-items:baseline;gap:8px;">
+<span style="font-family:'Playfair Display','Bodoni Moda','Georgia',serif !important;font-size:88px;font-weight:300;color:var(--bubble-ai, #D7EBE4);letter-spacing:-0.04em;line-height:0.9;text-shadow:2px 2px 8px rgba(104,84,75,0.12);">{{ togetherDays }}</span>
+<div style="display:flex;flex-direction:column;gap:2px;">
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:20px;font-weight:400;color:var(--bubble-user, #59483F);opacity:.75;">天</span>
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:11px;color:var(--bubble-user, #59483F);opacity:.45;">since 2026.06.30</span>
+</div>
+</div>
+</div>
+
+<!-- 总消息数 -->
+<div style="padding:0 0 28px;">
+<div style="display:flex;align-items:baseline;gap:6px;">
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:42px;font-weight:400;color:var(--bubble-user, #59483F);letter-spacing:-0.02em;">{{ homeTotalMsgs }}</span>
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:14px;color:var(--bubble-user, #59483F);opacity:.6;">messages</span>
+</div>
+<div style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:12px;color:var(--bubble-user, #59483F);opacity:.4;">{{ homeTotalRounds }} conversations</div>
+</div>
+
+<!-- 功能入口卡片 2x2 -->
+<div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px;">
+
+<!-- 纪念日 -->
+<div onClick="{{ openAnnivSheet }}" style="background:var(--bubble-ai, #D7EBE4);border:1px solid rgba(255,255,255,0.4);border-radius:22px;padding:20px 16px;cursor:pointer;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,0.04);">
+<svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M5 5v16l7-4 7 4V5a2 2 0 00-2-2H7a2 2 0 00-2 2z" stroke="var(--bubble-user, #59483F)" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+<span style="font-family:'Playfair Display','Newsreader','Georgia',serif !important;font-size:32px;font-weight:500;color:var(--bubble-user, #59483F);line-height:1;">{{ annivDays }}</span>
+<div>
+<div style="font-size:13px;font-weight:600;color:var(--bubble-user, #59483F);">纪念日</div>
+<div style="font-size:11px;color:var(--bubble-user, #59483F);opacity:.5;margin-top:2px;">{{ annivDisplayName }}</div>
+</div>
+</div>
+
+<!-- 经期日历 -->
+<div onClick="{{ navPeriod }}" style="background:#FFF;border:1px solid rgba(255,255,255,0.5);border-radius:22px;padding:20px 16px;cursor:pointer;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,0.04);">
+<div style="font-size:22px;">📅</div>
+<div>
+<div style="font-size:13px;font-weight:600;color:#2A2520;">日历</div>
+<div style="font-size:11px;color:#9A958B;margin-top:2px;">经期 · 排卵 · 亲密</div>
+</div>
+</div>
+
+<!-- 日记 -->
+<div onClick="{{ navDiary }}" style="background:#FFF;border:1px solid rgba(255,255,255,0.5);border-radius:22px;padding:20px 16px;cursor:pointer;display:flex;flex-direction:column;gap:10px;box-shadow:0 4px 16px rgba(0,0,0,0.04);">
+<div style="font-size:22px;">📖</div>
+<div>
+<div style="font-size:13px;font-weight:600;color:#2A2520;">日记</div>
+<div style="font-size:11px;color:#9A958B;margin-top:2px;">日常 · 回忆</div>
+</div>
+</div>
+
+</div>
+
+<!-- 热力图 -->
+<div style="background:rgba(255,255,255,0.6);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border:1px solid rgba(255,255,255,0.4);border-radius:22px;padding:18px 16px;margin-bottom:18px;box-shadow:0 4px 16px rgba(0,0,0,0.04);">
+<div onClick="{{ openHeatmapSettings }}" style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;cursor:pointer;">
+<div>
+<span style="font-size:13px;font-weight:600;color:var(--bubble-user, #59483F);">在一起的日子</span>
+<div style="font-size:10px;color:var(--bubble-user, #59483F);opacity:.4;margin-top:2px;">颜色越深聊的越多 · 点击调节</div>
+</div>
+<span style="font-size:11px;color:var(--bubble-user, #59483F);opacity:.5;">{{ homeHeatmapMonth }}</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;margin-bottom:4px;">
+<span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.5;text-align:center;">日</span><span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.5;text-align:center;">一</span><span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.5;text-align:center;">二</span><span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.5;text-align:center;">三</span><span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.5;text-align:center;">四</span><span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.5;text-align:center;">五</span><span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.5;text-align:center;">六</span>
+</div>
+<div style="display:grid;grid-template-columns:repeat(7,1fr);gap:3px;">
+<sc-for list="{{ homeHeatmapCells }}" as="hc" hint-placeholder-count="35">
+<div style="aspect-ratio:1;border-radius:5px;background:{{ hc.bg }};min-height:12px;display:flex;align-items:center;justify-content:center;font-size:7px;color:{{ hc.count > 0 ? '#1A1815' : 'transparent' }};font-weight:500;">{{ hc.label }}</div>
+</sc-for>
+</div>
+<div style="display:flex;align-items:center;gap:5px;margin-top:8px;justify-content:flex-end;">
+<span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.4;">少</span>
+<div style="width:9px;height:9px;border-radius:3px;background:#F5F3EE;border:1px solid rgba(0,0,0,.06);"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:#E8F6F1;"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:#DFF2EC;"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:#B8DFD2;"></div>
+<div style="width:9px;height:9px;border-radius:3px;background:#8ECBB8;"></div>
+<span style="font-size:8px;color:var(--bubble-user, #59483F);opacity:.4;">多</span>
+</div>
+</div>
 
 </div>
 </sc-if>
@@ -1756,7 +1797,38 @@ button:active {
 </div>
 </sc-if>
 
-
+<!-- 底部tab栏：5入口，聊天页隐藏 -->
+<sc-if value="{{ !isChat }}" hint-placeholder-val="{{ true }}">
+<div style="position:fixed;bottom:0;left:0;right:0;padding:6px 12px calc(env(safe-area-inset-bottom,0px) + 6px);background:red;display:flex;align-items:center;justify-content:space-around;z-index:9999;">
+  <!-- 主页 -->
+  <button onClick="{{ navHome }}" style="display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:transparent;cursor:pointer;padding:4px 6px;min-width:40px;">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 12l9-9 9 9" stroke="{{ navHomeColor }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v9a1 1 0 001 1h3v-5h6v5h3a1 1 0 001-1v-9" stroke="{{ navHomeColor }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    <span style="font-size:9px;color:{{ navHomeColor }};">主页</span>
+  </button>
+  <!-- 记忆库 -->
+  <button onClick="{{ navMemory }}" style="display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:transparent;cursor:pointer;padding:4px 6px;min-width:40px;">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="{{ navMemColor }}" stroke-width="1.8" stroke-linecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="{{ navMemColor }}" stroke-width="1.8"/><path d="M8 7h8M8 11h8" stroke="{{ navMemColor }}" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span style="font-size:9px;color:{{ navMemColor }};">记忆库</span>
+  </button>
+  <!-- 聊天（居中大圆底） -->
+  <button onClick="{{ navChatList }}" style="display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:transparent;cursor:pointer;padding:0;margin-top:-8px;">
+    <div style="width:54px;height:54px;border-radius:50%;background:#68544B;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(104,84,75,0.35);">
+      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <span style="font-size:9px;color:#68544B;font-weight:500;">聊天</span>
+  </button>
+  <!-- MCP -->
+  <button onClick="{{ navMCP }}" style="display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:transparent;cursor:pointer;padding:4px 6px;min-width:40px;">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="8" rx="2" stroke="{{ navMCPColor }}" stroke-width="1.8"/><rect x="2" y="14" width="20" height="8" rx="2" stroke="{{ navMCPColor }}" stroke-width="1.8"/><path d="M12 10v4" stroke="{{ navMCPColor }}" stroke-width="1.8"/></svg>
+    <span style="font-size:9px;color:{{ navMCPColor }};">MCP</span>
+  </button>
+  <!-- 设置 -->
+  <button onClick="{{ navSettings }}" style="display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:transparent;cursor:pointer;padding:4px 6px;min-width:40px;">
+    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="{{ navSettingsColor }}" stroke-width="1.8"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="{{ navSettingsColor }}" stroke-width="1.8" stroke-linecap="round"/></svg>
+    <span style="font-size:9px;color:{{ navSettingsColor }};">设置</span>
+  </button>
+</div>
+</sc-if>
 </div>
 </sc-if>
 
@@ -2708,39 +2780,6 @@ button:active {
 <input type="file" accept=".json" style="display:none;" id="kelImportInput" onChange="{{ handleImportFile }}">
 
 </div>
-
-<!-- 底部tab栏：5入口，聊天页隐藏 -->
-<sc-if value="{{ !isChat }}" hint-placeholder-val="{{ true }}">
-<div style="position:fixed;bottom:16px;left:12px;right:12px;padding:6px 10px;background:rgba(255,248,240,0.88);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:28px;box-shadow:0 8px 32px rgba(0,0,0,0.08),0 2px 8px rgba(0,0,0,0.04);display:flex;align-items:center;justify-content:space-around;z-index:9999;">
-  <!-- 主页 -->
-  <button onClick="{{ navHome }}" style="display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:transparent;cursor:pointer;padding:4px 6px;min-width:40px;">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 12l9-9 9 9" stroke="{{ navHomeColor }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/><path d="M5 10v9a1 1 0 001 1h3v-5h6v5h3a1 1 0 001-1v-9" stroke="{{ navHomeColor }}" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    <span style="font-size:9px;color:{{ navHomeColor }};">主页</span>
-  </button>
-  <!-- 记忆库 -->
-  <button onClick="{{ navMemory }}" style="display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:transparent;cursor:pointer;padding:4px 6px;min-width:40px;">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M4 19.5A2.5 2.5 0 016.5 17H20" stroke="{{ navMemColor }}" stroke-width="1.8" stroke-linecap="round"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 014 19.5v-15A2.5 2.5 0 016.5 2z" stroke="{{ navMemColor }}" stroke-width="1.8"/><path d="M8 7h8M8 11h8" stroke="{{ navMemColor }}" stroke-width="1.8" stroke-linecap="round"/></svg>
-    <span style="font-size:9px;color:{{ navMemColor }};">记忆库</span>
-  </button>
-  <!-- 聊天（居中大圆底） -->
-  <button onClick="{{ navChatList }}" style="display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:transparent;cursor:pointer;padding:0;margin-top:-8px;">
-    <div style="width:54px;height:54px;border-radius:50%;background:#68544B;display:flex;align-items:center;justify-content:center;box-shadow:0 4px 14px rgba(104,84,75,0.35);">
-      <svg width="26" height="26" viewBox="0 0 24 24" fill="none"><path d="M21 15a2 2 0 01-2 2H7l-4 4V5a2 2 0 012-2h14a2 2 0 012 2z" stroke="#FFFFFF" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
-    </div>
-    <span style="font-size:9px;color:#68544B;font-weight:500;">聊天</span>
-  </button>
-  <!-- MCP -->
-  <button onClick="{{ navMCP }}" style="display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:transparent;cursor:pointer;padding:4px 6px;min-width:40px;">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="2" y="2" width="20" height="8" rx="2" stroke="{{ navMCPColor }}" stroke-width="1.8"/><rect x="2" y="14" width="20" height="8" rx="2" stroke="{{ navMCPColor }}" stroke-width="1.8"/><path d="M12 10v4" stroke="{{ navMCPColor }}" stroke-width="1.8"/></svg>
-    <span style="font-size:9px;color:{{ navMCPColor }};">MCP</span>
-  </button>
-  <!-- 设置 -->
-  <button onClick="{{ navSettings }}" style="display:flex;flex-direction:column;align-items:center;gap:2px;border:none;background:transparent;cursor:pointer;padding:4px 6px;min-width:40px;">
-    <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="{{ navSettingsColor }}" stroke-width="1.8"/><path d="M12 2v2M12 20v2M4.93 4.93l1.41 1.41M17.66 17.66l1.41 1.41M2 12h2M20 12h2M4.93 19.07l1.41-1.41M17.66 6.34l1.41-1.41" stroke="{{ navSettingsColor }}" stroke-width="1.8" stroke-linecap="round"/></svg>
-    <span style="font-size:9px;color:{{ navSettingsColor }};">设置</span>
-  </button>
-</div>
-</sc-if>
 </x-dc>
 
 <script type="text/x-dc" data-dc-script data-props="{&quot;$preview&quot;:{&quot;width&quot;:390,&quot;height&quot;:844}}">
@@ -7612,7 +7651,6 @@ togetherMins: (() => { const start = new Date('2026-06-30T00:00:00'); const diff
 navSoul: () => self.setState({ tab: 'soul', drawer: false }),
 // Home 页数据
 homeTotalMsgs: (() => { let count = 0; for (const c of Object.values(s.chats)) { count += (c.messages || []).length; } return count; })(),
-homeTitleName: s.homeTitleName || 'Kel & 江吟',
 homeTotalRounds: (() => { let count = 0; for (const c of Object.values(s.chats)) { count += (c.messages || []).filter(m => m.role === 'user').length; } return count; })(),
 homeLastTime: (() => { const c = self.currentChat; const last = c.messages && c.messages.length > 0 ? c.messages[c.messages.length-1] : null; return last && last.timestamp ? last.timestamp.slice(11, 16) : ''; })(),
 homeLastOneLine: (() => { const c = self.currentChat; const msgs = (c.messages || []); if (msgs.length === 0) return '还没有对话'; const last = msgs[msgs.length - 1]; const text = (last.variants ? last.variants[last.variantIdx||0] : last.text) || ''; return (last.role === 'user' ? '你：' : 'Kel：') + text.slice(0, 40); })(),
