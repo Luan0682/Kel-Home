@@ -1744,15 +1744,98 @@ button:active {
 
 <!-- ========== MCP PAGE ========== -->
 <sc-if value="{{ isMCPPage }}" hint-placeholder-val="{{ false }}">
-<div style="position:absolute;inset:0;background:#F5F3EE;">
-<div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 8px;">
-<div style="width:36px;"></div>
-<div style="font-size:20px;font-weight:600;color:#2A2520;">MCP</div>
-<div style="width:36px;"></div>
-</div>
-<div style="padding:60px 20px;text-align:center;">
-<div style="font-size:14px;color:#9A958B;line-height:1.7;">MCP 功能即将上线<br>敬请期待</div>
-</div>
+<div style="position:absolute;inset:0;background:#f2f2f7;overflow-y:auto;">
+
+  <!-- 顶栏 -->
+  <div style="display:flex;align-items:center;justify-content:space-between;padding:16px 20px 4px;">
+    <div style="font-size:22px;font-weight:700;color:#1A1815;">MCP</div>
+    <div style="display:flex;align-items:center;gap:6px;">
+      <div style="width:8px;height:8px;border-radius:50%;background:{{ mcpStatusColor }};"></div>
+      <span style="font-size:13px;color:#9A958B;">{{ mcpStatusText }}</span>
+    </div>
+  </div>
+
+  <!-- 可用工具 -->
+  <div style="padding:12px 16px;">
+    <div style="font-size:13px;font-weight:600;color:#3A362F;margin-bottom:8px;padding:0 4px;">可用工具</div>
+    <sc-if value="{{ mcpHasTools }}" hint-placeholder-val="{{ false }}">
+      <sc-for list="{{ mcpToolCards }}" as="t" hint-placeholder-count="3">
+        <div onClick="{{ t.call }}" style="background:rgba(255,255,255,0.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:14px;padding:14px 16px;margin-bottom:8px;cursor:pointer;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+          <div style="display:flex;align-items:center;justify-content:space-between;">
+            <div>
+              <div style="font-size:15px;font-weight:500;color:#1A1815;">{{ t.name }}</div>
+              <div style="font-size:12px;color:#9A958B;margin-top:2px;">{{ t.desc }}</div>
+            </div>
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#C7C7CC" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </div>
+        </div>
+      </sc-for>
+    </sc-if>
+    <sc-if value="{{ !mcpHasTools }}" hint-placeholder-val="{{ true }}">
+      <div style="background:rgba(255,255,255,0.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:14px;padding:20px 16px;text-align:center;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+        <div style="font-size:13px;color:#9A958B;">暂无可用工具</div>
+        <button onClick="{{ mcpFetchTools }}" style="margin-top:10px;border:none;background:#007aff;color:#FFF;border-radius:12px;padding:8px 18px;font-size:13px;font-family:inherit;cursor:pointer;">刷新</button>
+      </div>
+    </sc-if>
+  </div>
+
+  <!-- 自定义工具 -->
+  <div style="padding:0 16px 12px;">
+    <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;padding:0 4px;">
+      <div style="font-size:13px;font-weight:600;color:#3A362F;">自定义工具</div>
+      <button onClick="{{ mcpShowAddForm }}" style="border:none;background:#007aff;color:#FFF;border-radius:12px;padding:6px 14px;font-size:12px;font-family:inherit;cursor:pointer;">+ 添加</button>
+    </div>
+    <sc-if value="{{ mcpShowAddFormVisible }}" hint-placeholder-val="{{ false }}">
+      <div style="background:rgba(255,255,255,0.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:14px;padding:14px 16px;margin-bottom:10px;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+        <input value="{{ mcpNewToolName }}" onInput="{{ mcpNewToolNameChange }}" placeholder="工具名称" style="width:100%;border:1px solid #E7E3DA;border-radius:10px;padding:9px 12px;font-size:13px;font-family:inherit;outline:none;margin-bottom:8px;background:#FFF;">
+        <input value="{{ mcpNewToolUrl }}" onInput="{{ mcpNewToolUrlChange }}" placeholder="API URL (POST)" style="width:100%;border:1px solid #E7E3DA;border-radius:10px;padding:9px 12px;font-size:13px;font-family:inherit;outline:none;margin-bottom:8px;background:#FFF;">
+        <textarea value="{{ mcpNewToolSchema }}" onInput="{{ mcpNewToolSchemaChange }}" placeholder='参数 JSON Schema（选填）&#10;{&#10;  "type": "object",&#10;  "properties": {&#10;    "key": { "type": "string" }&#10;  }&#10;}' rows="4" style="width:100%;border:1px solid #E7E3DA;border-radius:10px;padding:9px 12px;font-size:12px;font-family:'SF Mono',monospace;outline:none;margin-bottom:8px;resize:vertical;background:#FFF;"></textarea>
+        <button onClick="{{ mcpSaveCustomTool }}" style="width:100%;border:none;background:#007aff;color:#FFF;border-radius:12px;padding:10px;font-size:14px;font-weight:500;font-family:inherit;cursor:pointer;">保存</button>
+      </div>
+    </sc-if>
+    <sc-if value="{{ mcpHasCustomTools }}" hint-placeholder-val="{{ false }}">
+      <sc-for list="{{ mcpCustomToolCards }}" as="ct" hint-placeholder-count="2">
+        <div style="background:rgba(255,255,255,0.9);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px);border-radius:14px;padding:12px 16px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;box-shadow:0 1px 4px rgba(0,0,0,0.04);">
+          <div style="flex:1;cursor:pointer;" onClick="{{ ct.call }}">
+            <div style="font-size:14px;font-weight:500;color:#1A1815;">{{ ct.name }}</div>
+            <div style="font-size:11px;color:#9A958B;">{{ ct.urlShort }}</div>
+          </div>
+          <button onClick="{{ ct.remove }}" style="border:none;background:transparent;color:#FF3B30;font-size:18px;cursor:pointer;padding:4px;">×</button>
+        </div>
+      </sc-for>
+    </sc-if>
+  </div>
+
+  <!-- 同步到 Git -->
+  <div style="padding:0 16px 12px;">
+    <button onClick="{{ mcpSyncToGit }}" style="width:100%;border:none;background:#007aff;color:#FFF;border-radius:12px;padding:12px;font-size:15px;font-weight:500;font-family:inherit;cursor:pointer;box-shadow:0 2px 8px rgba(0,122,255,0.2);">
+      <span style="display:flex;align-items:center;justify-content:center;gap:8px;">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M5 12h14M12 5l7 7-7 7" stroke="#FFF" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        同步到 Git
+      </span>
+    </button>
+  </div>
+
+  <!-- 控制台（可折叠） -->
+  <div style="padding:0 16px 24px;">
+    <div onClick="{{ mcpToggleConsole }}" style="display:flex;align-items:center;justify-content:space-between;padding:8px 4px;cursor:pointer;">
+      <span style="font-size:13px;font-weight:600;color:#3A362F;">操作日志</span>
+      <svg width="14" height="14" viewBox="0 0 24 24" fill="none" style="transform:rotate({{ mcpConsoleRotate }}deg);transition:transform .3s ease;"><path d="M6 9l6 6 6-6" stroke="#9A958B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
+    </div>
+    <sc-if value="{{ mcpConsoleOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#1E1E1E;border-radius:14px;padding:12px;font-family:'SF Mono','Menlo',monospace;font-size:11px;line-height:1.7;color:#33D17A;max-height:200px;overflow-y:auto;">
+        <sc-if value="{{ mcpHasLogs }}" hint-placeholder-val="{{ false }}">
+          <sc-for list="{{ mcpLogLines }}" as="l" hint-placeholder-count="5">
+            <div style="white-space:pre-wrap;word-break:break-all;">{{ l.text }}</div>
+          </sc-for>
+        </sc-if>
+        <sc-if value="{{ !mcpHasLogs }}" hint-placeholder-val="{{ true }}">
+          <div style="color:#666;">暂无日志</div>
+        </sc-if>
+      </div>
+    </sc-if>
+  </div>
+
 </div>
 </sc-if>
 
@@ -2973,6 +3056,15 @@ attachments: [],
 petEnabled: saved.petEnabled !== false,
 petSizeIdx: saved.petSizeIdx || 1,
 soundEnabled: saved.soundEnabled !== false,
+mcpConnected: false,
+mcpTools: [],
+mcpLogs: [],
+mcpConsoleOpen: false,
+mcpShowAddForm: false,
+mcpNewToolName: '',
+mcpNewToolUrl: '',
+mcpNewToolSchema: '',
+mcpCustomTools: (() => { try { const raw = localStorage.getItem('mcpcustomtools'); return raw ? JSON.parse(raw) : []; } catch(e) { return []; } })(),
 memoryCount: saved.memoryCount || 10,
 avatarSize: saved.avatarSize || 36,
 userNickname: saved.userNickname || '江吟',
@@ -6209,6 +6301,116 @@ initPhotoStack() {
   });
 }
 
+// ====== MCP METHODS ======
+_mcpLog(msg) {
+  const logs = [...(this.state.mcpLogs || [])];
+  const ts = new Date().toLocaleTimeString();
+  logs.push('[' + ts + '] ' + msg);
+  if (logs.length > 100) logs.splice(0, logs.length - 50);
+  this.setState({ mcpLogs: logs });
+}
+_mcpFetchTools() {
+  this._mcpLog('正在获取工具列表...');
+  fetch('/api/mcp/tools/list').then(r => r.json()).then(data => {
+    const tools = data.tools || data || [];
+    this.setState({ mcpTools: tools, mcpConnected: true });
+    this._mcpLog('获取到 ' + tools.length + ' 个工具');
+  }).catch(err => {
+    this.setState({ mcpConnected: false });
+    this._mcpLog('获取失败: ' + err.message);
+  });
+}
+_mcpCallTool(tool) {
+  const name = tool.name || tool.function?.name || '工具';
+  const params = tool.input_schema || tool.function?.parameters || {};
+  const hasParams = params.properties && Object.keys(params.properties).length > 0;
+  if (!hasParams) {
+    this._mcpLog('调用 ' + name + '（无参数）');
+    fetch('/api/mcp/tools/call', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ name, arguments: {} })
+    }).then(r => r.json()).then(res => {
+      this._mcpLog(name + ' 返回: ' + JSON.stringify(res).slice(0, 200));
+    }).catch(err => {
+      this._mcpLog(name + ' 调用失败: ' + err.message);
+    });
+    return;
+  }
+  const argsStr = prompt('输入 ' + name + ' 的参数（JSON 格式）：\n' + JSON.stringify(params, null, 2), '{}');
+  if (argsStr === null) return;
+  let args;
+  try { args = JSON.parse(argsStr); } catch(e) { alert('JSON 格式错误'); return; }
+  this._mcpLog('调用 ' + name + '，参数: ' + JSON.stringify(args).slice(0, 100));
+  fetch('/api/mcp/tools/call', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name, arguments: args })
+  }).then(r => r.json()).then(res => {
+    this._mcpLog(name + ' 返回: ' + JSON.stringify(res).slice(0, 200));
+  }).catch(err => {
+    this._mcpLog(name + ' 调用失败: ' + err.message);
+  });
+}
+_mcpCallCustomTool(ct) {
+  if (!ct || !ct.url) return;
+  const argsStr = prompt('输入参数（JSON 格式，可选）：', '{}');
+  let body = {};
+  if (argsStr && argsStr !== '{}') { try { body = JSON.parse(argsStr); } catch(e) {} }
+  this._mcpLog('调用自定义工具 ' + ct.name + '...');
+  fetch(ct.url, {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  }).then(r => r.text()).then(res => {
+    this._mcpLog(ct.name + ' 返回: ' + res.slice(0, 200));
+  }).catch(err => {
+    this._mcpLog(ct.name + ' 失败: ' + err.message);
+  });
+}
+_mcpSyncToGit() {
+  this._mcpLog('正在同步到 Git...');
+  fetch('/api/mcp/tools/call', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ name: 'sync_to_git', arguments: {} })
+  }).then(r => r.json()).then(res => {
+    this._mcpLog('同步完成: ' + JSON.stringify(res).slice(0, 200));
+  }).catch(err => {
+    this._mcpLog('同步失败: ' + err.message);
+  });
+}
+_mcpToggleConsole() {
+  this.setState({ mcpConsoleOpen: !this.state.mcpConsoleOpen });
+}
+_mcpShowAddForm() {
+  this.setState({ mcpShowAddForm: true });
+}
+_mcpSaveCustomTool() {
+  const s = this.state;
+  if (!s.mcpNewToolName || !s.mcpNewToolUrl) { alert('请填写名称和 URL'); return; }
+  const list = [...(s.mcpCustomTools || [])];
+  let schema = null;
+  if (s.mcpNewToolSchema) { try { schema = JSON.parse(s.mcpNewToolSchema); } catch(e) { alert('Schema 格式错误'); return; } }
+  list.push({ name: s.mcpNewToolName, url: s.mcpNewToolUrl, schema });
+  this.setState({ mcpCustomTools: list, mcpNewToolName: '', mcpNewToolUrl: '', mcpNewToolSchema: '', mcpShowAddForm: false });
+  localStorage.setItem('mcpcustomtools', JSON.stringify(list));
+  this._mcpLog('已添加自定义工具: ' + s.mcpNewToolName);
+}
+_mcpRemoveCustomTool(idx) {
+  const list = [...(this.state.mcpCustomTools || [])];
+  list.splice(idx, 1);
+  this.setState({ mcpCustomTools: list });
+  localStorage.setItem('mcpcustomtools', JSON.stringify(list));
+  this._mcpLog('已删除自定义工具');
+}
+_mcpStartPolling() {
+  if (this._mcpPollTimer) clearInterval(this._mcpPollTimer);
+  this._mcpPollTimer = setInterval(() => {
+    fetch('/api/mcp/tools/list').then(r => {
+      if (r.ok) this.setState({ mcpConnected: true });
+      else this.setState({ mcpConnected: false });
+    }).catch(() => this.setState({ mcpConnected: false }));
+  }, 30000);
+  this._mcpFetchTools();
+}
+
 // ====== RENDER ======
 renderVals() {
 try {
@@ -6891,6 +7093,12 @@ if (!self._heatmapCache || self._heatmapCacheTick !== self.state.tab) {
   self._heatmapCache = null;
 }
 
+// MCP init
+if (!self._mcpStarted) {
+  self._mcpStarted = true;
+  self._mcpStartPolling();
+}
+
 return {
 true: true, false: false,
 // ===== 侧栏导航高亮 =====
@@ -6919,6 +7127,39 @@ navSettingsClass: s.tab === 'settings' ? 'active' : '',
 // ===== 新页面条件 =====
 isChatList: s.tab === 'chatlist',
 isMCPPage: s.tab === 'mcp',
+// ===== MCP 页面数据 =====
+mcpStatusColor: s.mcpConnected ? '#34C759' : '#FF3B30',
+mcpStatusText: s.mcpConnected ? '已连接' : '未连接',
+mcpHasTools: (s.mcpTools || []).length > 0,
+mcpToolCards: (s.mcpTools || []).map(t => ({
+  name: t.name || t.function?.name || '未知工具',
+  desc: t.description || t.function?.description || '',
+  call: () => self._mcpCallTool(t)
+})),
+mcpHasCustomTools: (s.mcpCustomTools || []).length > 0,
+mcpCustomToolCards: (s.mcpCustomTools || []).map((ct, i) => ({
+  name: ct.name || '未命名',
+  urlShort: (ct.url || '').slice(0, 40),
+  call: () => self._mcpCallCustomTool(ct),
+  remove: () => self._mcpRemoveCustomTool(i)
+})),
+mcpHasLogs: (s.mcpLogs || []).length > 0,
+mcpLogLines: (s.mcpLogs || []).map(l => ({ text: '> ' + l })),
+mcpConsoleOpen: s.mcpConsoleOpen || false,
+mcpConsoleRotate: s.mcpConsoleOpen ? '180' : '0',
+mcpShowAddFormVisible: s.mcpShowAddForm || false,
+mcpNewToolName: s.mcpNewToolName || '',
+mcpNewToolUrl: s.mcpNewToolUrl || '',
+mcpNewToolSchema: s.mcpNewToolSchema || '',
+mcpNewToolNameChange: (e) => self.setState({ mcpNewToolName: e.target.value }),
+mcpNewToolUrlChange: (e) => self.setState({ mcpNewToolUrl: e.target.value }),
+mcpNewToolSchemaChange: (e) => self.setState({ mcpNewToolSchema: e.target.value }),
+// ===== MCP 操作函数 =====
+mcpFetchTools: () => self._mcpFetchTools(),
+mcpSyncToGit: () => self._mcpSyncToGit(),
+mcpToggleConsole: () => self._mcpToggleConsole(),
+mcpShowAddForm: () => self._mcpShowAddForm(),
+mcpSaveCustomTool: () => self._mcpSaveCustomTool(),
 isSettings: s.tab === 'settings',
 // ===== 底栏导航颜色 =====
 navHomeColor: s.tab === 'home' ? '#68544B' : '#9A958B',
