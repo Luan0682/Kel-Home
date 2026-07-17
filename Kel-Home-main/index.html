@@ -26,7 +26,9 @@ html,body { margin:0; padding:0; height:100%; -webkit-font-smoothing:antialiased
 body { background:var(--bg-base, #d6d2c8); padding:env(safe-area-inset-top, 0) 0 0 0; }
 .sa::-webkit-scrollbar { width:0; display:none; }
 .sa { scrollbar-width:none; -webkit-overflow-scrolling:touch; }
-.msg-wrap { content-visibility:auto; contain-intrinsic-size:0 60px; }
+.msg-wrap { content-visibility:auto; contain-intrinsic-size:0 60px; overflow:visible; }
+/* PhotoStack 探边需要溢出可见；关闭 content-visibility 裁切 */
+.msg-wrap:has(.photostack) { content-visibility:visible; overflow:visible; }
 .nav-icon { width:44px;height:44px;border-radius:14px;display:flex;align-items:center;justify-content:center;cursor:pointer;transition:background .15s; }
 .nav-icon:hover { background:rgba(104,84,75,.06); }
 .nav-icon.active { background:var(--bg-card, #FFF);box-shadow:0 1px 4px rgba(43,38,30,.08); }
@@ -125,7 +127,18 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 .checklist-item-new .checklist-del-x, .checklist-item-new .checklist-check { visibility: hidden; }
 .checklist-check::before { content: "[ ]"; }
 #checklist-barcode i { display: block; background: var(--rc-ink); opacity: 0.85; }
-/* PhotoStack 核心样式（内联版） */
+/* PhotoStack 核心样式（内联版）
+   卡片尺寸由 JS options 控制；外层 .photostack 预留探边空间，禁止裁切 */
+.photostack {
+  position: relative;
+  overflow: visible !important;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  /* 默认外框 ≈ 卡片 118×158 + 左右探边 28×2 */
+  width: 174px;
+  height: 170px;
+}
 .photostack-container {
   position: relative;
   width: 100%;
@@ -135,22 +148,23 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 }
 .pstack-stage {
   position: relative;
-  width: 160px !important;
-  height: 200px !important;
-  overflow: visible;
+  overflow: visible !important;
+  /* width/height 由 PhotoStack JS 写入 */
+  flex: none;
 }
 .pstack-card {
   position: absolute;
   top: 0;
   left: 0;
-  width: 160px;
-  height: 200px;
+  width: 100%;
+  height: 100%;
   transform-origin: center center;
   transition: transform 0.35s cubic-bezier(0.32, 0.72, 0, 1), opacity 0.3s ease;
   box-shadow: 0 4px 16px rgba(0,0,0,0.15);
-  border-radius: 14px;
+  border-radius: 12px;
   overflow: hidden;
   cursor: grab;
+  will-change: transform;
 }
 .pstack-card:active {
   cursor: grabbing;
@@ -164,12 +178,12 @@ input, textarea { user-select:text; -webkit-user-select:text; }
 }
 .pstack-badge {
   position: absolute;
-  bottom: 8px;
-  right: 10px;
-  font-size: 11px;
-  color: rgba(255,255,255,0.8);
+  bottom: 6px;
+  right: 8px;
+  font-size: 10px;
+  color: rgba(255,255,255,0.85);
   background: rgba(0,0,0,0.35);
-  padding: 2px 7px;
+  padding: 1px 6px;
   border-radius: 10px;
   z-index: 200;
   backdrop-filter: blur(4px);
@@ -385,19 +399,19 @@ button:active {
 <sc-if value="{{ m.hasImages }}" hint-placeholder-val="{{ false }}">
   <div style="margin-bottom:6px;display:flex;justify-content:{{ m.imgJustify }};overflow:visible;">
     <sc-if value="{{ m.isSingleImage }}" hint-placeholder-val="{{ true }}">
-      <div style="position:relative;width:160px;height:160px;border-radius:14px;overflow:hidden;cursor:pointer;" onClick="{{ m.previewImage }}" onContextMenu="{{ m.longPressImage }}">
+      <div style="position:relative;width:118px;height:118px;border-radius:12px;overflow:hidden;cursor:pointer;" onClick="{{ m.previewImage }}" onContextMenu="{{ m.longPressImage }}">
         <img src="{{ m.images[0].preview }}" style="width:100%;height:100%;object-fit:cover;" alt="attachment">
       </div>
     </sc-if>
     <sc-if value="{{ m.isMultiImage }}" hint-placeholder-val="{{ false }}">
-      <div id="photostack-{{ m.photoStackId }}" class="photostack" data-msg-id="{{ m.photoStackId }}" style="width:160px;height:200px;position:relative;overflow:visible;">
+      <div id="photostack-{{ m.photoStackId }}" class="photostack" data-msg-id="{{ m.photoStackId }}">
         <sc-for list="{{ m.images }}" as="img" hint-placeholder-count="4">
           <img src="{{ img.preview }}" style="display:none;" alt="">
         </sc-for>
       </div>
       <!-- 网格fallback：PhotoStack加载失败时显示 -->
       <noscript>
-        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px;max-width:200px;">
+        <div style="display:grid;grid-template-columns:repeat(2,1fr);gap:4px;max-width:160px;">
           <sc-for list="{{ m.images }}" as="img" hint-placeholder-count="4">
             <div style="aspect-ratio:1;border-radius:10px;overflow:hidden;"><img src="{{ img.preview }}" style="width:100%;height:100%;object-fit:cover;" alt=""></div>
           </sc-for>
@@ -6147,20 +6161,35 @@ initPhotoStack() {
     const total = images.length;
     const onAllLoaded = () => {
       console.log('[Kel] 容器 ' + msgId + ' 图片加载完成，开始初始化 PhotoStack');
+      // 卡片略缩小；外框为探边留空，避免堆叠效果被裁切
+      const CARD_W = 118;
+      const CARD_H = 158;
+      const PEEK = 12;
+      const PEEK_STEP = 10;
+      const SIDE = PEEK + PEEK_STEP + 6; // 左右探边余量
+      const OUTER_W = CARD_W + SIDE * 2; // ~174
+      const OUTER_H = CARD_H + 12;       // ~170
+
       el.innerHTML = '';
-      el.style.overflow = 'hidden';
+      el.style.overflow = 'visible';
       el.style.position = 'relative';
-      el.style.width = '160px';
-      el.style.height = '200px';
-      el.style.borderRadius = '14px';
+      el.style.display = 'flex';
+      el.style.alignItems = 'center';
+      el.style.justifyContent = 'center';
+      el.style.width = OUTER_W + 'px';
+      el.style.height = OUTER_H + 'px';
+      el.style.borderRadius = '0';
+      el.style.background = 'transparent';
 
       try {
         el._ps = new PhotoStack(el, images, {
-          width: 160,
-          height: 200,
+          width: CARD_W,
+          height: CARD_H,
           counter: true,
-          peek: 14,
-          peekStep: 11,
+          peek: PEEK,
+          peekStep: PEEK_STEP,
+          rotStep: 2.2,
+          scaleStep: 0.08,
           onTap: (i) => {
             self.setState({
               imagePreviewOpen: true,
@@ -6170,11 +6199,15 @@ initPhotoStack() {
           onChange: () => {}
         });
         el._psImagesLen = images.length;
+        // 确保舞台本身也不裁切探边
+        if (el._ps && el._ps.stage) {
+          el._ps.stage.style.overflow = 'visible';
+        }
         console.log('[Kel] PhotoStack 初始化成功');
       } catch (err) {
         console.error('[PhotoStack] init failed:', err);
         // fallback：显示网格
-        el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;width:160px;">' +
+        el.innerHTML = '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;width:118px;">' +
           images.map(src => '<div style="aspect-ratio:1;border-radius:10px;overflow:hidden;cursor:pointer;" onclick="window.dispatchEvent(new CustomEvent(\'preview-image\',{detail:\'' + src + '\'}))"><img src="' + src + '" style="width:100%;height:100%;object-fit:cover;" alt=""></div>').join('') +
           '</div>';
       }
