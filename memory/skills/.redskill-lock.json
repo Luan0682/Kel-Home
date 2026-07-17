@@ -1,0 +1,13 @@
+{
+  "version": 1,
+  "skills": {
+    "memory": {
+      "name": "memory",
+      "version": "1.0.0",
+      "source": "redskill",
+      "install_dir": "D:\\Kel\\memory\\skills\\memory",
+      "installed_at": "1784175796002",
+      "sha256": "6418553a8385460f49a812c643e7239f79b5cf5aa2ef95e7776fe24bce9ceafe"
+    }
+  }
+}

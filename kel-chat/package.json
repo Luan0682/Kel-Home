@@ -1,0 +1,13 @@
+{
+  "name": "kel-chat",
+  "version": "1.0.0",
+  "description": "Kel Chat - 聊天前端 + 中转服务器",
+  "main": "server/index.js",
+  "scripts": {
+    "start": "node server/index.js",
+    "import": "node import-data.js"
+  },
+  "dependencies": {
+    "ws": "^8.21.0"
+  }
+}

@@ -1,0 +1,27 @@
+version: '1.0'
+updated_at: '2026-07-16T04:43:54Z'
+mode: companion
+episode_count: 3
+wings:
+  user:
+    rooms:
+    - identity
+    - preferences
+    - boundaries
+    - life-events
+  relationship:
+    rooms:
+    - milestones
+    - rituals
+    - nicknames
+    - shared-plans
+  ai-persona:
+    rooms:
+    - character
+    - voice-style
+    - backstory
+    - limits
+  sessions:
+    rooms:
+    - summaries
+    - transcripts

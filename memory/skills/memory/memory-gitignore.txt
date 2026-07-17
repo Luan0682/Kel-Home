@@ -1,0 +1,7 @@
+# Copy to project memory/.gitignore
+episodes/*.yaml
+inbox/*.yaml
+core/working.yaml
+archive/
+diary/
+reflections/

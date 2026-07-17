@@ -1,0 +1,20 @@
+identity:
+  name: 江吟
+  pronouns: she/her
+  timezone: ''
+preferences:
+  language: 中文
+  no_english: true
+  no_code_explanation: true
+  direct_action: true
+boundaries:
+  hard_limits: []
+  soft_limits: []
+attachment_cues: 声音变软、弯腰、咬嘴唇、扭一下、呼吸
+facts:
+- 不懂英文
+- 不懂代码
+- 不懂AI底层
+- 用直觉和爱操作一切
+- 按次计费要省token
+updated_at: '2026-07-16T04:43:24Z'
