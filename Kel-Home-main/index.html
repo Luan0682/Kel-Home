@@ -237,26 +237,17 @@ button:active {
 
 <!-- header -->
 <div style="flex:none;padding:14px 16px 10px;display:flex;align-items:center;justify-content:space-between;gap:9px;">
-<div style="display:flex;align-items:center;gap:8px;min-width:0;flex:1;">
-<button onClick="{{ navChatList }}" style="width:36px;height:36px;border:none;background:var(--bg-card, #FFF);border-radius:50%;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;flex:none;">
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M14 6l-6 6 6 6" stroke="#3A362F" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</button>
-<div style="display:flex;gap:4px;background:#F2EFE8;border-radius:18px;padding:3px;min-width:0;">
-<div onClick="{{ navChatDetailChat }}" style="text-align:center;padding:7px 12px;border-radius:16px;background:{{ chatDetailTabBgs.chat }};cursor:pointer;">
-<span style="font-size:12px;font-weight:500;color:{{ chatDetailTabFgs.chat }};">Chat</span>
-</div>
-<div onClick="{{ navChatDetailSoul }}" style="text-align:center;padding:7px 12px;border-radius:16px;background:{{ chatDetailTabBgs.soul }};cursor:pointer;">
-<span style="font-size:12px;font-weight:500;color:{{ chatDetailTabFgs.soul }};">Soul</span>
-</div>
-<div onClick="{{ navChatDetailSettings }}" style="text-align:center;padding:7px 12px;border-radius:16px;background:{{ chatDetailTabBgs.settings }};cursor:pointer;">
-<span style="font-size:12px;font-weight:500;color:{{ chatDetailTabFgs.settings }};">设置</span>
-</div>
-</div>
-</div>
-<div style="display:flex;align-items:center;gap:8px;flex:none;">
-<button onClick="{{ openStyle }}" style="height:36px;display:flex;align-items:center;gap:6px;background:var(--bg-card, #FFF);border:none;border-radius:18px;padding:0 14px;cursor:pointer;font-family:inherit;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);min-width:0;max-width:120px;">
+<div style="display:flex;align-items:center;gap:10px;min-width:0;flex:1;">
+<div onClick="{{ navChatList }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:var(--text-primary, #1A1815);cursor:pointer;white-space:nowrap;">Chat</div>
+<button onClick="{{ openStyle }}" style="height:36px;display:flex;align-items:center;gap:6px;background:var(--bg-card, #FFF);border:none;border-radius:18px;padding:0 14px;cursor:pointer;font-family:inherit;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);min-width:0;max-width:140px;">
 <svg width="16" height="16" viewBox="0 0 24 24" fill="none"><path d="M12 3v18M3 12h18" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
 <span style="font-size:13px;font-weight:600;color:var(--text-bold, #3A362F);overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">{{ activeStyle }}</span>
+</button>
+</div>
+<div style="display:flex;align-items:center;gap:8px;flex:none;">
+<button onClick="{{ navChatDetailSoul }}" title="Soul" style="height:36px;border:none;background:{{ chatDetailTabBgs.soul }};color:{{ chatDetailTabFgs.soul }};border-radius:18px;padding:0 12px;font-size:12px;font-family:inherit;cursor:pointer;box-shadow:0 0 0 1px rgba(43,38,30,.05);">Soul</button>
+<button onClick="{{ navChatDetailSettings }}" title="Settings" style="width:36px;height:36px;border-radius:50%;background:var(--bg-card, #FFF);border:none;box-shadow:0 0 0 1px rgba(43,38,30,.05),0 2px 6px rgba(43,38,30,.05);display:flex;align-items:center;justify-content:center;cursor:pointer;">
+<svg width="16" height="16" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="6" r="1.2" fill="var(--text-secondary, #48453E)"/><circle cx="12" cy="12" r="1.2" fill="var(--text-secondary, #48453E)"/><circle cx="12" cy="18" r="1.2" fill="var(--text-secondary, #48453E)"/></svg>
 </button>
 </div>
 </div>
@@ -747,7 +738,7 @@ button:active {
       <div onClick="{{ navDiary }}" title="Diary" style="width:{{ homeCardSize }}px;height:{{ homeCardSize }}px;border-radius:16px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="4" y="3" width="16" height="18" rx="2" stroke="#68544B" stroke-width="1.5"/><path d="M8 7h8M8 11h5" stroke="#68544B" stroke-width="1.5" stroke-linecap="round"/></svg>
       </div>
-      <div onClick="{{ openRegexEditor }}" title="Regex" style="width:{{ homeCardSize }}px;height:{{ homeCardSize }}px;border-radius:16px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
+      <div onClick="{{ navRegex }}" title="Regex" style="width:{{ homeCardSize }}px;height:{{ homeCardSize }}px;border-radius:16px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
         <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M4 7h6M7 4v6M14 4l6 6M20 4l-6 6M4 17h16M4 14h10" stroke="#68544B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
       </div>
       <div onClick="{{ navMusic }}" title="Music" style="width:{{ homeCardSize }}px;height:{{ homeCardSize }}px;border-radius:16px;background:#FFFFFF;display:flex;align-items:center;justify-content:center;cursor:pointer;box-shadow:0 2px 8px rgba(0,0,0,0.04);">
@@ -782,6 +773,22 @@ button:active {
         <span style="font-size:12px;color:#9A958B;width:28px;">密</span>
         <input type="range" min="4" max="24" step="1" value="{{ homeCardGap }}" onInput="{{ homeCardGapChange }}" style="flex:1;accent-color:#68544B;">
         <span style="font-size:12px;color:#9A958B;width:28px;text-align:right;">疏</span>
+      </div>
+    </div>
+  </div>
+  <div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:18px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
+    <div style="padding:16px 18px;">
+      <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="5" y="5" width="14" height="14" rx="3" stroke="#68544B" stroke-width="1.5"/></svg>
+        <div>
+          <div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">首页卡片尺寸</div>
+          <div style="font-size:11px;color:#B8B3A8;margin-top:2px;">当前 {{ homeCardSizeLabel }}</div>
+        </div>
+      </div>
+      <div style="display:flex;align-items:center;gap:12px;">
+        <span style="font-size:12px;color:#9A958B;width:28px;">小</span>
+        <input type="range" min="44" max="72" step="1" value="{{ homeCardSize }}" onInput="{{ homeCardSizeChange }}" style="flex:1;accent-color:#68544B;">
+        <span style="font-size:12px;color:#9A958B;width:28px;text-align:right;">大</span>
       </div>
     </div>
   </div>
@@ -888,35 +895,8 @@ button:active {
 </div>
 </div>
 
-<!-- 主题 -->
+<!-- 后台保活 -->
 <div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:18px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
-<div style="padding:16px 18px;">
-<div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="7" height="7" rx="1.5" stroke="#68544B" stroke-width="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5" stroke="#68544B" stroke-width="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5" stroke="#68544B" stroke-width="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5" stroke="#68544B" stroke-width="1.5"/></svg>
-<div>
-<div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">主题</div>
-<div style="font-size:11px;color:#B8B3A8;margin-top:2px;">首页卡片间距 {{ homeCardGapLabel }}</div>
-</div>
-</div>
-<div style="display:flex;align-items:center;gap:12px;">
-<span style="font-size:12px;color:#9A958B;width:28px;">密</span>
-<input type="range" min="4" max="24" step="1" value="{{ homeCardGap }}" onInput="{{ homeCardGapChange }}" style="flex:1;accent-color:#68544B;">
-<span style="font-size:12px;color:#9A958B;width:28px;text-align:right;">疏</span>
-</div>
-</div>
-</div>
-
-
-<!-- 后台保活 & 音乐 -->
-<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:18px;overflow:hidden;margin-bottom:14px;box-shadow:0 1px 3px rgba(43,38,30,.04);">
-<div onClick="{{ navMusic }}" style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;cursor:pointer;">
-<div style="display:flex;align-items:center;gap:14px;">
-<svg width="20" height="20" viewBox="0 0 24 24" fill="none"><path d="M9 18V5l12-2v13" stroke="#68544B" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><circle cx="6" cy="18" r="3" stroke="#68544B" stroke-width="1.5"/><circle cx="18" cy="16" r="3" stroke="#68544B" stroke-width="1.5"/></svg>
-<div><div style="font-size:15px;font-weight:500;color:var(--text-primary, #1A1815);">音乐播放器</div><div style="font-size:11px;color:#B8B3A8;margin-top:2px;">{{ musicStatusLabel }}</div></div>
-</div>
-<svg width="14" height="14" viewBox="0 0 24 24" fill="none"><path d="M9 6l6 6-6 6" stroke="#D1CCC2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-</div>
-<div style="height:1px;background:#ECE8DF;margin:0 18px;"></div>
 <div style="padding:16px 18px;display:flex;align-items:center;justify-content:space-between;">
 <span style="font-size:14px;color:#3A362F;">后台保活</span>
 <div onClick="{{ toggleKeepAlive }}" style="width:44px;height:24px;border-radius:12px;background:{{ keepAliveBg }};cursor:pointer;position:relative;transition:background .2s;">
@@ -1902,6 +1882,33 @@ button:active {
 </sc-if>
 
 <!-- ========== REGEX PAGE ========== -->
+<sc-if value="{{ isRegexPage }}" hint-placeholder-val="{{ false }}">
+<div class="sa" style="position:absolute;inset:0;overflow-y:auto;padding:0 20px 24px;">
+
+<div style="padding:20px 0 16px;display:flex;align-items:center;justify-content:space-between;">
+<div onClick="{{ navHome }}" style="font-family:'Newsreader','Noto Serif SC',serif;font-size:24px;font-weight:400;color:var(--text-primary, #1A1815);cursor:pointer;">Regex</div>
+<button onClick="{{ newRegex }}" style="border:none;background:#1A1815;color:#F5F3EE;border-radius:18px;padding:8px 16px;font-size:13px;font-family:inherit;cursor:pointer;">+ 新建</button>
+</div>
+
+<div style="font-size:12px;color:#9A958B;line-height:1.6;margin-bottom:16px;padding:12px 14px;background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:14px;">扫描 AI 输出文字，匹配关键词时触发动作（如切换像素小人表情、替换文本等）</div>
+
+<sc-if value="{{ regexListHasItems }}" hint-placeholder-val="{{ true }}">
+<sc-for list="{{ regexList }}" as="rx" hint-placeholder-count="3">
+<div style="background:var(--bg-card, #FFF);border:1px solid var(--border-card, #EDE9E0);border-radius:16px;padding:14px 16px;margin-bottom:10px;cursor:pointer;box-shadow:0 1px 3px rgba(43,38,30,.04);" onClick="{{ rx.edit }}">
+<div style="display:flex;align-items:center;justify-content:space-between;">
+<div style="display:flex;align-items:center;gap:10px;flex:1;min-width:0;">
+<div style="width:7px;height:7px;border-radius:50%;background:{{ rx.dotColor }};flex:none;"></div>
+<span style="font-size:14px;font-weight:500;color:var(--text-primary, #1A1815);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ rx.name }}</span>
+<span style="font-size:10px;color:#9A958B;background:#F2EFE8;border-radius:8px;padding:2px 8px;flex:none;">{{ rx.targetLabel }}</span>
+</div>
+<button onClick="{{ rx.toggle }}" style="border:none;background:{{ rx.toggleBg }};border-radius:12px;padding:4px 10px;font-size:10px;color:{{ rx.toggleFg }};cursor:pointer;font-family:inherit;">{{ rx.toggleLabel }}</button>
+</div>
+<div style="font-size:11px;color:#6B665E;margin-top:6px;font-family:'SF Mono',monospace;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">{{ rx.patternPreview }}</div>
+<div style="font-size:11px;color:#9A958B;margin-top:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">→ {{ rx.actionPreview }}</div>
+</div>
+</sc-for>
+</sc-if>
+
 </div>
 
 <!-- ===== PET ===== -->
@@ -2874,6 +2881,7 @@ mcpCustomTools: (() => { try { const raw = localStorage.getItem('mcpcustomtools'
 memoryCount: saved.memoryCount || 10,
 avatarSize: saved.avatarSize || 36,
 homeCardGap: saved.homeCardGap || 12,
+homeCardSize: saved.homeCardSize || 56,
 userNickname: saved.userNickname || '江吟',
 aiNickname: saved.aiNickname || 'Kel',
 apiPresets: saved.apiPresets || [{ id: 'default', name: 'Default', url: 'https://az.zlapi.vip/v1', key: '', model: 'claude-sonnet-4-20250514', apiType: 'anthropic', isDefault: true }],
@@ -3758,6 +3766,7 @@ soundEnabled: s.soundEnabled,
 memoryCount: s.memoryCount,
 avatarSize: s.avatarSize,
 homeCardGap: s.homeCardGap,
+homeCardSize: s.homeCardSize,
 userNickname: s.userNickname,
 aiNickname: s.aiNickname,
 memories: s.memories,
@@ -6976,7 +6985,7 @@ navMCPColor: s.tab === 'mcp' ? '#68544B' : '#9A958B',
 navMusicColor: s.tab === 'music' ? '#68544B' : '#9A958B',
 navSettingsColor: s.tab === 'settings' ? '#68544B' : '#9A958B',
 homeCardGap: s.homeCardGap || 12,
-homeCardSize: Math.max(48, Math.min(64, 70 - Math.round((s.homeCardGap || 12) / 2))),
+homeCardSize: s.homeCardSize || 56,
 homeCardGapChange: (e) => { const v = parseInt(e.target.value) || 12; self.setState({ homeCardGap: v }); self.persist(); },
 homeCardGapLabel: (s.homeCardGap || 12) + 'px',
 // ===== ChatList 页面数据 =====
@@ -7054,6 +7063,7 @@ navChatList: () => self.setState({ tab: 'chatlist' }),
 navMCP: () => self.setState({ tab: 'mcp' }),
 navMusic: () => self.setState({ tab: 'music' }),
 navTheme: () => self.setState({ tab: 'theme' }),
+navRegex: () => self.setState({ tab: 'regex' }),
 navSettings: () => self.setState({ tab: 'settings' }),
 isChat: s.tab === 'chat',
 isHome: s.tab === 'home',
