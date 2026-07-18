@@ -87,5 +87,5 @@
 - 聊天详情：保留 Soul / 设置入口（原样）
 - 正则：首页卡片进完整 Regex 页，编辑仍在正则内容里，空状态已补
 - 语法：`node --check` 通过
-- 状态：准备 commit + 部署
+- 状态：已部署服务器 + force-with-lease 推到 GitHub master (46d2d91)
 
